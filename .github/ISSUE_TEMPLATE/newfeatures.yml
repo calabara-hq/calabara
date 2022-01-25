@@ -1,0 +1,28 @@
+name: New Features for the next versions
+description: Community hurdles that could be addressed with new features in future versions
+labels: [enhancement, help wanted]
+body:
+  - type: textarea
+    attributes:
+      label: New Feature
+      description: Feature you would want to see in the next version
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: How could we do it?
+      description: Steps to reproduce the behavior.
+      placeholder: |
+            type here
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Screenshots & Files
+      description: |
+       Screenshots Relevant to this bug
+        Tip: You can attach image(s)/file(s) by dragging them in.
+      placeholder: |
+        - Drag and drop them into this text area.
+    validations:
+      required: false
