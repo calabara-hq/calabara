@@ -1,0 +1,24 @@
+name: Notes/Improvements/Suggestions
+description: Existing feature notes/improvements/suggestions
+labels: [enhancement, documentation]
+body:
+  - type: textarea
+    attributes:
+      label: Feature Improvementes
+      description: If your feature request is related to a problem, describe it clearly.
+  - type: textarea
+    attributes:
+      label: Suggestions/Ideas
+      description: Describe your solution/idea.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Notes
+      description: Describe
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Comments
+      description: Additional information, comments or screenshots about the feature request.
