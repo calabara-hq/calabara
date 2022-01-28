@@ -1,6 +1,6 @@
 name: New Features for the next versions
 description: Community hurdles that could be addressed with new features in future versions
-labels: [enhancement, help wanted]
+labels: [new feature]
 body:
   - type: textarea
     attributes:
