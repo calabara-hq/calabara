@@ -1,0 +1,201 @@
+@keyframes fadein{
+  100% {opacity: 1;}
+}
+
+.navbar{
+  width: 100%;
+  background-color: #141416;
+  border-radius: 0;
+  align-items: center;
+  padding-top: 10px;
+}
+
+.navbar.homepage{
+  background-color: black;
+}
+
+.navbar.homepage > .parent-container{
+  border-bottom: none;
+}
+
+.parent-container{
+  display: flex;
+  flex-direction: row;
+  width: 80%;
+  margin: 0 auto;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #333;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+
+.walletBox{
+  display: flex;
+  flex-direction: column;
+  margin-left: auto;
+  gap: 10px;
+}
+
+.walletBox > div:first-child{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.walletAvatar{
+  transform: scale(150%);
+  cursor: pointer;
+}
+
+.walletMore > span{
+  cursor: pointer;
+  transition: all 0.2s linear;
+}
+
+.walletMore > span{
+  color: #efefef !important;
+  
+}
+
+
+.connectionInfo{
+  background-color: #24262e;
+  color: white;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  animation: fadein 0.5s;
+
+}
+
+.connectionInfo > div:first-child{
+  transform: scale(300%);
+  margin-top: 15%;
+  
+}
+
+.connectionInfoAddress > span{
+  background-color: #1d1d1d;
+  border-radius: 6px;
+  margin: none;
+  width: 100%;
+  padding: 6px 10px;
+  font-size: 14px;
+}
+
+.connectionInfoAddress > span::after{
+  font-family: 'Font Awesome 5 Free';
+  margin-left: 10px;
+  content: "\f35d";
+  font-weight: 900;
+}
+
+.connectionInfoAddress > button{
+  display: block;
+  padding: 5px 16px;
+  border-radius: 6px;
+  width: 100%;
+  margin: 10px auto;
+  cursor: pointer;
+  background-color: #373e47;
+  color: #e5534b;
+}
+
+.connectionInfoAddress > button:hover{
+  background-color: #e5534b;
+  color: white;
+  transition: color 0.3s ease-in;
+  transition: background-color 0.3s ease-in;
+}
+
+
+
+.connectionInfoAddress > span:hover{
+  color: black;
+  background-color: white;
+  transition: color 0.3s ease-in;
+  transition: background-color 0.3s ease-in;
+  cursor: pointer;
+
+}
+
+
+
+.walletConnectBtn{
+  background-color: #2d2e35;
+  font-size: 16px;
+  padding: 10px;
+  color: white;
+
+  border: double 2px transparent;
+  border-radius: 6px;
+  background-image: linear-gradient(black, black), 
+                    linear-gradient(to right, #e00f8e, #2d66dc);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  transition: background-color 0.4s ease-in;
+  cursor: pointer;
+}
+
+
+
+#account-address{
+  border-radius: 20px;
+}
+
+
+.dropdown-menu{
+  color: black;
+  text-align: center;
+}
+
+
+.navbar-logo img{
+  width: 4rem;
+  cursor: pointer;
+}
+
+.discordBtn{
+
+  border-radius: 15px;
+  border: 2px solid rgb(56 74 255);
+  background: black;
+  font-size: 14px;
+  padding: 5px;
+  color: white;
+  padding-left: 10px;
+  padding-right: 10px;
+  cursor: pointer;
+}
+
+.launchAppBtn{
+  border-radius: 15px;
+  border: 2px solid #d95169;
+  background: black;
+  font-size: 14px;
+  padding: 5px;
+  color: white;
+  padding-left: 10px;
+  padding-right: 10px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.launchAppBtn.big{
+  padding: 15px 30px;
+  margin-top: 100px;
+}
+
+
+.launchAppDiv{
+  margin-left: auto;
+  display: flex;
+  flex-direction: row;
+  gap: 5px;
+}

@@ -1,0 +1,266 @@
+
+.wiki-display-container{
+  width: 98vw;
+  height: auto;
+  display: flex;
+  flex-direction: row;
+  padding-left: 2%;
+}
+
+.komLbZ, .bShPVy{
+  max-width: 10vw !important;
+  overflow: hidden !important;
+}
+
+
+
+
+.sc-gsTEea.iVDXBX{
+  max-width: 10vw;
+  overflow: hidden;
+}
+
+.wiki-sidebar{
+  background-color: #24262e;
+  border: 2px solid #1d1d1d;
+  border-radius: 15px;
+  width: calc(100vw - 90%);
+}
+
+.wiki-sidebar-heading{
+  margin-left: 20px;
+  margin-bottom: 20px;
+  display: grid;
+  grid-template-columns: 60% 40%;
+  color: #efefef;
+  
+}
+
+.wiki-sidebar-heading button{
+  margin: 10px;
+  border-radius: 10px;
+  border: none;
+  background-color: rgb(56, 74, 255);
+  color: white;
+}
+
+.wiki-sidebar-list{
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  margin-left: 10px;
+}
+
+.wiki-list{
+  display: grid;
+  grid-template-rows: repeat(1fr);
+  border-left: 2px solid black;
+  padding-left: 5px;
+}
+
+
+@keyframes wikiseq{
+  100% {opacity: 1;}
+}
+
+.wiki{
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 10px;
+}
+
+
+.wiki p{
+  animation: wikiseq 1.5s forwards;
+  cursor: pointer;
+  opacity: 0;
+  margin-left: 10px;
+}
+
+.wiki p:nth-child(n){
+  animation: wikiseq 1.5s forwards;
+}
+
+.wiki-folder{
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.wiki-folder p::before{
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  font-size: 12px;
+  content: "\f054  ";
+  display: inline-block;
+  margin: 5px;
+  margin-right: 5px;
+}
+
+.wiki-folder.rotate p::before{
+  -moz-transition: all 0.3s linear;
+  -webkit-transition: all 0.3s linear;
+  transition: all 0.3s linear;
+}
+
+.wiki-folder.rotate.down p::before{
+  -moz-transform:rotate(450deg);
+  -webkit-transform:rotate(450deg);
+  transform:rotate(450deg);
+}
+
+
+.wiki:hover{
+  background-color: grey;
+}
+
+
+.wiki-sidebar p{
+  color: #efefef;
+  font-size: 18px;
+  max-width: calc(100vw - 90%);
+  overflow-wrap: anywhere;
+}
+
+
+.new-wiki-btn{
+  position: flex;
+}
+
+.new-wiki-btn button{
+  width: 100%;
+  margin-bottom: 10px;
+  border: 2px solid #1d1d1d;
+  border-radius: 10px;
+  background-color: #384aff;
+  color: white;
+  padding: 6px;
+}
+
+.new-document{
+  background-color: #f4f5f7;
+  color: #f4f5f7;
+  cursor: pointer;
+  border-radius: 5px;
+  text-align: center;
+  padding: 10px;
+}
+
+.new-document span{
+  color: #f4f5f7;
+}
+
+.new-document:hover{
+  background-color: lightgrey !important;
+}
+
+.editor-display{
+  background-color: white;
+  border: 1px solid white;
+  border-radius: 15px;
+  width: 80%;
+}
+
+.draglist-header{
+  border-bottom: 2px solid #aaa;
+  padding-bottom: 15px;
+  display: flex;
+  align-items: center;
+}
+
+.draglist-header button{
+  position: absolute;
+  right: 3%;
+  border-radius: 6px;
+  margin: 2px;
+  color: transparent;
+  background-color: transparent;
+  border: none;
+}
+
+.draglist-header button:hover{
+  background-color: grey !important;
+}
+
+.drag-item-btn{
+  position: absolute;
+  right: 3%;
+  top: 50%;
+  transform: translate(0, -50%);
+  font-size: 16px;
+  color: transparent;
+  background-color: transparent;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  max-width: 30px;
+  max-height: 30px;
+}
+
+
+.drag-item-btn.focus{
+  background-color: #253858 !important;
+  color: white;
+  border-bottom-right-radius: 0px;
+  border-bottom-left-radius: 0px;
+}
+
+.drag-item-btn:hover{
+  background-color: #253858 !important;
+  color: white;
+}
+
+.dropdown{
+  border-top-right-radius: 0px;
+  position: absolute;
+  background-color: white;
+  border-radius: 3px;
+  border-top-right-radius: 1px;
+  border: 2px solid #253858;
+  box-shadow: rgba(9, 30, 66, 0.25) 0px 4px 8px -2px, rgba(9, 30, 66, 0.31) 0px 0px 1px;
+  right: 20%;
+  bottom: 0;
+  top: 0;
+  z-index: 1000;
+  padding: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: wikiseq 0.7s forwards;
+  opacity: 0;
+  maring-top: 0 auto;
+}
+
+.dropdown p{
+
+  font-size: 16px;
+  color: black;
+  padding: 5px;
+  margin: 0;
+}
+
+
+
+.dropdown p:hover{
+  background-color: rgba(255, 77, 77, 0.3);
+  border-radius: 3px;
+}
+
+
+.editor-title textarea{
+  animation: wikiseq 1.5s forwards;
+  opacity: 0;
+  cursor: text;
+}
+.editor-title.loading{
+  animation: wikiseq 1.5s forwards;
+  opacity: 0;
+  cursor: text;
+  background-color: orange !important;
+}
+
+
+.react-editor{
+  animation: wikiseq 1.5s forwards;
+  opacity: 0;
+  cursor: text;
+}

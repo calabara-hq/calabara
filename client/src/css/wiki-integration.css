@@ -1,0 +1,71 @@
+
+body{
+}
+
+.wiki-integration-container{
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  margin: 0 auto;
+  border: 2px solid black;
+  border-radius: 10px;
+}
+
+.wiki-integration-container h1{
+  text-align: center;
+}
+
+.wiki-integration-container p{
+  font-size: 22px;
+}
+
+.wiki-grid{
+  background-color: black;
+  width: 100%;
+  height: 12vw;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+}
+
+
+.new-wiki-container{
+  margin: 0 auto;
+  margin-top: 20px;
+  text-align: center;
+  width: 60%;
+  height: 80%;
+  background-color: #d3d3d3;
+  border-radius: 10px;
+}
+
+.new-wiki-container p{
+  color: black;
+}
+
+.new-wiki-container button{
+  border: none;
+  background: none;
+  font-size: 50px;
+}
+
+.wiki-ambience{
+  width: 80%;
+  height: auto;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.wiki-ambience img{
+  width: 14%;
+}
+
+.listHelpText{
+  background-color: black;
+  border-radius: 8px;
+}
+
+.listHelpText p{
+  text-align: center;
+  font-size: 1.6rem;
+}
