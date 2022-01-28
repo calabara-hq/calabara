@@ -1,0 +1,99 @@
+.edit-container{
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  margin: 0 auto;
+}
+
+.react-editor p{
+  color: black;
+  font-size: 1.7rem;
+}
+
+
+
+.react-editor{
+  padding-left: 20%;
+  padding-right: 20%;
+  padding-top: 40px;
+  height: auto;
+  min-height: 100vh;
+  font-size: 1.7rem;
+  background-color: white;
+  border-radius: 10px;
+  outline: none;
+  border: none;
+}
+
+
+.editor-title{
+  display: flex;
+  padding-left: 20%;
+  padding-top: 10%;
+  padding-right: 5%;
+}
+
+
+.edit-wiki-button{
+  background-color: white;
+  border: none;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12),0 1px 2px rgba(0,0,0,0.24);
+  font-size: 25px;
+  border-radius: 100%;
+  width: 6rem;
+  height: 6rem;
+  align-items: center;
+  margin-left: auto;
+}
+
+.editorPublishBtn{
+  border: none;
+  border-radius: 8px;
+  padding: 13px;
+  font-size: 1.7rem;
+  height: 6rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12),0 1px 2px rgba(0,0,0,0.24);
+  background: linear-gradient(to right,rgba(56, 74, 255, 0.9) 50%, white 50%);
+  background-size: 200% 100%;
+  background-position: right bottom;
+  transition: all 1s ease-out;
+  color: black;
+}
+
+.editorPublishBtn.spinner{
+  background-position: left bottom;
+}
+
+.editor-title::after{
+  content: attr(data-replicated-value) " ";
+  white-space: pre-wrap;
+  visibility: hidden;
+}
+
+.editor-title > textarea{
+  resize: none;
+  width: 70%;
+  border: none;
+  font-size: 3.5rem;
+  font-weight: bold;
+  outline: none;
+  overflow: hidden;
+
+}
+
+.editor-title::after {
+  padding: 0.5rem;
+  grid-area: 1 / 1 / 2 / 2;
+}
+
+.editorPublishContainer{
+  position: absolute;
+  right: 10%;
+  top: 8%;
+}
+
+
+.foremost{
+  background-color: black;
+}
