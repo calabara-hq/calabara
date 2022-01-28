@@ -1,0 +1,124 @@
+.input-container{
+  position: relative;
+  width: 50%;
+  height: 100%;
+  margin: 0 auto;
+}
+
+.input-container h2{
+  color: #efefef;
+  margin-left: 15px;
+  margin-bottom: 20px;
+  font-size: 25px;
+}
+
+.ens-verify{
+  position: relative;
+  background: black;
+  width: auto;
+  height: auto;
+  margin: auto;
+  border: 2px solid black;
+  border-radius: 20px;
+}
+
+
+
+.user-interact{
+
+  border-top: 1px solid black;
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+
+
+}
+
+.setup-heading h4{
+  text-align: center;
+  color: #efefef;
+}
+
+.setup-heading h5{
+  margin-left: 5%;
+  padding: 5px;
+  padding-top: 10px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.text-input{
+  position: relative;
+  text-align: center;
+  width: 100%;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.supporting-text{
+  position: relative;
+  background-color: black;
+  width: auto;
+  margin-left: 5%;
+}
+
+.supporting-text span{
+  font-size: 18px auto;
+  font-weight: bold;
+  position: absolute;
+  bottom: 40%;
+}
+
+
+.text-input input{
+  background: #efefef;
+  width: 80%;
+  height: 90%;
+  border: 1px solid black;
+  border-radius: 23px;
+  padding: 20px;
+}
+
+.text-input input:focus{
+  outline: 3px solid #384aff;
+}
+
+
+
+.dialogue-btn{
+  position: relative;
+  width: 100%;
+  text-align: center;
+}
+
+.dialogue-btn button{
+  position: relative;
+  width: 80%;
+  border-radius: 23px;
+  font-size: 25px;
+  font-weight: bold;
+  margin-top: 5px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.ens-button-purple{
+  background-color: #9c4be7;
+  border: 2px solid #9c4be7;
+  color: black;
+
+}
+
+.ens-button-grey{
+  color: #333333;
+  background-color: black;
+  border: 2px solid #9c4be7;
+}
+
+.saveSettings{
+  position: absolute;
+  right:15%;
+  top: 10%;
+  background: #efefef;
+  width: 10%;
+  height: 20%;
+}

@@ -1,0 +1,207 @@
+@keyframes cardseq{
+  100% {opacity: 1;}
+}
+
+
+
+.dashboard-wrapper{
+  animation: cardseq 1.3s forwards;
+  opacity: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+
+.widget-cards{
+  width: auto;
+  margin: 5rem auto;
+  display: grid;
+  gap: 2rem;
+
+}
+
+
+@media screen and (max-width: 600px){
+  .info{
+    margin: 0 auto !important; 
+  }
+}
+
+@media screen and (min-width: 1100px){
+  .widget-cards{
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media screen and (min-width: 1450px){
+  .widget-cards{
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.widget-card{
+  text-align: center;
+  border: 2px solid #2d2e35;
+  border-radius: 40px;
+  padding: 5px 6rem;
+  cursor: pointer;
+  background-color: #1d1d1d;
+  position: relative;
+}
+
+
+.widget-card h2{
+  text-align: center;
+  margin: 2 auto;
+  color: #efefef;
+}
+.widget-card button{
+  position: absolute;
+     right: -20px;
+     top: -10px;
+     background: #ff3333;
+     text-align: center;
+     border: 3px solid black;
+     border-radius: 100%;
+     color: black;
+     padding: 5px 10px;
+     font-size: 20px;
+}
+
+
+
+.new-widget-card{
+  text-align: center;
+  border: 2px solid black;
+  border-radius: 8px;
+  padding: 1rem 2rem;
+  background-color: grey;
+  position: relative;
+}
+
+
+.new-widget-card h2{
+  text-align: center;
+  margin: 2 auto;
+}
+
+.configureWidgetBtn{
+  position: absolute;
+     right: -20px;
+     top: -10px;
+     background: seagreen;
+     text-align: center;
+     border: 3px solid black;
+     border-radius: 100%;
+     color: white;
+     padding: 5px 10px;
+     font-size: 20px;
+}
+
+
+
+.card-image img{
+  width: 10rem;
+  height: 10rem;
+}
+
+.info{
+  margin: 5rem;
+  display: flex;
+  flex-direction: column;
+  border: 3px solid #2d2e35;
+  border-radius: 40px;
+  background: #24262e;
+  flex: 0 0 20em;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+
+.edit-settings-btn{
+  margin-left: auto;
+  margin-right: 10px;
+  margin-top: 10px;
+  width: auto;
+  background: #1d1d1d;
+  border: none;
+  border-radius: 6px;
+  font-size: 2rem;
+  color: #999;
+}
+
+.edit-settings-btn:hover{
+  color: white;
+}
+
+
+.info-content{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.info-content h1{
+  color: #efefef;
+  padding: 0px 3rem;
+}
+
+.info-content p{
+  color: #888;
+}
+
+.info-content a{
+  cursor: pointer;
+  margin-bottom: 10px;
+  color: #efefef;
+}
+
+
+.info-content > span{
+  background-color: #1d1d1d;
+  padding: 5px 30px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.info-content > span > img {
+  width: 3rem;
+  background-color: #1d1d1d;
+}
+
+.info-content img{
+  max-width: 10rem;
+  max-height: 10rem;
+  border-radius: 100px;
+}
+
+
+
+.subscribe-btn{
+  border: 2px solid black;
+  border-radius: 20px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  font-size: 15px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+
+
+
+.managePencil{
+  font-size: 10rem;
+  background-color: #2d2e35;
+}
+.manage-widgets{
+  background-color: #2d2e35;
+  border: 1px solid #2d2e35;
+  color: #1d1d1d;
+}

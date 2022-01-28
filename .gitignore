@@ -1,0 +1,8 @@
+node_modules/
+*.cert
+*.key
+.env
+*.pem
+server/org-repository/*
+server/img/logos/*
+build/
