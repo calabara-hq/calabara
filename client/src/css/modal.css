@@ -376,8 +376,14 @@ button,
 }
 .installable-widgets-container{
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   justify-content: center;
+  width: 80%;
+  margin: 0 auto;
+}
+
+.installable-widgets-container > * {
+  flex: 0 1 22%;
 }
 
 .installable-widget{
