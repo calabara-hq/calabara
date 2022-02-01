@@ -255,7 +255,7 @@ function InfoCard({info, ens, showSettingsModal}){
     {(!isMemberOf && isConnected) && <button name="join" onClick={handleJoinOrg} type="button" className="subscribe-btn">Join</button>}
     {(isMemberOf && isConnected) && <button name="leave" onClick={handleLeaveOrg} type="button" className="subscribe-btn">Leave</button>}
     <p> {members} members </p>
-      <a onClick={function(){window.open(website)}}>{website}</a>
+      <a href={'https://' + website} target="_blank">{website}</a>
     </>
     }
     </div>
