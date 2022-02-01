@@ -40,6 +40,7 @@ import {
   populateDashboardRules,
   applyDashboardRules,
 } from '../gatekeeper/gatekeeper-rules-reducer'
+import { current } from '@reduxjs/toolkit'
 
 export default function WikiDisplay({mode}) {
   const {ens} = useParams();
@@ -155,13 +156,19 @@ const editWikiGroupingClick = (group_id) => {
   showModal();
 }
 
-
+const fireWikiPopout = () => {
+  setCurrentWikiId(-1)
+  setIsWikiLoaded(false)
+}
 
 
   return (
     
     <div className={"wiki-display-container"}>
-      <div className={"wiki-sidebar "  + (currentWikiId == -1 ? 'wiki-closed' : undefined)}>
+      <div className={"wiki-popout-sidebar " + (currentWikiId == -1 ? 'wiki-closed' : 'wiki-open')}>
+        <button onClick={fireWikiPopout}>documents</button>
+      </div>
+      <div className={"wiki-sidebar "  + (currentWikiId == -1 ? 'wiki-closed' : 'wiki-open')}>
         <div className="wiki-sidebar-heading">
           <h2> Docs </h2>
           {isAdmin && <button onClick={newWikiGroupingClick}><Glyphicon glyph="folder-open"/></button> }
@@ -177,7 +184,7 @@ const editWikiGroupingClick = (group_id) => {
           </>
       }
       </div>
-      {currentWikiId != -1 && <RenderWiki isWikiLoaded={isWikiLoaded} isAdmin = {isAdmin} currentWikiId={currentWikiId} wikiDisplayTitle={wikiDisplayTitle} wikiDisplayContent={wikiDisplayContent}/>}
+      <RenderWiki isWikiLoaded={isWikiLoaded} isAdmin = {isAdmin} currentWikiId={currentWikiId} wikiDisplayTitle={wikiDisplayTitle} wikiDisplayContent={wikiDisplayContent}/>
       {modalOpen && <HelpModal groupID={groupID} tab={modalTab} modalOpen={modalOpen} handleClose={close}/>}
     </div>
   
@@ -254,44 +261,58 @@ function B({setCurrentWikiId, group_data}){
 
   return(
     <>
-      {group_data.list.length > 0 && <div className={"wiki-folder rotate " + (isFolderOpen ? 'down' : undefined) }onClick={() => {setIsFolderOpen(!isFolderOpen)}}><p>{group_data.group_name}</p></div>}
+      {group_data.list.length > 0 && 
+      <div className={"wiki-folder rotate " + (isFolderOpen ? 'down' : undefined) }onClick={() => {setIsFolderOpen(!isFolderOpen)}}>
+        <span></span>
+        <p>{group_data.group_name}</p>
+      </div>}
       {group_data.list.map((el, idx) => {
-      return <div className={"wiki " + (!isFolderOpen ? 'hidden' : undefined)} onClick={() => {setCurrentWikiId(el.id)}}> <p>{el.title}</p> </div>
+      return( 
+            <div className={"wiki " + (!isFolderOpen ? 'hidden' : 'undefined')} onClick={() => {setCurrentWikiId(el.id)}}>
+              <p>{el.title}</p>
+            </div>
+            )
     })}
     </>
   )
 }
 
 
+
 function RenderWiki({isWikiLoaded, isAdmin, currentWikiId, wikiDisplayTitle, wikiDisplayContent}){
   const history = useHistory();
-
+  console.log(isWikiLoaded)
 
   return(
     <>
-  {isWikiLoaded &&
-    <div className="editor-display">
-    <div className="editor-title">
-    <textarea style={{background: 'none', marginLeft: "-8px"}} disabled type="text" value={wikiDisplayTitle}></textarea>
-    {isAdmin && <button onClick={() => {history.push('wiki-edit/1/' + currentWikiId)}} className="edit-wiki-button"><Glyphicon glyph="pencil"/></button>}
-    </div>
+    <div className={"editor-display " + (currentWikiId != -1 ? 'wiki-open' : 'wiki-closed')}>
+      <div className="edit-wiki-container">
+        {isAdmin && <button onClick={() => {history.push('wiki-edit/1/' + currentWikiId)}} className="edit-wiki-button"><Glyphicon glyph="pencil"/></button>}
+      </div>
 
+    {isWikiLoaded && 
+    <>
+    <div className="editor-title">
+      <div>{wikiDisplayTitle}</div>
+    </div>
 
     <Editor
         className="react-editor"
         text={wikiDisplayContent}
         options={{disableEditing: true, toolbar: false, placeholder: false}}
        />
+    </>
+     }
 
-    </div>
-  }
-  {!isWikiLoaded &&
-    <div className="editor-display">
-      <div style={{backgroundColor: 'white'}} className="editor-title">
-        <div className="loading" disabled style={{backgroundColor: 'lightgrey', borderRadius: '16px', marginBottom: '10px'}}></div>
+    {!isWikiLoaded &&
+   
+      <div style={{backgroundColor: 'lightgrey', borderRadius: '16px', height: '5rem'}} className="editor-title">
+        <div className="loading" disabled></div>
       </div>
+    }
     </div>
-  }
+
+  
   </>
   )
 }

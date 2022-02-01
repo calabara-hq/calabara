@@ -15,6 +15,8 @@ import {
 
 const DragDropContextContainer = styled.div`
   padding: 20px;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 `;
 
 const ListGrid = styled.div`

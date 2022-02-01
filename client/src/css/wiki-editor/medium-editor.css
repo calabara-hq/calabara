@@ -88,11 +88,8 @@
   .medium-editor-placeholder:after {
     content: attr(data-placeholder) !important;
     font-style: italic;
-    position: absolute;
-    left: 20%;
-    top: 5%;
     white-space: pre;
-    margin: inherit; }
+   }
 
 .medium-editor-placeholder-relative {
   position: relative; }
