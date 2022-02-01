@@ -70,13 +70,15 @@ export default function WikiEditor(){
 
 
 function ReactEditor({data}){
-  console.log(data)
   var content = data.filedata.content;
   const [title, setTitle] = useState(data.filedata.title)
   const {ens, file, grouping} = useParams();
   const history = useHistory();
   const [pending, setPending] = useState(false)
-  const contentRef = useRef(null)
+  const contentRef = useRef(null);
+  const textAreaRef = useRef(null);
+  const [textAreaHeight, setTextAreaHeight] = useState("auto");
+  const [parentHeight, setParentHeight] = useState("auto")
 
 
   async function publishDocument(){
@@ -111,14 +113,28 @@ function ReactEditor({data}){
     content = newContent;
   }
 
-    useEffect(()=>{console.log(title)},[title])
+
+  useEffect(() => {
+		setParentHeight(`${textAreaRef.current.scrollHeight}px`);
+		setTextAreaHeight(`${textAreaRef.current.scrollHeight}px`);
+	}, [title]);
+
+	const onTitleChangeHandler = (e) => {
+		setTextAreaHeight("auto");
+		setParentHeight(`${textAreaRef.current.scrollHeight}px`);
+		setTitle(e.target.value);
+	};
+
 
 
   return(
     <>
-    <div className="editor-title">
-    <textarea type="text" placeholder="Your title here" onChange={e => setTitle(e.target.value)} value={title}></textarea>
+    <div className="wiki-publish-container">
     <button onClick={publishDocument} className={"editorPublishBtn " + (pending ? 'spinner' : undefined)}>Publish</button>
+
+    </div>
+    <div className="editor-title" style={{minHeight: parentHeight}}>
+      <textarea ref={textAreaRef} rows={1} style={{height: textAreaHeight}} type="text" placeholder="Your title here" value={title} onChange={onTitleChangeHandler}/>
     </div>
 
     <Editor

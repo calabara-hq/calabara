@@ -1,53 +1,55 @@
 
 .wiki-display-container{
-  width: 98vw;
-  height: auto;
+  position: relative;
+  width: 100%;
   display: flex;
   flex-direction: row;
-  padding-left: 2%;
 }
 
-.komLbZ, .bShPVy{
-  max-width: 10vw !important;
-  overflow: hidden !important;
-}
-
-
-
-
-.sc-gsTEea.iVDXBX{
-  max-width: 10vw;
-  overflow: hidden;
-}
 
 .wiki-sidebar{
   background-color: #24262e;
   border: 2px solid #1d1d1d;
   border-radius: 15px;
-  width: calc(100vw - 90%);
+  width: 30rem;
+  flex-wrap: wrap;
+}
+
+/*
+  if not small screen, don't show popout button
+*/
+.wiki-popout-sidebar{
+  max-height: 0px;
+  max-width: 0px;
+  visibility: hidden;
+  opacity: 0;
 }
 
 .wiki-sidebar-heading{
-  margin-left: 20px;
-  margin-bottom: 20px;
-  display: grid;
-  grid-template-columns: 60% 40%;
+  display: flex;
+  flex-direction: row;
   color: #efefef;
-  
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.wiki-sidebar-heading > h2{
+  margin-left: 10px;
 }
 
 .wiki-sidebar-heading button{
-  margin: 10px;
+  margin-left: auto;
+  margin-right: 10px;
   border-radius: 10px;
   border: none;
   background-color: rgb(56, 74, 255);
   color: white;
+  padding: 10px 30px;
 }
 
 .wiki-sidebar-list{
-  display: grid;
-  grid-template-rows: 1fr 1fr;
-  margin-left: 10px;
+  max-width: 30rem;
+  overflow-wrap: anywhere;
 }
 
 .wiki-list{
@@ -83,30 +85,42 @@
 .wiki-folder{
   border-radius: 8px;
   cursor: pointer;
+  display: flex;
+  flex-direction: row;
 }
 
-.wiki-folder p::before{
+
+
+
+.wiki-folder span::before{
   font-family: "Font Awesome 5 Free";
   font-weight: 900;
   font-size: 12px;
   content: "\f054  ";
-  display: inline-block;
+  display: flex;
+  flex-direction: row;
   margin: 5px;
   margin-right: 5px;
+  color: white;
 }
 
-.wiki-folder.rotate p::before{
+
+
+.wiki-folder.rotate span::before{
   -moz-transition: all 0.3s linear;
   -webkit-transition: all 0.3s linear;
   transition: all 0.3s linear;
 }
 
-.wiki-folder.rotate.down p::before{
+.wiki-folder.rotate.down span::before{
   -moz-transform:rotate(450deg);
   -webkit-transform:rotate(450deg);
   transform:rotate(450deg);
 }
 
+.wiki-folder p{
+  display: inline;
+}
 
 .wiki:hover{
   background-color: grey;
@@ -116,8 +130,7 @@
 .wiki-sidebar p{
   color: #efefef;
   font-size: 18px;
-  max-width: calc(100vw - 90%);
-  overflow-wrap: anywhere;
+  
 }
 
 
@@ -156,7 +169,9 @@
   background-color: white;
   border: 1px solid white;
   border-radius: 15px;
-  width: 80%;
+  width: 70%;
+  display: flex;
+  flex-direction: column;
 }
 
 .draglist-header{
@@ -199,8 +214,6 @@
 .drag-item-btn.focus{
   background-color: #253858 !important;
   color: white;
-  border-bottom-right-radius: 0px;
-  border-bottom-left-radius: 0px;
 }
 
 .drag-item-btn:hover{
@@ -209,16 +222,14 @@
 }
 
 .dropdown{
-  border-top-right-radius: 0px;
   position: absolute;
   background-color: white;
   border-radius: 3px;
-  border-top-right-radius: 1px;
   border: 2px solid #253858;
   box-shadow: rgba(9, 30, 66, 0.25) 0px 4px 8px -2px, rgba(9, 30, 66, 0.31) 0px 0px 1px;
-  right: 20%;
-  bottom: 0;
-  top: 0;
+  top: 50%;
+  right: 0;
+  transform: translate(100%, 0);
   z-index: 1000;
   padding: 10px;
   cursor: pointer;
@@ -227,7 +238,6 @@
   justify-content: center;
   animation: wikiseq 0.7s forwards;
   opacity: 0;
-  maring-top: 0 auto;
 }
 
 .dropdown p{
@@ -251,16 +261,121 @@
   opacity: 0;
   cursor: text;
 }
-.editor-title.loading{
-  animation: wikiseq 1.5s forwards;
-  opacity: 0;
-  cursor: text;
-  background-color: orange !important;
-}
+
 
 
 .react-editor{
   animation: wikiseq 1.5s forwards;
   opacity: 0;
   cursor: text;
+}
+
+@keyframes slide-right {
+  from {
+    margin-left: -100%;
+  }
+  to {
+    margin-left: 0%;
+  }
+}
+
+@keyframes slide-up {
+  from {
+    margin-bottom: -100%;
+  }
+  to {
+    margin-bottom: 0%;
+  }
+}
+
+@keyframes slide-left {
+  from {
+    margin-left: 0%;
+    visibility: visible;
+    opacity: 1;
+    max-height: 1000px
+  }
+  to {
+    margin-left: -100%;
+    visibility: hidden;
+    opacity: 0;
+    z-index: -1;
+  }
+}
+
+
+
+@media only screen and (max-width: 800px){
+ .wiki-display-container{
+   flex-direction: column;
+   width: 100%;
+   justify-content: center;
+
+ }
+
+ .wiki-sidebar{
+  margin-left: -100%;
+  transition-property: margin-left;
+  transition: 0.3s ease-in-out;
+ }
+
+ .wiki-sidebar.wiki-closed{
+   width: 90vw;
+   margin: 0 auto;
+   /*animation: 0.5s slide-right;*/
+   margin-left: 0%;
+  }
+  /*
+  on smaller screens, hide the wiki list when a document is open. When popout button is clicked, hide document and show wiki list
+  */
+
+  .wiki-sidebar.wiki-open{
+    margin-left: -100%;
+    max-height: 0;
+    
+  }
+
+  .wiki-popout-sidebar.wiki-open{
+    visibility: visible;
+    opacity: 1;
+    max-height: 1000px;
+    margin-bottom: 1em;
+  }
+  .wiki-popout-sidebar.wiki-closed{
+    visibility: hidden;
+    opacity: 0;
+    max-height: 0px;
+    max-width: 0px;
+  }
+
+  .wiki-popout-sidebar.wiki-open > button{
+    border: none;
+    border-radius: 100px;
+    padding: 10px;
+    background-color: #384aff;
+    color: white;
+  }
+  .wiki-sidebar p{
+    width: 100%;
+    overflow-wrap: break-word;
+  }
+  .wiki{
+    padding: 0px 5px 0px 15px;
+  }
+
+  .editor-display{
+    margin-top: 200%;
+    width: 100%;
+    transition-property: margin-top;
+    transition: 0.3s ease-in-out;
+  }
+
+  .editor-display.wiki-open{
+    margin-top: 0%;
+  }
+
+  .editor-display.wiki-closed{
+    margin-top: 200%;
+  }
+
 }
