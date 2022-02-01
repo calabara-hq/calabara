@@ -86,9 +86,7 @@ function Analytics() {
 
   return (
     <div className="analyticsContainer">
-    <div className="myParticipation">
-    <DoughnutChart chartData={userParticipationPercentage}/>
-    </div>
+    
     <div className="newProposals">
     {missedVotes.votes.length > 0 &&
       <>
@@ -106,17 +104,22 @@ function Analytics() {
 
       }
     </div>
-    <div className="pastProposals">
-      <h1>Past proposals</h1>
-      <div className="proposalBox">
-        {pastFiveproposals.map((proposal)=>{
-        return (
-          <div className="proposal closed" onClick={()=> window.open(('https://snapshot.org/#/' + ens + '/proposal/' + proposal.id).toLowerCase())}>
-            <h4>{proposal.title}</h4>
-            <div className="proposal-status-btn closed">closed</div>
-          </div>
-        )
-        })}
+    <div className="snapshot-flex-column-2">
+      <div className="myParticipation">
+      <DoughnutChart chartData={userParticipationPercentage}/>
+      </div>
+      <div className="pastProposals">
+        <h1>Past proposals</h1>
+        <div className="proposalBox">
+          {pastFiveproposals.map((proposal)=>{
+          return (
+            <div className="proposal closed" onClick={()=> window.open(('https://snapshot.org/#/' + ens + '/proposal/' + proposal.id).toLowerCase())}>
+              <h4>{proposal.title}</h4>
+              <div className="proposal-status-btn closed">closed</div>
+            </div>
+          )
+          })}
+        </div>
       </div>
     </div>
     </div>

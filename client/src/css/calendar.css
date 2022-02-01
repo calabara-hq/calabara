@@ -17,15 +17,7 @@
   border: 2px solid rgb(94, 177, 126) !important;
 }
 
-.rbc-event:hover{
-    overflow: visible !important;
-    height: auto !important;
-    white-space: unset !important;
-    z-index: 100 !important;
-    background-color: #384aff !important;
-    border: 2px solid #384aff !important;
 
-  }
 
 .rbc-current-time-indicator{
   background-color: blue !important;

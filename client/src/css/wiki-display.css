@@ -4,6 +4,7 @@
   width: 100%;
   display: flex;
   flex-direction: row;
+  justify-content: center;
 }
 
 
@@ -172,6 +173,39 @@
   width: 70%;
   display: flex;
   flex-direction: column;
+  height: 0%;
+  transition-property: height;
+  transition: 0.5s ease-in-out;
+}
+
+.editor-display.wiki-open{
+  height: 100%;
+  visibility: visible;
+  opacity: 1;
+}
+.editor-display.wiki-closed{
+  height: 0%;
+  visibility: hidden;
+  opacity: 0;
+
+}
+
+.example-enter {
+  opacity: 0.01;
+}
+
+.example-enter.example-enter-active {
+  opacity: 1;
+  transition: opacity 500ms ease-in;
+}
+
+.example-leave {
+  opacity: 1;
+}
+
+.example-leave.example-leave-active {
+  opacity: 0.01;
+  transition: opacity 300ms ease-in;
 }
 
 .draglist-header{
@@ -270,40 +304,6 @@
   cursor: text;
 }
 
-@keyframes slide-right {
-  from {
-    margin-left: -100%;
-  }
-  to {
-    margin-left: 0%;
-  }
-}
-
-@keyframes slide-up {
-  from {
-    margin-bottom: -100%;
-  }
-  to {
-    margin-bottom: 0%;
-  }
-}
-
-@keyframes slide-left {
-  from {
-    margin-left: 0%;
-    visibility: visible;
-    opacity: 1;
-    max-height: 1000px
-  }
-  to {
-    margin-left: -100%;
-    visibility: hidden;
-    opacity: 0;
-    z-index: -1;
-  }
-}
-
-
 
 @media only screen and (max-width: 800px){
  .wiki-display-container{
@@ -322,8 +322,6 @@
  .wiki-sidebar.wiki-closed{
    width: 90vw;
    margin: 0 auto;
-   /*animation: 0.5s slide-right;*/
-   margin-left: 0%;
   }
   /*
   on smaller screens, hide the wiki list when a document is open. When popout button is clicked, hide document and show wiki list
@@ -364,18 +362,8 @@
   }
 
   .editor-display{
-    margin-top: 200%;
     width: 100%;
-    transition-property: margin-top;
-    transition: 0.3s ease-in-out;
   }
 
-  .editor-display.wiki-open{
-    margin-top: 0%;
-  }
-
-  .editor-display.wiki-closed{
-    margin-top: 200%;
-  }
 
 }

@@ -14,7 +14,6 @@ import Glyphicon from '@strongdm/glyphicon'
 import moment from "moment";
 
 
-
 //redux
 import { useSelector, useDispatch } from 'react-redux';
 
@@ -304,7 +303,7 @@ function RenderWiki({isWikiLoaded, isAdmin, currentWikiId, wikiDisplayTitle, wik
     </>
      }
 
-    {!isWikiLoaded &&
+    {currentWikiId != -1 && !isWikiLoaded &&
    
       <div style={{backgroundColor: 'lightgrey', borderRadius: '16px', height: '5rem'}} className="editor-title">
         <div className="loading" disabled></div>
