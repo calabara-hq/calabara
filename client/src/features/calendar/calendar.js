@@ -91,6 +91,7 @@ export default function Events(){
           defaultView="week"
           events={calendarEvents}
           style={{ height: "100vh" }}
+          onSelectEvent={(e) => {window.open(e.htmlLink)}}
         />
 
   </div>

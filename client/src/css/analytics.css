@@ -5,45 +5,60 @@
   position: relative;
   width: 90vw;
   margin: 0 auto;
-  height: 90vh;
-  display: grid;
-  grid-gap: 5px;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(2, 1fr);
-  border: 8px solid black;
-  background-color: #282c35;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1em;
+  margin-bottom: 2em;
+  border: 5px solid #24262e;
   border-radius: 10px;
-  padding: 5px;
+}
+
+.analyticsContainer > * {
+  flex: 1 1 50ch;
 }
 
 
+.snapshot-flex-column-2{
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+
+}
+
+.snapshot-flex-column-2 > * {
+  flex: 1 1 50ch;
+}
+
 .newProposals{
-  position: relative;
-  grid-row-start: 1;
-  grid-row-end: 3;
-  grid-column-start: 1;
-  grid-column-end: 2;
-  background-color: #282c35;
-  border-radius: 10px;
-  border: 2px solid #8b93a7;
+  border-right: 2px solid #24262e;
+
+
 }
 
 .pastProposals{
-  position: relative;
-  background-color: #282c35;
-  border-radius: 10px;
-  border: 2px solid #8b93a7;
-  max-height: 40rem;
+
+
 }
+
+.myParticipation{
+  cursor: pointer;
+  border-bottom: 2px solid #24262e;
+
+  
+
+}
+
 
 .pastProposals h1{
   margin-left: 20px;
   color: #F9F6EE;
+  font-weight: bold;
 }
 
 .newProposals h1{
   margin-left: 20px;
   color: #F9F6EE;
+  font-weight: bold;
 }
 .newProposals h2{
   margin-left: 20px;
@@ -60,13 +75,10 @@
   color: #F9F6EE;
 }
 .proposalBox{
-  position: relative;
-  display: grid;
-  margin-left: 10px;
-  margin-right: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   grid-gap: 10px;
-  max-height: 82%;
-  overflow-y: scroll;
 
 }
 
@@ -74,10 +86,7 @@
   position: relative;
   background-color: #F9F6EE;
   border-radius: 5px;
-  margin-left: 10px;
-  margin-right: 10px;
   cursor: pointer;
-  padding: 1px;
   height: auto;
   width: 95%;
   display: inline-flex;
@@ -132,36 +141,12 @@
   font-weight: bold;
 }
 
-.myParticipation{
-  position: relative;
-  grid-row-start: 1;
-  grid-row-end: 2;
-  grid-column-start: 2;
-  grid-column-end: 3;
-  background-color: #282c35;
-  border-radius: 10px;
-  border: 2px solid #8b93a7;
-  width: 100%;
-  margin: 0 auto;
-  cursor: pointer;
-}
-
 .chartContainer{
   width: 300px;
   margin: 0 auto;
   padding-bottom: 10px;
 }
 
-
-.past-proposals{
-  position: relative;
-  text-align: center;
-  grid-row-start: 2;
-  grid-row-end: 3;
-  grid-column-start: 2;
-  grid-column-end: 3;
-  background-color: #282c35;
-}
 
 .snapshot-btn{
   position: relative;
@@ -180,16 +165,5 @@
   color: #F9F6EE;
 }
 
-.proposalBox::-webkit-scrollbar {
-    width: 12px;
-}
 
-.proposalBox::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 100px black;
-    border-radius: 10px;
-}
 
-.proposalBox::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    -webkit-box-shadow: inset 0 0 100px #F9F6EE;
-}
