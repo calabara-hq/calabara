@@ -99,10 +99,12 @@ function Analytics() {
       </div>
       </>
     }
-    {missedVotes.votes.length == 0 &&
+    {(missedVotes.votes.length == 0  && !isConnected) &&
+      <h2>Connect your wallet to view active proposals!</h2>
+    }
+    {(missedVotes.votes.length == 0  && isConnected) &&
       <h2>You're all caught up! Have a great day 🌅</h2>
-
-      }
+    }
     </div>
     <div className="snapshot-flex-column-2">
       <div className="myParticipation">
@@ -112,12 +114,7 @@ function Analytics() {
         <h1>Past proposals</h1>
         <div className="proposalBox">
           {pastFiveproposals.map((proposal)=>{
-          return (
-            <div className="proposal closed" onClick={()=> window.open(('https://snapshot.org/#/' + ens + '/proposal/' + proposal.id).toLowerCase())}>
-              <h4>{proposal.title}</h4>
-              <div className="proposal-status-btn closed">closed</div>
-            </div>
-          )
+          return <Proposal proposal={proposal} ens = {ens}/>;
           })}
         </div>
       </div>
@@ -138,8 +135,8 @@ function Proposal({proposal, ens}){
   return(
     <>
     <div className={'proposal ' + (proposal.state == 'active' ? 'active' : 'closed')} onClick={()=> window.open(('https://snapshot.org/#/' + ens + '/proposal/' + proposal.id).toLowerCase())}>
-    <div className={'proposal-status-btn ' + (proposal.state == 'active' ? 'active' : 'closed')}>{proposal.state}</div>
     <h4>{proposal.title} </h4>
+    <div className={'proposal-status-btn ' + (proposal.state == 'active' ? 'active' : 'closed')}>{proposal.state}</div>
     </div>
     </>
 

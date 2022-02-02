@@ -10,7 +10,7 @@ import discordLogo from '../../img/discord.svg'
 import snapshotLogo from '../../img/snapshot.svg'
 import wikiLogo from '../../img/wiki.svg'
 
-
+import { showNotification } from '../notifications/notifications'
 
 
 //redux
@@ -31,8 +31,6 @@ import {
 } from '../org-cards/org-cards-reducer';
 
 import {
-  setInstalledWidgets,
-  setInstallableWidgets,
   populateInitialWidgets,
   selectInstalledWidgets,
   selectInstallableWidgets,
@@ -102,11 +100,22 @@ const post = async function(params){
  
 
    async function showSettingsModal(){
-    (isSettingsModalOpen ? settingsModalClose() : settingsModalOpen())
+    if(isSettingsModalOpen){
+      settingsModalClose();
+     }
+     else{
+       if(!isConnected){
+         showNotification('please sign in', 'hint', 'please connect your wallet')
+       }
+       else{
+         settingsModalOpen()
+       }
+     }
    }
 
    async function showWidgetsModal(){
-     (isWidgetsModalOpen ? widgetsModalClose() : widgetsModalOpen())
+    (isWidgetsModalOpen ? widgetsModalClose() : widgetsModalOpen())
+
    }
 
 

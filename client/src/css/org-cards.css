@@ -7,7 +7,7 @@
 }
 
 .cards{
-  margin: 5rem auto;
+  margin: 6rem auto;
   width: 100%;
   display: grid;
   gap: 5%;
@@ -76,19 +76,20 @@
 }
 
 .newOrgBox{
+  position: absolute;
   display: flex;
-  margin-top: 20px;
+  right: 10%;
+  margin-bottom: 200px;
 }
 
 .newOrgBtn{
   margin-left: auto;
-  border: 2px solid #384aff;
-  border-radius: 10px;
-  padding: 5px 30px;
-  text-align: center;
-  background-color: #2d2e35;
-  color: white;
   align-items: center;
+  border: none;
+  border-radius: 10px;
+  padding: 5px 20px;
+  background-color: rgb(45, 46, 53);
+  color: white;
   font-size: 20px;
 }
 .wallet-error-box{
