@@ -11,10 +11,6 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 
 
 import {
-  isMember,
-  deleteMembership,
-  addMembership,
-  selectMemberOf,
   populateInitialMembership,
 } from '../org-cards/org-cards-reducer';
 
@@ -34,12 +30,12 @@ export default function Events(){
 
 
 
-  useEffect(async()=>{
-    if(dataPulled == false && isConnected == true){
-     await dispatch(populateInitialMembership(walletAddress))
-     setDataPulled(true)
+  useEffect(()=>{
+    if(dataPulled == false){
+      dispatch(populateInitialMembership(walletAddress))
+      setDataPulled(true)
     }
-  },[isConnected])
+  },[])
 
 
   useEffect(async()=>{
@@ -88,7 +84,7 @@ export default function Events(){
     <Calendar
           localizer={localizer}
           defaultDate={new Date()}
-          defaultView="week"
+          defaultView="month"
           events={calendarEvents}
           style={{ height: "100vh" }}
           onSelectEvent={(e) => {window.open(e.htmlLink)}}

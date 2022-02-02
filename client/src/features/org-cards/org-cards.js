@@ -180,7 +180,7 @@ function DaoCard({org}){
 
     return(
       <div className="newOrgBox">
-        <button className="newOrgBtn" type="button" onClick={handleNewOrg}>🚀 New Org</button>
+        <button className="newOrgBtn" type="button" onClick={handleNewOrg}>🚀 New</button>
       </div>
       )
   }

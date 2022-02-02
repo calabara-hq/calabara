@@ -299,39 +299,39 @@ function Wallet(){
   }
 
 
-  const handleDisconnectClick = async() => {
+  const handleDisconnectClick = async(e) => {
     if(isConnected){
       await onboard.walletReset();
       dispatch(setDisconnected());
       setConnectBtnTxt('Connect wallet')
+      setIsMoreExpanded(false);
+    }
+  }
+
+
+  const handleBlur = (e) => {
+    if(!e.currentTarget.contains(e.relatedTarget)){
       setIsMoreExpanded(false)
     }
   }
 
 
-
-
-
   
 return(
- <div className="walletBox">
+ <div tabIndex="0" onBlur={handleBlur} onClick={handleConnectClick} className="walletBox">
    <div>
+   {isConnected &&
     <div className="walletAvatar">
-      {isConnected && <Identicon address={walletAddress}/>}
+     <Identicon address={walletAddress}/>
     </div>
-
-    <div className="walletConnectBtn"  onClick={handleConnectClick}>{connectBtnTxt}
-    
-    </div>
-
+    }
+    <p>{connectBtnTxt}</p>
+    {isConnected && <i class="fas fa-chevron-down"></i>}
   </div>
   {isMoreExpanded && 
   <div className="connectionInfo">
-    <Identicon address={walletAddress}/>
-    <div className="connectionInfoAddress">
     <span onClick={() => {window.open('https://etherscan.io/address/' + walletAddress)}}>{connectBtnTxt}</span>
-    <button onClick={handleDisconnectClick}>Disconnect</button>
-    </div>
+    <button onClick={handleDisconnectClick}>disconnect</button>
   </div>
   }
   
