@@ -34,7 +34,7 @@
   display: flex;
   flex-direction: column;
   margin-left: auto;
-  gap: 10px;
+  grid-gap: 10px;
 }
 
 .walletBox > div:first-child{
@@ -69,7 +69,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 30px;
+  grid-gap: 30px;
   animation: fadein 0.5s;
 
 }

@@ -128,6 +128,8 @@ function AddWikiGrouping({handleClose, groupID}){
   const [groupingName, setGroupingName] = useState("");
   const dispatch = useDispatch();
   const [isFolderError, setIsFolderError] = useState(false);
+  const availableRules = useSelector(selectDashboardRules);
+
 
   const [appliedRules, setAppliedRules] = useReducer(
     (appliedRules, newRules) => ({...appliedRules, ...newRules}),
@@ -257,10 +259,20 @@ function AddWikiGrouping({handleClose, groupID}){
         {progress == 1 && 
           <>
             <h2 className="tab-header"> Gatekeeper </h2>
-            <div className="tab-message">
+            {Object.keys(availableRules).length > 0 && 
+            <>
+            <div className="tab-neutral-message">
               <p>Toggle the switches to apply gatekeeper rules to this folder group. If multiple rules are applied, the gatekeeper will pass if the connected wallet passes any of the rules.</p>
             </div>
             <RuleSelect ruleError={ruleError} setRuleError={setRuleError} appliedRules={appliedRules} setAppliedRules={setAppliedRules}/>
+            </>
+            }
+            {Object.keys(availableRules).length == 0 && 
+              <div className="tab-neutral-message">
+                <p>Nothing to do. There aren't any gatekeepers configured for this organization. Gatekeepers can be added in organization settings.</p>
+              </div>
+            }
+           
             <button className={"modal-save-btn"} onClick={handleSave}>save</button>
             <button className={"modal-previous-btn"} onClick={()=>{setProgress(0)}}><i class="fas fa-long-arrow-alt-left"></i></button>
           </>

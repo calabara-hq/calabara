@@ -291,7 +291,8 @@ button,
 
 .entrypoint-container{
   width: 70%;
-  margin: 200px auto;
+  margin: 10% auto;
+  justify-content: center;
   display: flex;
   flex-direction: row;
   gap: 20px;
@@ -301,17 +302,19 @@ button,
   flex-basis: 50%;
   background-color: #1d1d1d;
   border-radius: 10px;
+  border: 2px solid rgb(44, 192, 255);
   color: #2d2e35;
   text-align: center;
   cursor: pointer;
-  display: grid;
-  grid-template-rows: 1fr 1fr;
+  display: flex;
+  flex-direction: column;
 }
 
 
 .add-new{
   flex-basis: 50%;
   background-color: #2d2e35;
+  border: 2px solid rgb(169, 152, 255);
   color: #1d1d1d;
   border-radius: 10px;
   cursor: pointer;
@@ -376,14 +379,8 @@ button,
 }
 .installable-widgets-container{
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   justify-content: center;
-  width: 80%;
-  margin: 0 auto;
-}
-
-.installable-widgets-container > * {
-  flex: 0 1 22%;
 }
 
 .installable-widget{
@@ -943,7 +940,7 @@ input.error{
   border: 2px solid rgb(242, 201, 77);
   border-radius: 8px;
   padding: 5px;
-  background: rgb(242, 201, 77, 0.3);
+  background: rgba(242, 201, 77, 0.3);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -962,7 +959,25 @@ input.error{
 }
 
 
+.tab-neutral-message{
+  margin: 0 auto;
+  width: 60%;
+  border: 2px solid rgb(44, 192, 255);
+  border-radius: 8px;
+  padding: 5px;
+  background: rgb(44, 192, 255, 0.2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
 
+.tab-neutral-message p{
+  color: rgb(44, 192, 255);
+  margin: 0 !important;
+  padding: 5px;
+  font-size: 16px;
+}
 
 
 .calendar-step1{
