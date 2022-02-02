@@ -26,27 +26,50 @@
   padding-bottom: 15px;
   border-bottom: 1px solid #333;
   flex-wrap: wrap;
-  gap: 10px;
+  grid-gap: 10px;
 }
 
 
 .walletBox{
   display: flex;
-  flex-direction: column;
+  background-color: #2d2e35;
   margin-left: auto;
-  gap: 10px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border 0.1s;
 }
+
+
+.walletBox:active{
+  border: 2px solid transparent;
+}
+
 
 .walletBox > div:first-child{
   display: flex;
   flex-direction: row;
+  grid-gap: 10px; 
   justify-content: center;
   align-items: center;
-  gap: 20px;
+  padding: 0px 10px;
+}
+
+.walletBox > div:first-child > p{
+  color: white;
+  font-size: 16px;
+  margin: 0;
+  justify-self: center;
+  align-self: center;
+}
+
+.walletBox > div:first-child > i{
+  color: lightgrey;
 }
 
 .walletAvatar{
   transform: scale(150%);
+  -webkit-transform: scale(150%);
   cursor: pointer;
 }
 
@@ -62,6 +85,9 @@
 
 
 .connectionInfo{
+  position: absolute;
+  z-index: 20;
+  top: 5em;
   background-color: #24262e;
   color: white;
   border-radius: 6px;
@@ -69,45 +95,41 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 30px;
   animation: fadein 0.5s;
+  padding: 10px 10px;
+  grid-gap: 10px;
 
 }
 
-.connectionInfo > div:first-child{
-  transform: scale(300%);
-  margin-top: 15%;
-  
-}
 
-.connectionInfoAddress > span{
-  background-color: #1d1d1d;
+.connectionInfo > span{
+  background-color: white;
+  color: black;
   border-radius: 6px;
-  margin: none;
   width: 100%;
-  padding: 6px 10px;
+  padding: 6px 12px;
   font-size: 14px;
+  cursor: pointer;
 }
 
-.connectionInfoAddress > span::after{
+.connectionInfo > span::after{
   font-family: 'Font Awesome 5 Free';
   margin-left: 10px;
   content: "\f35d";
   font-weight: 900;
 }
 
-.connectionInfoAddress > button{
+.connectionInfo > button{
   display: block;
-  padding: 5px 16px;
+  padding: 5px 12px;
   border-radius: 6px;
   width: 100%;
-  margin: 10px auto;
   cursor: pointer;
   background-color: #373e47;
   color: #e5534b;
 }
 
-.connectionInfoAddress > button:hover{
+.connectionInfo > button:hover{
   background-color: #e5534b;
   color: white;
   transition: color 0.3s ease-in;
@@ -116,32 +138,6 @@
 
 
 
-.connectionInfoAddress > span:hover{
-  color: black;
-  background-color: white;
-  transition: color 0.3s ease-in;
-  transition: background-color 0.3s ease-in;
-  cursor: pointer;
-
-}
-
-
-
-.walletConnectBtn{
-  background-color: #2d2e35;
-  font-size: 16px;
-  padding: 10px;
-  color: white;
-
-  border: double 2px transparent;
-  border-radius: 6px;
-  background-image: linear-gradient(black, black), 
-                    linear-gradient(to right, #e00f8e, #2d66dc);
-  background-origin: border-box;
-  background-clip: padding-box, border-box;
-  transition: background-color 0.4s ease-in;
-  cursor: pointer;
-}
 
 
 

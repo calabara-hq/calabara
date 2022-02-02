@@ -10,7 +10,7 @@ import discordLogo from '../../img/discord.svg'
 import snapshotLogo from '../../img/snapshot.svg'
 import wikiLogo from '../../img/wiki.svg'
 
-
+import { showNotification } from '../notifications/notifications'
 
 
 //redux
@@ -31,8 +31,6 @@ import {
 } from '../org-cards/org-cards-reducer';
 
 import {
-  setInstalledWidgets,
-  setInstallableWidgets,
   populateInitialWidgets,
   selectInstalledWidgets,
   selectInstallableWidgets,
@@ -102,11 +100,22 @@ const post = async function(params){
  
 
    async function showSettingsModal(){
-    (isSettingsModalOpen ? settingsModalClose() : settingsModalOpen())
+    if(isSettingsModalOpen){
+      settingsModalClose();
+     }
+     else{
+       if(!isConnected){
+         showNotification('please sign in', 'hint', 'please connect your wallet')
+       }
+       else{
+         settingsModalOpen()
+       }
+     }
    }
 
    async function showWidgetsModal(){
-     (isWidgetsModalOpen ? widgetsModalClose() : widgetsModalOpen())
+    (isWidgetsModalOpen ? widgetsModalClose() : widgetsModalOpen())
+
    }
 
 
@@ -255,7 +264,7 @@ function InfoCard({info, ens, showSettingsModal}){
     {(!isMemberOf && isConnected) && <button name="join" onClick={handleJoinOrg} type="button" className="subscribe-btn">Join</button>}
     {(isMemberOf && isConnected) && <button name="leave" onClick={handleLeaveOrg} type="button" className="subscribe-btn">Leave</button>}
     <p> {members} members </p>
-      <a href={'https://' + website} target="_blank">{website}</a>
+      <a href={'//' + website} target="_blank">{website}</a>
     </>
     }
     </div>
@@ -281,7 +290,7 @@ function ManageWidgets({isAdmin, showWidgetsModal}){
       <article className="widget-card manage-widgets" onClick={showWidgetsModal}>
       <div>
       <span><Glyphicon className="managePencil" glyph="pencil"/></span>
-      <h1> manage widgets </h1>
+      <h2> manage widgets </h2>
       </div>
       </article>
     }
@@ -325,7 +334,6 @@ export function WidgetCard({gatekeeperPass, orgInfo, widget, btnState, setBtnSta
   var logoImg;
   if(name == 'snapshot'){logoImg = snapshotLogo}
   if(name == 'calendar'){logoImg = calendarLogo}
-  if(name == 'discord'){logoImg = discordLogo}
   if(name == 'wiki'){logoImg = wikiLogo}
 
 
@@ -337,7 +345,7 @@ export function WidgetCard({gatekeeperPass, orgInfo, widget, btnState, setBtnSta
     <div className="card-image">
     <img src={logoImg}/>
     </div>
-    <h2> {name}</h2>
+    <h2> {name == 'wiki' ? 'docs' : name}</h2>
     </article>
 
 
@@ -346,129 +354,4 @@ export function WidgetCard({gatekeeperPass, orgInfo, widget, btnState, setBtnSta
 }
 
 
-function NewWidgetButton({btnState, setBtnState}){
 
-  function handleEditClick(){
-  //  setBtnState(!btnState.btnState)
-    setBtnState(!btnState)
-  // when clicked, we want to get all available widgets,
-  // parse out the ones already installed then print them
-  // all of that will happen in the main Dashboard component
-  }
-
-    return(
-      <div className = "newButtonDiv">
-      <button type="button" className="editWidgetBtn"onClick={handleEditClick}>
-      {btnState == false && <Glyphicon glyph="pencil"/>}
-      {btnState == true && <Glyphicon glyph="check"/>}
-      </button>
-      </div>
-    )
-  }
-
-  function NewWidgets({ens, orgInfo, btnState, setBtnState}){
-
-    const installableWidgets = useSelector(selectInstallableWidgets);
-
-
-    useEffect(()=>{
-      //WebWorker.processImages();
-    },[installableWidgets])
-
-    return(
-      <>
-      {installableWidgets.map((widget)=>{
-        return <NewWidgetCard ens={ens} orgInfo={orgInfo} key={widget.widget_id} widget={widget}/>;
-
-      })}
-      </>
-
-  )
-}
-
-
-export function NewWidgetCard({orgInfo, widget, ens}){
-  console.log(widget)
-  const {name, widget_logo} = widget;
-  const [bounce, setBounce] = useState(0);
-  const [widgetUrl, setWidgetUrl] = useState('');
-  const [urlError, setUrlError] = useState(0);
-  const [gatekeeperEnable] = useState(false);
-  const [isGatekeeperOn, setIsGatekeeperOn] = useState(false);
-
-  const dispatch = useDispatch();
-  const history = useHistory();
-
-  const addWidget = () => {
-    if(name == 'calendar'){
-      history.push('/' + ens + '/calendar-integration')
-    }
-    else{
-    setBounce(1)
-    }
-  }
-
-  const handleUrlChange = (e) => {
-    setWidgetUrl(e.target.value)
-  }
-
-  const handleWidgetSubmit = async() => {
-    console.log(widgetUrl)
-    const regex = new RegExp(name, "i");
-    console.log(regex)
-    console.log(widgetUrl.match(regex))
-    if(widgetUrl.match(regex) == null){
-      setUrlError(1)
-    }
-    else{
-      setUrlError(0)
-      const params = {endpoint: '/addWidget', data: {ens: ens, name: name, link: widgetUrl, widget_logo: widget_logo, gatekeeper_enabled: isGatekeeperOn}}
-      var req = await post(params)
-      dispatch(updateWidgets(1, {ens: ens, name: name, link: widgetUrl, widget_logo: widget_logo, gatekeeper_enabled: isGatekeeperOn, notify: 0}))
-
-    }
-  }
-
-
-  const handleToggle = () =>{
-    setIsGatekeeperOn(!isGatekeeperOn)
-  }
-
-
-
-  useEffect(() =>{
-  },[isGatekeeperOn])
-
-  return(
-    <article className={`new-widget-card ${bounce == 0 ? 'bounce' : 'no-bounce'}`}>
-    {bounce == 0 && <button className="configureWidgetBtn" onClick={addWidget}><Glyphicon glyph="plus"/></button>}
-    <div className="card-image">
-    <img data-src={widget_logo}/>
-    </div>
-    <h2> {name}</h2>
-    <div className="widgetUrl">
-    <div className="urlInput">
-    {bounce == 1 && <input placeholder={`${name} url`} value={widgetUrl} onChange={handleUrlChange} type="text"></input>}
-    </div>
-    {urlError == 1 && <p className='urlError'>hmm... that doesn't seem like a valid link for this widget</p>}
-    </div>
-    {bounce == 1 &&
-      <>
-    <div className="gatekeeperSelect">
-    <label className="toggleText">enable gatekeeper</label>
-    <input checked={isGatekeeperOn} onChange={handleToggle} className="react-switch-checkbox" id={`react-switch-toggle`} type="checkbox"/>
-    <label  style={{ background: isGatekeeperOn && '#06D6A0' }} className="react-switch-label" htmlFor={`react-switch-toggle`}>
-      <span className={`react-switch-button`} />
-    </label>
-
-    </div>
-
-    <div className="widgetSubmit">
-    <button type="button" onClick={handleWidgetSubmit}>Add widget</button>
-    </div>
-    </>
-    }
-    </article>
-  )
-
-}

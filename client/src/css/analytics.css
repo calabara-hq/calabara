@@ -31,14 +31,10 @@
 
 .newProposals{
   border-right: 2px solid #24262e;
-
-
-}
-
-.pastProposals{
-
+  min-height: 20em;
 
 }
+
 
 .myParticipation{
   cursor: pointer;
@@ -89,8 +85,10 @@
   cursor: pointer;
   height: auto;
   width: 95%;
-  display: inline-flex;
+  display: flex;
   text-align: left;
+  justify-content: center;
+  align-items: center;
 }
 
 
@@ -104,10 +102,8 @@
 }
 
 .proposal-status-btn{
-  position: absolute;
-  right: 10px;
-  top: 50%;
-  transform: translate(0, -50%);
+  margin-left: auto;
+  margin-right: 5px;
   border-radius: 20px;
   padding: 3px 10px 3px 10px;
   display: flex;

@@ -255,6 +255,7 @@ function OrgProfileTab({setProgress, fields, setFields, mode, lockedAdminAddress
   const dispatch = useDispatch();
 
   const [nameErrorMsg, setNameErrorMsg] = useState({error:false, msg: ""});
+  const [websiteErrorMsg, setWebsiteErrorMsg] = useState({error:false, msg: ""});
 
 
   const updateName = (e) =>{
@@ -265,6 +266,9 @@ function OrgProfileTab({setProgress, fields, setFields, mode, lockedAdminAddress
   }
 
   const updateWebsite = (e) =>{
+    if(websiteErrorMsg.error){
+      setWebsiteErrorMsg({error:false, msg: ""});
+    }
     setFields({website: e.target.value})
   }
 
@@ -293,6 +297,7 @@ function OrgProfileTab({setProgress, fields, setFields, mode, lockedAdminAddress
   async function handleNext(){
     if(fields.name == ""){
       setNameErrorMsg({error: true, msg: "name field cannot be left blank"})
+      return;
     }
     else{
       console.log(fields.name, fields.ens)
@@ -300,12 +305,18 @@ function OrgProfileTab({setProgress, fields, setFields, mode, lockedAdminAddress
       if(exists.data){
         //name already exists
         setNameErrorMsg({error: true, msg: "an organization with this name already exists"})
+        return;
 
       }
-      else{
-        setProgress(2);
+    }
+    if(fields.website != ""){
+      if(fields.website.indexOf("http://") == 0 || fields.website.indexOf("https://") == 0){
+        setWebsiteErrorMsg({error: true, msg: "please exclude http/https from your webpage link"});
+        return;
       }
     }
+
+    setProgress(2);
 
   }
 
@@ -376,6 +387,10 @@ tldr;; rel path -> webworker -> blob -> fields.logo = blob
 
       <div className="profile-website-input">
         <input placeholder="e.g. calabara.com" value={fields.website} onChange={updateWebsite} type="text"/>
+        {websiteErrorMsg.error &&
+        <div className="tab-error-msg">
+          <p>{websiteErrorMsg.msg}</p>
+        </div>}
       </div>
       <div className="profile-discord-input">
         <input value={fields.discord} onChange={updateDiscord} type="text"/>
@@ -603,8 +618,8 @@ function OrgGateKeeperTab({setProgress, fields, setFields, mode}){
     <div className="org-gatekeeper-tab">
       <h2> Gatekeeper Configuration </h2>
       {(gatekeeperInnerProgress == 0) && 
-      <div className="tab-message">
-        <p> Gatekeeper allows organizations to use ERC-20 and/or ERC-721 token balance checks to offer different app functionality and displays for users on either side of a threshold set for each app. <u onClick={() => {window.open('https://docs.calabara.com/gatekeeper')}}>Learn more</u></p>
+      <div className="tab-neutral-message">
+        <p> Gatekeeper allows organizations to use ERC-20 and/or ERC-721 token balance checks to offer different app functionality and displays for users on either side of a threshold set for each app. <u style={{cursor: 'pointer'}} onClick={() => {window.open('https://docs.calabara.com/gatekeeper')}}>Learn more</u></p>
       </div>
       }
       
