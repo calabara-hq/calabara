@@ -105,16 +105,23 @@ function FunctionalitySelect({functionality, setFunctionality, handleClose}){
 
 function ManageWidgetsEntrypoint({setFunctionality}){
 
+  const installedWidgets = useSelector(selectInstalledWidgets);
+  const installableWidgets = useSelector(selectInstallableWidgets);
+
   return(
     <div className="entrypoint-container">
-      <div className="manage-installed" onClick={()=>{setFunctionality(1)}}>
-          <h2>manage installed widgets</h2>
-          <h2><Glyphicon glyph="cog"/></h2>
-      </div>
-      <div className="add-new" onClick={() => {setFunctionality(2)}}>
-          <h2>install new widgets</h2>
-          <h2><Glyphicon glyph="plus"/></h2>
-      </div>
+      {installedWidgets.length > 0 && 
+        <div className="manage-installed" onClick={()=>{setFunctionality(1)}}>
+            <h2>manage installed widgets</h2>
+            <h2><Glyphicon glyph="cog"/></h2>
+        </div>
+      }
+      {installableWidgets.length > 0 && 
+        <div className="add-new" onClick={() => {setFunctionality(2)}}>
+            <h2>install new widgets</h2>
+            <h2><Glyphicon glyph="plus"/></h2>
+        </div>
+      }
     </div>
 
   )
@@ -242,12 +249,12 @@ function ConfigureGatekeeper({setProgress, selected, appliedRules, setAppliedRul
     <div className="configure-gatekeeper-tab">
       <h2 className="tab-header" style={{fontWeight: "bold"}}>  gatekeeper </h2>
        {Object.keys(availableRules).length == 0 ?
-        <div className="tab-message" style={{marginTop: '150px'}}>
+        <div className="tab-neutral-message" style={{marginTop: '150px'}}>
           <p>Nothing to do. There are no gatekeepers configured for this organization. Gatekeepers can be added in organization settings.</p>
         </div>
       :
         <>
-        <div className="tab-message">
+        <div className="tab-neutral-message">
           <p>Toggle the switches to apply gatekeeper rules to this widget. If multiple rules are applied, the gatekeeper will pass if the connected wallet passes any of the rules.</p>
         </div>
         <RuleSelect ruleError={ruleError} setRuleError={setRuleError} appliedRules={appliedRules} setAppliedRules={setAppliedRules}/>
@@ -444,7 +451,7 @@ function SnapshotConfiguration({setProgress}){
       </>
     }
     {isLoading && 
-     <div className="tab-message">
+     <div className="tab-neutral-message">
       <p>searching for the {ens} snapshot space</p>
     </div>    
     }

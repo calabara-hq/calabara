@@ -433,7 +433,7 @@ app.post('/updateSettings', async function(req, res, next){
   await db.query('insert into organizations (name, members, website, discord, logo, addresses, verified, ens)\
   values ($1, $2, $3, $4, $5, $6, $7, $8)\
   on conflict (ens)\
-  do update set name=$1, members=$2, website=$3, discord=$4, logo=$5, addresses=$6, verified=$7', [fields.name, 0, fields.website, fields.discord, logoPath, fields.addresses, false, fields.ens])
+  do update set name=$1, members=$2, website=$3, discord=$4, logo=$5, addresses=$6, verified=$7', [fields.name, fields.members, fields.website, fields.discord, logoPath, fields.addresses, false, fields.ens])
 
 
   for(var rule in fields.gatekeeper.rules){

@@ -45,17 +45,20 @@
 .widget-card{
   text-align: center;
   border: 2px solid #2d2e35;
-  border-radius: 40px;
-  padding: 5px 6rem;
+  border-radius: 30px;
+  padding: 2rem 6rem;
   cursor: pointer;
   background-color: #1d1d1d;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  grid-gap: 1em;
 }
 
 
 .widget-card h2{
   text-align: center;
-  margin: 2 auto;
+  margin: 0 auto;
   color: #efefef;
 }
 .widget-card button{
@@ -197,11 +200,15 @@
 
 
 .managePencil{
-  font-size: 10rem;
+  font-size: 8rem;
   background-color: #2d2e35;
 }
 .manage-widgets{
   background-color: #2d2e35;
   border: 1px solid #2d2e35;
-  color: #1d1d1d;
+  color: lightgrey;
+}
+
+.manage-widgets h2{
+  color: lightgrey;
 }
