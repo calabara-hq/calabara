@@ -320,13 +320,12 @@ function Wallet(){
 return(
  <div tabIndex="0" onBlur={handleBlur} onClick={handleConnectClick} className="walletBox">
    <div>
-   {isConnected &&
+    <p>{connectBtnTxt}</p>
+    {isConnected &&
     <div className="walletAvatar">
      <Identicon address={walletAddress}/>
     </div>
     }
-    <p>{connectBtnTxt}</p>
-    {isConnected && <i class="fas fa-chevron-down"></i>}
   </div>
   {isMoreExpanded && 
   <div className="connectionInfo">

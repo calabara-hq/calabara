@@ -47,63 +47,58 @@ function Analytics() {
   const [pastFiveproposals, setPastFiveProposals] = useState([])
 
 
-  useEffect(async()=>{
-    if(dataPulled == false && isConnected == true){
-     await dispatch(populateInitialMembership(walletAddress))
-     setDataPulled(true)
+  useEffect(()=>{
+    if(!dataPulled && isConnected){
+      dispatch(populateInitialMembership(walletAddress))
+      setDataPulled(true)
     }
   },[isConnected])
 
-
-  useEffect(async()=>{
-    console.log('datapulled ', dataPulled)
-    if(dataPulled){
-      WebWorker.processImages();
-      const isMemberOf = dispatch(isMember(ens))
-        const votes = await didAddressVote(ens, walletAddress);
-        console.log(votes)
-        setMissedVotes({votes: votes})
-        const percentage = await userParticipation(ens, walletAddress)
-        setUserParticipationPercentage(percentage)
-
-        const past5 = await getProposals(ens, 'closed', 5)
-        setPastFiveProposals(past5)
-
-      //  const globalPercentage = await globalParticipation(ens)
-      //  console.log(globalPercentage)
-      //  setGlobalParticipationPercentage(globalPercentage)
-    }
-  },[dataPulled])
 
   useEffect(()=>{
-    console.log('wallet action')
-  },[isConnected])
+    (async() => {
+      if(dataPulled){
+        WebWorker.processImages();
+        const isMemberOf = dispatch(isMember(ens))
+          const votes = await didAddressVote(ens, walletAddress);
+          console.log(votes)
+          setMissedVotes({votes: votes})
+          const percentage = await userParticipation(ens, walletAddress)
+          setUserParticipationPercentage(percentage)
+  
+          const past5 = await getProposals(ens, 'closed', 5)
+          setPastFiveProposals(past5)
+      }
 
-
-
-
+    })();
+  },[dataPulled])
 
 
   return (
     <div className="analyticsContainer">
     
     <div className="newProposals">
+      <h1>Active Proposals</h1>
     {missedVotes.votes.length > 0 &&
-      <>
-      <h1>Cast your vote! </h1>
+    <>
       <h3> These are active proposals you haven't voted on yet.</h3>
       <div className="proposalBox">
       {missedVotes.votes.map((proposal, idx) => {
         return <Proposal proposal={proposal} ens = {ens}/>;
       })}
       </div>
-      </>
+    </>
+
     }
-    {(missedVotes.votes.length == 0  && !isConnected) &&
+    {(missedVotes.votes.length === 0  && !isConnected) &&
+    <div className="new-proposal-message">
       <h2>Connect your wallet to view active proposals!</h2>
+    </div>
     }
-    {(missedVotes.votes.length == 0  && isConnected) &&
+    {(missedVotes.votes.length === 0  && isConnected) &&
+    <div className="new-proposal-message">
       <h2>You're all caught up! Have a great day 🌅</h2>
+    </div>
     }
     </div>
     <div className="snapshot-flex-column-2">
@@ -130,13 +125,12 @@ function Proposal({proposal, ens}){
   endDate = endDate.toString();
 
 
-  console.log(endDate)
 
   return(
     <>
-    <div className={'proposal ' + (proposal.state == 'active' ? 'active' : 'closed')} onClick={()=> window.open(('https://snapshot.org/#/' + ens + '/proposal/' + proposal.id).toLowerCase())}>
+    <div className={'proposal ' + (proposal.state === 'active' ? 'active' : 'closed')} onClick={()=> window.open(('https://snapshot.org/#/' + ens + '/proposal/' + proposal.id).toLowerCase())}>
     <h4>{proposal.title} </h4>
-    <div className={'proposal-status-btn ' + (proposal.state == 'active' ? 'active' : 'closed')}>{proposal.state}</div>
+    <div className={'proposal-status-btn ' + (proposal.state === 'active' ? 'active' : 'closed')}>{proposal.state}</div>
     </div>
     </>
 

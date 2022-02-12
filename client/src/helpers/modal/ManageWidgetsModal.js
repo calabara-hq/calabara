@@ -12,9 +12,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useParams, useHistory } from 'react-router-dom'
 import {WidgetsCheckpointBar} from '../../features/checkpoint-bar/checkpoint-bar'
 import {getSpace} from '../snapshot_api'
-import ManageInstalledWidgetsTab from './update-installed-widgets.js'
-import '../../css/modal.css';
-
+import ManageInstalledWidgetsTab from '../../features/manage-widgets/update-installed-widgets.js'
 
 
 import {
@@ -166,13 +164,6 @@ function AddNewWidgetsTab({setFunctionality, handleClose}){
 
   return(
     <>
-    {/*
-    {progress == 0 && <h2 className="tab-header" style={{fontWeight: "bold"}}> &#x1F680; install new widgets </h2>}
-    {progress == 1 && <h2 className="tab-header" style={{fontWeight: "bold"}}> {selected.name} setup </h2>}
-    {progress == 2 && <h2 className="tab-header" style={{fontWeight: "bold"}}>  gatekeeper </h2>}
-    {progress == 3 && <h2 className="tab-header" style={{fontWeight: "bold"}}> finalize </h2>}
-    */}
-
     {progress == 0 && <SelectNewWidget setProgress={setProgress} selected={selected} setSelected={setSelected} setFunctionality={setFunctionality}/>}
     {progress == 1 && <ConfigureWidget setProgress={setProgress} selected={selected} metadata = {metadata} setMetadata={setMetadata}/>}
     {progress == 2 && <ConfigureGatekeeper setProgress={setProgress} selected={selected} appliedRules={appliedRules} setAppliedRules={setAppliedRules}/>}

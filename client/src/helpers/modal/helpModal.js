@@ -42,6 +42,7 @@ const dropIn = {
 
 
 export default function HelpModal({ handleClose, tab, groupID }){
+  require('../../css/modal.css');
   // tab indicates which help tab we want to show
   const [infoTab, setInfoTab] = useState(false)
   const [saveVisible, setSaveVisible] = useState(false)

@@ -7,7 +7,6 @@ import { SettingsCheckpointBar, FinalizeSettingsCheckpointBar } from '../../feat
 import Wallet, { validAddress, erc20GetSymbolAndDecimal, erc721GetSymbol, signTransaction, connectWallet } from '../../features//wallet/wallet'
 import HelpModal from './helpModal.js'
 import * as WebWorker from '../../app/worker-client';
-import '../../css/modal.css';
 import { useParams } from 'react-router-dom'
 
 
@@ -63,6 +62,8 @@ const dropIn = {
 
 
 export default function SettingsModal({mode, handleClose}){
+  require('../../css/modal.css');
+
   const [saveVisible, setSaveVisible] = useState(false)
   const dispatch = useDispatch();
   const dashboardInfo = useSelector(selectDashboardInfo)

@@ -377,36 +377,6 @@ button,
 .progress-bar{
   margin: 0 auto;
 }
-.installable-widgets-container{
-  display: flex;
-  flex-wrap: nowrap;
-  justify-content: center;
-}
-
-.installable-widget{
-  margin: 10px;
-  background-color: #1d1d1d;
-  color: white;
-  border: 2px solid #363944;
-  border-radius: 6px;
-  cursor: pointer;
-  text-align: center;
-  min-width: 15%;
-
-}
-
-.installable-widget-text{
-  max-width: 90%;
-  margin: 20px auto;
-}
-
-.selected{
-  border: 2px solid #384aff;
-}
-
-.installable-widget img{
-  width: 10rem;
-}
 
 
 .apply-gatekeeper-rules{

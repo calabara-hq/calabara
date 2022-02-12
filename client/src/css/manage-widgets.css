@@ -1,0 +1,317 @@
+.manage-widgets-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.manage-widgets-next-previous-ctr{
+    width: 80%;
+    display: flex;
+  }
+  
+  .next-btn{
+      margin-left: auto;
+      border: 2px solid white;
+      border-radius: 30px;
+      font-size: 18px;
+      padding: 5px 25px 5px 25px;
+      cursor: pointer;
+      margin-bottom: 10px;
+  }
+  
+  .previous-btn{
+    margin-right: auto;
+    border: 2px solid white;
+    border-radius: 30px;
+    font-size: 18px;
+    padding: 5px 25px 5px 25px;
+    cursor: pointer;
+    margin-bottom: 10px;
+  }
+  
+
+
+.manage-widgets-content{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.manage-installed-widgets-tab{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.installable-widgets-container{
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+  }
+
+  .installable-widget{
+    margin: 10px;
+    background-color: #1d1d1d;
+    color: white;
+    border: 2px solid #363944;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: center;
+    min-width: 15%;
+  
+  }
+
+  .installable-widget-text{
+    max-width: 90%;
+    margin: 20px auto;
+  }
+  
+  .selected{
+    border: 2px solid #384aff;
+  }
+  
+  .installable-widget img{
+    width: 10rem;
+  }
+
+  .widget-summary{
+    display: flex;
+    flex-direction: column;  
+  }
+
+  .widget-summary > div > h2{
+    color: lightgrey;
+  }
+
+  .widget-summary > * {
+      margin-bottom: 40px;
+  }
+
+  .newWikiGrouping{
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+  }
+  
+  .newFolder{
+    display: flex;
+    flex-direction: column;
+    width: 40%;
+    height: 100%;
+    justify-content: center;
+    flex: 1;
+    align-items: center;
+    gap: 10rem;
+  }
+  
+  .newFolder > div:first-child{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 60%;
+  }
+  
+  
+  .newWikiGrouping h2{
+    color: white;
+  }
+  
+  .dangerzone{
+    display: flex; 
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .dangerzone > div:first-child{
+    margin: 0 !important;
+    animation: fadein 0.5s forwards;
+    opacity: 0;
+    border: 2px solid #e5534b66;
+    border-radius: 6px;
+    height: auto;
+    background-color: rgba(235, 87, 87, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .dangerzone > div:first-child p{
+    padding: 10px;
+    margin: 0;
+    color: rgb(235, 87, 87);
+  }
+  
+  .danger-contents{
+    border: 2px solid #e5534b66;
+    width: 100%;
+    border-radius: 6px;
+    padding: 15px;
+    font-size: 18px;
+    cursor: pointer;
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 30px;
+  }
+  
+  
+  .danger-description,
+  .standard-contents p:first-child{
+    margin: 0;
+    text-align: left;
+    color: #999;
+  }
+  .danger-description,
+  .standard-contents p:nth-child(2){
+    margin: 0;
+    text-align: left;
+    font-size: 14px;
+    color: #999;
+    flex: wrap;
+  }
+  
+  .danger-contents > button{
+    align-self: center;
+    margin: 0;
+    background-color: #373e47;
+    border-radius: 6px;
+    border: none;
+    font-size: 14px;
+    color: #e5534b;
+    padding: 8px 20px;
+  }
+  
+  .danger-contents > button:hover{
+    color: white;
+    background-color: #e5534b;
+    font-weight: 200;
+    transition: background-color 0.2s ease-in;
+    transition: color 0.2s ease-in;
+  }
+  
+  .updateable-settings-container{
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    width: 70%;
+  }
+  
+  
+  .standard-contents{
+    width: 100%;
+    padding: 15px 0px;
+    font-size: 18px;
+    cursor: pointer;
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 30px;
+  }
+  
+  
+  .standard-contents > button{
+    margin: 0;
+    background-color: #373e47;
+    border-radius: 6px;
+    border: none;
+    font-size: 14px;
+    color: white;
+    padding: 5px 16px;
+  }
+  
+  .standard-contents > button:hover{
+    background-color: #384aff;
+    font-weight: 200;
+    transition: background-color 0.2s ease-in;
+  }
+  
+  .widget-summary > div:first-child{
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    align-items: center;
+    width: 70%;
+    margin: 0 auto;
+  }
+  
+  .widget-summary > div > img{
+    width: 10rem;
+    height: 10rem;
+    align-self: flex-end;
+    margin-left: auto;
+  }
+  
+  .update-metadata-settings{
+    display: flex;
+    flex-direction: column;
+    width: 70%;
+    margin: 0 auto;
+    gap: 30px;
+  }
+  
+  .metadata{
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .metadata p{
+    font-size: 16px;
+    color: lightgrey;
+  }
+  
+  
+  .react-switch-checkbox {
+    height: 0;
+    width: 0;
+    visibility: hidden;
+  }
+  
+  .react-switch-label {
+    justify-content: space-between;
+    cursor: pointer;
+    width: 40px;
+    height: 20px;
+    background: grey;
+    border-radius: 100px;
+    position: relative;
+    transition: background-color .2s;
+  }
+  
+  .react-switch-button {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 15px;
+    height: 15px;
+    border-radius: 45px;
+    transition: 0.4s;
+    background: #fff;
+    box-shadow: 0 0 2px 0 rgba(10, 10, 10, 0.29);
+  }
+  
+  .react-switch-checkbox:checked + .react-switch-label .react-switch-button {
+    left: calc(100% - 2px);
+    transform: translateX(-100%);
+  }
+  
+  .react-switch-label:active .react-switch-button {
+    width: 20px;
+  }
+  
+  .toggleText{
+    margin-bottom: 10px;
+    margin-right: 10px;
+    float: left;
+  }
+  

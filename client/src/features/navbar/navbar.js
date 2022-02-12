@@ -37,8 +37,9 @@ function Nav({homepage}) {
             </a>
           </span>
       </div>
-      <div className="launchAppDiv">
+      <div className="landing-page-btns">
       <button className="discordBtn" onClick={()=>window.open('https://discord.gg/dBBzHe9k3E')}>Discord</button>
+      <button className="launchAppBtn" onClick={()=>history.push('/explore')}>Launch App</button>
     </div>      
       </div>
   </nav> 

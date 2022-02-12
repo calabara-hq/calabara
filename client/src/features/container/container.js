@@ -7,7 +7,8 @@ import Analytics from '../analytics/analytics'
 import WikiDisplay from '../wiki/wiki-display'
 import Events from '../calendar/calendar'
 import ReactEditor from '../wiki/wiki-edit'
-
+import Settings from '../settings/settings'
+import ManageWidgets from '../manage-widgets/manage-widgets'
 
 
 
@@ -40,6 +41,13 @@ export default function Container(){
     <WikiDisplay/>
     </Route>
 
+    <Route path="/:organization/settings">
+    <Settings/>
+    </Route>
+
+    <Route path="/:organization/manageWidgets">
+    <ManageWidgets/>
+    </Route>
 
     <Route path="/:ens/wiki-edit/:grouping/:file">
     <ReactEditor/>

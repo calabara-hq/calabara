@@ -255,7 +255,7 @@ function InfoCard({info, ens, showSettingsModal}){
 
   return(
     <div className="info">
-    <button className="edit-settings-btn" type="button" onClick={showSettingsModal}><i className="fas fa-cog"></i></button>
+    <button className="edit-settings-btn" type="button" onClick={()=>{history.push('settings')}}><i className="fas fa-cog"></i></button>
     <div className="info-content">
     {isInfoLoaded &&
       <>
@@ -276,7 +276,7 @@ function InfoCard({info, ens, showSettingsModal}){
 function ManageWidgets({isAdmin, showWidgetsModal}){
 
   const isConnected = useSelector(selectConnectedBool)
-
+  const history = useHistory();
 
   useEffect(()=>{
     console.log(isAdmin)
@@ -287,7 +287,7 @@ function ManageWidgets({isAdmin, showWidgetsModal}){
 
 
     {(isAdmin && isConnected) && 
-      <article className="widget-card manage-widgets" onClick={showWidgetsModal}>
+      <article className="widget-card manage-widgets" onClick={()=>{history.push('manageWidgets')}}>
       <div>
       <span><Glyphicon className="managePencil" glyph="pencil"/></span>
       <h2> manage widgets </h2>

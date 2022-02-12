@@ -7,7 +7,6 @@
   margin: 0 auto;
   display: flex;
   flex-wrap: wrap;
-  gap: 1em;
   margin-bottom: 2em;
   border: 5px solid #24262e;
   border-radius: 10px;
@@ -31,7 +30,7 @@
 
 .newProposals{
   border-right: 2px solid #24262e;
-  min-height: 20em;
+  border-bottom: 2px solid #24262e;
 
 }
 
@@ -44,6 +43,9 @@
 
 }
 
+.pastProposals{
+  border-bottom: 2px solid #24262e;
+}
 
 .pastProposals h1{
   margin-left: 20px;
@@ -109,6 +111,21 @@
   display: flex;
 }
 
+.new-proposal-message{
+  background-color: #373e47;
+  width: fit-content;
+  margin-left: 20px;
+  margin-right: 20px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  margin-bottom: 3em;
+}
+
+.new-proposal-message h2{
+  margin: 0;
+  padding: 10px 20px;
+  font-size: 28px;
+}
 
 
 
