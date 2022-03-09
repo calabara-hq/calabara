@@ -151,6 +151,7 @@ in the complex case (existing org), the name can exist so long as it is only own
 app.post('/doesNameExist', async function(req, res, next){
 
     const {name, ens} = req.body;
+    console.log(req.body)
     var result = await db.query('select exists (select id from organizations where name = $1 and ens != $2)', [name.toLowerCase(), ens]).then(clean);
     res.status(200);
     res.send(result.exists)
@@ -401,16 +402,11 @@ app.post('/valid_wl', async function(req, res, next){
 })
 
 app.post('/updateSettings', async function(req, res, next){
-
- /*
-  place rules in rule table
-  place settings in organizations table
-  
- */
-
-
+  console.log('here')
   const fields = req.body
   let logoPath;
+  
+  console.log(fields)
 
   // prep the logo path if a logo was provided
   if(fields.logo){
