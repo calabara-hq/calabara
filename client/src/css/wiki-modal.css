@@ -1,0 +1,37 @@
+.wiki-tab-header{
+    font-size: 20px;
+    margin-top: 20px;
+    margin-bottom: 30px;
+    color: white;
+}
+.newWikiGrouping{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 auto;
+  }
+  
+  .newFolder{
+    display: flex;
+    flex-direction: column;
+    max-width: 95%;
+  }
+  
+  .newFolder > div:first-child{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 30px;
+  }
+  
+  
+  .newFolder p{
+    color: white;
+    font-size: 16px;
+  }
+
+  .help-modal-next-previous-ctr{
+    position: absolute;
+    bottom: 0;
+    width: 99%;
+    display: flex;
+  }
