@@ -50,6 +50,10 @@
   flex-wrap: wrap;
 }
 
+.dao-card:hover{
+  background-color: rgba(36, 38, 46, 0.7);
+}
+
 .dao-card > img{
   display: none;
   margin: 5%;
@@ -73,6 +77,10 @@
 
 .dao-card > p{
   color: #efefef;
+}
+
+.dao-card > *{
+  margin-bottom: 10px;
 }
 
 .newOrgBox{

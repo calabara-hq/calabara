@@ -1,36 +1,38 @@
 .manage-widgets-container{
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
 
-.manage-widgets-next-previous-ctr{
-    width: 80%;
-    display: flex;
-  }
-  
-  .next-btn{
-      margin-left: auto;
-      border: 2px solid white;
-      border-radius: 30px;
-      font-size: 18px;
-      padding: 5px 25px 5px 25px;
-      cursor: pointer;
-      margin-bottom: 10px;
-  }
-  
-  .previous-btn{
-    margin-right: auto;
-    border: 2px solid white;
-    border-radius: 30px;
-    font-size: 18px;
-    padding: 5px 25px 5px 25px;
-    cursor: pointer;
-    margin-bottom: 10px;
-  }
-  
+.manage-widgets-container > * {
+  margin-bottom: 30px;
+}
 
+.manage-widgets-top-level{
+  display: flex;
+  width: 80%;
+}
+
+.manage-widgets-top-level > .left,
+.manage-widgets-top-level > .right{
+  display: flex;
+  flex: 1;
+}
+
+.manage-widgets-top-level > p{
+  color: lightgrey;
+  font-size: 22px;
+  margin: 0;
+}
+
+
+.manage-widgets-next-previous-ctr{
+    display: flex;
+    width: 80%;
+    margin-top: 20px;
+  }
+  
 
 .manage-widgets-content{
     display: flex;
@@ -40,41 +42,90 @@
     align-items: center;
 }
 
+.manage-widgets-content > *{
+  margin-top: 50px;
+}
+
+.manage-installed{
+  color: rgb(169, 152, 255);
+  border: 2px solid rgb(169, 152, 255);
+  background-color: rgba(169, 152, 255, 0.3);
+  border-radius: 8px;
+  width: 50%;
+  text-align: center;
+  cursor: pointer;
+}
+.manage-installed > *{
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.add-new-widget{
+  color: rgb(44, 192, 255);
+  border:2px solid rgb(44, 192, 255);
+  background-color: rgba(44, 192, 255, 0.3);
+  border-radius: 8px; 
+  width: 50%;
+  text-align: center;
+  cursor: pointer;
+}
+
+.add-new-widget > *{
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+
+
 .manage-installed-widgets-tab{
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 100%;
+}
+
+.manage-installed-widgets-tab > *{
+  margin-top: 20px;
 }
 
 .installable-widgets-container{
     display: flex;
-    flex-wrap: nowrap;
-    justify-content: center;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .installable-widgets-container > *{
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 20px;
   }
 
   .installable-widget{
-    margin: 10px;
-    background-color: #1d1d1d;
+    flex: 1 1 200px;
+    background-color: #2d2e35;
     color: white;
-    border: 2px solid #363944;
+    border: 2px solid transparent;
     border-radius: 6px;
     cursor: pointer;
     text-align: center;
-    min-width: 15%;
-  
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .installable-widget:hover{
+    background-color: rgba(45, 46, 53, 0.7);
+  }
+
+  .installable-widget > * {
+    margin-top: 10px;
   }
 
   .installable-widget-text{
     max-width: 90%;
     margin: 20px auto;
   }
-  
-  .selected{
-    border: 2px solid #384aff;
-  }
-  
+ 
   .installable-widget img{
     width: 10rem;
   }
@@ -83,6 +134,7 @@
     display: flex;
     flex-direction: column;  
   }
+
 
   .widget-summary > div > h2{
     color: lightgrey;
@@ -100,29 +152,7 @@
     height: 100%;
     width: 100%;
   }
-  
-  .newFolder{
-    display: flex;
-    flex-direction: column;
-    width: 40%;
-    height: 100%;
-    justify-content: center;
-    flex: 1;
-    align-items: center;
-    gap: 10rem;
-  }
-  
-  .newFolder > div:first-child{
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    width: 60%;
-  }
-  
-  
-  .newWikiGrouping h2{
-    color: white;
-  }
+
   
   .dangerzone{
     display: flex; 
@@ -201,7 +231,6 @@
     display: flex;
     flex-direction: column;
     margin: 0 auto;
-    width: 70%;
   }
   
   
@@ -235,40 +264,82 @@
     transition: background-color 0.2s ease-in;
   }
   
-  .widget-summary > div:first-child{
-    display: flex;
-    flex-direction: row;
-    justify-content: left;
-    align-items: center;
-    width: 70%;
-    margin: 0 auto;
-  }
-  
-  .widget-summary > div > img{
-    width: 10rem;
-    height: 10rem;
-    align-self: flex-end;
-    margin-left: auto;
-  }
+
   
   .update-metadata-settings{
     display: flex;
     flex-direction: column;
-    width: 70%;
-    margin: 0 auto;
-    gap: 30px;
+    justify-content: center;
+    align-items: center;
   }
   
   .metadata{
     display: flex;
     flex-direction: column;
   }
+
+  .metadata > * {
+    margin-top: 2em;
+  }
   
   .metadata p{
     font-size: 16px;
-    color: lightgrey;
   }
   
+  .calendar-step1{
+    display: flex;
+    flex-direction: column;
+  }
+
+  .calendar-step1 > *{
+    margin-bottom: 20px !important;
+  }
+
+  .calendar-step-text{
+    display: flex;
+    flex-direction: column;
+    color: lightgrey;
+    margin-top: 30px;
+  }
+
+  .service-flex{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .service-address{
+    background-color: #f5f5f5;
+    width: fit-content;
+    padding: 10px;
+    border-radius: 4px;
+  }
+
+  .copy-to-clipboard{
+    background-color: #f5f5f5 !important;
+    color: black !important;
+    margin-left: 15px !important;
+    border: none;
+    padding: 10px !important;
+    border-radius: 4px;
+  }
+  .copy-to-clipboard > i{
+    font-size: 23px;
+    color: rgb(66, 65, 65);
+  }
+  .service-address > p{
+    margin: 0;
+    color: black;
+    font-family: 'Menlo,Monaco,Consolas,"Courier New",monospace';
+  }
+
+  .calendar-step1-input > h3{
+    color: lightgrey;
+  } 
+
+  .cal-id-input{
+    width: 100%;
+  }
   
   .react-switch-checkbox {
     height: 0;
@@ -315,3 +386,50 @@
     float: left;
   }
   
+  .manage-widgets-configure-gatekeeper-tab{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .manage-widgets-configure-gatekeeper-tab > h2{
+    margin-bottom: 20px;
+  }
+
+
+  .install-new-tab{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .install-new-tab > *{
+    margin-bottom: 20px !important;
+  }
+
+  .configure-widget-tab{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .configure-widget-tab > *{
+    margin-bottom: 20px !important;
+  }
+
+  .manage-widgets-final-message-tab{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .manage-widgets-final-message-tab > div:first-child{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }

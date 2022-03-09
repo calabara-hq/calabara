@@ -38,7 +38,7 @@
   display: flex;
   background-color: #2d2e35;
   margin-left: auto;
-  border: 1px solid transparent;
+  border: 2px solid #7c3aed;
   border-radius: 10px;
   cursor: pointer;
   transition: border 0.1s;

@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
 import '../../css/container.css'
 import Cards from '../org-cards/org-cards'
 import Dashboard from '../dashboard/dashboard'
-import Analytics from '../analytics/analytics'
+import Analytics from '../snapshot-analytics/snapshot-analytics'
 import WikiDisplay from '../wiki/wiki-display'
 import Events from '../calendar/calendar'
 import ReactEditor from '../wiki/wiki-edit'
@@ -37,19 +37,19 @@ export default function Container(){
     </Route>
 
 
-    <Route path="/:ens/wiki">
+    <Route path="/:ens/docs">
     <WikiDisplay/>
     </Route>
 
-    <Route path="/:organization/settings">
-    <Settings/>
+    <Route path="/:ens/settings">
+    <Settings urlSlug={'hello slug'}/>
     </Route>
 
-    <Route path="/:organization/manageWidgets">
+    <Route path="/:ens/manageWidgets">
     <ManageWidgets/>
     </Route>
 
-    <Route path="/:ens/wiki-edit/:grouping/:file">
+    <Route path="/:ens/docs-edit/:grouping/:file">
     <ReactEditor/>
     </Route>
 

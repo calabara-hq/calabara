@@ -7,6 +7,8 @@ import dashboard_img from '../../img/dashboard.png';
 import calendar_img from '../../img/calendar.png';
 import docs_img from '../../img/docs.png';
 import snapshot_img from '../../img/snapshot.png';
+import shadowLogo from '../../img/3D-logo.svg'
+import blueprint from '../../img/blueprint.png'
 import React, { useState, useEffect } from 'react'
 
 
@@ -20,9 +22,31 @@ function Homepage() {
         <div className="left">
           <div>
             <div className="section1-header">
-              <h1>Web3 coordination tools for digital communities.</h1>
+              <h1>A mission for community led web3 coordination tools</h1>
             </div>
-            <div className="section1-blueprint">
+
+          </div>
+        </div>
+        <div className="right">
+          <img className="bigimg" src={logo_sketch} alt="didn't work" />
+        </div>
+
+      </section>
+
+      <section className="section2">
+        <div>
+          <div className="section2-banner">
+            <h1>Our Story</h1>
+            <img src={shadowLogo} />
+          </div>
+          <div className="section2-content">
+            <p>We're a DAO of web3 creatives working together to invent, design, and build the tools that will help communities achieve their missions.</p>
+            <p>As web3 communities continue to push the boundaries and set their sights on more ambitious goals, we'll need flexible tools that keep the pace. From coordination amongst subDAOs / committees to web3 docs, we're focused on building community-first, open source software that empowers coordination and collaboration.</p>
+            <p>We're our own users, sorting through the same roadblocks that many other communities face. By collaborating with other communities, we can build the tools that we all need, the way we want. We're flexible, forkable, and fast.</p>
+            <p>V1 is our first iteration. It's an ultra simple platform that lays the foundation for what's to come. You can read more about V1 below.</p>
+          </div>
+          <div className="section2-footer">
+            <div className="section2-blueprint">
               <div className="blueprint-row1">
                 <p>Calabara</p>
               </div>
@@ -41,13 +65,9 @@ function Homepage() {
             </div>
           </div>
         </div>
-        <div className="right">
-          <img className="bigimg" src={logo_sketch} alt="didn't work" />
-        </div>
-
       </section>
 
-      <section className="section2">
+      <section className="section3">
         <div className="top">
           <div className="left">
             <img src={dashboard_img} />
@@ -63,7 +83,7 @@ function Homepage() {
           <div className="left">
             <h1>Token Gating</h1>
             <div>
-              <p>Give potential frens the pitch. Give OG's the alpha. Use gatekeeper rules to enforce ERC-721 & ERC-20 token balance checks specific to each application.</p>
+              <p>Give potential frens the pitch. Give OG's the alpha. Use gatekeeper rules to enforce ERC-721 & ERC-20 token balance checks that uniquely affect each application.</p>
             </div>
           </div>
 
@@ -74,11 +94,11 @@ function Homepage() {
         </div>
       </section>
 
-      <section className="section3">
+      <section className="section4">
         <div className="left">
           <div className="top">
             <h1>V1 🎉</h1>
-            <p>V1 is our communities first release. Click through the supported applications below to learn more about them.</p>
+            <p>V1 is focused on helping contributors and members keep up with the latest community events, announcements, and proposals. Click through the supported applications below to learn more about them.</p>
           </div>
           <div className="bottom">
             <div className="widgets-container">
@@ -102,7 +122,7 @@ function Homepage() {
             <div className="widget-description">
               <h1>{selectedWidget}</h1>
               {selectedWidget == 'snapshot' && <p>The snapshot app provides a useful display of proposals, personalized for the connected wallet. Members can quickly see ongoing proposals which they haven't voted on yet, as well as data about their participation and past proposals.</p>}
-              {selectedWidget == 'calendar' && <p>Calendar offers a simple event interface that hooks into google calendar events for community wide calendars. Members can view upcoming events all in one spot.</p>}
+              {selectedWidget == 'calendar' && <p>Calendar offers a simple event interface that hooks into google calendar. Members can view upcoming events all in one spot.</p>}
               {selectedWidget == 'docs' && <p>Docs allows dashboard admins to create token gated folders and documents. Token checks can be used to provide member wallets with written updates and newbie wallets with the community basics.</p>}
             </div>
           </div>
@@ -118,7 +138,7 @@ function Homepage() {
 
       </section>
 
-      <section className="section4">
+      <section className="section5">
         <div className="top">
           <div>
             <h1>Roadmap</h1>

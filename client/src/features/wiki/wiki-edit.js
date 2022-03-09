@@ -27,7 +27,7 @@ export default function WikiEditor(){
 
     if(info.name == ""){
       // don't allow direct url access. direct the user to the wiki-display screen first.
-      history.push('/' + ens + '/wiki')
+      history.push('/' + ens + '/docs')
     }
 
     else{
@@ -96,7 +96,7 @@ function ReactEditor({data}){
     }
     setTimeout(() => {
       setPending(false);
-      history.push('/' + ens + '/wiki')
+      history.push('/' + ens + '/docs')
     },1000)
 
 

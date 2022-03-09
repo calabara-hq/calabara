@@ -39,11 +39,6 @@ const DraggableElement = ({ prefix, elements, setCurrentWikiId, history, group_n
       <button onClick={()=> {editWikiGroupingClick(prefix)}}><span className="fas fa-cog"></span></button>
     </div>
     </ColumnHeader>
-    {/*
-    <div className="new-wiki-btn">
-      <button onClick={()=> {history.push('wiki-edit/' + prefix + '/new/');}} >New</button>
-    </div>
-    */}
     <Droppable droppableId={`${prefix}`}>
       {(provided) => (
         <div {...provided.droppableProps} ref={provided.innerRef}>
@@ -51,7 +46,7 @@ const DraggableElement = ({ prefix, elements, setCurrentWikiId, history, group_n
             <ListItem key={item.id} item={item} index={index} setCurrentWikiId={setCurrentWikiId}/>
           ))}
           {provided.placeholder}
-          <div className="new-document" onClick={()=> {history.push('wiki-edit/' + prefix + '/new/');}}>
+          <div className="new-document" onClick={()=> {history.push('docs-edit/' + prefix + '/new/');}}>
           <span className="fas fa-plus"></span>
           </div>
         </div>

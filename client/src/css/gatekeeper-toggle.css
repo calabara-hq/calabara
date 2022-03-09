@@ -1,0 +1,119 @@
+
+.apply-gatekeeper-rules{
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    margin-top: 10px;
+    height: 65%;
+    width: 80%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-bottom: 20px;
+  }
+  
+  .gk-rule{
+    display: flex;
+    flex-direction: row;
+    align-items: center; 
+    justify-content: space-between;
+    margin: 10px;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  
+  .gk-rule > p{
+    margin: 0;
+    flex: 0.2;
+    color: lightgrey;
+  }
+  
+  .gk-rule > span{
+    margin-right: auto;
+  }
+  
+  .details{
+    cursor: pointer;
+  }
+  
+  .details::after{
+    font-family: "Font Awesome 5 Free";
+      font-weight: 900;
+      font-size: 12px;
+      content: "\f054 ";
+      display: inline-block;
+      margin: 5px;
+      margin-right: 5px;
+      transform: rotate(90deg);
+  }
+  
+  .details.rotate::after{
+    transition: all 0.3s linear;
+  }
+  
+  .details.rotate.down::after{
+    transform: rotate(630deg);
+  }
+  
+  .gk-rule-input{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+  }
+
+  .gk-rule-input > input{
+    animation: fadein 1s forwards;
+    width: 120px;
+  }
+  
+  
+  .rule-details{
+    animation: fadein 1s forwards;
+    display: flex;
+    flex-direction: row;
+    margin-left: 8px;
+    text-align: center;
+    width: auto;
+    border-radius: 4px;
+    padding: 5px 16px;
+    justify-content: center;
+    align-items: center;
+  
+    background-color: #373e47;
+    border-radius: 6px;
+    border: none;
+  }
+  
+  .rule-details p{
+    margin: 0 !important;
+    color: #adbac7;
+  }
+  
+  .detail-contract{
+    flex: 1;
+    text-align: center;
+  }
+  
+  
+  .gatekeeper-toggle{
+    margin-left: auto;
+    margin-right: 20px;
+    align-self: center;
+  }
+  
+  .gk-rule-input > span{
+    margin-right: 10px;
+    color: lightgrey;
+  }
+
+  /* Chrome, Brave, Opera */
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  
+  /* Firefox */
+  input[type=number] {
+    -moz-appearance: textfield;
+  }
+
