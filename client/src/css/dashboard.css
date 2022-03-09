@@ -130,7 +130,7 @@
   margin-right: 10px;
   margin-top: 10px;
   width: auto;
-  background: #1d1d1d;
+  background: none;
   border: none;
   border-radius: 6px;
   font-size: 2rem;
@@ -148,6 +148,11 @@
   justify-content: center;
   align-items: center;
 }
+
+.info-content > * {
+  margin-bottom: 5px;
+}
+
 .info-content h1{
   color: #efefef;
   padding: 0px 3rem;
@@ -159,7 +164,6 @@
 
 .info-content a{
   cursor: pointer;
-  margin-bottom: 10px;
   color: #efefef;
 }
 
@@ -185,7 +189,8 @@
 
 
 .subscribe-btn{
-  border: 2px solid black;
+  border: none;
+  background-color: white;
   border-radius: 20px;
   padding-left: 10px;
   padding-right: 10px;
@@ -199,9 +204,10 @@
 
 
 
-.managePencil{
+.pencil-logo{
   font-size: 8rem;
   background-color: #2d2e35;
+
 }
 .manage-widgets{
   background-color: #2d2e35;

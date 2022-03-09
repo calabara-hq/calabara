@@ -10,12 +10,14 @@
   padding-top: 10px;
 }
 
-.navbar.homepage{
-  background-color: black;
-}
+
 
 .navbar.homepage > .parent-container{
   border-bottom: none;
+}
+
+.navbar-brand{
+  height: auto;
 }
 
 .parent-container{
@@ -27,6 +29,8 @@
   border-bottom: 1px solid #333;
   flex-wrap: wrap;
   grid-gap: 10px;
+  align-items: center;
+  justify-content: center;
 }
 
 
@@ -34,16 +38,12 @@
   display: flex;
   background-color: #2d2e35;
   margin-left: auto;
-  border: 1px solid transparent;
+  border: 2px solid #7c3aed;
   border-radius: 10px;
   cursor: pointer;
   transition: border 0.1s;
 }
 
-
-.walletBox:active{
-  border: 2px solid transparent;
-}
 
 
 .walletBox > div:first-child{
@@ -52,7 +52,7 @@
   grid-gap: 10px; 
   justify-content: center;
   align-items: center;
-  padding: 0px 10px;
+  padding: 10px 15px;
 }
 
 .walletBox > div:first-child > p{
@@ -63,14 +63,12 @@
   align-self: center;
 }
 
-.walletBox > div:first-child > i{
-  color: lightgrey;
-}
 
 .walletAvatar{
   transform: scale(150%);
   -webkit-transform: scale(150%);
   cursor: pointer;
+  margin-left: 10px;
 }
 
 .walletMore > span{
@@ -125,6 +123,7 @@
   border-radius: 6px;
   width: 100%;
   cursor: pointer;
+  border: none;
   background-color: #373e47;
   color: #e5534b;
 }
@@ -159,39 +158,33 @@
 
 .discordBtn{
 
-  border-radius: 15px;
-  border: 2px solid rgb(56 74 255);
-  background: black;
+  border-radius: 8px;
+  border: none;
+  background: rgba(56, 74, 255, 0.9);
   font-size: 14px;
-  padding: 5px;
+  padding: 10px 20px;
   color: white;
-  padding-left: 10px;
-  padding-right: 10px;
   cursor: pointer;
 }
 
 .launchAppBtn{
-  border-radius: 15px;
-  border: 2px solid #d95169;
-  background: black;
+  border-radius: 8px;
+  border: none;
+  background: rgb(217, 81, 105, 0.9);
   font-size: 14px;
-  padding: 5px;
+  padding: 10px 20px;
   color: white;
-  padding-left: 10px;
-  padding-right: 10px;
   cursor: pointer;
   font-weight: 500;
-}
-
-.launchAppBtn.big{
-  padding: 15px 30px;
-  margin-top: 100px;
+  margin-left: 10px;
 }
 
 
-.launchAppDiv{
+.landing-page-btns{
   margin-left: auto;
   display: flex;
   flex-direction: row;
-  gap: 5px;
+  align-items: center;
+  justify-content: center;
+  
 }

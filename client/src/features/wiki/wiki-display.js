@@ -286,7 +286,7 @@ function RenderWiki({isWikiLoaded, isAdmin, currentWikiId, wikiDisplayTitle, wik
     <>
     <div className={"editor-display " + (currentWikiId != -1 ? 'wiki-open' : 'wiki-closed')}>
       <div className="edit-wiki-container">
-        {isAdmin && <button onClick={() => {history.push('wiki-edit/1/' + currentWikiId)}} className="edit-wiki-button"><Glyphicon glyph="pencil"/></button>}
+        {isAdmin && <button onClick={() => {history.push('docs-edit/1/' + currentWikiId)}} className="edit-wiki-button"><Glyphicon glyph="pencil"/></button>}
       </div>
 
     {isWikiLoaded && 

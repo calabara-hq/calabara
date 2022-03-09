@@ -1,0 +1,435 @@
+.manage-widgets-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.manage-widgets-container > * {
+  margin-bottom: 30px;
+}
+
+.manage-widgets-top-level{
+  display: flex;
+  width: 80%;
+}
+
+.manage-widgets-top-level > .left,
+.manage-widgets-top-level > .right{
+  display: flex;
+  flex: 1;
+}
+
+.manage-widgets-top-level > p{
+  color: lightgrey;
+  font-size: 22px;
+  margin: 0;
+}
+
+
+.manage-widgets-next-previous-ctr{
+    display: flex;
+    width: 80%;
+    margin-top: 20px;
+  }
+  
+
+.manage-widgets-content{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.manage-widgets-content > *{
+  margin-top: 50px;
+}
+
+.manage-installed{
+  color: rgb(169, 152, 255);
+  border: 2px solid rgb(169, 152, 255);
+  background-color: rgba(169, 152, 255, 0.3);
+  border-radius: 8px;
+  width: 50%;
+  text-align: center;
+  cursor: pointer;
+}
+.manage-installed > *{
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.add-new-widget{
+  color: rgb(44, 192, 255);
+  border:2px solid rgb(44, 192, 255);
+  background-color: rgba(44, 192, 255, 0.3);
+  border-radius: 8px; 
+  width: 50%;
+  text-align: center;
+  cursor: pointer;
+}
+
+.add-new-widget > *{
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+
+
+.manage-installed-widgets-tab{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.manage-installed-widgets-tab > *{
+  margin-top: 20px;
+}
+
+.installable-widgets-container{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
+  .installable-widgets-container > *{
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-bottom: 20px;
+  }
+
+  .installable-widget{
+    flex: 1 1 200px;
+    background-color: #2d2e35;
+    color: white;
+    border: 2px solid transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .installable-widget:hover{
+    background-color: rgba(45, 46, 53, 0.7);
+  }
+
+  .installable-widget > * {
+    margin-top: 10px;
+  }
+
+  .installable-widget-text{
+    max-width: 90%;
+    margin: 20px auto;
+  }
+ 
+  .installable-widget img{
+    width: 10rem;
+  }
+
+  .widget-summary{
+    display: flex;
+    flex-direction: column;  
+  }
+
+
+  .widget-summary > div > h2{
+    color: lightgrey;
+  }
+
+  .widget-summary > * {
+      margin-bottom: 40px;
+  }
+
+  .newWikiGrouping{
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+  }
+
+  
+  .dangerzone{
+    display: flex; 
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .dangerzone > div:first-child{
+    margin: 0 !important;
+    animation: fadein 0.5s forwards;
+    opacity: 0;
+    border: 2px solid #e5534b66;
+    border-radius: 6px;
+    height: auto;
+    background-color: rgba(235, 87, 87, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .dangerzone > div:first-child p{
+    padding: 10px;
+    margin: 0;
+    color: rgb(235, 87, 87);
+  }
+  
+  .danger-contents{
+    border: 2px solid #e5534b66;
+    width: 100%;
+    border-radius: 6px;
+    padding: 15px;
+    font-size: 18px;
+    cursor: pointer;
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 30px;
+  }
+  
+  
+  .danger-description,
+  .standard-contents p:first-child{
+    margin: 0;
+    text-align: left;
+    color: #999;
+  }
+  .danger-description,
+  .standard-contents p:nth-child(2){
+    margin: 0;
+    text-align: left;
+    font-size: 14px;
+    color: #999;
+    flex: wrap;
+  }
+  
+  .danger-contents > button{
+    align-self: center;
+    margin: 0;
+    background-color: #373e47;
+    border-radius: 6px;
+    border: none;
+    font-size: 14px;
+    color: #e5534b;
+    padding: 8px 20px;
+  }
+  
+  .danger-contents > button:hover{
+    color: white;
+    background-color: #e5534b;
+    font-weight: 200;
+    transition: background-color 0.2s ease-in;
+    transition: color 0.2s ease-in;
+  }
+  
+  .updateable-settings-container{
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+  }
+  
+  
+  .standard-contents{
+    width: 100%;
+    padding: 15px 0px;
+    font-size: 18px;
+    cursor: pointer;
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 30px;
+  }
+  
+  
+  .standard-contents > button{
+    margin: 0;
+    background-color: #373e47;
+    border-radius: 6px;
+    border: none;
+    font-size: 14px;
+    color: white;
+    padding: 5px 16px;
+  }
+  
+  .standard-contents > button:hover{
+    background-color: #384aff;
+    font-weight: 200;
+    transition: background-color 0.2s ease-in;
+  }
+  
+
+  
+  .update-metadata-settings{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .metadata{
+    display: flex;
+    flex-direction: column;
+  }
+
+  .metadata > * {
+    margin-top: 2em;
+  }
+  
+  .metadata p{
+    font-size: 16px;
+  }
+  
+  .calendar-step1{
+    display: flex;
+    flex-direction: column;
+  }
+
+  .calendar-step1 > *{
+    margin-bottom: 20px !important;
+  }
+
+  .calendar-step-text{
+    display: flex;
+    flex-direction: column;
+    color: lightgrey;
+    margin-top: 30px;
+  }
+
+  .service-flex{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .service-address{
+    background-color: #f5f5f5;
+    width: fit-content;
+    padding: 10px;
+    border-radius: 4px;
+  }
+
+  .copy-to-clipboard{
+    background-color: #f5f5f5 !important;
+    color: black !important;
+    margin-left: 15px !important;
+    border: none;
+    padding: 10px !important;
+    border-radius: 4px;
+  }
+  .copy-to-clipboard > i{
+    font-size: 23px;
+    color: rgb(66, 65, 65);
+  }
+  .service-address > p{
+    margin: 0;
+    color: black;
+    font-family: 'Menlo,Monaco,Consolas,"Courier New",monospace';
+  }
+
+  .calendar-step1-input > h3{
+    color: lightgrey;
+  } 
+
+  .cal-id-input{
+    width: 100%;
+  }
+  
+  .react-switch-checkbox {
+    height: 0;
+    width: 0;
+    visibility: hidden;
+  }
+  
+  .react-switch-label {
+    justify-content: space-between;
+    cursor: pointer;
+    width: 40px;
+    height: 20px;
+    background: grey;
+    border-radius: 100px;
+    position: relative;
+    transition: background-color .2s;
+  }
+  
+  .react-switch-button {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 15px;
+    height: 15px;
+    border-radius: 45px;
+    transition: 0.4s;
+    background: #fff;
+    box-shadow: 0 0 2px 0 rgba(10, 10, 10, 0.29);
+  }
+  
+  .react-switch-checkbox:checked + .react-switch-label .react-switch-button {
+    left: calc(100% - 2px);
+    transform: translateX(-100%);
+  }
+  
+  .react-switch-label:active .react-switch-button {
+    width: 20px;
+  }
+  
+  .toggleText{
+    margin-bottom: 10px;
+    margin-right: 10px;
+    float: left;
+  }
+  
+  .manage-widgets-configure-gatekeeper-tab{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .manage-widgets-configure-gatekeeper-tab > h2{
+    margin-bottom: 20px;
+  }
+
+
+  .install-new-tab{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .install-new-tab > *{
+    margin-bottom: 20px !important;
+  }
+
+  .configure-widget-tab{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .configure-widget-tab > *{
+    margin-bottom: 20px !important;
+  }
+
+  .manage-widgets-final-message-tab{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .manage-widgets-final-message-tab > div:first-child{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }

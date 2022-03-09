@@ -12,7 +12,7 @@ const notifyOptions = {
   networkId: 1,
   darkMode: true, // (default: false)
   mobilePosition: 'bottom', // 'top', 'bottom' (default: 'top')
-  desktopPosition: 'topRight', // 'bottomLeft', 'bottomRight', 'topLeft', 'topRight' (default: 'bottomRight')
+  desktopPosition: 'topLeft', // 'bottomLeft', 'bottomRight', 'topLeft', 'topRight' (default: 'bottomRight')
 }
 
 const notify = Notify(notifyOptions);

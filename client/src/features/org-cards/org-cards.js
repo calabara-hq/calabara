@@ -1,13 +1,7 @@
 import React, { useEffect, useState, componentDidMount } from 'react'
-import axios from 'axios'
 import { useHistory } from "react-router-dom"
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
 import '../../css/org-cards.css'
-import Dashboard from '../dashboard/dashboard'
-import SettingsModal from '../../helpers/modal/SettingsModal'
 import * as WebWorker from '../../app/worker-client'
-import { AnimatePresence, motion } from "framer-motion";
-import Glyphicon from '@strongdm/glyphicon'
 import { showNotification } from '../notifications/notifications'
 
 //redux
@@ -27,12 +21,10 @@ import {
   selectConnectedBool,
   selectConnectedAddress,
 } from '../wallet/wallet-reducer';
-//
 
 import {
   clearWidgets,
 } from '../dashboard/dashboard-widgets-reducer'
-import { connectWallet } from '../wallet/wallet'
 
 
 export default function Cards(){
@@ -44,9 +36,7 @@ export default function Cards(){
   // clear redux store so that clicking into a new dashboard doesn't briefly render old data
   dispatch(clearWidgets());
 
-  const [modalOpen, setModalOpen] = useState(false);
-  const close = () => setModalOpen(false);
-  const open = () => setModalOpen(true);
+
 
   // there is room for optimization here. The webworker is fetching new resources everytime this page loads.
   // i created a cardsPulled state in the org-cards reducer that may come in handy for a solution
@@ -74,7 +64,7 @@ export default function Cards(){
   return(
     <>
     <div className="cards-flex">
-    <NewOrgButton modalOpen={modalOpen} close={close} open={open} isConnected={isConnected}/>
+    <NewOrgButton isConnected={isConnected}/>
     <section className="cards">
 
     {organizations.map((org, idx) => {
@@ -82,7 +72,6 @@ export default function Cards(){
     })}
     </section>
     </div>
-    {modalOpen && <SettingsModal mode={'new-org'} modalOpen={modalOpen} handleClose={close}/>}
     </>
  )}
 
@@ -148,27 +137,16 @@ function DaoCard({org}){
 
   )}
 
-  function NewOrgButton({modalOpen, close, open, isConnected}){
+  function NewOrgButton({isConnected}){
     const [didUserRefuseConnect, setDidUserRefuseConnect] = useState(false);
-
-    async function showModal(){
-      (modalOpen ? close() : open())
-    }
 
     const history = useHistory();
 
-    const handleClick = () => {
-        history.push('/setup/')
-    }
-
-
     const handleNewOrg = async() => {
       
-      
-
       if(isConnected){
           setDidUserRefuseConnect(false)
-          open();
+          history.push('new/settings')
         }
         else{
           setDidUserRefuseConnect(true);
