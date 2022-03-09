@@ -39,7 +39,20 @@ export default function ManageWidgets() {
   const [tabHeader, setTabHeader] = useState('manage widgets')
   const dispatch = useDispatch();
   const history = useHistory();
+  const {ens} = useParams();
 
+  // don't allow direct URL access
+  const checkHistory = () => {
+    if(history.action === 'POP'){
+        history.push('/' + ens + '/dashboard')
+    }
+  }
+
+
+
+  useEffect(()=>{
+    checkHistory();
+  },[])
 
   return (
     <div className="manage-widgets-container">
