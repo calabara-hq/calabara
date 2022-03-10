@@ -8,6 +8,7 @@ import calendarLogo from '../../img/calendar.svg'
 import discordLogo from '../../img/discord.svg'
 import snapshotLogo from '../../img/snapshot.svg'
 import wikiLogo from '../../img/wiki.svg'
+import otterspaceLogo from '../../img/otterspace.png'
 
 import { showNotification } from '../notifications/notifications'
 
@@ -275,21 +276,22 @@ export function WidgetCard({ gatekeeperPass, orgInfo, widget, btnState, setBtnSt
   const history = useHistory();
 
 
-
   function handleClick() {
     // block widget functionality if we are in edit mode
     if (!btnState) {
-      console.log(link)
-      if (name == 'snapshot') {
+      if (name === 'snapshot') {
         history.push('/' + ens + '/snapshot')
       }
-      else if (name == 'calendar') {
+      else if (name === 'calendar') {
         history.push('/' + ens + '/calendar/' + metadata.calendarID)
       }
-      else if (name == 'wiki') {
+      else if (name === 'wiki') {
         history.push('/' + ens + '/docs')
       }
-      else window.open(link)
+      else if (name === 'otterspace onboarding'){
+        window.open('https://app.otterspace.xyz/dao_landing/sharkdao-1641723620621x716200186443409800')
+      }
+
     }
   }
 
@@ -300,9 +302,10 @@ export function WidgetCard({ gatekeeperPass, orgInfo, widget, btnState, setBtnSt
   }
 
   var logoImg;
-  if (name == 'snapshot') { logoImg = snapshotLogo }
-  if (name == 'calendar') { logoImg = calendarLogo }
-  if (name == 'wiki') { logoImg = wikiLogo }
+  if (name === 'snapshot') { logoImg = snapshotLogo }
+  if (name === 'calendar') { logoImg = calendarLogo }
+  if (name === 'wiki') { logoImg = wikiLogo }
+  if (name === 'otterspace onboarding'){logoImg = otterspaceLogo}
 
 
   return (

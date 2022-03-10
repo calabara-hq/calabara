@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import calendarLogo from '../../img/calendar.svg'
 import snapshotLogo from '../../img/snapshot.svg'
 import wikiLogo from '../../img/wiki.svg'
+import otterspaceLogo from '../../img/otterspace.png'
 import axios from 'axios'
 import { useParams } from 'react-router-dom';
 import '../../css/manage-widgets.css'
@@ -111,6 +112,12 @@ function InstalledWidget({ el, selected, setSelected }) {
     link = 'https://docs.calabara.com/v1/widgets/calendar-description'
   }
 
+  if (el.name == 'otterspace onboarding') {
+    imgSource = otterspaceLogo
+    description = 'otterspace onboarding app'
+    link = 'https://app.otterspace.xyz/dao_landing/sharkdao-1641723620621x716200186443409800'
+  }
+
   return (
 
     <div className="installable-widget" onClick={handleClick}>
@@ -118,7 +125,7 @@ function InstalledWidget({ el, selected, setSelected }) {
       <div className="installable-widget-text">
         <p>{el.name == 'wiki' ? 'docs' : el.name}</p>
         <p>{description}</p>
-        <u onClick={() => { window.open(link) }}>Learn more</u>
+        <u onClick={(e) => { window.open(link);e.stopPropagation();}}>Learn more</u>
       </div>
     </div>
   )
@@ -141,7 +148,7 @@ function ManageWidget({ selected, setProgress, setTabHeader }) {
         <WidgetSummary selected={selected} setSettingsStep={setSettingsStep} setProgress={setProgress} setTabHeader={setTabHeader} />
       }
       {settingsStep == 1 &&
-        <MetadataSettings selected={selected} setSettingsStep={setSettingsStep} setTabHeader={setTabHeader} />
+        <MetadataSettings selected={selected} setProgress={setProgress} setSettingsStep={setSettingsStep} setTabHeader={setTabHeader} />
       }
       {settingsStep == 2 &&
         <GatekeeperSettings selected={selected} setSettingsStep={setSettingsStep} setTabHeader={setTabHeader} />
@@ -191,7 +198,7 @@ function WidgetSummary({ selected, setSettingsStep, setProgress, setTabHeader })
           }
         </div>
         <div className="standard-contents">
-          {selected.name != 'wiki' &&
+          {selected.name != 'wiki' || selected.name != 'otterspace onboarding' &&
             <>
               <div className="standard-description">
                 <p>Gatekeeper</p>
@@ -222,7 +229,7 @@ function WidgetSummary({ selected, setSettingsStep, setProgress, setTabHeader })
 }
 
 
-function MetadataSettings({ selected, setSettingsStep, setTabHeader }) {
+function MetadataSettings({ selected, setSettingsStep, setTabHeader, setProgress }) {
   const [metadata, setMetadata] = useReducer(
     (metadata, newMetadata) => ({ ...metadata, ...newMetadata }),
     selected.metadata
@@ -232,7 +239,7 @@ function MetadataSettings({ selected, setSettingsStep, setTabHeader }) {
     <>
       <div className="update-metadata-settings">
         <div className="metadata">
-          <CalendarConfiguration metadata={metadata} setMetadata={setMetadata} setSettingsStep={setSettingsStep} setTabHeader={setTabHeader} />
+          <CalendarConfiguration mode={'update'} metadata={metadata} setProgress={setProgress} setMetadata={setMetadata} setSettingsStep={setSettingsStep} setTabHeader={setTabHeader} />
         </div>
       </div>
     </>
