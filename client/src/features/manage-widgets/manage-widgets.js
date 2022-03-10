@@ -12,6 +12,7 @@ import '../../css/status-messages.css'
 import snapshotLogo from '../../img/snapshot.svg'
 import wikiLogo from '../../img/wiki.svg'
 import calendarLogo from '../../img/calendar.svg'
+import otterspaceLogo from '../../img/otterspace.png'
 import ManageInstalledWidgetsTab from './update-installed-widgets.js'
 import CalendarConfiguration from './calendar-configuration'
 import SnapshotConfiguration from './snapshot-configuration'
@@ -158,7 +159,7 @@ function SelectNewWidget({ setProgress, setSelected, selected, setFunctionality,
 
   useEffect(() => {
 
-    if (selected.name == 'wiki') {
+    if (selected.name == 'wiki' || selected.name == 'otterspace onboarding') {
       // no additional setup. Go straight to finalize.
       setProgress(3);
     }
@@ -195,7 +196,7 @@ function ConfigureWidget({ setProgress, selected, metadata, setMetadata, setTabH
   return (
     <div className="configure-widget-tab">
       {selected.name == 'snapshot' && <SnapshotConfiguration setProgress={setProgress} setTabHeader={setTabHeader} />}
-      {selected.name == 'calendar' && <CalendarConfiguration setProgress={setProgress} metadata={metadata} setMetadata={setMetadata} setTabHeader={setTabHeader} />}
+      {selected.name == 'calendar' && <CalendarConfiguration mode={'new'} setProgress={setProgress} metadata={metadata} setMetadata={setMetadata} setTabHeader={setTabHeader} />}
     </div>
   )
 }
@@ -317,6 +318,12 @@ function InstallableWidget({ el, selected, setSelected }) {
     link = 'https://docs.calabara.com/v1/widgets/calendar-description'
   }
 
+  if (el.name == 'otterspace onboarding') {
+    imgSource = otterspaceLogo
+    description = 'otterspace onboarding app'
+    link = 'https://app.otterspace.xyz/dao_landing/sharkdao-1641723620621x716200186443409800'
+  }
+
   const handleClick = () => {
     setSelected(el);
   }
@@ -328,7 +335,7 @@ function InstallableWidget({ el, selected, setSelected }) {
       <div className="installable-widget-text">
         <p>{el.name == 'wiki' ? 'docs' : el.name}</p>
         <p>{description}</p>
-        <u onClick={() => { window.open(link) }}>Learn more</u>
+        <u onClick={(e) => { window.open(link); e.stopPropagation(); }}>Learn more</u>
       </div>
     </div>
   )

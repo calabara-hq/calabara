@@ -1,8 +1,4 @@
 
-h2{
-    color: lightgrey;
-}
-
 button:disabled{
   color: grey;
   background-color: lightgrey;
@@ -499,7 +495,7 @@ input.error{
   align-items: center;
 }
 
-.org-finalize-tab > p{
+.org-finalize-tab > p,h2{
   font-size: 20px;
   color: lightgrey;
 }

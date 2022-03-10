@@ -3,13 +3,13 @@ import axios from 'axios'
 import Tooltip from '@mui/material/Tooltip';
 import Button from '@mui/material/Button';
 
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import {
     updateWidgetMetadata,
 } from '../../features/dashboard/dashboard-widgets-reducer';
 
-export default function CalendarConfiguration({ metadata, setMetadata, setProgress, setTabHeader }) {
+export default function CalendarConfiguration({ mode, metadata, setMetadata, setProgress, setSettingsStep, setTabHeader }) {
     const [configProgress, setConfigProgress] = useState(0)
     const [inputError, setInputError] = useState(0);
     const [calendarID, setCalendarID] = useState(metadata.calendarID || "")
@@ -17,9 +17,10 @@ export default function CalendarConfiguration({ metadata, setMetadata, setProgre
     const { ens } = useParams();
     const dispatch = useDispatch();
 
+
     useEffect(() => {
         setTabHeader('calendar metadata')
-    },[])
+    }, [])
 
     const numSteps = 2;
 
@@ -59,7 +60,6 @@ export default function CalendarConfiguration({ metadata, setMetadata, setProgre
         setTimeout(() => { setCopyStatus('copy to clipboard') }, 1000)
     }
 
-
     async function handleNext() {
         if (configProgress == 0) {
             // check if we got any input from the calendar ID field
@@ -73,7 +73,12 @@ export default function CalendarConfiguration({ metadata, setMetadata, setProgre
                 setMetadata({ calendarID: calendarID });
                 await axios.post('/updateWidgetMetadata', { ens: ens, metadata: { calendarID: calendarID }, name: 'calendar' });
                 dispatch(updateWidgetMetadata('calendar', { calendarID: calendarID }))
-                setProgress(3);
+                if (mode === 'new') {
+                    setProgress(3);
+                }
+                else if(mode === 'update'){
+                    setSettingsStep(0);
+                }
             }
             else {
                 // the calendar is not public, ask them to set it to public
@@ -94,7 +99,12 @@ export default function CalendarConfiguration({ metadata, setMetadata, setProgre
                 setMetadata({ calendarID: calendarID });
                 await axios.post('/updateWidgetMetadata', { ens: ens, metadata: { calendarID: calendarID }, name: 'calendar' });
                 dispatch(updateWidgetMetadata('calendar', { calendarID: calendarID }))
-                setProgress(0);
+                if (mode === 'new') {
+                    setProgress(3);
+                }
+                else if(mode === 'update'){
+                    setSettingsStep(0);
+                }
             }
 
 
@@ -107,7 +117,7 @@ export default function CalendarConfiguration({ metadata, setMetadata, setProgre
             setConfigProgress(0);
         }
         else {
-            setProgress(0)
+            setSettingsStep(0)
         }
     }
 
@@ -151,7 +161,7 @@ export default function CalendarConfiguration({ metadata, setMetadata, setProgre
                             <div className="service-address">
                                 <p>calabara-service-account@calabara-331416.iam.gserviceaccount.com</p>
                             </div>
-                                <Button className="copy-to-clipboard" onClick={copyToClipboard}><i class="far fa-clipboard"></i></Button>
+                            <Button className="copy-to-clipboard" onClick={copyToClipboard}><i class="far fa-clipboard"></i></Button>
                         </div>
 
                         <br />
