@@ -495,7 +495,12 @@ input.error{
   align-items: center;
 }
 
-.org-finalize-tab > p,h2{
+.org-finalize-tab > p{
+  font-size: 20px;
+  color: lightgrey;
+}
+
+.org-finalize-tab > h2{
   font-size: 20px;
   color: lightgrey;
 }
