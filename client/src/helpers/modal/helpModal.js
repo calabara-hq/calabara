@@ -30,7 +30,7 @@ import { useParams } from 'react-router-dom'
 const dropIn = {
   hidden: {
     y: "-100vh",
-    opacity: 0,
+    opacity: 1,
   },
   visible: {
     y: "0",
@@ -44,7 +44,7 @@ const dropIn = {
   },
   exit: {
     y: "100vh",
-    opacity: 0,
+    opacity: 1,
   },
 };
 
