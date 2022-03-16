@@ -41,6 +41,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  opacity: 1 !important;
 }
 
 
@@ -219,12 +220,13 @@
   position: absolute;
   right: 5px;
   top: 5px;
-  font-size: 20px;
-  background: #f2355c;
-  border-radius: 10px;
-  border: 1px solid black;
-  color: black;
   z-index: 1;
   cursor: pointer;
-
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  margin-left: auto;
+  font-weight: bold;
+  background-color: #2d2e35;
+  color: lightcoral;
 }
