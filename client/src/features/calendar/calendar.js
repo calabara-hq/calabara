@@ -1,9 +1,11 @@
-import React, {useEffect, useState} from 'react'
+import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux';
 import { listEvents } from '../../helpers/google-calendar'
 import { useHistory, useParams } from "react-router-dom"
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
+import HelpModal from '../../helpers/modal/helpModal';
+import axios from 'axios'
 
 
 import '../../css/calendar.css'
@@ -20,28 +22,34 @@ import {
 } from '../wallet/wallet-reducer';
 
 
-export default function Events(){
+export default function Events() {
   const { ens, calendarId } = useParams();
   const dispatch = useDispatch();
   const isConnected = useSelector(selectConnectedBool)
   const walletAddress = useSelector(selectConnectedAddress)
   const [calendarEvents, setCalendarEvents] = useState([])
   const [dataPulled, setDataPulled] = useState(false)
+  const [modalOpen, setModalOpen] = useState(false)
+  const [eventData, setEventData] = useState('')
+
+  const open = () => { setModalOpen(true) }
+  const close = () => { setModalOpen(false) }
 
 
 
-  useEffect(()=>{
-    if(dataPulled == false){
+  useEffect(() => {
+    if (dataPulled == false) {
       dispatch(populateInitialMembership(walletAddress))
       setDataPulled(true)
     }
-  },[])
+  }, [])
 
 
-  useEffect(async()=>{
+  useEffect(() => {
 
+    (async () => {
 
-    if(dataPulled){
+      if (dataPulled) {
         var result = await listEvents(calendarId);
         var events = result.data.data.items;
 
@@ -69,28 +77,34 @@ export default function Events(){
           eventItem.timeUntil = moment.duration(moment(eventItem.start).diff(moment()))
         })
 
-        console.log(events)
         setCalendarEvents(events)
-    }
-  },[dataPulled])
+      }
+    })();
+  }, [dataPulled])
 
   const localizer = momentLocalizer(moment);
 
 
-  return(
 
-  <div className="calendarContainer">
+  return (
+    <>
 
-    <Calendar
+      <div className="calendarContainer">
+        <Calendar
           localizer={localizer}
           defaultDate={new Date()}
           defaultView="month"
           events={calendarEvents}
           style={{ height: "100vh" }}
-          onSelectEvent={(e) => {window.open(e.htmlLink)}}
+          onSelectEvent={(e) => { setModalOpen(true); setEventData(e) }}
         />
+      </div>
+      <div>
+        {modalOpen && <HelpModal handleClose={close} tab="calendarEvent" eventData={eventData} />}
+      </div>
 
-  </div>
+    </>
   )
+
 }
 

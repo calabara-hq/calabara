@@ -9,6 +9,7 @@ import '../../css/settings-buttons.css'
 import '../../css/status-messages.css'
 import '../../css/gatekeeper-toggle.css'
 import { RuleSelect } from '../../features/manage-widgets/gatekeeper-toggle.js'
+import DOMPurify from 'dompurify'
 
 
 
@@ -49,25 +50,15 @@ const dropIn = {
 
 
 
-export default function HelpModal({ handleClose, tab, groupID }) {
-  require('../../css/modal.css');
+export default function HelpModal({ handleClose, tab, groupID, eventData }) {
   // tab indicates which help tab we want to show
   const [infoTab, setInfoTab] = useState(false)
   const [saveVisible, setSaveVisible] = useState(false)
   const dispatch = useDispatch();
 
-
-
-
-
-
-
-
   async function handleSave() {
     console.log('saving')
   }
-
-
 
   return (
     <Backdrop>
@@ -80,14 +71,26 @@ export default function HelpModal({ handleClose, tab, groupID }) {
         exit="exit"
 
       >
-        <div className="helpModalContainer">
-          <button className="closeModalButton" onClick={handleClose}><Glyphicon glyph="remove" /></button>
-          <div className="helpModalContent">
-            <HelpTab handleClose={handleClose} tab={tab} groupID={groupID} />
+        {tab === 'deleteGatekeeper' || tab === 'addWikiGrouping' &&
+          <div className="helpModalContainer">
+            <button className="closeModalButton" onClick={handleClose}><Glyphicon glyph="remove" /></button>
+            <div className="helpModalContent">
+              <HelpTab handleClose={handleClose} tab={tab} groupID={groupID} />
 
 
+            </div>
           </div>
-        </div>
+        }
+
+        {tab === 'calendarEvent' &&
+          <div className="calendarModalContainer">
+            <button className="closeModalButton" onClick={handleClose}><Glyphicon glyph="remove" /></button>
+            <div className="helpModalContent">
+              <ViewCalendarEvent handleClose={handleClose} eventData={eventData} />
+
+            </div>
+          </div>
+        }
 
       </motion.div>
     </Backdrop>
@@ -100,14 +103,56 @@ function HelpTab({ tab, handleClose, groupID }) {
   return (
     <>
 
-      {tab == 'deleteGatekeeper' && <DeleteGatekeeperTabContent handleClose={handleClose} />}
-      {tab == 'addWikiGrouping' && <AddWikiGrouping handleClose={handleClose} groupID={groupID} />}
+      {tab === 'deleteGatekeeper' && <DeleteGatekeeperTabContent handleClose={handleClose} />}
+      {tab === 'addWikiGrouping' && <AddWikiGrouping handleClose={handleClose} groupID={groupID} />}
 
     </>
   )
 }
 
+function ViewCalendarEvent({ handleClose, eventData }) {
 
+
+  console.log(eventData)
+  console.log(JSON.stringify(eventData.start))
+  const [dateString, setDateString] = useState('');
+  const [description, setDescription] = useState(eventData.description)
+  
+  function urlify(text) {
+    var urlRegex =/(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+    return text.replace(urlRegex, function(url) {
+        return '<a target=_blank href="' + url + '">' + url + '</a>';
+    });
+
+  }
+
+  useEffect(() => {
+    var d = new Date(eventData.start)
+    setDateString(d.toLocaleString())
+  }, [])
+
+  useEffect(()=>{
+    if(eventData.description){
+      setDescription(urlify(DOMPurify.sanitize(description)))
+    }
+  },[eventData.description])
+
+
+
+
+  return (
+    <div className="view-calendar-event-container">
+      <div>
+        <span><h1>{eventData.title}</h1></span>
+        <span><p>{dateString}</p></span>
+        {description && <span><p><b>description</b></p><p dangerouslySetInnerHTML={{__html: description}}/></span>}
+        <div className="add-to-gcal">
+          <button onClick={()=>{window.open(eventData.htmlLink)}}>add to google cal</button>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 function DeleteGatekeeperTabContent({ handleClose }) {
   const dispatch = useDispatch();
@@ -165,7 +210,7 @@ function AddWikiGrouping({ handleClose, groupID }) {
   useEffect(() => {
     if (groupID != null) {
       //setAppliedRules(wikiList[groupID].gk_rules);
-      setAppliedRules({ type: 'update_all', payload: wikiList[groupID].gk_rules})
+      setAppliedRules({ type: 'update_all', payload: wikiList[groupID].gk_rules })
 
       setGroupingName(wikiList[groupID].group_name)
     }
@@ -250,7 +295,7 @@ function AddWikiGrouping({ handleClose, groupID }) {
               <p> Folder Name </p>
               <input className={isFolderError ? 'error' : undefined} value={groupingName} onChange={(e) => { setGroupingName(e.target.value); setIsFolderError(false) }}></input>
               {isFolderError &&
-                <div className="tab-message error" style={{width: "100%"}}>
+                <div className="tab-message error" style={{ width: "100%" }}>
                   <p>Please give your folder a name</p>
                 </div>
               }
@@ -313,7 +358,7 @@ function ConfigureGatekeeper({ setProgress, appliedRules, setAppliedRules, handl
           <div className="tab-message neutral">
             <p>Toggle the switches to apply gatekeeper rules to this widget. If multiple rules are applied, the gatekeeper will pass if the connected wallet passes 1 or more rules.</p>
           </div>
-          <RuleSelect ruleError={ruleError} setRuleError={setRuleError} appliedRules={appliedRules} setAppliedRules={setAppliedRules}/>
+          <RuleSelect ruleError={ruleError} setRuleError={setRuleError} appliedRules={appliedRules} setAppliedRules={setAppliedRules} />
         </>
       }
 
