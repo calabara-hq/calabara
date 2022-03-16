@@ -213,10 +213,15 @@ body{
   
 }
 
-.section3 > * > * > h1,p{
+.section3 > * > * > h1{
   color: #e2e2e2;
   margin: 0;
 }
+.section3 > * > * > p{
+  color: #e2e2e2;
+  margin: 0;
+}
+
 
 .section3 > .top > p{
   font-size: 18px;
@@ -382,9 +387,14 @@ body{
   
 }
 
-.section4 > * > * p,h1{
+.section4 > * > * p{
   color: #e2e2e2;
 }
+
+.section4 > * > * h1{
+  color: #e2e2e2;
+}
+
 
 @keyframes fade-text{
   100% {opacity: 1;}
