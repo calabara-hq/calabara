@@ -356,6 +356,7 @@
     border-radius: 100px;
     position: relative;
     transition: background-color .2s;
+    margin-bottom: 0px;
   }
   
   .react-switch-button {
@@ -432,4 +433,5 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    color: white;
   }

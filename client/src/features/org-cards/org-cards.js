@@ -3,6 +3,8 @@ import { useHistory } from "react-router-dom"
 import '../../css/org-cards.css'
 import * as WebWorker from '../../app/worker-client'
 import { showNotification } from '../notifications/notifications'
+import axios from 'axios'
+
 
 //redux
 import { useSelector, useDispatch } from 'react-redux';
@@ -27,7 +29,7 @@ import {
 } from '../dashboard/dashboard-widgets-reducer'
 
 
-export default function Cards(){
+export default function Cards() {
   const isConnected = useSelector(selectConnectedBool);
   const walletAddress = useSelector(selectConnectedAddress);
   const organizations = useSelector(selectOrganizations);
@@ -41,44 +43,45 @@ export default function Cards(){
   // there is room for optimization here. The webworker is fetching new resources everytime this page loads.
   // i created a cardsPulled state in the org-cards reducer that may come in handy for a solution
 
-  useEffect(()=>{
-      // pull org cards
-      dispatch(populateInitialOrganizations())
-      // set the joined orgs for this wallet address
-      dispatch(populateInitialMembership(walletAddress));
+  useEffect(() => {
+    // pull org cards
+    dispatch(populateInitialOrganizations())
+    // set the joined orgs for this wallet address
+    dispatch(populateInitialMembership(walletAddress));
   }, [])
 
-  useEffect(()=>{
-    if(organizations.length > 0){
+  useEffect(() => {
+    if (organizations.length > 0) {
       WebWorker.processImages().then((result) => {
         console.log(result)
       })
 
     }
-  },[organizations])
+  }, [organizations])
 
   // don't want to call WW everytime. Let's cache the img blob in the reducer. When we 
   // add a new org, just directly inject the img src  
 
 
-  return(
+  return (
     <>
-    <div className="cards-flex">
-    <NewOrgButton isConnected={isConnected}/>
-    <section className="cards">
+      <div className="cards-flex">
+        <NewOrgButton isConnected={isConnected} />
+        <section className="cards">
 
-    {organizations.map((org, idx) => {
-      return <DaoCard key={idx} org={org}/>;
-    })}
-    </section>
-    </div>
+          {organizations.map((org, idx) => {
+            return <DaoCard key={idx} org={org} />;
+          })}
+        </section>
+      </div>
     </>
- )}
+  )
+}
 
 
-function DaoCard({org}){
+function DaoCard({ org }) {
   console.log(org)
-  const {name, logo, verified, ens} = org;
+  const { name, logo, verified, ens } = org;
   const memership = useSelector(selectMemberOf);
   const isConnected = useSelector(selectConnectedBool)
   const walletAddress = useSelector(selectConnectedAddress)
@@ -89,12 +92,12 @@ function DaoCard({org}){
 
   const history = useHistory();
 
-  function handleJoinOrg(){
+  function handleJoinOrg() {
     dispatch(addMembership(walletAddress, ens))
     setMembers(members + 1);
   }
 
-  function handleLeaveOrg(){
+  function handleLeaveOrg() {
     dispatch(deleteMembership(walletAddress, ens))
     setMembers(members - 1);
   }
@@ -102,63 +105,69 @@ function DaoCard({org}){
 
 
   const handleClick = (e) => {
-    if(e.target.name === 'join'){
+    if (e.target.name === 'join') {
       e.preventDefault();
       e.stopPropagation();
     }
-    else if(e.target.name === 'leave'){
+    else if (e.target.name === 'leave') {
       e.preventDefault();
       e.stopPropagation();
     }
 
-    else{
-    history.push('/' + ens + '/dashboard')
+    else {
+      history.push('/' + ens + '/dashboard')
     }
   }
 
   // rerender the card when membership details change
-  useEffect(() =>{},[isMemberOf])
+  useEffect(() => { }, [isMemberOf])
 
 
-  return(
+  return (
 
     <article className="dao-card" onClick={handleClick}>
-      {logo.substring(0,10) === 'img/logos/'
+      {logo.substring(0, 10) === 'img/logos/'
 
-        ? <img data-src={logo}/>
-        : <img src={logo}/>
+        ? <img data-src={logo} />
+        : <img src={logo} />
 
-     }
-    <h2> {name}</h2>
-    <p>{members} members</p>
-    {!isMemberOf && <button name="join" onClick={handleJoinOrg} type="button" className="subscribe-btn">{'Join'}</button>}
-    {isMemberOf && <button name="leave" onClick={handleLeaveOrg} type="button" className="subscribe-btn">{'Leave'}</button>}
+      }
+      <h2> {name}</h2>
+      <p>{members} members</p>
+      {!isMemberOf && <button name="join" onClick={handleJoinOrg} type="button" className="subscribe-btn">{'Join'}</button>}
+      {isMemberOf && <button name="leave" onClick={handleLeaveOrg} type="button" className="subscribe-btn">{'Leave'}</button>}
     </article>
 
-  )}
+  )
+}
 
-  function NewOrgButton({isConnected}){
-    const [didUserRefuseConnect, setDidUserRefuseConnect] = useState(false);
 
-    const history = useHistory();
 
-    const handleNewOrg = async() => {
-      
-      if(isConnected){
-          setDidUserRefuseConnect(false)
-          history.push('new/settings')
-        }
-        else{
-          setDidUserRefuseConnect(true);
-          showNotification('please sign in', 'hint', 'please sign in to create a dashboard')
-        }
-      
-  
+
+
+function NewOrgButton({ isConnected }) {
+  const [didUserRefuseConnect, setDidUserRefuseConnect] = useState(false);
+
+  const history = useHistory();
+
+  const handleNewOrg = async () => {
+
+    if (isConnected) {
+      setDidUserRefuseConnect(false)
+      history.push('new/settings')
+    }
+    else {
+      setDidUserRefuseConnect(true);
+      showNotification('please sign in', 'hint', 'please sign in to create a dashboard')
     }
 
-    return(
-      <div className="newOrgBox">
-        <button className="newOrgBtn" type="button" onClick={handleNewOrg}>🚀 New</button>
-      </div>
-      )
+
   }
+
+
+  return (
+    <div className="newOrgBox">
+      <button className="newOrgBtn" type="button" onClick={handleNewOrg}>🚀 New</button>
+    </div>
+  )
+}

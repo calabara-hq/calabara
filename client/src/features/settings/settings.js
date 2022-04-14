@@ -7,8 +7,8 @@ import * as WebWorker from '../../app/worker-client';
 import { useHistory, useParams } from 'react-router-dom'
 import HelpModal from '../../helpers/modal/helpModal'
 import '../../css/settings-buttons.css'
-import '../../css/settings.css'
 import '../../css/status-messages.css'
+import '../../css/discord-add-bot.css'
 
 
 
@@ -27,6 +27,7 @@ import {
 import { useForkRef } from '@mui/material'
 
 import {
+  applyDashboardRules,
   populateDashboardRules,
   selectDashboardRules,
 } from '../../features/gatekeeper/gatekeeper-rules-reducer';
@@ -39,11 +40,11 @@ import {
   addOrganization,
   deleteOrganization,
 } from '../../features/org-cards/org-cards-reducer';
+import { showNotification } from '../notifications/notifications'
 
 
 
-export default function Settings(urlSlug) {
-  console.log(urlSlug)
+export default function Settings() {
   const [saveVisible, setSaveVisible] = useState(false)
   const { ens } = useParams()
   const dispatch = useDispatch();
@@ -64,11 +65,11 @@ export default function Settings(urlSlug) {
 
   // don't allow direct URL access
   const checkHistory = () => {
-    if(history.action === 'POP'){
-      if(ens !== 'new'){
+    if (history.action === 'POP') {
+      if (ens !== 'new') {
         history.push('/' + ens + '/dashboard')
       }
-      else{
+      else {
         history.push('/explore')
       }
     }
@@ -122,11 +123,11 @@ function TabSelector({ fields, setFields, lockedAdminAddresses }) {
     }
   }, [])
 
-  const handleExit = () =>{
-    if(ens === 'new'){
+  const handleExit = () => {
+    if (ens === 'new') {
       history.push('/explore')
     }
-    else if(ens !=='new'){
+    else if (ens !== 'new') {
       history.push('dashboard')
     }
   }
@@ -143,7 +144,7 @@ function TabSelector({ fields, setFields, lockedAdminAddresses }) {
       <div className="checkpoint settings">
         <SettingsCheckpointBar percent={progress * 25} />
       </div>
-      {progress == 0 && <OrgEnsTab setProgress={setProgress} fields={fields} setFields={setFields} setTabHeader={setTabHeader}/>}
+      {progress == 0 && <OrgEnsTab setProgress={setProgress} fields={fields} setFields={setFields} setTabHeader={setTabHeader} />}
 
       {progress == 1 && <OrgProfileTab hasImageChanged={hasImageChanged} setHasImageChanged={setHasImageChanged} setTabHeader={setTabHeader} lockedAdminAddresses={lockedAdminAddresses} setProgress={setProgress} fields={fields} setFields={setFields} />}
 
@@ -151,7 +152,7 @@ function TabSelector({ fields, setFields, lockedAdminAddresses }) {
 
 
       {progress == 3 && <OrgGateKeeperTab setProgress={setProgress} fields={fields} setFields={setFields} setTabHeader={setTabHeader} />}
-      {progress == 4 && <FinalizeTab lockedAdminAddresses={lockedAdminAddresses} setProgress={setProgress} fields={fields} setFields={setFields} setTabHeader={setTabHeader}/>}
+      {progress == 4 && <FinalizeTab lockedAdminAddresses={lockedAdminAddresses} setProgress={setProgress} fields={fields} setFields={setFields} setTabHeader={setTabHeader} />}
 
 
     </div>
@@ -169,7 +170,7 @@ function OrgEnsTab({ setProgress, fields, setFields, setTabHeader }) {
 
   useEffect(() => {
     setTabHeader('🚀 Create a Dashboard');
-  },[])
+  }, [])
 
   useEffect(() => {
 
@@ -240,9 +241,9 @@ function OrgEnsTab({ setProgress, fields, setFields, setTabHeader }) {
       <div className="tab-message neutral">
         <p>Enter your organization's ENS to initialize a dashboard </p>
       </div>
-      <input style={{width: "80%"}} disabled={!isConnected} className={`${errorMsg.error ? "error" : null}`} placeholder="e.g. calabara.eth" value={ens} onChange={updateInput} type="text" />
+      <input style={{ width: "80%" }} disabled={!isConnected} className={`${errorMsg.error ? "error" : null}`} placeholder="e.g. calabara.eth" value={ens} onChange={updateInput} type="text" />
       {resolvedAddress != "" &&
-          <p className="success"> {ens} resolves to {resolvedAddress} &#x1F517;</p>
+        <p className="success"> {ens} resolves to {resolvedAddress} &#x1F517;</p>
       }
       {errorMsg.error &&
         <div className="tab-message error">
@@ -255,7 +256,7 @@ function OrgEnsTab({ setProgress, fields, setFields, setTabHeader }) {
   )
 }
 
-function OrgProfileTab({ setProgress, fields, setFields, lockedAdminAddresses, hasImageChanged, setHasImageChanged, setTabHeader }) {
+function OrgProfileTab({ setProgress, fields, setFields, lockedAdminAddresses, hasImageChanged, setHasImageChanged, setTabHeader}) {
   const [name, setName] = useState(fields.name || "");
   const { ens } = useParams();
   const uploadedImage = useRef(null);
@@ -451,8 +452,8 @@ function OrgProfileTab({ setProgress, fields, setFields, lockedAdminAddresses, h
 
       {/* Only show previous (back to ens) if this is a new org. If it's existing, don't allow nav to ens setup*/}
       <div className="settings-next-previous-ctr">
-        {ens === 'new' && <button className={"previous-btn"} onClick={() => { setProgress(0) }}><i class="fas fa-long-arrow-alt-left"></i></button>}
-        <button disabled={fields.name == ''}className="next-btn" onClick={handleNext}><i class="fas fa-long-arrow-alt-right"></i></button>
+        {ens === 'new' && <button className={"previous-btn"} onClick={() => { setProgress(0) }}><i className="fas fa-long-arrow-alt-left"></i></button>}
+        <button disabled={fields.name == ''} className="next-btn" onClick={handleNext}><i className="fas fa-long-arrow-alt-right"></i></button>
       </div>
     </div>
   )
@@ -539,7 +540,7 @@ function OrgAdminsTab({ setProgress, fields, setFields, setTabHeader }) {
 
   useEffect(() => {
     setTabHeader('Add Admins')
-  },[])
+  }, [])
 
 
   return (
@@ -565,8 +566,8 @@ function OrgAdminsTab({ setProgress, fields, setFields, setTabHeader }) {
 
       </div>
       <div className="settings-next-previous-ctr">
-        <button className={"previous-btn"} onClick={() => { setProgress(1) }}><i class="fas fa-long-arrow-alt-left"></i></button>
-        <button className={"next-btn enable"} onClick={handleNext}><i class="fas fa-long-arrow-alt-right"></i></button>
+        <button className={"previous-btn"} onClick={() => { setProgress(1) }}><i className="fas fa-long-arrow-alt-left"></i></button>
+        <button className={"next-btn enable"} onClick={handleNext}><i className="fas fa-long-arrow-alt-right"></i></button>
       </div>
     </div>
   )
@@ -587,47 +588,52 @@ function AdminAddressInput({ addressErrors, parentAddress, index, updateElementI
   )
 }
 
-function OrgGateKeeperTab({ setProgress, fields, setFields, setTabHeader }) {
+export function OrgGateKeeperTab({ setProgress, fields, setFields, setTabHeader }) {
 
   const [gatekeeperInnerProgress, setGatekeeperInnerProgress] = useState(0)
   const installedWidgets = useSelector(selectInstalledWidgets)
-  const dashboardRules = useSelector(selectDashboardRules)
-  const [ruleToDelete, setRuleToDelete] = useState('');
-  const [areDetailsVisible, setAreDetailsVisible] = useState(false);
+  const existingRules = useSelector(selectDashboardRules)
 
-  const [helpModalOpen, setHelpModalOpen] = useState(false);
 
-  useEffect(()=>{
+
+  useEffect(() => {
     setTabHeader('Gatekeeper')
-  },[])
+  }, [])
 
-  const close = (choice) => {
-    // this is where we digest the choice from the warning message and either delete or do nothing.
-    if (choice == 'delete') {
-      //axios.post('/removeGatekeeperDependencies', {ens: fields.ens, rule_id: ruleIdToDelete})
-      var gatekeeperCopy = JSON.parse(JSON.stringify(fields.gatekeeper.rules));
-      gatekeeperCopy.splice(ruleToDelete.index, 1)
-      setFields({ gatekeeper: { rules: gatekeeperCopy, rulesToDelete: fields.gatekeeper.rulesToDelete.concat(ruleToDelete.rule_id) } })
 
-    }
-    setHelpModalOpen(false);
-  }
 
-  const open = () => setHelpModalOpen(true);
-
-  async function showHelpModal() {
-    (helpModalOpen ? close() : open())
-  }
 
   const removeGatekeeperRule = (array_index) => {
     // If the user is editing an organization and
     // a rule is deleted, we need to check on the widgets in which that rule is applied.
-    // we need to grab this orgs widgets and see if any are affected and let them know before allowing a delete.
     // if they want to delete, set the gatekeeper.rulesToDelete state in fields and handle the actual deletion when the user saves at the end.
-    var gatekeeperCopy = JSON.parse(JSON.stringify(fields.gatekeeper));
-    gatekeeperCopy.rules.splice(array_index, 1)
-    setFields({ gatekeeper: gatekeeperCopy })
+    // we only want to push values to rulesToDelete if the rule in question is an existing gk rule. Otherwise we'll just pretend like we never added it.
+    // use existing rules to get a rule_id. If rule_id == undefined, then we'll just splice it from the rules field.
+    // if rule_id is defined, we'll add it to our ruleToDelete array
 
+    var gatekeeperCopy = JSON.parse(JSON.stringify(fields.gatekeeper.rules));
+    const ruleToDelete = JSON.parse(JSON.stringify(gatekeeperCopy[array_index]))
+
+    let isRuleExisting = false;
+    let deleteKey;
+
+    Object.keys(existingRules).map((key) => {
+      if (existingRules[key].guildId === ruleToDelete.guildId || existingRules[key].gatekeeperAddress === ruleToDelete.gatekeeperAddress) {
+        isRuleExisting = true
+        deleteKey = key
+      }
+    })
+
+
+    if (!isRuleExisting) {
+      gatekeeperCopy.splice(array_index, 1)
+      setFields({ gatekeeper: { rules: gatekeeperCopy } })
+
+    }
+    else {
+      gatekeeperCopy.splice(array_index, 1)
+      setFields({ gatekeeper: { rules: gatekeeperCopy, rulesToDelete: fields.gatekeeper.rulesToDelete.concat(deleteKey) } })
+    }
   }
 
 
@@ -635,7 +641,7 @@ function OrgGateKeeperTab({ setProgress, fields, setFields, setTabHeader }) {
     <div className="org-gatekeeper-tab">
       {(gatekeeperInnerProgress == 0) &&
         <div className="tab-message neutral">
-          <p> Gatekeepers allow organizations to use token balance checks to offer different app functionality and displays for users via rules set for each app. <u style={{ cursor: 'pointer' }} onClick={() => { window.open('https://docs.calabara.com/gatekeeper') }}>Learn more</u></p>
+          <p> Gatekeepers allow organizations to use token balance or discord role checks to offer different app functionality and displays for users via rules set for each app. <u style={{ cursor: 'pointer' }} onClick={() => { window.open('https://docs.calabara.com/gatekeeper') }}>Learn more</u></p>
         </div>
       }
 
@@ -644,20 +650,26 @@ function OrgGateKeeperTab({ setProgress, fields, setFields, setTabHeader }) {
           {fields.gatekeeper.rules.map((el, idx) => {
             return (
               <>
-                <div className="gatekeeper-option">
-                  <p>Symbol: {el.gatekeeperSymbol}</p>
-                  <span className={'gatekeeper-details rotate ' + (areDetailsVisible ? 'down' : undefined)} onClick={() => { setAreDetailsVisible(!areDetailsVisible) }}>details</span>
-                  <button className="remove-gatekeeper-rule" onClick={() => { removeGatekeeperRule(idx) }}><Glyphicon glyph="trash" /></button>
-                  {helpModalOpen && <HelpModal tab={'deleteGatekeeper'} />}
-                </div>
+                <div className="gatekeeper-option" key={idx}>
+                  {(el.gatekeeperType === 'erc721' || el.gatekeeperType === 'erc20') &&
+                    <>
+                      <p><b>Type:</b> <span className={el.gatekeeperType}>{el.gatekeeperType}</span></p>
+                      <p><b>Symbol:</b> {el.gatekeeperSymbol}</p>
+                      <p onClick={() => { window.open('https://etherscan.io/address/' + el.gatekeeperAddress) }}><button className="gatekeeper-address">{el.gatekeeperAddress.substring(0, 6)}...{el.gatekeeperAddress.substring(38, 42)} <i className="fas fa-external-link-alt"></i></button></p>
+                      <button className="remove-gatekeeper-rule exit-btn" onClick={() => { removeGatekeeperRule(idx) }}><Glyphicon glyph="trash" /></button>
 
-                {areDetailsVisible &&
-                  <div className="rule-details">
-                    <p>Type: {el.gatekeeperType}</p>
-                    <p className='detail-contract'>Contract: {el.gatekeeperAddress.substring(0, 6)}...{el.gatekeeperAddress.substring(38, 42)}</p>
-                    <p style={{ fontSize: '16px', cursor: 'pointer' }} onClick={() => { window.open('https://etherscan.io/address/' + el.gatekeeperAddress) }}><i class="fas fa-external-link-alt"></i></p>
-                  </div>
-                }
+                    </>
+                  }
+
+                  {el.gatekeeperType === 'discord' &&
+                    <>
+                      <p><b>Type:</b> <span className={el.gatekeeperType}>{el.gatekeeperType}</span></p>
+                      <p><b>Server:</b> {el.serverName}</p>
+                      <span></span>
+                      <button className="remove-gatekeeper-rule exit-btn" onClick={() => { removeGatekeeperRule(idx) }}><Glyphicon glyph="trash" /></button>
+                    </>
+                  }
+                </div>
               </>
             )
           })}
@@ -670,8 +682,8 @@ function OrgGateKeeperTab({ setProgress, fields, setFields, setTabHeader }) {
       }
       {gatekeeperInnerProgress == 0 &&
         <div className="settings-next-previous-ctr">
-          <button className={"previous-btn"} onClick={() => { setProgress(2) }}><i class="fas fa-long-arrow-alt-left"></i></button>
-          <button className={"next-btn enable"} onClick={() => { setProgress(4) }}><i class="fas fa-long-arrow-alt-right"></i></button>
+          <button className={"previous-btn"} onClick={() => { setProgress(2) }}><i className="fas fa-long-arrow-alt-left"></i></button>
+          <button className={"next-btn enable"} onClick={() => { setProgress(4) }}><i className="fas fa-long-arrow-alt-right"></i></button>
         </div>
       }
     </div>
@@ -679,6 +691,7 @@ function OrgGateKeeperTab({ setProgress, fields, setFields, setTabHeader }) {
 }
 
 function GatekeeperOptions({ setGatekeeperInnerProgress, fields, setFields }) {
+
   const [gatekeeperOptionClick, setGatekeeperOptionClick] = useState('none')
 
   return (
@@ -688,7 +701,9 @@ function GatekeeperOptions({ setGatekeeperInnerProgress, fields, setFields }) {
           <h4 style={{ textAlign: "center", marginBottom: "20px" }}>choose a gatekeeper rule option</h4>
           <div className="available-gatekeeper-options">
             <button className="erc20-option" onClick={() => { setGatekeeperOptionClick('erc20') }}>ERC-20 balanceOf</button>
+            <button className="discord-roles-option" onClick={() => { setGatekeeperOptionClick('discord-roles') }}>Discord Roles</button>
             <button className="erc721-option" onClick={() => { setGatekeeperOptionClick('erc721') }}>ERC-721 balanceOf</button>
+
           </div>
           <button className="gk-rule-cancel" onClick={() => { setGatekeeperInnerProgress(0) }}>cancel</button>
         </>
@@ -696,6 +711,11 @@ function GatekeeperOptions({ setGatekeeperInnerProgress, fields, setFields }) {
       {gatekeeperOptionClick == 'erc20' &&
         <ERC20gatekeeper setGatekeeperInnerProgress={setGatekeeperInnerProgress} fields={fields} setFields={setFields} />
       }
+
+      {gatekeeperOptionClick == 'discord-roles' &&
+        <DiscordRoleGatekeeper setGatekeeperInnerProgress={setGatekeeperInnerProgress} fields={fields} setFields={setFields} />
+      }
+
       {gatekeeperOptionClick == 'erc721' &&
         <ERC721gatekeeper setGatekeeperInnerProgress={setGatekeeperInnerProgress} fields={fields} setFields={setFields} />
       }
@@ -899,30 +919,25 @@ function ERC721gatekeeper({ setGatekeeperInnerProgress, fields, setFields }) {
 
 
   async function handleSave() {
-    console.log('here')
     // do some more error checking. 
     // check if the contract address is valid
     var valid = await validAddress(gatekeeperAddress)
     if (!valid) {
       //set an error
       setAddressError(true)
-      console.log('address error')
       return
     }
     else {
       if (gatekeeperSymbol == "") {
         // set an error
         setSymbolError(true)
-        console.log('symbol error')
         return
       }
-      console.log('continuing')
       const gatekeeperObj = {
         gatekeeperType: 'erc721',
         gatekeeperAddress: gatekeeperAddress,
         gatekeeperSymbol: gatekeeperSymbol,
       }
-      console.log('here i am')
 
       // add it if there are no rules
       if (fields.gatekeeper.rules.length == 0) {
@@ -1016,29 +1031,212 @@ function ERC721gatekeeper({ setGatekeeperInnerProgress, fields, setFields }) {
 
 }
 
-function FinalizeTab({ setProgress, fields, setFields, lockedAdminAddresses, setTabHeader }) {
+function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }) {
+  const [guildId, setGuildId] = useState('');
+  const [guildName, setGuildName] = useState('');
+  const [discordRuleState, setDiscordRuleState] = useState('')
+  const [guildRoles, setGuildRoles] = useState('');
+  const [popoutFired, setPopoutFired] = useState(false);
+  const [isBotVerified, setIsBotVerified] = useState(false);
+  const [botFailureMessage, setBotFailureMessage] = useState('');
+  const walletAddress = useSelector(selectConnectedAddress)
+
+  const ens = fields.ens;
+
+  // on tab load, check if we already have a guild registered for this ens.
+  // if we do, set the guildId and allow them to update if neccessary
+  // otherwise, allow them to add one
+  useEffect(() => {
+    (async () => {
+      await fetchGuildInfo();
+    })();
+  }, [])
+
+
+  const fetchGuildInfo = async () => {
+    const resp = await axios.post('/discord/getGuildProperties', { ens: ens });
+    if (resp.data === 'guild does not exist') {
+      setDiscordRuleState('no rule')
+      return
+    }
+    else {
+      setDiscordRuleState('rule exists')
+      console.log(resp)
+      setGuildId(resp.data.id)
+      setGuildName(resp.data.name);
+      setGuildRoles(resp.data.roles);
+      return
+    }
+  }
+
+
+
+  const addBot = async () => {
+    setPopoutFired(true)
+    setBotFailureMessage('')
+    //pass guildId as autofill
+    let popout;
+    if (process.env.NODE_ENV === 'development') {
+      popout = window.open(`https://discord.com/api/oauth2/authorize?client_id=895719351406190662&permissions=0&redirect_uri=https%3A%2F%2Flocalhost%3A3000%2Foauth%2Fdiscord&response_type=code&scope=identify%20bot%20applications.commands&state=${walletAddress},bot,${ens}`, 'popUpWindow', 'height=700,width=600,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes')
+
+    }
+
+    else if (process.env.NODE_ENV === 'production') {
+      popout = window.open(`https://discord.com/api/oauth2/authorize?client_id=895719351406190662&permissions=0&redirect_uri=https%3A%2F%2Flocalhost%3A3000%2Foauth%2Fdiscord&response_type=code&scope=identify%20bot%20applications.commands&state=${walletAddress},bot,${ens}`, 'popUpWindow', 'height=700,width=600,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes')
+    }
+
+    var pollTimer = window.setInterval(async function () {
+      if (popout.closed !== false) {
+        window.clearInterval(pollTimer);
+        setPopoutFired(false);
+        await verifyBot();
+      }
+    }, 1000);
+
+  }
+
+
+  // if there was a problem adding, let the user know and reset the whole process
+  // otherwise, set a success message
+
+  const verifyBot = async () => {
+    const resp = await axios.post('/discord/getGuildProperties', { ens: ens })
+    switch (resp.data) {
+      case 'guild does not exist':
+        setIsBotVerified(false);
+        setBotFailureMessage('bot was not added')
+        return;
+      default:
+        setIsBotVerified(true);
+        setDiscordRuleState('rule exists')
+        setGuildId(resp.data.id)
+        setGuildName(resp.data.name);
+        setGuildRoles(resp.data.roles);
+        return
+    }
+
+  }
+  const calculateColor = (decimal) => {
+    if (decimal == 0) {
+      return ['rgba(211, 211, 211, 1)', 'rgba(18, 52, 86, 0.3)']
+    }
+    return ['rgb(' + ((decimal >> 16) & 0xff) + ',' + ((decimal >> 8) & 0xff) + ',' + (decimal & 0xff) + ')',
+    'rgba(' + ((decimal >> 16) & 0xff) + ',' + ((decimal >> 8) & 0xff) + ',' + (decimal & 0xff) + ',0.3)']
+  }
+
+
+  const addDiscordRule = () => {
+    const gatekeeperObj = {
+      gatekeeperType: 'discord',
+      serverName: guildName,
+      guildId: guildId
+    }
+
+
+    let gatekeeperCopy = JSON.parse(JSON.stringify(fields.gatekeeper.rules));
+
+
+    // add it if there are no rules
+    if (fields.gatekeeper.rules.length == 0) {
+      gatekeeperCopy.push(gatekeeperObj)
+      setFields({ gatekeeper: { rules: gatekeeperCopy } })
+    }
+    // check if discord is already setup. If so, just replace the entry in rules
+    else {
+      for (var i in fields.gatekeeper.rules) {
+
+        if (fields.gatekeeper.rules[i].gatekeeperType === 'discord') {
+          //gatekeeperCopy.splice(i, 1);
+          gatekeeperCopy[i] = gatekeeperObj
+          break;
+        }
+
+        // reached the end of our loop
+        if (i == fields.gatekeeper.rules.length - 1 && fields.gatekeeper.rules[i].gatekeeperType !== 'discord') {
+          gatekeeperCopy.push(gatekeeperObj)
+        }
+
+      }
+      setFields({ gatekeeper: { rules: gatekeeperCopy } })
+    }
+    setGatekeeperInnerProgress(0);
+  }
+
+
+
+
+  return (
+
+    <>
+      {discordRuleState === 'no rule' &&
+        <>
+          <div className="discord-add-bot-container">
+            <button className={'discord-add-bot ' + (popoutFired ? 'loading' : '')} onClick={addBot}>{popoutFired ? 'check popup window' : 'add bot'}</button>
+          </div>
+
+          {(!isBotVerified && botFailureMessage != '') &&
+            <div style={{ width: '100%' }} className="tab-message error">
+              <p>{botFailureMessage}</p>
+            </div>
+          }
+          <div className="gk-detail-buttons" style={{ width: '100%' }}>
+            <button className="gk-rule-cancel" style={{ width: '100%' }} onClick={() => { setGatekeeperInnerProgress(0) }}>cancel</button>
+          </div>
+        </>
+      }
+      {(guildRoles != '' && guildName != null) &&
+        <>
+
+          <div className="discord-guild-info">
+            <div className="discord-guild-name">
+              <p className="discord-name-header">server name</p>
+              <p>{guildName}</p>
+              <button className={'discord-add-bot ' + (popoutFired ? 'loading' : '')} onClick={addBot}>{popoutFired ? 'check popup window' : 'update server link'}</button>
+            </div>
+            <div className="discord-guild-roles">
+              <p className="discord-roles-header">server roles</p>
+              {guildRoles.map((val) => {
+                return <span style={{ backgroundColor: calculateColor(val.color)[1], color: calculateColor(val.color)[0] }}><p>{val.name}</p></span>
+              })}
+            </div>
+          </div>
+
+          <div className="settings-next-previous-ctr">
+            <button className="next-btn enable" disabled={!guildName} onClick={addDiscordRule}><i className="fas fa-long-arrow-alt-right"></i></button>
+          </div>
+        </>
+      }
+
+
+    </>
+  )
+
+
+}
+
+
+
+export function FinalizeTab({ setProgress, fields, setFields, lockedAdminAddresses, setTabHeader }) {
 
   const walletAddress = useSelector(selectConnectedAddress);
   const isConnected = useSelector(selectConnectedBool)
   const existingGatekeeperRules = useSelector(selectDashboardRules);
   const [transactionError, setTransactionError] = useState('');
-  const [transactionSuccess, setTransactionSuccess] = useState('');
   const { ens } = useParams();
   const history = useHistory();
-  
+
 
   const dispatch = useDispatch();
 
-  useEffect(()=>{
+  useEffect(() => {
     setTabHeader('Finalize')
-  },[])
-
+  }, [])
 
   const postData = async (submission) => {
     var out = await axios.post('/updateSettings', submission);
   }
 
-  const handleClose = () =>{
+  const handleClose = () => {
     history.push('/' + fields.ens + '/dashboard')
   }
 
@@ -1070,42 +1268,50 @@ function FinalizeTab({ setProgress, fields, setFields, lockedAdminAddresses, set
     setFields({ addresses: finalSubmission.addresses })
 
     // we only want to send the new rules to the db
-    finalSubmission.gatekeeper.rules = fields.gatekeeper.rules.filter(({ gatekeeperAddress: x }) => !Object.values(existingGatekeeperRules).some(({ gatekeeperAddress: y }) => y === x))
+
+
+    let ruleDuplicates = fields.gatekeeper.rules.filter(({ gatekeeperAddress: gk_addy1, guildId: gid1 }) => !Object.values(existingGatekeeperRules).some(({ gatekeeperAddress: gk_addy2, guildId: gid2 }) => (gk_addy2 === gk_addy1 && gid1 === gid2)))
+    //let discordDuplicates = fields.gatekeeper.rules.filter(({ guildId: gid1 }) => !Object.values(existingGatekeeperRules).some(({ guildId: gid2 }) => gid1 === gid2))
+
+
+    console.log(ruleDuplicates)
+
+    finalSubmission.gatekeeper.rules = ruleDuplicates
+
     var compressedSubmission = JSON.parse(JSON.stringify(finalSubmission))
     compressedSubmission.logo = compressedSubmission.logo.substring(0, 25) + '...';
 
 
 
-    
+
 
     var result = await signTransaction(compressedSubmission, whitelist);
     switch (result) {
       case 0:
-        setTransactionError('user cancelled signature request');
-        setTransactionSuccess('')
+        showNotification('error', 'error', 'user cancelled signature request');
+
         break;
       case 1:
-        setTransactionError('metamask error');
-        setTransactionSuccess('')
+        showNotification('error', 'error', 'metamask error');
         break;
       case 2:
-        setTransactionError('signature request rejected. Wallet is not an organization admin');
-        setTransactionSuccess('')
+        showNotification('error', 'error', 'signature request rejected. Wallet is not an organization admin');
+
         break;
       case 3:
-        setTransactionSuccess('success');
-        setTransactionError('')
         await postData(finalSubmission);
         if (ens === 'new') dispatch(addOrganization({ name: fields.name, members: 0, logo: fields.logo, verified: false, ens: fields.ens }));
         else if (ens !== 'new') {
           dispatch(updateDashboardInfo({ name: fields.name, website: fields.website, discord: fields.discord, addresses: finalSubmission.addresses }))
           dispatch(populateDashboardRules(fields.ens))
         }
+        showNotification('saved successfully', 'success', 'your changes were successfully saved')
         handleClose();
         break;
       case 4:
-        setTransactionError('please connect your wallet to write data');
-        setTransactionSuccess('')
+        showNotification('error', 'error', 'please connect your wallet to write data');
+
+        
 
     }
   }
@@ -1113,22 +1319,15 @@ function FinalizeTab({ setProgress, fields, setFields, lockedAdminAddresses, set
   return (
 
     <div className="org-finalize-tab">
-      <p>All good! Hit save to finalize your dashboard.</p>
-      {transactionError != '' &&
-        <div className="tab-message error" style={{ textAlign: 'center' }}>
-          <p>{transactionError}</p>
-        </div>
-      }
-      {transactionSuccess != '' &&
-        <div className="tab-message success" style={{ textAlign: 'center' }}>
-          <p>{transactionSuccess}</p>
-        </div>
-      }
-
+      <div>
+        <h1>🎉🎉🎉</h1>
+        <h2>That was easy. Click <b>finish</b> to save your changes.</h2>
+      </div>
       <div className="settings-next-previous-ctr">
-        <button className={"previous-btn"} onClick={() => { setProgress(3) }}><i class="fas fa-long-arrow-alt-left"></i></button>
-        <button className={"save-btn"} onClick={handleSave}>save</button>
+        <button className={"previous-btn"} onClick={() => {setProgress(3)}}><i class="fas fa-long-arrow-alt-left"></i></button>
+        <button className={"finish-btn enable"} onClick={handleSave}>Finish</button>
       </div>
     </div>
   )
 }
+

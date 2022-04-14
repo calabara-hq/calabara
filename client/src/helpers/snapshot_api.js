@@ -1,16 +1,20 @@
 import React from 'react'
+import fetch from 'cross-fetch'
 import {
   ApolloClient,
   InMemoryCache,
   ApolloProvider,
   useQuery,
-  gql
+  gql,
+  createHttpLink
 } from "@apollo/client";
 
 
-
 const client = new ApolloClient({
-  uri: 'https://hub.snapshot.org/graphql',
+  link: createHttpLink({
+    uri: 'https://hub.snapshot.org/graphql',
+    fetch,
+  }),
   cache: new InMemoryCache()
 });
 

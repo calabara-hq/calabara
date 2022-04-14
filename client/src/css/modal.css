@@ -111,6 +111,37 @@
   border-radius: 10px;
 }
 
+
+.role-select-container{
+  position: relative;
+  background: black;
+  width: 80%;
+  min-height: 50%;
+  border-radius: 10px;
+}
+
+.role-select-save-ctr{
+  margin-top: auto;
+  align-self: flex-end;
+  justify-self: flex-end;
+}
+
+.role-select-container > div{
+  width: 95%;
+  height: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+.role-select-container > div > .role-dropdown{
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+
 .calendarModalContainer{
   top: 10%;
   position: relative;
@@ -124,6 +155,14 @@
   .calendarModalContainer{
     width: 40%;
   }
+  .role-select-container{
+    width: 40%;
+  }
+}
+
+.custom-role-color{
+  background-color: red;
+  color: red;
 }
 
 .view-calendar-event-container{

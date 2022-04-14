@@ -12,19 +12,18 @@
   }
   
   .gk-rule{
-    display: flex;
-    flex-direction: row;
-    align-items: center; 
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
     margin: 10px;
     gap: 20px;
     flex-wrap: wrap;
+    height: 50px;
   }
   
   .gk-rule > p{
     margin: 0;
-    flex: 0.2;
-    color: lightgrey;
+    color: #d3d3d3;
+    align-self: center;
   }
   
   .gk-rule > span{
@@ -54,49 +53,49 @@
     transform: rotate(630deg);
   }
   
-  .gk-rule-input{
-      display: flex;
-      justify-content: center;
-      align-items: center;
-  }
 
-  .gk-rule-input > input{
+  .gk-rule > input{
     animation: fadein 1s forwards;
     width: 120px;
+    height: 50px;
+    margin-left: auto;
+    align-self: center;
   }
   
-  
-  .rule-details{
-    animation: fadein 1s forwards;
-    display: flex;
-    flex-direction: row;
-    margin-left: 8px;
-    text-align: center;
-    width: auto;
-    border-radius: 4px;
-    padding: 5px 16px;
-    justify-content: center;
-    align-items: center;
-  
-    background-color: #373e47;
-    border-radius: 6px;
-    border: none;
+  .gk-rule > .select-roles{
+    display: block;
+    width: 120px;
+    padding: 10px 15px;
+    margin-left: auto;
+    height: 50px;
+    align-self: center;
+    cursor: pointer;
+    border-radius: 30px;
+    background-color: #0e0e30;
+    color: #008cff;
+    border: 2px solid #008cff;
+  }
+
+  .gk-rule > .select-roles:hover{
+    background-color: #008cff;
+    color: white;
+  }
+
+  .gk-rule > .gatekeeper-toggle{
+    margin-right: auto;
   }
   
-  .rule-details p{
-    margin: 0 !important;
-    color: #adbac7;
+  .gk-rule > span{
+    margin-left: auto;
+    align-self: center;
+    color: #d3d3d3;
   }
-  
-  .detail-contract{
-    flex: 1;
-    text-align: center;
-  }
+
+
   
   
   .gatekeeper-toggle{
     margin-left: auto;
-    margin-right: 20px;
     align-self: center;
   }
   
@@ -117,3 +116,29 @@
     -moz-appearance: textfield;
   }
 
+  .gk-rule > p > .gatekeeper-symbol{
+   cursor: pointer;
+  }
+  .gk-rule > p > .gatekeeper-symbol > i{
+    color: grey;
+  }
+  
+  .gk-rule > p > span{
+    padding: 3px 3px;
+    border-radius: 5px;
+  }
+  
+  .gk-rule > p > span.erc721{
+    background-color: rgba(155, 89, 182, 0.3);
+    color: rgb(155, 89, 182);
+  }
+  
+  .gk-rule > p > span.discord{
+    background-color: rgba(26, 188, 156, 0.3);
+    color: rgb(26, 188, 156);
+  }
+  
+  .gk-rule > p > span.erc20{
+    background: rgb(44, 192, 255, 0.3);
+    color: rgb(44, 192, 255);
+  }

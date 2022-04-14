@@ -1,0 +1,98 @@
+@keyframes loading {
+    to {transform: rotate(360deg);}
+  }
+   
+
+  .discord-add-bot-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    grid-gap: 20px;
+    position: relative;    
+  }
+
+
+  .loading:after {
+    content: '';
+    box-sizing: border-box;
+    position: absolute;
+    top: 50%;
+    width: 20px;
+    height: 20px;
+    margin-top: -10px;
+    margin-left: 10px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    border-top-color: #07d;
+    border-bottom-color: #07d;
+    animation: loading .8s ease infinite;
+  }
+
+ .discord-add-bot{
+      position: relative;
+      padding: 5px 40px;
+      border: none;
+      border-radius: 8px;
+      color: rgb(169, 152, 255);
+      background-color: rgba(169, 152, 255, 0.3);
+}
+
+.discord-add-bot[disabled]{
+  background-color: lightgrey;
+  color: grey;
+}
+
+.discord-roles-header{
+  font-weight: bold;
+}
+
+.discord-name-header{
+  font-weight: bold;
+}
+
+.discord-guild-info{
+  display: flex;
+  flex-direction: column;
+  grid-gap: 40px;
+  width: 95%;
+  margin: 0 auto;
+}
+
+.discord-guild-info > .discord-guild-name{
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+.discord-guild-info > .discord-guild-name > *{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.discord-guild-info > .discord-guild-roles{
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-gap: 10px;
+}
+
+.discord-guild-info > .discord-guild-roles > *{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.discord-guild-info > .discord-guild-roles > span{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3px 3px;
+  border-radius: 10px;
+}
+
+.discord-guild-info > .discord-guild-roles > span > p{
+  margin: 0 !important;
+}

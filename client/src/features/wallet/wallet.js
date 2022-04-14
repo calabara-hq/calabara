@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import Web3 from "web3";
 import Onboard from 'bnc-onboard'
 import { showNotification } from '../notifications/notifications';
-import { useParams, useHistory } from 'react-router-dom'
 import Identicon from '../identicon/identicon';
 import store from '../../app/store.js'
 
@@ -12,8 +11,12 @@ import {
   setDisconnected,
   selectConnectedBool,
   selectConnectedAddress,
+  setAccountChange,
+  selectAccountChange,
+  manageAccountChange,
 } from './wallet-reducer';
 
+import { registerUser } from '../user/user-reducer';
 
 
 
@@ -40,14 +43,18 @@ const onboard = Onboard({
     },
 
     network: network => {
-      console.log(network)
       if (network && network != 1) {
         showNotification("different network", 'hint', 'please switch your network to ETH mainnet')
       }
     },
 
+    address: address => {
+      store.dispatch(manageAccountChange(address))
+    }
+
   }
 })
+
 
 
 // fetch wallet address
@@ -62,10 +69,6 @@ async function getAddress() {
 
 async function validAddress(address) {
   // if it's ens, convert it
-  console.log(address)
-  if (address.endsWith('.eth')) {
-    address = await web3Infura.eth.ens.getAddress(address)
-  }
   try {
     var valid = web3Infura.utils.toChecksumAddress(address)
     return valid
@@ -175,7 +178,7 @@ async function erc721GetSymbol(address) {
 
 // check balance of token given a wallet address and a contract address
 async function checkERC20Balance(walletAddress, contractAddress, decimal) {
-  const tokenContract = await new web3Infura.eth.Contract(erc20abi, contractAddress);
+  const tokenContract = new web3Infura.eth.Contract(erc20abi, contractAddress);
   const balance = await tokenContract.methods.balanceOf(walletAddress).call();
   const adjusted = balance / 10 ** decimal
   return adjusted;
@@ -184,7 +187,7 @@ async function checkERC20Balance(walletAddress, contractAddress, decimal) {
 
 
 async function checkERC721Balance(walletAddress, contractAddress) {
-  const tokenContract = await new web3Infura.eth.Contract(erc721abi, contractAddress);
+  const tokenContract = new web3Infura.eth.Contract(erc721abi, contractAddress);
   const balance = await tokenContract.methods.balanceOf(walletAddress).call();
   return balance;
 
@@ -263,7 +266,7 @@ async function signTransaction(message, whitelist) {
   }
 }
 
-const auxillaryConnect = async() => {
+const auxillaryConnect = async () => {
   const res = await onboard.walletSelect();
   if (!res) {
     return;
@@ -279,7 +282,7 @@ const auxillaryConnect = async() => {
 function Wallet() {
   const isConnected = useSelector(selectConnectedBool);
   const walletAddress = useSelector(selectConnectedAddress);
-  const address = useSelector(selectConnectedAddress);
+  const account_change = useSelector(selectAccountChange);
   const dispatch = useDispatch();
   const [connectBtnTxt, setConnectBtnTxt] = useState('Connect wallet');
   const [isMoreExpanded, setIsMoreExpanded] = useState(false);
@@ -305,12 +308,12 @@ function Wallet() {
     (async () => {
       const selected = localStorage.getItem('selectedWallet');
       if (selected != '' && selected != undefined && selected != 'undefined') {
-        console.log('here')
         await onboard.walletSelect(selected);
         await onboard.walletCheck();
         const state = onboard.getState();
         const checkSumAddr = web3Infura.utils.toChecksumAddress(state.address)
         dispatch(setConnected(checkSumAddr))
+        dispatch(registerUser(checkSumAddr))
       }
     })();
   }, [])
@@ -323,6 +326,21 @@ function Wallet() {
   }, [isConnected])
 
 
+
+  useEffect(async () => {
+    console.log(account_change)
+    console.log(isConnected)
+    if (account_change === true && !isConnected) {
+      const state = onboard.getState();
+      const checkSumAddr = web3Infura.utils.toChecksumAddress(state.address)
+      console.log(checkSumAddr)
+      dispatch(setConnected(checkSumAddr))
+      dispatch(registerUser(checkSumAddr))
+      dispatch(setAccountChange(false))
+
+    }
+  }, [account_change])
+
   const handleConnectClick = async () => {
     if (!isConnected) {
       const res = await onboard.walletSelect();
@@ -331,6 +349,7 @@ function Wallet() {
         const state = onboard.getState();
         const checkSumAddr = web3Infura.utils.toChecksumAddress(state.address)
         dispatch(setConnected(checkSumAddr))
+        dispatch(registerUser(checkSumAddr))
       }
     }
     else if (isConnected) {

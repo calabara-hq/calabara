@@ -41,15 +41,12 @@ export const selectDashboardInfo = state => state.dashboardInfo.info;
 export const populateDashboardInfo = (ens) => async (dispatch, getState, axios) => {
 
   const res = await axios.get('/dashboardInfo/' + ens);
-  console.log(res)
   dispatch(populateInfo(res.data.orgInfo))
 }
 
 export const updateDashboardInfo = (params) => async (dispatch, getState, axios) => {
-  console.log('here!!!')
 
   const {dashboardInfo} = getState();
-  console.log(params)
 
   let infoCopy = JSON.parse(JSON.stringify(dashboardInfo.info));
 

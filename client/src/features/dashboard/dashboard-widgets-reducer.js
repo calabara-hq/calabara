@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { testDiscordRoles } from '../gatekeeper/gatekeeper';
 
 
 // installed widgets --> all widgets this org has installed on their dashboard
@@ -43,20 +44,17 @@ export const { setInstalledWidgets, setInstallableWidgets, setVisibleWidgets, se
 export const populateInitialWidgets = (ens) => async (dispatch, getState, axios) => {
 
   var installed = await axios.get('/dashboardWidgets/' + ens)
-  // set initial notification status to 0
 
-  installed.data.widgets.map(el => el['notify'] = 0)
   dispatch(setInstalledWidgets(installed.data.widgets))
 
   var installable = await axios.get('/availableWidgets/' + ens)
-  installable.data.items.map(el => el['notify'] = 0)
   dispatch(setInstallableWidgets(installable.data.items))
 
 }
 
 export const populateVisibleWidgets = () => async (dispatch, getState) => {
 
-  const { dashboardWidgets, gatekeeperRules } = getState();
+  let { dashboardWidgets, gatekeeperRules } = getState();
 
   // rule results stores {rule_id: balance}
   // widget gatekeeper_rules store the contract definition and the thresholds. 
@@ -76,15 +74,30 @@ export const populateVisibleWidgets = () => async (dispatch, getState) => {
   // check the gatekeeper configured for each widget
   dashboardWidgets.installedWidgets.map(function (widget) {
 
+
     if (Object.keys(widget.gatekeeper_rules).length == 0) {
       // no rules set. add all to filtered widgets
       filteredWidgets.push(widget);
     }
     else {
       for (const [key, value] of Object.entries(widget.gatekeeper_rules)) {
-        if (gatekeeperRules.ruleResults[key] >= value) {
-          filteredWidgets.push(widget)
-          break;
+        // if value is an object, it's a discord rule
+        if (typeof value === 'object') {
+          // map over role values and check if any of them match the rule_id's that are in gatekeeper ruleResults
+          // only run comparisons once we have values for ruleResults
+            const roleTestResult = testDiscordRoles(value, gatekeeperRules.ruleResults[key])
+            if (roleTestResult === 'pass') {
+              filteredWidgets.push(widget);
+              break;
+            }
+        }
+        
+        // otherwise, it's an erc20/erc721 rule
+        else {
+          if (gatekeeperRules.ruleResults[key] >= value) {
+            filteredWidgets.push(widget)
+            break;
+          }
         }
       }
     }
