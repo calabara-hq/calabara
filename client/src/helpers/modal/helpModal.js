@@ -201,7 +201,10 @@ function AddWikiGrouping({ handleClose, groupID }) {
   const [tabHeader, setTabHeader] = useState('')
 
   useEffect(() => {
-    if (progress == 0) { setTabHeader('New Folder') }
+    if (progress == 0) { 
+      if(!groupID) setTabHeader('New Folder')
+      else setTabHeader('Edit Folder')
+    }
     else if (progress == 1) { setTabHeader('Gatekeeper') }
   }, [progress])
 
