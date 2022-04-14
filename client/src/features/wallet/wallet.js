@@ -56,7 +56,6 @@ const onboard = Onboard({
 })
 
 
-
 // fetch wallet address
 async function getAddress() {
   try {
@@ -69,6 +68,9 @@ async function getAddress() {
 
 async function validAddress(address) {
   // if it's ens, convert it
+  if (address.endsWith('.eth')) {
+    address = await web3Infura.eth.ens.getAddress(address)
+  }
   try {
     var valid = web3Infura.utils.toChecksumAddress(address)
     return valid

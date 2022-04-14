@@ -10,7 +10,6 @@ import ReactEditor from '../wiki/wiki-edit'
 import Settings from '../settings/settings'
 import SettingsManager from '../settings/settings2'
 import ManageWidgets from '../manage-widgets/manage-widgets'
-
 export default function Container() {
 
 
@@ -21,6 +20,7 @@ export default function Container() {
       <Route path="/:ens/dashboard">
         <Dashboard />
       </Route>
+
 
       <Route path="/explore">
         <Cards />

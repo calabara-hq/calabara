@@ -2,7 +2,7 @@
 .settings-manager{
     padding-bottom: 3em;
     display: grid;
-    grid-template-columns: 70% 30%;
+    grid-template-columns: repeat(6, 1fr);
 }
 
 @media screen and (max-width: 1000px){
@@ -12,15 +12,14 @@
     justify-content: center;
     align-items: center;
 }
-
-  .save-settings-container{
-    position: relative;
-  }
-
-  .settings-components{
-    grid-column-start: 1;
-  }
-
+.settings-components{
+  margin: 0 auto;
+  width: 90% !important;
+}
+.save-settings-container{
+  width: 90% !important;
+  margin-bottom: 1em !important;
+}
   
 }
 
@@ -29,18 +28,44 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 50vw;
     height: auto;
-    margin: 0 auto;
-    grid-column-start: 1;
+    width: 50vw;
+    margin-left: auto;
+    grid-column: 1 / 5;
+
 }
+
+.save-settings-container{
+  grid-column: 5 / 7;
+  background-color: #22272e;
+  height: fit-content;
+  width: 20vw;
+  margin: 0 auto;
+  padding: 20px 20px;
+  border-radius: 4px;
+  border: none;
+  color: white;
+  box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+}
+
+.save-settings-container > button{
+  background-color: rgb(88, 101, 242);
+  border: none;
+  border-radius: 4px;
+  padding: 5px 20px;
+  width: 100%;
+
+}
+
+
+
 
 .settings-components > .component{
     background-color: #22272e;
     height: auto;
     width: 100%;
     min-height: 30em;
-    margin-top: 3em;
+    margin-bottom: 3em;
     padding: 20px 20px;
     border-radius: 4px;
     border: none;
@@ -77,6 +102,22 @@ input.error{
     display: flex;
   }
     
+/***** begin ens tab *****/
+.org-ens-tab{
+    margin-top: 5em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.org-ens-tab > input{
+  margin-top: 3em;
+}
+/***** end ens tab *****/
+
+
+
 
 /***** begin profile tab *****/
 .org-profile-tab{
@@ -494,32 +535,5 @@ input.error{
   
   /***** end gatekeeper tab *****/
 
-  /***** begin save component ****/
 
-  .save-settings-container{
-    position: fixed;
-    grid-column-start: 2;
-    background-color: #22272e;
-    height: fit-content;
-    right: 10%;
-    width: 15%;
-    margin-top: 3em;
-    margin-left: auto;
-    margin-right: auto;
-    padding: 20px 20px;
-    border-radius: 4px;
-    border: none;
-    color: white;
-    box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
-  }
 
-  .save-settings-container > button{
-    background-color: rgb(88, 101, 242);
-    border: none;
-    border-radius: 4px;
-    padding: 5px 20px;
-    width: 100%;
-
-  }
-
-  /***** end save component *****/

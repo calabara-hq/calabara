@@ -91,10 +91,9 @@ export default function Dashboard() {
     }
   }
 
-  useEffect(async () => {
+  useEffect(() => {
     // check that the info state is not stale (pointing to another dashboard)
       batchFetchDashboardData(ens, dispatch);
-    //dispatch(populateInitialWidgets(ens))
 
   }, [])
 

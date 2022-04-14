@@ -90,7 +90,9 @@ export default function SettingsManager() {
         <div className="settings-manager">
             {fieldsReady &&
                 <>
-                    <SaveComponent standardProps={standardProps} infoErrorController={infoErrorController} adminErrorController={adminErrorController} />
+                    {fields.ens != '' &&
+                        <SaveComponent standardProps={standardProps} infoErrorController={infoErrorController} adminErrorController={adminErrorController} />
+                    }
                     <SettingsComponentSelector standardProps={standardProps} infoErrorController={infoErrorController} adminErrorController={adminErrorController} />
                 </>
             }
@@ -100,26 +102,135 @@ export default function SettingsManager() {
 
 
 function SettingsComponentSelector({ standardProps, infoErrorController, adminErrorController }) {
+    const { fields, setFields } = standardProps
     const [hasImageChanged, setHasImageChanged] = useState(false);
+    const { ens } = useParams();
 
 
     return (
         <div className="settings-components">
-            <div className="component">
-                <p className="component-header">Organization Profile</p>
-                <OrganizationInfoComponent standardProps={standardProps} infoErrorController={infoErrorController} hasImageChanged={hasImageChanged} setHasImageChanged={setHasImageChanged} />
+            {(ens === 'new' && !fields.ens) &&
+                <div className="component">
+                    <p className="component-header">Organization ENS</p>
+                    <OrganizationENSComponent standardProps={standardProps} infoErrorController={infoErrorController} hasImageChanged={hasImageChanged} setHasImageChanged={setHasImageChanged} />
+                </div>
+            }
+            {fields.ens &&
+                <>
+                    <div className="component">
+                        <p className="component-header">Organization Profile</p>
+                        <OrganizationInfoComponent standardProps={standardProps} infoErrorController={infoErrorController} hasImageChanged={hasImageChanged} setHasImageChanged={setHasImageChanged} />
+                    </div>
+                    <div className="component">
+                        <p className="component-header">Organization Admins</p>
+                        <OrganizationAdminsComponent adminErrorController={adminErrorController} />
+                    </div>
+                    <div className="component">
+                        <p className="component-header">Gatekeeper Rules</p>
+                        <OrganizationGatekeeperComponent standardProps={standardProps} />
+                    </div>
+                </>
+            }
+        </div>
+    )
+}
+
+function OrganizationENSComponent({ standardProps }) {
+    const { fields, setFields } = standardProps
+    const [ens, setEns] = useState("");
+    const [validEns, setValidEns] = useState(false);
+    const [resolvedAddress, setResolvedAddress] = useState("");
+    const [errorMsg, setErrorMsg] = useState({ error: false, msg: "" });
+    const walletAddress = useSelector(selectConnectedAddress);
+    const isConnected = useSelector(selectConnectedAddress);
+    const history = useHistory();
+
+    useEffect(() => {
+
+        (async () => {
+
+            // simple check to make sure we don't slow the program down with too many validAddress calls
+            // clear the error msg
+            setErrorMsg({ error: false, msg: "" });
+            if (ens.endsWith('.eth')) {
+                console.log(ens)
+                var valid = await validAddress(ens)
+                console.log(valid)
+                if (valid == false) {
+                    setValidEns(false);
+                    setResolvedAddress("")
+                }
+                else {
+                    // check if this ens already exists in the system
+                    const doesExist = await axios.get('/doesEnsExist/' + ens)
+                    if (doesExist.data) {
+                        // already exists. set error msg
+                        setErrorMsg({ error: true, msg: "A dashboard with this ens already exists" })
+                    }
+                    else {
+                        //doesn't exist. good to go
+                        setValidEns(true)
+                        setResolvedAddress(valid.substring(0, 6) + '...' + valid.substring(35, 40))
+                    }
+
+                }
+            }
+            else {
+                setValidEns(false);
+                setResolvedAddress("")
+            }
+        })();
+
+
+    }, [ens])
+
+
+
+    const updateInput = (e) => {
+        setEns(e.target.value)
+    }
+
+
+    const handleNext = async () => {
+        // check for beta whitelist
+
+        console.log(walletAddress)
+        const wl_res = await axios.post('/valid_wl', { address: walletAddress })
+
+        if (wl_res.data == false) {
+            setResolvedAddress('')
+            setErrorMsg({ error: true, msg: 'sorry, we are only allowing certain wallets to create dashboards at this time. Feel free to look around!' })
+        }
+        else {
+            setFields({ ens: ens });
+        }
+
+    }
+
+
+    return (
+        <div className="org-ens-tab">
+            <div className="tab-message neutral">
+                <p>Enter your organization's ENS to initialize a dashboard </p>
             </div>
-            <div className="component">
-                <p className="component-header">Organization Admins</p>
-                <OrganizationAdminsComponent adminErrorController={adminErrorController} />
-            </div>
-            <div className="component">
-                <p className="component-header">Gatekeeper Rules</p>
-                <OrganizationGatekeeperComponent standardProps={standardProps} />
+            <input style={{ width: "80%" }} disabled={!isConnected} className={`${errorMsg.error ? "error" : null}`} placeholder="e.g. calabara.eth" value={ens} onChange={updateInput} type="text" />
+            {resolvedAddress != "" &&
+                <div className="tab-message success">
+                    <p className="success"> {ens} resolves to {resolvedAddress} &#x1F517;</p>
+                </div>
+            }
+            {errorMsg.error &&
+                <div className="tab-message error" style={{ width: '80%' }}>
+                    <p>{errorMsg.msg}</p>
+                </div>
+            }
+            <div className="settings-next-previous-ctr" style={{ width: '80%', marginTop: '1em' }}>
+                <button disabled={!validEns} className={"next-btn " + (validEns ? 'enable' : null)} onClick={handleNext}> <i className="fas fa-long-arrow-alt-right"></i></button>
             </div>
         </div>
     )
 }
+
 function OrganizationInfoComponent({ standardProps, hasImageChanged, setHasImageChanged, infoErrorController }) {
     const { fields, setFields, lockedAdminAddresses } = standardProps
     const { nameErrorMsg, setNameErrorMsg, websiteErrorMsg, setWebsiteErrorMsg, infoRef } = infoErrorController;
