@@ -1210,7 +1210,7 @@ function SaveComponent({ standardProps, infoErrorController, adminErrorControlle
 
     return (
         <div className="save-settings-container">
-            <button onClick={saveSequence}>Save</button>
+            <button className="next-btn enable" onClick={saveSequence}>Save</button>
         </div>
     )
 }
