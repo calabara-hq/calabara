@@ -28,9 +28,14 @@ const processImages2 = async function () {
 */
 
 // used when settings has changed the dashboard logo
-const updateLogo = async function (dispatch, logoCache){
-    dispatch(updateDashboardInfo({logo: logoCache['dummy']}))
+
+const updateLogo = async function (dispatch, logoPath, logoBlob){
+      const imageURL = document.getElementById('info-logo')
+      imageURL.setAttribute('src', logoBlob);
+      dispatch(populateLogoCache({ [logoPath]: logoBlob }))
 }
+
+
 
 const processImages = async function (dispatch, logoCache) {
   const pullLogo = Comlink.wrap(worker);

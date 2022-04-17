@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, createRef } from 'react'
 import { useHistory, useParams } from "react-router-dom"
 import axios from 'axios'
 import '../../css/dashboard.css'
@@ -107,7 +107,7 @@ export default function Dashboard() {
     dispatch(populateVisibleWidgets())
   }, [gatekeeperRuleResults])
 
-  useEffect(() => {},[isAdmin])
+  useEffect(() => { }, [isAdmin])
 
   return (
     <div className="dashboard-wrapper">
@@ -140,8 +140,9 @@ function InfoCard({ info, ens, membership }) {
   const dispatch = useDispatch();
   const isMemberOf = dispatch(isMember(ens))
   const [isInfoLoaded, setIsInfoLoaded] = useState(false)
-  const [logo, setLogo] = useState('')
+  const imgRef = createRef(null);
 
+  const [logo, setLogo] = useState(info.logo)
 
   function handleJoinOrg() {
     dispatch(addMembership(walletAddress, ens))
@@ -165,19 +166,25 @@ function InfoCard({ info, ens, membership }) {
   useEffect(() => {
     if (info.ens == ens) {
       setIsInfoLoaded(true)
-      setLogo(logoCache[info.logo])
     }
-  },[info])
+  }, [info])
 
-/*
+
   useEffect(() => {
-      WebWorker.processImages(dispatch, logoCache);
-  },[isInfoLoaded])
-*/
+    WebWorker.processImages(dispatch, logoCache);
+  }, [isInfoLoaded])
 
-useEffect(()=>{},[info.logoPath])
 
-  
+  useEffect(() => {
+    if(info.logoBlob && imgRef.current != null){
+      console.log(imgRef)
+      WebWorker.updateLogo(dispatch, info.logo, info.logoBlob)
+    }
+  }, [info.logoBlob, imgRef])
+
+
+
+
   useEffect(() => {
     Object.keys(dashboardRules).map((key) => {
       if (dashboardRules[key].gatekeeperType === 'discord') {
@@ -228,7 +235,7 @@ useEffect(()=>{},[info.logoPath])
         <div className="info-content">
           {isInfoLoaded &&
             <>
-              <img id="info-logo" src={logo} />
+              <img id="info-logo" ref={imgRef} data-src={info.logo} />
               <h1> {info.name} </h1>
               {(!isMemberOf && isConnected) && <button name="join" onClick={handleJoinOrg} type="button" className="subscribe-btn">Join</button>}
               {(isMemberOf && isConnected) && <button name="leave" onClick={handleLeaveOrg} type="button" className="subscribe-btn">Leave</button>}
@@ -303,7 +310,7 @@ export function WidgetCard({ gatekeeperPass, orgInfo, widget, btnState, setBtnSt
   }
 
   async function handleDeleteWidget() {
-    var request = await axios.post('/removeWidget',{ ens: ens, name: name })
+    var request = await axios.post('/removeWidget', { ens: ens, name: name })
     dispatch(updateWidgets(0, widget));
 
   }

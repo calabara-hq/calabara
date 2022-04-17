@@ -282,11 +282,10 @@ function OrganizationInfoComponent({ standardProps, hasImageChanged, setHasImage
             const reader = new FileReader();
             reader.onload = (e) => {
                 console.log(e.target.result)
-                setFields({ logo: e.target.result, logoPath: logoPath})
                 const blob = b64toBlob(e.target.result);
                 const blobUrl = URL.createObjectURL(blob);
                 console.log(blobUrl)
-                //dispatch(populateLogoCache({ [fields.logo]: blobUrl }))
+                setFields({ logo: e.target.result, logoPath: fields.logo, logoBlob: blobUrl})
                 setLogo(blobUrl)
             }
 
@@ -1214,7 +1213,7 @@ function SaveComponent({ standardProps, infoErrorController, adminErrorControlle
                 await postData(finalSubmission);
                 if (ens === 'new') dispatch(addOrganization({ name: fields.name, members: 0, logo: fields.logo, verified: false, ens: fields.ens }));
                 else if (ens !== 'new') {
-                    dispatch(updateDashboardInfo({ name: fields.name, website: fields.website, logo: fields.logoPath, discord: fields.discord, addresses: finalSubmission.addresses }))
+                    dispatch(updateDashboardInfo({ name: fields.name, website: fields.website, logo: fields.logoPath, logoBlob: fields.logoBlob, discord: fields.discord, addresses: finalSubmission.addresses }))
                     dispatch(populateDashboardRules(fields.ens))
 
                 }
