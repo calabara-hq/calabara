@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { getProposals, didAddressVote, userParticipation } from '../../helpers/snapshot_api'
+import { createClient, getProposals, didAddressVote, userParticipation } from '../../helpers/snapshot_api'
 import '../../css/snapshot-analytics.css'
 import { useParams } from "react-router-dom"
 import { useSelector, useDispatch } from 'react-redux';
@@ -46,13 +46,14 @@ function Analytics() {
       if (dataPulled) {
         WebWorker.processImages();
         const isMemberOf = dispatch(isMember(ens))
-        const votes = await didAddressVote(ens, walletAddress);
+        const client = createClient();
+        const votes = await didAddressVote(client, ens, walletAddress);
         
         setMissedVotes({ votes: votes })
-        const percentage = await userParticipation(ens, walletAddress)
+        const percentage = await userParticipation(client, ens, walletAddress)
         setUserParticipationPercentage(percentage)
 
-        const past5 = await getProposals(ens, 'closed', 5)
+        const past5 = await getProposals(client, ens, 'closed', 5)
         setPastFiveProposals(past5)
       }
 

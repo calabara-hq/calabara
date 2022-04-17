@@ -4,6 +4,7 @@ import '../../css/org-cards.css'
 import * as WebWorker from '../../app/worker-client'
 import { showNotification } from '../notifications/notifications'
 import { fetchOrganizations, fetchUserMembership } from '../common/common'
+import plusSign from '../../img/plus-sign.svg'
 
 
 //redux
@@ -79,9 +80,8 @@ export default function Cards() {
   return (
     <>
       <div className="cards-flex">
-        <NewOrgButton isConnected={isConnected} />
         <section className="cards">
-
+          <NewOrgButton isConnected={isConnected} />
           {organizations.map((org, idx) => {
             return <DaoCard key={idx} org={org} membership={membership} />;
           })}
@@ -184,8 +184,13 @@ function NewOrgButton({ isConnected }) {
     }
   }
   return (
-    <div className="newOrgBox">
-      <button className="newOrgBtn" type="button" onClick={handleNewOrg}>🚀 New</button>
-    </div>
+
+
+    <article className="new-org" onClick={handleNewOrg}>
+      <img src={plusSign}/>
+      <h2>New</h2>
+    </article>
+
+
   )
 }

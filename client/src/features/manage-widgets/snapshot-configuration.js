@@ -1,4 +1,4 @@
-import { getSpace } from "../../helpers/snapshot_api";
+import {createClient, getSpace } from "../../helpers/snapshot_api";
 import React, {useState, useEffect} from 'react';
 import { useParams } from 'react-router-dom'
 
@@ -19,7 +19,8 @@ export default function SnapshotConfiguration({ setProgress, setTabHeader }) {
   
     useEffect(() => {
       (async () => {
-        const res = await getSpace(ens);
+        const client = createClient();
+        const res = await getSpace(client, ens);
         
         if (res != null) {
           setDoesSpaceExist(true)

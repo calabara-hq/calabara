@@ -1,4 +1,3 @@
-import React from 'react'
 import fetch from 'cross-fetch'
 import {
   ApolloClient,
@@ -9,7 +8,7 @@ import {
   createHttpLink
 } from "@apollo/client";
 
-
+/*
 const client = new ApolloClient({
   link: createHttpLink({
     uri: 'https://hub.snapshot.org/graphql',
@@ -17,11 +16,25 @@ const client = new ApolloClient({
   }),
   cache: new InMemoryCache()
 });
+*/
+
+const createClient = () => {
+  const http = createHttpLink({
+    uri: 'https://hub.snapshot.org/graphql',
+    fetch,
+  });
+
+  return new ApolloClient({
+    cache: new InMemoryCache(),
+    link: http,
+  })
+
+}
 
 
 
 
-const getProposals = async (ens, proposalState, count) =>{
+const getProposals = async (client, ens, proposalState, count) =>{
   const result = await client.query({
     variables: {ens: ens, proposalState: proposalState, count: count },
     query: gql`
@@ -50,7 +63,7 @@ const getProposals = async (ens, proposalState, count) =>{
 
 
 // get all proposals that a user voted on. we can use this to compare with active proposals
-const getAllVotes = async (ens, walletAddress) =>{
+const getAllVotes = async (client, ens, walletAddress) =>{
   const result = await client.query({
     variables: {ens: ens, walletAddress: walletAddress},
     query: gql`
@@ -77,7 +90,7 @@ const getAllVotes = async (ens, walletAddress) =>{
 
 
 // get the number of votes for a single proposal
-const getSingleProposalVotes = async (proposal_id) => {
+const getSingleProposalVotes = async (client, proposal_id) => {
   const result = await client.query({
     variables: {proposal_id: proposal_id},
     query: gql`
@@ -101,7 +114,7 @@ const getSingleProposalVotes = async (proposal_id) => {
   return result.data.votes
 }
 
-const getSpace = async (ens) => {
+const getSpace = async (client, ens) => {
   const result = await client.query({
     variables: {ens: ens},
     query: gql`
@@ -128,9 +141,9 @@ const getSpace = async (ens) => {
 // 3. remove voted on from active
 // 4. return remaining active proposals which a user hasn't voted on
 
-const didAddressVote = async(ens, walletAddress) =>{
-  var proposals = await getProposals(ens, 'active', 1000)
-  var votes = await getAllVotes(ens, walletAddress)
+const didAddressVote = async(client, ens, walletAddress) =>{
+  var proposals = await getProposals(client, ens, 'active', 1000)
+  var votes = await getAllVotes(client, ens, walletAddress)
   votes = votes.map(el => el.proposal.id)
 
   // map voted proposals to a 1D array
@@ -146,9 +159,9 @@ const didAddressVote = async(ens, walletAddress) =>{
 }
 
 // get all proposals. get all proposals this user voted on. participation = proposals/voted on
-const userParticipation = async(ens, walletAddress) =>{
-  var proposals = await getProposals(ens, 'all', 1000)
-  var votes = await getAllVotes(ens, walletAddress)
+const userParticipation = async(client, ens, walletAddress) =>{
+  var proposals = await getProposals(client, ens, 'all', 1000)
+  var votes = await getAllVotes(client, ens, walletAddress)
   votes = votes.map(el => el.proposal.id)
 
   const participation = (votes.length / proposals.length) * 100;
@@ -157,15 +170,15 @@ const userParticipation = async(ens, walletAddress) =>{
 }
 
 // get average org-wide voter turnout over the last 5 proposals
-const globalParticipation = async(ens) =>{
-  const space = await getSpace(ens)
+const globalParticipation = async(client, ens) =>{
+  const space = await getSpace(client, ens)
   
-  var proposals = await getProposals(ens, 'all', 5)
+  var proposals = await getProposals(client, ens, 'all', 5)
   var proposal_ids = proposals.map(el => el.id)
   var numVotes = []
   
   for(var id in proposal_ids){
-    const numVoters = await getSingleProposalVotes(proposal_ids[id])
+    const numVoters = await getSingleProposalVotes(client, proposal_ids[id])
     numVotes.push(numVoters.length)
   }
 
@@ -174,4 +187,4 @@ const globalParticipation = async(ens) =>{
 }
 
 
-export { getSpace, getProposals, didAddressVote, userParticipation, globalParticipation };
+export { createClient, getSpace, getProposals, didAddressVote, userParticipation, globalParticipation };

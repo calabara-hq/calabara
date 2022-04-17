@@ -377,12 +377,13 @@ function Wallet() {
   return (
     <div tabIndex="0" onBlur={handleBlur} onClick={handleConnectClick} className="walletBox">
       <div>
-        <p>{connectBtnTxt}</p>
         {isConnected &&
           <div className="walletAvatar">
             <Identicon address={walletAddress} />
           </div>
         }
+        <p className="addressText">{connectBtnTxt}</p>
+
       </div>
       {isMoreExpanded &&
         <div className="connectionInfo">

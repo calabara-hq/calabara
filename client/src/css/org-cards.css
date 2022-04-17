@@ -37,6 +37,38 @@
   100% {opacity: 1;}
 }
 
+.new-org{
+  opacity: 0;
+  animation: cardseq 1s forwards;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border-radius: 30px;
+  cursor: pointer;
+  background-color: #656a81;
+  flex-wrap: wrap;
+  color: #d2d2d2;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+
+}
+
+.new-org > img{
+  display: inline;
+  max-width: 10rem;
+  max-height: 10rem;
+  margin: 5%;
+}
+
+
+.new-org:hover{
+  background-color: #384aff;
+  color: white;
+  transition: background-color ease-in 0.3s;
+  transition: color ease-in 0.3s;
+}
+
+
 .dao-card{
   opacity: 0;
   animation: cardseq 1s forwards;
@@ -48,6 +80,8 @@
   cursor: pointer;
   background-color: #24262e;
   flex-wrap: wrap;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+
 }
 
 .dao-card:hover{
@@ -57,7 +91,6 @@
 .dao-card > img{
   display: none;
   margin: 5%;
-
 }
 
 .dao-card > img[src]{
@@ -66,7 +99,6 @@
   max-height: 10rem;
   border: 1px solid #24262e;
   border-radius: 100px;
-
 }
 
 .dao-card > h2{
@@ -76,59 +108,11 @@
 }
 
 .dao-card > p{
-  color: #efefef;
+  color: #d2d2d2;
 }
 
 .dao-card > *{
   margin-bottom: 10px;
 }
 
-.newOrgBox{
-  position: absolute;
-  display: flex;
-  right: 10%;
-  margin-bottom: 200px;
-}
-
-.newOrgBtn{
-  margin-left: auto;
-  align-items: center;
-  border: none;
-  border-radius: 10px;
-  padding: 5px 20px;
-  background-color: rgb(45, 46, 53);
-  color: white;
-  font-size: 20px;
-}
-.wallet-error-box{
-  display: flex;
-}
-
-.wallet-error-msg{
-  animation: fadein 0.5s forwards;
-  opacity: 0;
-  border: 2px solid rgb(235, 87, 87);
-  border-radius: 10px;
-  height: auto;
-  margin: 10px auto;
-  background-color: rgba(235, 87, 87, 0.3);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-}
-.wallet-error-msg p{
-  padding: 10px;
-  margin: 0;
-  color: rgb(235, 87, 87) !important;
-  
-}
-
-
-.newOrgBtn:hover{
-  background-color: #384aff;
-  color: white;
-  transition: background-color ease-in 0.3s;
-  transition: color ease-in 0.3s;
-}
 

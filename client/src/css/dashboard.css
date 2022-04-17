@@ -45,7 +45,7 @@
 
 .widget-card{
   text-align: center;
-  border: 2px solid #2d2e35;
+  border: none;
   border-radius: 30px;
   padding: 2rem 6rem;
   cursor: pointer;
@@ -54,6 +54,12 @@
   display: flex;
   flex-direction: column;
   grid-gap: 1em;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+}
+
+.widget-card:hover{
+  background-color: rgba(29, 29, 29, 0.3);
+
 }
 
 
@@ -124,11 +130,13 @@
 .info{
   display: flex;
   flex-direction: column;
-  border: 3px solid #2d2e35;
+  border: none;
   border-radius: 40px;
   background: #24262e;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+
 }
 
 .dashboard-notify-container{
@@ -236,7 +244,7 @@
 
 .subscribe-btn{
   border: none;
-  background-color: white;
+  background-color: #d2d2d2;
   border-radius: 20px;
   padding-left: 10px;
   padding-right: 10px;
@@ -247,18 +255,24 @@
   margin-bottom: 10px;
 }
 
+.subscribe-btn:hover{
+  background-color: white;
+}
 
 
 
 .pencil-logo{
   font-size: 8rem;
-  background-color: #2d2e35;
 
 }
 .manage-widgets{
   background-color: #2d2e35;
-  border: 1px solid #2d2e35;
+  border: none;
   color: lightgrey;
+}
+
+.manage-widgets:hover{
+  background-color: rgba(45, 46, 53, 0.3);
 }
 
 .manage-widgets h2{
