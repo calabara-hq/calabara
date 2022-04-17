@@ -8,7 +8,7 @@ import { showNotification } from '../notifications/notifications'
 import { selectConnectedAddress } from '../wallet/wallet-reducer'
 import { populateDashboardInfo, selectDashboardInfo, updateDashboardInfo } from '../dashboard/dashboard-info-reducer'
 import { populateDashboardRules, selectDashboardRules } from '../gatekeeper/gatekeeper-rules-reducer'
-import { deleteOrganization, addOrganization } from '../org-cards/org-cards-reducer'
+import { deleteOrganization, addOrganization, selectLogoCache, populateLogoCache } from '../org-cards/org-cards-reducer'
 import * as WebWorker from '../../app/worker-client';
 import Glyphicon from '@strongdm/glyphicon'
 
@@ -153,9 +153,9 @@ function OrganizationENSComponent({ standardProps }) {
             // clear the error msg
             setErrorMsg({ error: false, msg: "" });
             if (ens.endsWith('.eth')) {
-                console.log(ens)
+
                 var valid = await validAddress(ens)
-                console.log(valid)
+
                 if (valid == false) {
                     setValidEns(false);
                     setResolvedAddress("")
@@ -194,7 +194,7 @@ function OrganizationENSComponent({ standardProps }) {
     const handleNext = async () => {
         // check for beta whitelist
 
-        console.log(walletAddress)
+
         const wl_res = await axios.post('/valid_wl', { address: walletAddress })
 
         if (wl_res.data == false) {
@@ -239,7 +239,9 @@ function OrganizationInfoComponent({ standardProps, hasImageChanged, setHasImage
     const dispatch = useDispatch();
     const { ens } = useParams();
     const history = useHistory();
-
+    const logoCache = useSelector(selectLogoCache);
+    const [logo, setLogo] = useState(logoCache[fields.logo])
+    const [logoPath, setLogoPath] = useState(fields.logo);
 
 
 
@@ -258,21 +260,40 @@ function OrganizationInfoComponent({ standardProps, hasImageChanged, setHasImage
     }
 
 
+    function b64toBlob(dataURI) {
+    
+        var byteString = atob(dataURI.split(',')[1]);
+        var ab = new ArrayBuffer(byteString.length);
+        var ia = new Uint8Array(ab);
+        
+        for (var i = 0; i < byteString.length; i++) {
+            ia[i] = byteString.charCodeAt(i);
+        }
+        return new Blob([ab], { type: 'image/jpeg' });
+    }
+
 
     const handleImageUpload = e => {
         setHasImageChanged(true)
 
         const [file] = e.target.files;
         if (file) {
-            console.log(file)
+
             const reader = new FileReader();
             reader.onload = (e) => {
-                setFields({ logo: e.target.result })
+                console.log(e.target.result)
+                setFields({ logo: e.target.result, logoPath: logoPath})
+                const blob = b64toBlob(e.target.result);
+                const blobUrl = URL.createObjectURL(blob);
+                console.log(blobUrl)
+                //dispatch(populateLogoCache({ [fields.logo]: blobUrl }))
+                setLogo(blobUrl)
             }
 
             reader.readAsDataURL(file);
         }
     }
+
 
     const handleDeleteOrganization = async () => {
         var result = await signTransaction(walletAddress, { mode: 'delete' }, lockedAdminAddresses)
@@ -294,21 +315,21 @@ function OrganizationInfoComponent({ standardProps, hasImageChanged, setHasImage
         }
     }
 
-
-    useEffect(() => {
-        if (ens !== 'new' && !hasImageChanged && fields.logo) {
-            WebWorker.settingsProcessLogo().then(result => {
-                const reader = new FileReader();
-                reader.onload = () => {
-                    let base64data = reader.result;
-                    setFields({ logo: base64data })
-                }
-                reader.readAsDataURL(result);
-                setHasImageChanged(true)
-            })
-        }
-    }, [fields.logo])
-
+    /*
+        useEffect(() => {
+            if (ens !== 'new' && !hasImageChanged && fields.logo) {
+                WebWorker.settingsProcessLogo(dispatch, logoCache).then(result => {
+                    const reader = new FileReader();
+                    reader.onload = () => {
+                        let base64data = reader.result;
+                        setFields({ logo: base64data })
+                    }
+                    reader.readAsDataURL(result);
+                    setHasImageChanged(true)
+                })
+            }
+        }, [fields.logo])
+    */
 
     return (
         <div className="org-profile-tab" ref={infoRef}>
@@ -333,8 +354,8 @@ function OrganizationInfoComponent({ standardProps, hasImageChanged, setHasImage
                         <input placeholder="Logo" type="file" accept="image/*" style={{ display: 'none' }} onChange={handleImageUpload} ref={imageUploader} />
                         <button className="logo-upload-btn" type="button" onClick={() => imageUploader.current.click()}>
                             <div>
-                                {!hasImageChanged && <img data-src={fields.logo} />} {/* use webworker to get blob when displaying the logo*/}
-                                {hasImageChanged && <img src={fields.logo} />} {/* if they want to change the logo, we switch to non-webworker */}
+                                <img src={logo} /> {/* use webworker to get blob when displaying the logo*/}
+                                {/*hasImageChanged && <img src={fields.logo} />} {/* if they want to change the logo, we switch to non-webworker */}
                             </div>
                         </button>
                     </div>
@@ -370,7 +391,7 @@ function OrganizationAdminsComponent({ adminErrorController }) {
 
 
     async function addBlankAddress() {
-        console.log(addresses)
+
         setAddresses(addresses.concat(''))
     }
 
@@ -380,7 +401,7 @@ function OrganizationAdminsComponent({ adminErrorController }) {
         let addressesCopy = JSON.parse(JSON.stringify(addresses));
         let addressToUpdate = e.target.value;
         addressesCopy[index] = addressToUpdate;
-        console.log(addressToUpdate)
+
         setAddresses(addressesCopy);
 
     }
@@ -666,7 +687,7 @@ function ERC20gatekeeper({ setGatekeeperInnerProgress, fields, setFields }) {
                     setGatekeeperDecimal(decimal)
                     setGatekeeperSymbol(symbol)
                 } catch (e) {
-                    console.log("can't autofill symbol and decimals for this address")
+
                 }
 
             }
@@ -816,7 +837,7 @@ function ERC721gatekeeper({ setGatekeeperInnerProgress, fields, setFields }) {
                     var symbol = await erc721GetSymbol(gatekeeperAddress)
                     setGatekeeperSymbol(symbol)
                 } catch (e) {
-                    console.log("can't autofill symbol for this address")
+
                 }
 
             }
@@ -898,7 +919,7 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
         }
         else {
             setDiscordRuleState('rule exists')
-            console.log(resp)
+
             setGuildId(resp.data.id)
             setGuildName(resp.data.name);
             setGuildRoles(resp.data.roles);
@@ -1069,7 +1090,7 @@ function SaveComponent({ standardProps, infoErrorController, adminErrorControlle
             return 'error';
         }
         else {
-            console.log(fields.name, fields.ens)
+
             const exists = await axios.post('/doesNameExist', { name: fields.name, ens: fields.ens })
             if (exists.data) {
                 //name already exists
@@ -1152,7 +1173,7 @@ function SaveComponent({ standardProps, infoErrorController, adminErrorControlle
         // in both cases for new and existing orgs, we want to push the resolved ens and walletAddress, then remove duplicates
         const resolvedEns = await validAddress(fields.ens);
         finalSubmission.addresses.push(resolvedEns, walletAddress)
-        console.log(finalSubmission)
+
         // now remove the duplicates
         finalSubmission.addresses = [...new Set(finalSubmission.addresses)]
 
@@ -1167,7 +1188,7 @@ function SaveComponent({ standardProps, infoErrorController, adminErrorControlle
         //let discordDuplicates = fields.gatekeeper.rules.filter(({ guildId: gid1 }) => !Object.values(existingGatekeeperRules).some(({ guildId: gid2 }) => gid1 === gid2))
 
 
-        console.log(ruleDuplicates)
+
 
         finalSubmission.gatekeeper.rules = ruleDuplicates
 
@@ -1193,8 +1214,9 @@ function SaveComponent({ standardProps, infoErrorController, adminErrorControlle
                 await postData(finalSubmission);
                 if (ens === 'new') dispatch(addOrganization({ name: fields.name, members: 0, logo: fields.logo, verified: false, ens: fields.ens }));
                 else if (ens !== 'new') {
-                    dispatch(updateDashboardInfo({ name: fields.name, website: fields.website, discord: fields.discord, addresses: finalSubmission.addresses }))
+                    dispatch(updateDashboardInfo({ name: fields.name, website: fields.website, logo: fields.logoPath, discord: fields.discord, addresses: finalSubmission.addresses }))
                     dispatch(populateDashboardRules(fields.ens))
+
                 }
                 showNotification('saved successfully', 'success', 'your changes were successfully saved')
                 handleClose();

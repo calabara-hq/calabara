@@ -55,7 +55,7 @@ export default function RoleSelectModal({ handleClose, handleAddDiscordRule, exi
     const dispatch = useDispatch();
 
     async function handleSave() {
-        console.log('saving')
+        
     }
 
     return (

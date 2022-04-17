@@ -20,7 +20,7 @@ export default function SnapshotConfiguration({ setProgress, setTabHeader }) {
     useEffect(() => {
       (async () => {
         const res = await getSpace(ens);
-        console.log(res)
+        
         if (res != null) {
           setDoesSpaceExist(true)
           setIsLoading(false)

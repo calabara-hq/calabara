@@ -44,7 +44,7 @@ export default function CalendarConfiguration({ mode, metadata, setMetadata, set
 
     async function testGrantedAccess() {
         var result = await axios.post('/fetchCalendarMetaData', { calendarID: calendarID })
-        console.log(result)
+        
         if (result.data == 'FAIL') {
             return 'fail'
         }
@@ -82,7 +82,7 @@ export default function CalendarConfiguration({ mode, metadata, setMetadata, set
             }
             else {
                 // the calendar is not public, ask them to set it to public
-                console.log('here')
+                
                 setConfigProgress(1);
             }
 

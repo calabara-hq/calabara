@@ -1,5 +1,7 @@
 import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
+import store from '../../app/store.js'
+
 
 import {
   selectConnectedBool,
@@ -12,6 +14,7 @@ import {
   addMembership,
   selectMemberOf,
   populateInitialMembership,
+  populateOrganizations,
 } from '../org-cards/org-cards-reducer';
 
 import {
@@ -41,12 +44,26 @@ import {
   setDashboardRules,
 } from '../gatekeeper/gatekeeper-rules-reducer'
 
-import { selectDiscordId } from '../user/user-reducer';
 
-export const batchFetchDashboardData = async (ens, dispatch) => {
+export const batchFetchDashboardData = async (ens, info, dispatch) => {
+  if (info.ens !== ens) {
     const resp = await axios.get('/dashboardBatchData/' + ens)
     dispatch(populateInfo(resp.data.dashboardData.orgInfo))
     dispatch(setDashboardRules(resp.data.dashboardData.rules))
     dispatch(setInstalledWidgets(resp.data.dashboardData.widgets.installed))
     dispatch(setInstallableWidgets(resp.data.dashboardData.widgets.installable))
   }
+}
+
+export const fetchOrganizations = async (cardsPulled, dispatch) => {
+  if (!cardsPulled) {
+    var orgs = await axios.get('/organizations');
+    dispatch(populateOrganizations(orgs.data))
+  }
+}
+
+export const fetchUserMembership = async (walletAddress, membershipPulled, dispatch) => {
+  if (!membershipPulled && walletAddress) {
+    dispatch(populateInitialMembership(walletAddress));
+  }
+}

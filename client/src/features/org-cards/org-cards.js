@@ -3,7 +3,7 @@ import { useHistory } from "react-router-dom"
 import '../../css/org-cards.css'
 import * as WebWorker from '../../app/worker-client'
 import { showNotification } from '../notifications/notifications'
-import axios from 'axios'
+import { fetchOrganizations, fetchUserMembership } from '../common/common'
 
 
 //redux
@@ -17,6 +17,8 @@ import {
   populateInitialOrganizations,
   selectOrganizations,
   selectCardsPulled,
+  selectMembershipPulled,
+  selectLogoCache
 } from './org-cards-reducer';
 
 import {
@@ -25,18 +27,29 @@ import {
 } from '../wallet/wallet-reducer';
 
 import {
+  clearDashboardData,
   clearWidgets,
+  dashboardWidgetsReset,
 } from '../dashboard/dashboard-widgets-reducer'
+import { auxillaryConnect } from '../wallet/wallet'
+import { dashboardInfoReset } from '../dashboard/dashboard-info-reducer'
 
 
 export default function Cards() {
   const isConnected = useSelector(selectConnectedBool);
   const walletAddress = useSelector(selectConnectedAddress);
   const organizations = useSelector(selectOrganizations);
-  const areCardsPulled = useSelector(selectCardsPulled);
+  const cardsPulled = useSelector(selectCardsPulled);
+  const membershipPulled = useSelector(selectMembershipPulled);
+  const membership = useSelector(selectMemberOf);
+  const logoCache = useSelector(selectLogoCache);
+
   const dispatch = useDispatch();
-  // clear redux store so that clicking into a new dashboard doesn't briefly render old data
-  dispatch(clearWidgets());
+
+
+  // clear redux store so that clicking into a new dashboard doesn't briefly render stale data
+  dispatch(dashboardInfoReset);
+  dispatch(dashboardWidgetsReset);
 
 
 
@@ -44,20 +57,20 @@ export default function Cards() {
   // i created a cardsPulled state in the org-cards reducer that may come in handy for a solution
 
   useEffect(() => {
-    // pull org cards
-    dispatch(populateInitialOrganizations())
-    // set the joined orgs for this wallet address
-    dispatch(populateInitialMembership(walletAddress));
+    fetchOrganizations(cardsPulled, dispatch)
   }, [])
 
   useEffect(() => {
-    if (organizations.length > 0) {
-      WebWorker.processImages().then((result) => {
-        console.log(result)
-      })
+    fetchUserMembership(walletAddress, membershipPulled, dispatch)
+  }, [walletAddress])
 
+
+  useEffect(() => {
+    if (organizations.length > 0) {
+      WebWorker.processImages(dispatch, logoCache);
     }
   }, [organizations])
+
 
   // don't want to call WW everytime. Let's cache the img blob in the reducer. When we 
   // add a new org, just directly inject the img src  
@@ -70,7 +83,7 @@ export default function Cards() {
         <section className="cards">
 
           {organizations.map((org, idx) => {
-            return <DaoCard key={idx} org={org} />;
+            return <DaoCard key={idx} org={org} membership={membership} />;
           })}
         </section>
       </div>
@@ -79,22 +92,24 @@ export default function Cards() {
 }
 
 
-function DaoCard({ org }) {
-  console.log(org)
+function DaoCard({ org, membership }) {
   const { name, logo, verified, ens } = org;
-  const memership = useSelector(selectMemberOf);
   const isConnected = useSelector(selectConnectedBool)
   const walletAddress = useSelector(selectConnectedAddress)
   const dispatch = useDispatch();
   const [members, setMembers] = useState(org.members)
-
-  var isMemberOf = dispatch(isMember(ens))
+  const [isMemberOf, setIsMemberOf] = useState(false)
 
   const history = useHistory();
 
   function handleJoinOrg() {
-    dispatch(addMembership(walletAddress, ens))
-    setMembers(members + 1);
+    if (isConnected) {
+      dispatch(addMembership(walletAddress, ens))
+      setMembers(members + 1);
+    }
+    else {
+      auxillaryConnect();
+    }
   }
 
   function handleLeaveOrg() {
@@ -120,7 +135,10 @@ function DaoCard({ org }) {
   }
 
   // rerender the card when membership details change
-  useEffect(() => { }, [isMemberOf])
+  useEffect(() => {
+    let res = dispatch(isMember(ens))
+    setIsMemberOf(res)
+  }, [membership])
 
 
   return (
@@ -134,8 +152,12 @@ function DaoCard({ org }) {
       }
       <h2> {name}</h2>
       <p>{members} members</p>
-      {!isMemberOf && <button name="join" onClick={handleJoinOrg} type="button" className="subscribe-btn">{'Join'}</button>}
-      {isMemberOf && <button name="leave" onClick={handleLeaveOrg} type="button" className="subscribe-btn">{'Leave'}</button>}
+      {isConnected &&
+        <>
+          {!isMemberOf && <button name="join" onClick={handleJoinOrg} type="button" className="subscribe-btn">{'Join'}</button>}
+          {isMemberOf && <button name="leave" onClick={handleLeaveOrg} type="button" className="subscribe-btn">{'Leave'}</button>}
+        </>
+      }
     </article>
 
   )
@@ -160,11 +182,7 @@ function NewOrgButton({ isConnected }) {
       setDidUserRefuseConnect(true);
       showNotification('please sign in', 'hint', 'please sign in to create a dashboard')
     }
-
-
   }
-
-
   return (
     <div className="newOrgBox">
       <button className="newOrgBtn" type="button" onClick={handleNewOrg}>🚀 New</button>

@@ -32,7 +32,7 @@ export const selectDashboardRuleResults = state => state.gatekeeperRules.ruleRes
 export const populateDashboardRules = (ens) => async (dispatch, getState, axios) => {
 
   const res = await axios.get('/dashboardRules/' + ens);
-  console.log(res)
+  
     dispatch(setDashboardRules(res.data))
 }
 

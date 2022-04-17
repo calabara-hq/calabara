@@ -54,7 +54,7 @@ function GatekeeperRule({ element, rule_id, appliedRules, setAppliedRules, ruleE
 
 
 
-    console.log(appliedRules)
+    
 
 
 
@@ -63,7 +63,7 @@ function GatekeeperRule({ element, rule_id, appliedRules, setAppliedRules, ruleE
 
 
   const addRule = (e) => {
-    //console.log(e.target.value)
+    //
     setAppliedRules({ type: 'update_single', payload: { [rule_id]: "" } })
     setRuleError({ [rule_id]: "" })
   }
@@ -80,7 +80,7 @@ function GatekeeperRule({ element, rule_id, appliedRules, setAppliedRules, ruleE
   }
 
   const handleAddDiscordRule = (val) => {
-    console.log(val)
+    
     setAppliedRules({ type: 'update_single', payload: { [rule_id]: val } })
   }
 

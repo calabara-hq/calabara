@@ -52,7 +52,7 @@ export default function Settings() {
   const dashboardRules = useSelector(selectDashboardRules)
   const history = useHistory();
 
-  console.log(history)
+  
   // keep a copy that will never change for signing transactions later;
   const lockedAdminAddresses = dashboardInfo.addresses || [];
 
@@ -180,9 +180,9 @@ function OrgEnsTab({ setProgress, fields, setFields, setTabHeader }) {
       // clear the error msg
       setErrorMsg({ error: false, msg: "" });
       if (ens.endsWith('.eth')) {
-        console.log(ens)
+        
         var valid = await validAddress(ens)
-        console.log(valid)
+        
         if (valid == false) {
           setValidEns(false);
           setResolvedAddress("")
@@ -220,7 +220,7 @@ function OrgEnsTab({ setProgress, fields, setFields, setTabHeader }) {
   const handleNext = async () => {
     // check for beta whitelist
 
-    console.log(walletAddress)
+    
     const wl_res = await axios.post('/valid_wl', { address: walletAddress })
 
     if (wl_res.data == false) {
@@ -296,7 +296,7 @@ function OrgProfileTab({ setProgress, fields, setFields, lockedAdminAddresses, h
 
     const [file] = e.target.files;
     if (file) {
-      console.log(file)
+      
       const reader = new FileReader();
       reader.onload = (e) => {
         setFields({ logo: e.target.result })
@@ -314,7 +314,7 @@ function OrgProfileTab({ setProgress, fields, setFields, lockedAdminAddresses, h
       return;
     }
     else {
-      console.log(fields.name, fields.ens)
+      
       const exists = await axios.post('/doesNameExist', { name: fields.name, ens: fields.ens })
       if (exists.data) {
         //name already exists
@@ -359,7 +359,7 @@ function OrgProfileTab({ setProgress, fields, setFields, lockedAdminAddresses, h
   }, [])
 
   const handleImgLoaded = (e) => {
-    console.log(e)
+    
   }
 
   const handleDeleteOrganization = async () => {
@@ -831,7 +831,7 @@ function ERC20gatekeeper({ progress, setProgress, setGatekeeperInnerProgress, fi
           setGatekeeperDecimal(decimal)
           setGatekeeperSymbol(symbol)
         } catch (e) {
-          console.log("can't autofill symbol and decimals for this address")
+          
         }
 
       }
@@ -981,7 +981,7 @@ function ERC721gatekeeper({ setGatekeeperInnerProgress, fields, setFields }) {
           var symbol = await erc721GetSymbol(gatekeeperAddress)
           setGatekeeperSymbol(symbol)
         } catch (e) {
-          console.log("can't autofill symbol for this address")
+          
         }
 
       }
@@ -1061,7 +1061,7 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
     }
     else {
       setDiscordRuleState('rule exists')
-      console.log(resp)
+      
       setGuildId(resp.data.id)
       setGuildName(resp.data.name);
       setGuildRoles(resp.data.roles);
@@ -1259,7 +1259,7 @@ export function FinalizeTab({ setProgress, fields, setFields, lockedAdminAddress
     // in both cases for new and existing orgs, we want to push the resolved ens and walletAddress, then remove duplicates
     const resolvedEns = await validAddress(fields.ens);
     finalSubmission.addresses.push(resolvedEns, walletAddress)
-    console.log(finalSubmission)
+    
     // now remove the duplicates
     finalSubmission.addresses = [...new Set(finalSubmission.addresses)]
 
@@ -1274,7 +1274,7 @@ export function FinalizeTab({ setProgress, fields, setFields, lockedAdminAddress
     //let discordDuplicates = fields.gatekeeper.rules.filter(({ guildId: gid1 }) => !Object.values(existingGatekeeperRules).some(({ guildId: gid2 }) => gid1 === gid2))
 
 
-    console.log(ruleDuplicates)
+    
 
     finalSubmission.gatekeeper.rules = ruleDuplicates
 

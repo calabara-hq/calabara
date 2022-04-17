@@ -57,7 +57,7 @@ export default function HelpModal({ handleClose, tab, groupID, eventData }) {
   const dispatch = useDispatch();
 
   async function handleSave() {
-    console.log('saving')
+    
   }
 
   return (
@@ -113,8 +113,8 @@ function HelpTab({ tab, handleClose, groupID }) {
 function ViewCalendarEvent({ handleClose, eventData }) {
 
 
-  console.log(eventData)
-  console.log(JSON.stringify(eventData.start))
+  
+  
   const [dateString, setDateString] = useState('');
   const [description, setDescription] = useState(eventData.description)
   

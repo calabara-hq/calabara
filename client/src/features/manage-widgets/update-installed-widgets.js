@@ -273,7 +273,7 @@ function GatekeeperSettings({ selected, setSettingsStep, setTabHeader }) {
     for (const [key, value] of Object.entries(appliedRules)) {
       if (value == '') {
         setRuleError({ id: key })
-        console.log('rule error on ', key)
+        
         return;
       }
     }
@@ -286,7 +286,7 @@ function GatekeeperSettings({ selected, setSettingsStep, setTabHeader }) {
     for (const [key, value] of Object.entries(appliedRules)) {
       if (value == '') {
         setRuleError({ id: key })
-        console.log('rule error on ', key)
+        
         return;
       }
     }

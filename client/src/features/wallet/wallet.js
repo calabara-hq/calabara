@@ -330,12 +330,9 @@ function Wallet() {
 
 
   useEffect(async () => {
-    console.log(account_change)
-    console.log(isConnected)
     if (account_change === true && !isConnected) {
       const state = onboard.getState();
       const checkSumAddr = web3Infura.utils.toChecksumAddress(state.address)
-      console.log(checkSumAddr)
       dispatch(setConnected(checkSumAddr))
       dispatch(registerUser(checkSumAddr))
       dispatch(setAccountChange(false))

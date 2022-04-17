@@ -135,8 +135,8 @@ const didAddressVote = async(ens, walletAddress) =>{
 
   // map voted proposals to a 1D array
 
-  console.log(votes)
-  console.log(proposals)
+  
+  
   let alter = JSON.parse(JSON.stringify(votes))
   let removed = alter.splice(2,1)
   const active_unvoted = proposals.filter((el) => !alter.includes(el.id))
@@ -159,17 +159,17 @@ const userParticipation = async(ens, walletAddress) =>{
 // get average org-wide voter turnout over the last 5 proposals
 const globalParticipation = async(ens) =>{
   const space = await getSpace(ens)
-  console.log(space)
+  
   var proposals = await getProposals(ens, 'all', 5)
   var proposal_ids = proposals.map(el => el.id)
   var numVotes = []
-  console.log(proposal_ids)
+  
   for(var id in proposal_ids){
     const numVoters = await getSingleProposalVotes(proposal_ids[id])
     numVotes.push(numVoters.length)
   }
 
-  console.log(numVotes)
+  
 
 }
 

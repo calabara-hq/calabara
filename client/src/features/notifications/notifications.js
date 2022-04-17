@@ -23,7 +23,7 @@ const showNotification = (eventCode, type, message) => {
 
 async function querySnapshot(ens, walletAddress){
   var missedVotes = await didAddressVote(ens, walletAddress);
-  console.log(missedVotes)
+  
   if(missedVotes.length > 0){
     store.dispatch(setWidgetNotification('snapshot'))
   }

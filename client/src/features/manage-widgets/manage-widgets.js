@@ -275,7 +275,7 @@ function FinalMessage({ setProgress, selected, appliedRules, metadata, setSelect
   }
 
   const handlePrevious = () => {
-    console.log(selected.name)
+    
     if (selected.name == 'wiki') {
       setSelected('')
       setProgress(0);

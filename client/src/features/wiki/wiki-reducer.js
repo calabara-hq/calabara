@@ -71,7 +71,7 @@ export const deleteWiki = (id, grouping, index) => async (dispatch, getState, ax
 
 export const populateInitialWikiList = (ens) => async (dispatch, getState, axios) => {
   const result = await axios.get('/fetchWikis/' + ens)
-  console.log(result)
+  
   dispatch(setEns(ens))
   dispatch(setWikiList(result.data))
 
@@ -102,8 +102,8 @@ export const renameWikiList = (newList) => async (dispatch, getState, axios) => 
 
   let listCopy = JSON.parse(JSON.stringify(wiki_data.wikiList))
 
-  console.log(newList.group_id)
-  console.log(listCopy[newList.group_id])
+  
+  
 
 
   listCopy[newList.group_id] = newList.value;

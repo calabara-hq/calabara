@@ -50,7 +50,7 @@ describe('settings gatekeeper tab test', () => {
         //const message = <p>Gatekeepers allow organizations to use token balance or discord role checks to offer different app functionality and displays for users via rules set for each app. </p>
 
         //expect(wrapper.find("p").to.have.text(message))
-        console.log(wrapper.debug())
+        
         //wrapper.instance().removeGatekeeperRule(0)
     });
     chai.use(chaiEnzyme());

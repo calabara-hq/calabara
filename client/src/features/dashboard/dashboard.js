@@ -8,7 +8,7 @@ import calendarLogo from '../../img/calendar.svg'
 import discordLogo from '../../img/discord.svg'
 import snapshotLogo from '../../img/snapshot.svg'
 import wikiLogo from '../../img/wiki.svg'
-import { batchFetchDashboardData } from '../common/common'
+import { batchFetchDashboardData, fetchUserMembership } from '../common/common'
 
 import { showNotification } from '../notifications/notifications'
 
@@ -27,13 +27,11 @@ import {
   deleteMembership,
   addMembership,
   selectMemberOf,
-  populateInitialMembership,
+  selectLogoCache,
+  selectMembershipPulled,
 } from '../org-cards/org-cards-reducer';
 
 import {
-  populateInitialWidgets,
-  selectInstalledWidgets,
-  selectInstallableWidgets,
   populateVisibleWidgets,
   selectVisibleWidgets,
   updateWidgets,
@@ -47,32 +45,27 @@ import {
 } from './dashboard-info-reducer'
 
 import {
-  populateDashboardRules,
   selectDashboardRules,
   applyDashboardRules,
   selectDashboardRuleResults,
 } from '../gatekeeper/gatekeeper-rules-reducer'
 
 import { selectDiscordId, setDiscordId } from '../user/user-reducer';
+import { FieldsOnCorrectTypeRule } from 'graphql'
 
-const post = async function (params) {
-  var out = await axios.post(params.endpoint, params.data)
-  return out.data;
-}
 
 export default function Dashboard() {
   const isConnected = useSelector(selectConnectedBool)
   const walletAddress = useSelector(selectConnectedAddress)
-  const installedWidgets = useSelector(selectInstalledWidgets)
   const visibleWidgets = useSelector(selectVisibleWidgets)
   const info = useSelector(selectDashboardInfo)
   const gatekeeperRules = useSelector(selectDashboardRules)
   const gatekeeperRuleResults = useSelector(selectDashboardRuleResults)
   const discordId = useSelector(selectDiscordId);
+  const membershipPulled = useSelector(selectMembershipPulled);
+  const membership = useSelector(selectMemberOf)
   const { ens } = useParams();
   const dispatch = useDispatch();
-
-  const history = useHistory();
 
   const [gatekeeperResult, setGatekeeperResult] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
@@ -92,43 +85,33 @@ export default function Dashboard() {
   }
 
   useEffect(() => {
-    // check that the info state is not stale (pointing to another dashboard)
-      batchFetchDashboardData(ens, dispatch);
+    batchFetchDashboardData(ens, info, dispatch);
+  }, [info])
 
-  }, [])
-
-
-
-  // check for admin status and fetch membership
-  useEffect(() => {
-    (async function () {
-      if (isConnected) {
-        checkAdmin(walletAddress)
-        dispatch(populateInitialMembership(walletAddress))
-      }
-    }());
-
-  }, [isConnected, info])
 
   useEffect(() => {
-    (async function () {
-        // if there are widgets installed, we need to test the rules with the connected wallet.
-        dispatch(applyDashboardRules(walletAddress))
-    }());
+    if (walletAddress) {
+      checkAdmin(walletAddress)
+      fetchUserMembership(walletAddress, membershipPulled, dispatch)
+    }
+  }, [walletAddress, info])
 
-  }, [isConnected, discordId, gatekeeperRules])
 
+  useEffect(() => {
+    // if there are widgets installed, we need to test the rules with the connected wallet.
+    dispatch(applyDashboardRules(walletAddress))
+  }, [walletAddress, discordId, gatekeeperRules])
 
 
   useEffect(() => {
     dispatch(populateVisibleWidgets())
   }, [gatekeeperRuleResults])
 
-
+  useEffect(() => {},[isAdmin])
 
   return (
     <div className="dashboard-wrapper">
-      <InfoCard key={info.id} ens={ens} info={info} />
+      {info && <InfoCard ens={ens} info={info} membership={membership} />}
       <section className="widget-cards">
 
         {visibleWidgets.map((widget, idx) => {
@@ -146,21 +129,18 @@ export default function Dashboard() {
 
 
 
-function InfoCard({ info, ens }) {
-  const membership = useSelector(selectMemberOf);
+function InfoCard({ info, ens, membership }) {
   const isConnected = useSelector(selectConnectedBool)
   const walletAddress = useSelector(selectConnectedAddress)
-  const { name, members, logo, discord, website, verified } = info;
+  const logoCache = useSelector(selectLogoCache)
   const dashboardRules = useSelector(selectDashboardRules);
   const discord_id = useSelector(selectDiscordId)
   const [promptDiscordLink, setPromptDiscordLink] = useState(false);
-
-
   const history = useHistory();
   const dispatch = useDispatch();
-
   const isMemberOf = dispatch(isMember(ens))
   const [isInfoLoaded, setIsInfoLoaded] = useState(false)
+  const [logo, setLogo] = useState('')
 
 
   function handleJoinOrg() {
@@ -185,16 +165,19 @@ function InfoCard({ info, ens }) {
   useEffect(() => {
     if (info.ens == ens) {
       setIsInfoLoaded(true)
+      setLogo(logoCache[info.logo])
     }
-  })
+  },[info])
 
+/*
+  useEffect(() => {
+      WebWorker.processImages(dispatch, logoCache);
+  },[isInfoLoaded])
+*/
 
-  // process images once we have the correct info
-  useEffect(async () => {
-    await WebWorker.processImages();
+useEffect(()=>{},[info.logoPath])
 
-  }, [isInfoLoaded])
-
+  
   useEffect(() => {
     Object.keys(dashboardRules).map((key) => {
       if (dashboardRules[key].gatekeeperType === 'discord') {
@@ -230,10 +213,10 @@ function InfoCard({ info, ens }) {
     var pollTimer = window.setInterval(async function () {
       if (popout.closed !== false) {
         window.clearInterval(pollTimer);
-        let isDiscordLinked = await axios.post('/discord/getUserDiscord', {walletAddress: walletAddress})
+        let isDiscordLinked = await axios.post('/discord/getUserDiscord', { walletAddress: walletAddress })
 
-        if(isDiscordLinked.data) dispatch(setDiscordId(isDiscordLinked.data))
-      
+        if (isDiscordLinked.data) dispatch(setDiscordId(isDiscordLinked.data))
+
       }
     }, 1000);
   }
@@ -245,12 +228,12 @@ function InfoCard({ info, ens }) {
         <div className="info-content">
           {isInfoLoaded &&
             <>
-              <img data-src={logo} />
-              <h1> {name} </h1>
+              <img id="info-logo" src={logo} />
+              <h1> {info.name} </h1>
               {(!isMemberOf && isConnected) && <button name="join" onClick={handleJoinOrg} type="button" className="subscribe-btn">Join</button>}
               {(isMemberOf && isConnected) && <button name="leave" onClick={handleLeaveOrg} type="button" className="subscribe-btn">Leave</button>}
-              <p> {members} members </p>
-              <a href={'//' + website} target="_blank">{website}</a>
+              <p> {info.members} members </p>
+              <a href={'//' + info.website} target="_blank">{info.website}</a>
             </>
           }
         </div>
@@ -259,7 +242,7 @@ function InfoCard({ info, ens }) {
         <div className="dashboard-notify-container">
           <span><Glyphicon glyph="info-sign" /></span>
           <div className="dashboard-notify-content">
-            <p>{name} uses discord roles for certain applications. Link your discord to unlock the full dashboard</p>
+            <p>{info.name} uses discord roles for certain applications. Link your discord to unlock the full dashboard</p>
             <button onClick={linkDiscord}>link discord</button>
           </div>
         </div>
@@ -320,7 +303,7 @@ export function WidgetCard({ gatekeeperPass, orgInfo, widget, btnState, setBtnSt
   }
 
   async function handleDeleteWidget() {
-    var request = await post({ endpoint: '/removeWidget', data: { ens: ens, name: name } })
+    var request = await axios.post('/removeWidget',{ ens: ens, name: name })
     dispatch(updateWidgets(0, widget));
 
   }

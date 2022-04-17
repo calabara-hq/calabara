@@ -47,7 +47,7 @@ function Analytics() {
         WebWorker.processImages();
         const isMemberOf = dispatch(isMember(ens))
         const votes = await didAddressVote(ens, walletAddress);
-        console.log(votes)
+        
         setMissedVotes({ votes: votes })
         const percentage = await userParticipation(ens, walletAddress)
         setUserParticipationPercentage(percentage)
@@ -127,7 +127,7 @@ function Proposal({ proposal, ens }) {
 }
 
 function DoughnutChart({ chartData }) {
-  console.log(chartData)
+  
 
   const data = {
     labels: ['% voted', '% did not vote'],

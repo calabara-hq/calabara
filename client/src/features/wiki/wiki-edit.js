@@ -83,7 +83,7 @@ function ReactEditor({data}){
 
   async function publishDocument(){
     setPending(true)
-    console.log(contentRef.current)
+    
 
       data.filedata.title = title;
       data.filedata.content = content;

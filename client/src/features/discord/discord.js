@@ -8,7 +8,7 @@ import '../../css/status-messages.css'
 const fetchGuildFromInvite = async (inviteLink) => {
     let inviteCode = inviteLink.split('/')[3]
     let resp = await axios.post('/discord/fetchGuildFromInvite', { inviteCode: inviteCode });
-    console.log(resp)
+    
 }
 
 
@@ -59,7 +59,7 @@ export default function Discord() {
     const verifyBot = async () => {
         const resp = await axios.post('/discord/getGuildRoles', { ens: ens })
         setIsVerifyingBot(false)
-        console.log(resp.data)
+        
         switch (resp.data) {
             case 'not added':
                 setIsBotVerified(false);
@@ -70,7 +70,7 @@ export default function Discord() {
                 setBotFailureMessage('not able to read roles from server');
                 return;
             default:
-                console.log('here')
+                
                 setIsBotVerified(true)
         }
 
