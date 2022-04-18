@@ -11,7 +11,7 @@ import Editor from 'react-medium-editor';
 import DragList from '../drag-n-drop/dragList'
 import HelpModal from '../../helpers/modal/helpModal'
 import Glyphicon from '@strongdm/glyphicon'
-import moment from "moment";
+import BasicModal from './wiki-folder-modal'
 
 
 //redux
@@ -24,23 +24,23 @@ import {
 
 import {
   selectWikiList,
-  populateInitialWikiList,
   selectWikiListOrganization,
+  removeFromWikiList,
+  populateInitialWikiList
 } from './wiki-reducer';
 
 import {
   selectDashboardInfo,
-  populateDashboardInfo,
 } from '../dashboard/dashboard-info-reducer'
 
 import {
   selectDashboardRuleResults,
   selectDashboardRules,
-  populateDashboardRules,
   applyDashboardRules,
 } from '../gatekeeper/gatekeeper-rules-reducer'
-import { current } from '@reduxjs/toolkit'
+
 import { testDiscordRoles } from '../gatekeeper/gatekeeper'
+import { batchFetchDashboardData } from '../common/common'
 
 export default function WikiDisplay({ mode }) {
   const { ens } = useParams();
@@ -56,29 +56,37 @@ export default function WikiDisplay({ mode }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isMetadataLoaded, setIsMetadataLoaded] = useState(false)
   const [isWikiLoaded, setIsWikiLoaded] = useState(false);
-  const [gatekeeperPass, setGatekeeperPass] = useState(false)
   const [wikiDisplayTitle, setWikiDisplayTitle] = useState(null);
   const [wikiDisplayContent, setWikiDisplayContent] = useState(null)
   const [currentWikiId, setCurrentWikiId] = useState(-1)
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalTab, setModalTab] = useState("");
-  const [modalData, setModalData] = useState("");
-
   const [groupID, setGroupID] = useState(null)
 
-  const close = (cleanup) => {
-    setModalOpen(false);
-    setModalTab("")
-    setGroupID(null);
-    if (cleanup == -1) {
+  useEffect(() => {
+    // populate the dashboard info on pageload
+    batchFetchDashboardData(ens, info, dispatch)
+    dispatch(populateInitialWikiList(ens))
+  }, [])
+
+
+
+  const close = async (cleanup) => {
+    if(cleanup.type === 'standard'){
+      setModalOpen(false);
+      setGroupID(null)
+    }
+
+    else if (cleanup.type === 'delete') {
+      await axios.post('/deleteWikiGrouping', { ens: cleanup.ens, groupID: cleanup.groupID })
+      dispatch(removeFromWikiList(cleanup.groupID));
       setCurrentWikiId(-1);
+
     }
   }
+
+
   const open = () => setModalOpen(true);
 
-  async function showModal() {
-    (modalOpen ? close() : open())
-  }
 
 
   async function readWiki(file_id) {
@@ -110,14 +118,7 @@ export default function WikiDisplay({ mode }) {
   // display the default for whichever case (public or member)
 
 
-  useEffect(async () => {
-    // populate the dashboard info on pageload
-    dispatch(populateInitialWikiList(ens));
-    dispatch(populateDashboardInfo(ens))
-    dispatch(populateDashboardRules(ens))
 
-
-  }, [])
 
   // do this to make sure no stale lists from other orgs
   useEffect(() => {
@@ -144,16 +145,13 @@ export default function WikiDisplay({ mode }) {
 
 
 
-
   const newWikiGroupingClick = () => {
-    setModalTab('addWikiGrouping')
-    showModal();
+    open();
   }
 
   const editWikiGroupingClick = (group_id) => {
     setGroupID(group_id)
-    setModalTab('addWikiGrouping')
-    showModal();
+    open();
   }
 
   const fireWikiPopout = () => {
@@ -185,7 +183,7 @@ export default function WikiDisplay({ mode }) {
         }
       </div>
       <RenderWiki isWikiLoaded={isWikiLoaded} isAdmin={isAdmin} currentWikiId={currentWikiId} wikiDisplayTitle={wikiDisplayTitle} wikiDisplayContent={wikiDisplayContent} />
-      {modalOpen && <HelpModal groupID={groupID} tab={modalTab} modalOpen={modalOpen} handleClose={close} />}
+      {modalOpen && <BasicModal modalOpen={modalOpen} handleClose={close} groupID={groupID} />}
     </div>
 
   );
@@ -204,7 +202,7 @@ function TestWikiVisibility({ setCurrentWikiId, wikiList, dashboardRuleResults }
       <div>
         {/* map over all wiki groups*/}
         {Object.entries(wikiList).map(([group, group_data]) => {
-          return <WikiRuleMap setCurrentWikiId={setCurrentWikiId} group={group} group_data={group_data} dashboardRuleResults={dashboardRuleResults} />
+          return <WikiRuleMap setCurrentWikiId={setCurrentWikiId} key={group} group={group} group_data={group_data} dashboardRuleResults={dashboardRuleResults} />
         })}
 
       </div>
@@ -224,23 +222,23 @@ function WikiRuleMap({ setCurrentWikiId, group, group_data, dashboardRuleResults
 
       {Object.keys(group_data.gk_rules).length == 0 ? (
 
-        <ShowWikiInSidebar setCurrentWikiId={setCurrentWikiId} group_data={group_data} />
+        <ShowWikiInSidebar key={group} setCurrentWikiId={setCurrentWikiId} group_data={group_data} />
 
       ) : (
 
         /* else, map over gk_rules in wiki list and make visible accordingly*/
         Object.entries(group_data.gk_rules).map(([key, applied_rule]) => {
           let isVisible;
-          if(typeof applied_rule === 'object'){
+          if (typeof applied_rule === 'object') {
             isVisible = testDiscordRoles(applied_rule, dashboardRuleResults[key]) === 'pass'
           }
-          else{
+          else {
             isVisible = dashboardRuleResults[key] >= applied_rule
           }
           return (
             <>
               {isVisible &&
-                <ShowWikiInSidebar setCurrentWikiId={setCurrentWikiId} group_data={group_data} />
+                <ShowWikiInSidebar setCurrentWikiId={setCurrentWikiId} key={key} group_data={group_data} />
               }
             </>
           )
@@ -265,7 +263,7 @@ function ShowWikiInSidebar({ setCurrentWikiId, group_data }) {
         </div>}
       {group_data.list.map((el, idx) => {
         return (
-          <div className={"wiki " + (!isFolderOpen ? 'hidden' : 'undefined')} onClick={() => { setCurrentWikiId(el.id) }}>
+          <div key = {idx} className={"wiki " + (!isFolderOpen ? 'hidden' : 'undefined')} onClick={() => { setCurrentWikiId(el.id) }}>
             <p>{el.title}</p>
           </div>
         )

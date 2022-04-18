@@ -198,6 +198,9 @@ function AddWikiGrouping({ handleClose, groupID }) {
   const [appliedRules, setAppliedRules] = useReducer(reducer, {});
 
 
+ 
+
+
   const [tabHeader, setTabHeader] = useState('')
 
   useEffect(() => {

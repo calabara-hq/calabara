@@ -44,17 +44,22 @@ function Analytics() {
   useEffect(() => {
     (async () => {
       if (dataPulled) {
-        WebWorker.processImages();
+        console.log('RUNNING')
         const isMemberOf = dispatch(isMember(ens))
         const client = createClient();
-        const votes = await didAddressVote(client, ens, walletAddress);
+        console.log(client)
         
+        const votes = await didAddressVote(client, ens, walletAddress);
+        console.log(votes)
         setMissedVotes({ votes: votes })
         const percentage = await userParticipation(client, ens, walletAddress)
+        console.log(percentage)
         setUserParticipationPercentage(percentage)
 
         const past5 = await getProposals(client, ens, 'closed', 5)
+        console.log(past5)
         setPastFiveProposals(past5)
+        
       }
 
     })();

@@ -1,60 +1,63 @@
 
 .apply-gatekeeper-rules{
-    display: flex;
-    flex-direction: column;
-    margin: 0 auto;
-    margin-top: 10px;
-    height: 65%;
-    width: 80%;
-    overflow-y: auto;
-    overflow-x: hidden;
-    margin-bottom: 20px;
+  margin-top: 15px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 20px;
+  width: 80%;
+  }
+
+
+  @media screen and (max-width: 900px){
+    .apply-gatekeeper-rules{
+      grid-template-columns: repeat(2, 1fr);
+    }
   }
   
+  @media screen and (max-width: 520px){
+    .apply-gatekeeper-rules{
+      grid-template-columns: repeat(1, 1fr);
+    }
+  }
+  
+
+
   .gk-rule{
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    margin: 10px;
-    gap: 20px;
-    flex-wrap: wrap;
-    height: 50px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: space-evenly;
+    align-items: center;
+    grid-gap: 20px;
+    justify-content: flex-start;
+    align-items: flex-start;
+    border: none;
+    border-radius: 4px;
+    background-color: #1c2128;
+    padding: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+    min-height: 150px;
+  }
+
+  .gk-rule.error{
+    border: 2px solid rgb(235, 87, 87);
   }
 
   .gk-rule > p{
     margin: 0;
     color: #d3d3d3;
-    align-self: center;
+    align-self: flex-start;
   }
-  
-  .gk-rule > span{
-    margin-right: auto;
-  }
-  
-  .details{
-    cursor: pointer;
-  }
-  
-  .details::after{
-    font-family: "Font Awesome 5 Free";
-      font-weight: 900;
-      font-size: 12px;
-      content: "\f054 ";
-      display: inline-block;
-      margin: 5px;
-      margin-right: 5px;
-      transform: rotate(90deg);
-  }
-  
-  .details.rotate::after{
-    transition: all 0.3s linear;
-  }
-  
-  .details.rotate.down::after{
-    transform: rotate(630deg);
-  }
-  
 
-  .gk-rule > input{
+  .gk-rule > .toggle-flex{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+  }
+  
+  .gk-rule > .toggle-flex > input{
     animation: fadein 1s forwards;
     width: 120px;
     height: 50px;
@@ -62,13 +65,11 @@
     align-self: center;
   }
   
-  .gk-rule > .select-roles{
-    display: block;
+  .gk-rule > .toggle-flex > .select-roles{
     width: 120px;
     padding: 10px 15px;
     margin-left: auto;
     height: 50px;
-    align-self: center;
     cursor: pointer;
     border-radius: 30px;
     background-color: #0e0e30;
@@ -76,33 +77,12 @@
     border: 2px solid #008cff;
   }
 
-  .gk-rule > .select-roles:hover{
+  .gk-rule > .toggle-flex > .select-roles:hover{
     background-color: #008cff;
     color: white;
   }
 
-  .gk-rule > .gatekeeper-toggle{
-    margin-right: auto;
-  }
-  
-  .gk-rule > span{
-    margin-left: auto;
-    align-self: center;
-    color: #d3d3d3;
-  }
-
-
-  
-  
-  .gatekeeper-toggle{
-    margin-left: auto;
-    align-self: center;
-  }
-  
-  .gk-rule-input > span{
-    margin-right: 10px;
-    color: lightgrey;
-  }
+ 
 
   /* Chrome, Brave, Opera */
   input::-webkit-outer-spin-button,

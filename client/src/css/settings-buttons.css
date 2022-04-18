@@ -45,6 +45,13 @@
     margin-bottom: 10px;
     background-color: rgba(0, 163, 104, 0.3);
     color: rgb(0, 163, 104);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+
+}
+
+.save-btn:hover{
+    background-color: rgba(0, 163, 104, 0.1);
+
 }
 
 

@@ -112,6 +112,7 @@
   animation: fadein 0.5s;
   padding: 10px 10px;
   grid-gap: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
 
 }
 

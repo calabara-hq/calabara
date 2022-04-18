@@ -1,22 +1,14 @@
 import fetch from 'cross-fetch'
 import {
   ApolloClient,
+  ApolloLink,
   InMemoryCache,
-  ApolloProvider,
-  useQuery,
   gql,
   createHttpLink
 } from "@apollo/client";
 
-/*
-const client = new ApolloClient({
-  link: createHttpLink({
-    uri: 'https://hub.snapshot.org/graphql',
-    fetch,
-  }),
-  cache: new InMemoryCache()
-});
-*/
+import { RetryLink } from '@apollo/client/link/retry'
+
 
 const createClient = () => {
   const http = createHttpLink({
@@ -24,9 +16,21 @@ const createClient = () => {
     fetch,
   });
 
+  const retryLink = new RetryLink({
+    delay: {
+      initial: 300,
+      max: Infinity,
+      jitter: true
+    },
+    attempts: {
+      max: 10,
+      retryIf: (error, _operation) => !!error
+    }
+  });
+
   return new ApolloClient({
     cache: new InMemoryCache(),
-    link: http,
+    link: ApolloLink.from([retryLink, http])
   })
 
 }
