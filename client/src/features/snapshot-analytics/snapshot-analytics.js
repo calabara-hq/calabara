@@ -71,7 +71,7 @@ function Analytics() {
             <h3> These are active proposals you haven't voted on yet.</h3>
             <div className="proposalBox">
               {missedVotes.votes.map((proposal, idx) => {
-                return <Proposal proposal={proposal} ens={ens} />;
+                return <Proposal key={idx} proposal={proposal} ens={ens} />;
               })}
             </div>
           </>
