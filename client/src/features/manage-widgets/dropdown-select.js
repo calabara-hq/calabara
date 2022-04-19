@@ -11,21 +11,6 @@ import {
 
 const animatedComponents = makeAnimated();
 
-const options = [
-  { value: 'red', label: 'red', color: 'red' },
-  { value: 'orange', label: 'orange', color: 'orange' },
-  { value: 'blue', label: 'blue', color: 'blue' }
-]
-
-
-const calculateColor = (decimal) => {
-  if (decimal == 0) {
-    return ['rgba(211, 211, 211, 1)', 'rgba(18, 52, 86, 0.3)']
-  }
-  return ['rgb(' + ((decimal >> 16) & 0xff) + ',' + ((decimal >> 8) & 0xff) + ',' + (decimal & 0xff) + ')',
-  'rgba(' + ((decimal >> 16) & 0xff) + ',' + ((decimal >> 8) & 0xff) + ',' + (decimal & 0xff) + ',0.3)']
-}
-
 
 const calculateBackgroundColor = (decimal) => {
   if (decimal == 0) {
@@ -51,6 +36,27 @@ const customStyles = {
     const color = calculateTextColor(state.data.color);
     return { ...provided, color }
   },
+
+  control: (provided) => {
+    const backgroundColor = '#24262e';
+    const border = '1px solid #d2d2d2';
+    const cursor = 'pointer';
+    return {...provided, border, backgroundColor, cursor}
+  },
+
+  option: (provided, state) => {
+    const color = calculateTextColor(state.data.color);
+    const cursor = 'pointer';
+    return { ...provided, color, cursor }
+  },
+
+  menuList: (provided) => {
+    const backgroundColor = '#1d1d1d';
+    const boxShadow =  "0 10px 30px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);"
+
+    return {...provided, backgroundColor, boxShadow}
+  },
+
 
 }
 

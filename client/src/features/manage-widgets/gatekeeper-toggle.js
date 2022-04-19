@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react'
 import '../../css/gatekeeper-toggle.css'
 import { useSelector, useDispatch } from 'react-redux';
-import RoleSelectModal from '../../helpers/modal/role-select-modal';
+//import RoleSelectModal from '../../helpers/modal/role-select-modal';
+import RoleSelectModal from './role-select-modal';
 
 
 import {
@@ -112,7 +113,7 @@ function GatekeeperRule({ element, rule_id, appliedRules, setAppliedRules, ruleE
               {isGatekeeperOn &&
                 <>
                   <button className="select-roles primary-gradient-button" onClick={open}>select roles</button>
-                  {roleModalOpen && <RoleSelectModal handleAddDiscordRule={handleAddDiscordRule} handleClose={close} existingRoles={appliedRules[rule_id] || []} />}
+                  {roleModalOpen && <RoleSelectModal handleAddDiscordRule={handleAddDiscordRule} handleClose={close} modalOpen={roleModalOpen} existingRoles={appliedRules[rule_id] || []} />}
                 </>
               }
             </div>

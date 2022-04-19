@@ -8,7 +8,7 @@ import WikiDisplay from '../wiki/wiki-display'
 import Events from '../calendar/calendar'
 import ReactEditor from '../wiki/wiki-edit'
 import Settings from '../settings/settings'
-import SettingsManager from '../settings/settings2'
+import SettingsManager from '../settings/settings'
 import ManageWidgets from '../manage-widgets/manage-widgets'
 export default function Container() {
 

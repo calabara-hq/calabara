@@ -6,6 +6,7 @@ import axios from 'axios'
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RuleSelect } from '../manage-widgets/gatekeeper-toggle';
+import '../../css/wiki-modal.css'
 
 
 import { selectWikiList, removeFromWikiList, renameWikiList, addToWikiList } from './wiki-reducer';
@@ -40,7 +41,7 @@ function reducer(state, action) {
 }
 
 
-export default function BasicModal({ modalOpen, handleClose, groupID }) {
+export default function WikiModal({ modalOpen, handleClose, groupID }) {
     const wikiList = useSelector(selectWikiList)
     const [ruleError, setRuleError] = useState(false)
     const [progress, setProgress] = useState(0)
@@ -118,8 +119,6 @@ export default function BasicModal({ modalOpen, handleClose, groupID }) {
             <Modal
                 open={modalOpen}
                 onClose={() => {handleClose({type: 'standard'})}}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
             >
                 <Box className="wiki-modal" sx={style}>
                     <h2>{groupID ? 'Edit Folder' : 'New Folder'}</h2>

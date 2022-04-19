@@ -5,7 +5,6 @@ import { SettingsCheckpointBar, FinalizeSettingsCheckpointBar } from '../../feat
 import Wallet, { validAddress, erc20GetSymbolAndDecimal, erc721GetSymbol, signTransaction, connectWallet } from '../../features//wallet/wallet'
 import * as WebWorker from '../../app/worker-client';
 import { useHistory, useParams } from 'react-router-dom'
-import HelpModal from '../../helpers/modal/helpModal'
 import '../../css/manage-widgets.css'
 import '../../css/settings-buttons.css'
 import '../../css/status-messages.css'

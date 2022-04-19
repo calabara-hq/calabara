@@ -9,9 +9,8 @@ import { useHistory, useParams } from "react-router-dom"
 import axios from 'axios';
 import Editor from 'react-medium-editor';
 import DragList from '../drag-n-drop/dragList'
-import HelpModal from '../../helpers/modal/helpModal'
 import Glyphicon from '@strongdm/glyphicon'
-import BasicModal from './wiki-folder-modal'
+import WikiModal from './wiki-folder-modal'
 
 
 //redux
@@ -183,7 +182,7 @@ export default function WikiDisplay({ mode }) {
         }
       </div>
       <RenderWiki isWikiLoaded={isWikiLoaded} isAdmin={isAdmin} currentWikiId={currentWikiId} wikiDisplayTitle={wikiDisplayTitle} wikiDisplayContent={wikiDisplayContent} />
-      {modalOpen && <BasicModal modalOpen={modalOpen} handleClose={close} groupID={groupID} />}
+      {modalOpen && <WikiModal modalOpen={modalOpen} handleClose={close} groupID={groupID} />}
     </div>
 
   );
