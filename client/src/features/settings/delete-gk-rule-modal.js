@@ -37,8 +37,8 @@ export default function DeleteGkRuleModal({ modalOpen, handleClose, handleDelete
                         <div>
                             <p>If this rule is applied to any applications, deleting it may cause undesired consequences. Are you sure you want to delete?</p>
                             <div className="delete-gk-rule-btn-container">
-                                <button className="delete-gk-rule-abort">cancel</button>
-                                <button className="delete-gk-rule-proceed">delete</button>
+                                <button className="delete-gk-rule-abort" onClick={handleClose}>cancel</button>
+                                <button className="delete-gk-rule-proceed" onClick={() => {handleDeleteGkRule(idx); handleClose();}}>delete</button>
                             </div>
                         </div>
                     </div>

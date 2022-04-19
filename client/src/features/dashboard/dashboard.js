@@ -5,7 +5,6 @@ import '../../css/dashboard.css'
 import * as WebWorker from '../../app/worker-client.js'
 import Glyphicon from '@strongdm/glyphicon'
 import calendarLogo from '../../img/calendar.svg'
-import discordLogo from '../../img/discord.svg'
 import snapshotLogo from '../../img/snapshot.svg'
 import wikiLogo from '../../img/wiki.svg'
 import { batchFetchDashboardData, fetchUserMembership } from '../common/common'
@@ -129,7 +128,7 @@ export default function Dashboard() {
 
 
 
-function InfoCard({ info, ens, membership }) {
+function InfoCard({ info, ens }) {
   const isConnected = useSelector(selectConnectedBool)
   const walletAddress = useSelector(selectConnectedAddress)
   const logoCache = useSelector(selectLogoCache)
@@ -164,7 +163,7 @@ function InfoCard({ info, ens, membership }) {
   }
 
   useEffect(() => {
-    if (info.ens == ens) {
+    if (info.ens == ens && !isInfoLoaded) {
       setIsInfoLoaded(true)
     }
   }, [info])
@@ -177,7 +176,7 @@ function InfoCard({ info, ens, membership }) {
 
   useEffect(() => {
     if(info.logoBlob && imgRef.current != null){
-      console.log(imgRef)
+      console.log('WE ARE UPDATING SOMETHING')
       WebWorker.updateLogo(dispatch, info.logo, info.logoBlob)
     }
   }, [info.logoBlob, imgRef])

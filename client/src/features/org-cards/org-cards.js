@@ -144,12 +144,7 @@ function DaoCard({ org, membership }) {
   return (
 
     <article className="dao-card" onClick={handleClick}>
-      {logo.substring(0, 10) === 'img/logos/'
-
-        ? <img data-src={logo} />
-        : <img src={logo} />
-
-      }
+         <img data-src={logo} />
       <h2> {name}</h2>
       <p>{members} members</p>
       {isConnected &&

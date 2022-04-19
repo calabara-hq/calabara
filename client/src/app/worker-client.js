@@ -32,7 +32,7 @@ const processImages2 = async function () {
 const updateLogo = async function (dispatch, logoPath, logoBlob){
       const imageURL = document.getElementById('info-logo')
       imageURL.setAttribute('src', logoBlob);
-      dispatch(populateLogoCache({ [logoPath]: logoBlob }))
+      dispatch(populateLogoCache({ imageURL: [logoPath], blob: logoBlob }))
 }
 
 

@@ -441,7 +441,6 @@ app.post('/valid_wl', async function (req, res, next) {
 })
 
 app.post('/updateSettings', async function (req, res, next) {
-  console.log('here')
   const fields = req.body
   let logoPath;
 
@@ -450,7 +449,8 @@ app.post('/updateSettings', async function (req, res, next) {
   // prep the logo path if a logo was provided
   if (fields.logo) {
 
-    if (fields.logo == '/img/logos/default-logo.svg') {
+    if (fields.logo.startsWith('img/logos/')) {
+      console.log('HEY IT LOOKS LIKE THIS BITCH')
       // if they haven't changed from the default, leave it as-is
       logoPath = fields.logo
     }
@@ -460,7 +460,7 @@ app.post('/updateSettings', async function (req, res, next) {
   }
   else {
     // give them a default logo if they haven't provided one
-    logoPath = '/img/logos/default-logo.svg'
+    logoPath = 'img/logos/default-logo.svg'
   }
 
 

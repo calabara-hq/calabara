@@ -355,7 +355,6 @@ function OrganizationInfoComponent({ standardProps, hasImageChanged, setHasImage
                         <button className="logo-upload-btn" type="button" onClick={() => imageUploader.current.click()}>
                             <div>
                                 <img src={logo} /> {/* use webworker to get blob when displaying the logo*/}
-                                {/*hasImageChanged && <img src={fields.logo} />} {/* if they want to change the logo, we switch to non-webworker */}
                             </div>
                         </button>
                     </div>
@@ -1226,7 +1225,7 @@ function SaveComponent({ standardProps, infoErrorController, adminErrorControlle
                 await postData(finalSubmission);
                 if (ens === 'new') dispatch(addOrganization({ name: fields.name, members: 0, logo: fields.logo, verified: false, ens: fields.ens }));
                 else if (ens !== 'new') {
-                    dispatch(updateDashboardInfo({ name: fields.name, website: fields.website, logo: fields.logoPath, logoBlob: fields.logoBlob, discord: fields.discord, addresses: finalSubmission.addresses }))
+                    dispatch(updateDashboardInfo({ name: fields.name, website: fields.website, logo: fields.logoPath || fields.logo, logoBlob: fields.logoBlob, discord: fields.discord, addresses: finalSubmission.addresses }))
                     dispatch(populateDashboardRules(fields.ens))
 
                 }
