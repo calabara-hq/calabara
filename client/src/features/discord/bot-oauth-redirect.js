@@ -75,7 +75,7 @@ export default function SuccessfulDiscordRedirect() {
                     {!didUserDenyIdentify &&
                         <div className="oauth-success-message">
                             <h1>🎉🎉🎉</h1>
-                            <h1 style={{ color: 'white' }}>Woohoo! The your account was successfully linked.</h1>
+                            <h1 style={{ color: 'white' }}>Woohoo! Your account was successfully linked.</h1>
                             <h3>Please close this window.</h3>
                         </div>
                     }

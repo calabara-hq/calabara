@@ -1,8 +1,10 @@
-require('dotenv').config(); //initialize dotenv
+const dotenv = require('dotenv'); //initialize dotenv
 const { Client, Intents } = require('discord.js')
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const guildId = process.env.DISCORD_GUILD_ID;
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MEMBERS] }); //create new client
+
+dotenv.config();
+
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
@@ -54,7 +56,7 @@ const totalMembers = totalAdmin.length // how many users have the role
 */
 
 //make sure this line is the last line
-client.login(process.env.DISCORD_CLIENT_TOKEN); //login bot using token
+client.login(process.env.DISCORD_BOT_TOKEN); //login bot using token
 
 exports.getServerRoles = getServerRoles;
 exports.getGuildUserRoles = getGuildUserRoles;

@@ -1,0 +1,55 @@
+
+
+.delete-gk-rule-modal > h1{
+    color: #d2d2d2;
+}
+
+.delete-gk-rule-modal-container > div{
+    display: flex;
+    flex-direction: column;
+    grid-gap: 20px;
+}
+
+
+.delete-gk-rule-modal-container > div > p{
+    color: #d2d2d2;
+    font-size: 16px;
+}
+
+.delete-gk-rule-btn-container{
+    display: flex;
+}
+
+.delete-gk-rule-proceed{
+    margin-left: auto;
+}
+
+.delete-gk-rule-proceed{
+    background-color: #373e47;
+    color:rgb(235, 87, 87);
+    border: none;
+    border-radius: 8px;
+    padding: 5px 15px;
+    font-size: 16px;
+}
+
+.delete-gk-rule-abort{
+    background-color: #373e47;
+    color:#d2d2d2;
+    border: none;
+    border-radius: 8px;
+    padding: 5px 15px;
+    font-size: 16px;
+}
+
+.delete-gk-rule-abort:hover{
+    background-color: rgba(45, 46, 53, 0.7);
+}
+
+.delete-gk-rule-proceed:hover{
+    color: white;
+    background-color: #e5534b;
+    font-weight: 200;
+    transition: background-color 0.2s ease-in;
+    transition: color 0.2s ease-in;
+}

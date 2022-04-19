@@ -2,19 +2,18 @@ const express = require('express');
 const axios = require('axios')
 const fetch = require('node-fetch')
 const db = require('./db-init')
-
+const dotenv = require('dotenv')
 const discordApp = express();
 discordApp.use(express.json())
 
 const { getServerRoles, getGuildUserRoles } = require('./discord-bot/discord-bot.js')
 require('./discord-bot/deploy-commands.js')
 
+dotenv.config();
 
-const API_ENDPOINT = 'https://discord.com/api/v8'
-const CLIENT_ID = '895719351406190662'
-const CLIENT_SECRET = 'kLgpila03Wur86mEJsgk-u3R_LYy4RSP'
-const REDIRECT_URI = 'https://localhost:3000/explore'
-const botToken = 'ODk1NzE5MzUxNDA2MTkwNjYy.YV8ppw.DOCyNSp5486W8q8TIgbvfqwDO28'
+const CLIENT_ID = process.env.DISCORD_CLIENT_ID
+const CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET
+const BOT_TOKEN = process.env.DISCORD_BOT_TOKEN
 
 
 function clean(data) {
@@ -92,7 +91,7 @@ const getGuildRoles = async (guild_id) => {
   try {
     var response = await axios.get(`https://discord.com/api/v6/guilds/${guild_id}/roles`, {
       headers: {
-        authorization: `Bot ${botToken}`,
+        authorization: `Bot ${BOT_TOKEN}`,
         "Content-Type": "application/json",
       },
     })
@@ -101,34 +100,6 @@ const getGuildRoles = async (guild_id) => {
     return 'unable to read roles'
   }
 }
-
-
-/*
-
-discordApp.post('/getGuildRoles', async function (req, res, next) {
-  const { ens } = req.body;
-
-
-  // check whether user aborted popout window
-
-  const guild = await db.query('select guild_id from discord_guilds where ens = $1', [ens]).then(clean)
-  if (!guild) {
-    res.send('not added');
-    res.status(200)
-  }
-
-    // if not aborted, send the guild roles back
-
-
-  else {
-
-    const roles = await getGuildRoles(guild.guild_id);
-    res.send(roles)
-    res.status(200);
-  }
-});
-
-*/
 
 
 discordApp.post('/getUserRoles', async function (req, res, next) {
@@ -166,7 +137,7 @@ discordApp.post('/getGuildProperties', async function (req, res, next) {
   try {
     var response = await axios.get(`https://discord.com/api/v6/guilds/${guild.guild_id}`, {
       headers: {
-        authorization: `Bot ${botToken}`,
+        authorization: `Bot ${BOT_TOKEN}`,
         "Content-Type": "application/json",
       },
     })

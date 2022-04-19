@@ -11,6 +11,7 @@ import { populateDashboardRules, selectDashboardRules } from '../gatekeeper/gate
 import { deleteOrganization, addOrganization, selectLogoCache, populateLogoCache } from '../org-cards/org-cards-reducer'
 import * as WebWorker from '../../app/worker-client';
 import Glyphicon from '@strongdm/glyphicon'
+import DeleteGkRuleModal from './delete-gk-rule-modal'
 
 export default function SettingsManager() {
     const [fieldsReady, setFieldsReady] = useState(false)
@@ -454,6 +455,8 @@ function OrganizationGatekeeperComponent({ standardProps }) {
     const existingRules = useSelector(selectDashboardRules);
     const [addGatekeeperOptionClick, setAddGatekeeperOptionClick] = useState('none')
     const [doesDiscordExist, setDoesDiscordExist] = useState(false);
+    const [modalOpen, setModalOpen] = useState(false);
+    const [deleteModalIndex, setDeleteModalIndex] = useState(null);
 
     useEffect(() => {
         fields.gatekeeper.rules.map((el) => {
@@ -497,6 +500,15 @@ function OrganizationGatekeeperComponent({ standardProps }) {
         setGatekeeperInnerProgress(1)
     }
 
+    const handleDeleteGkRule = (idx) => {
+        removeGatekeeperRule(idx)
+    }
+
+    const handleModalClose = () => {
+        setModalOpen(false)
+    }
+
+
     return (
         <div className="org-gatekeeper-tab">
             {(gatekeeperInnerProgress == 0) &&
@@ -514,7 +526,7 @@ function OrganizationGatekeeperComponent({ standardProps }) {
                                     <div className="gatekeeper-option" key={idx}>
                                         {(el.gatekeeperType === 'erc721' || el.gatekeeperType === 'erc20') &&
                                             <>
-                                                <button className="remove-gatekeeper-rule exit-btn" onClick={() => { removeGatekeeperRule(idx) }}><Glyphicon glyph="trash" /></button>
+                                                <button className="remove-gatekeeper-rule exit-btn" onClick={() => { setModalOpen(true); setDeleteModalIndex(idx) }}><Glyphicon glyph="trash" /></button>
                                                 <p><b>Type:</b> <span className={el.gatekeeperType}>{el.gatekeeperType}</span></p>
                                                 <p><b>Symbol:</b> {el.gatekeeperSymbol}</p>
                                                 <button onClick={() => { window.open('https://etherscan.io/address/' + el.gatekeeperAddress) }} className="gatekeeper-config">{el.gatekeeperAddress.substring(0, 6)}...{el.gatekeeperAddress.substring(38, 42)} <i className="fas fa-external-link-alt"></i></button>
@@ -523,7 +535,7 @@ function OrganizationGatekeeperComponent({ standardProps }) {
 
                                         {el.gatekeeperType === 'discord' &&
                                             <>
-                                                <button className="remove-gatekeeper-rule exit-btn" onClick={() => { removeGatekeeperRule(idx) }}><Glyphicon glyph="trash" /></button>
+                                                <button className="remove-gatekeeper-rule exit-btn" onClick={() => { setModalOpen(true); setDeleteModalIndex(idx) }}><Glyphicon glyph="trash" /></button>
                                                 <p><b>Type:</b> <span className={el.gatekeeperType}>{el.gatekeeperType}</span></p>
                                                 <p><b>Server:</b> {el.serverName}</p>
                                                 <button className="gatekeeper-config" onClick={() => handleAddGatekeeperClick('discord-roles')}>view config</button>
@@ -535,6 +547,7 @@ function OrganizationGatekeeperComponent({ standardProps }) {
                         })}
 
                     </div>
+                    {modalOpen && <DeleteGkRuleModal modalOpen={modalOpen} handleClose={handleModalClose} handleDeleteGkRule={handleDeleteGkRule} idx={deleteModalIndex}/>}
                     <div className="gatekeeper-option-buttons">
                         <button className="erc20-option" onClick={() => { handleAddGatekeeperClick('erc20') }}>erc20</button>
                         <button className="erc721-option" onClick={() => { handleAddGatekeeperClick('erc721') }}>erc721</button>
