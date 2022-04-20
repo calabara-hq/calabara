@@ -8,7 +8,6 @@ import calendarLogo from '../../img/calendar.svg'
 import snapshotLogo from '../../img/snapshot.svg'
 import wikiLogo from '../../img/wiki.svg'
 import { batchFetchDashboardData, fetchUserMembership } from '../common/common'
-
 import { showNotification } from '../notifications/notifications'
 
 
@@ -126,8 +125,6 @@ export default function Dashboard() {
 }
 
 
-
-
 function InfoCard({ info, ens }) {
   const isConnected = useSelector(selectConnectedBool)
   const walletAddress = useSelector(selectConnectedAddress)
@@ -175,7 +172,7 @@ function InfoCard({ info, ens }) {
 
 
   useEffect(() => {
-    if(info.logoBlob && imgRef.current != null){
+    if (info.logoBlob && imgRef.current != null) {
       console.log('WE ARE UPDATING SOMETHING')
       WebWorker.updateLogo(dispatch, info.logo, info.logoBlob)
     }

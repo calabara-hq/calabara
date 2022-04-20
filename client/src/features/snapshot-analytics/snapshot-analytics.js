@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Doughnut } from 'react-chartjs-2';
 import * as WebWorker from '../../app/worker-client.js'
 import { auxillaryConnect } from '../wallet/wallet';
-
+import BackButton from '../back-button/back-button';
 
 import {
   isMember,
@@ -48,7 +48,7 @@ function Analytics() {
         const isMemberOf = dispatch(isMember(ens))
         const client = createClient();
         console.log(client)
-        
+
         const votes = await didAddressVote(client, ens, walletAddress);
         console.log(votes)
         setMissedVotes({ votes: votes })
@@ -59,7 +59,7 @@ function Analytics() {
         const past5 = await getProposals(client, ens, 'closed', 5)
         console.log(past5)
         setPastFiveProposals(past5)
-        
+
       }
 
     })();
@@ -67,49 +67,52 @@ function Analytics() {
 
 
   return (
-    <div className="analyticsContainer">
+    <>
+      <BackButton link={'dashboard'} text={"back to dashboard"} />
+      <div className="analyticsContainer">
 
-      <div className="newProposals">
-        <h1>Active Proposals</h1>
-        {missedVotes.votes.length > 0 &&
-          <>
-            <h3> These are active proposals you haven't voted on yet.</h3>
+        <div className="newProposals">
+          <h1>Active Proposals</h1>
+          {missedVotes.votes.length > 0 &&
+            <>
+              <h3> These are active proposals you haven't voted on yet.</h3>
+              <div className="proposalBox">
+                {missedVotes.votes.map((proposal, idx) => {
+                  return <Proposal key={idx} proposal={proposal} ens={ens} />;
+                })}
+              </div>
+            </>
+
+          }
+          {(missedVotes.votes.length === 0 && !isConnected) &&
+            <>
+              <div className="new-proposal-message">
+                <h2>Connect your wallet to view active proposals!</h2>
+              </div>
+              <button className="snapshot-connect-wallet" onClick={auxillaryConnect}>Connect Wallet</button>
+            </>
+          }
+          {(missedVotes.votes.length === 0 && isConnected) &&
+            <div className="new-proposal-message">
+              <h2>You're all caught up! Have a great day 🌅</h2>
+            </div>
+          }
+        </div>
+        <div className="snapshot-flex-column-2">
+          <div className="myParticipation">
+            <DoughnutChart chartData={userParticipationPercentage} />
+          </div>
+          <div className="pastProposals">
+            <h1>Past proposals</h1>
             <div className="proposalBox">
-              {missedVotes.votes.map((proposal, idx) => {
-                return <Proposal key={idx} proposal={proposal} ens={ens} />;
+              {pastFiveproposals.map((proposal) => {
+                return <Proposal proposal={proposal} ens={ens} />;
               })}
             </div>
-          </>
-
-        }
-        {(missedVotes.votes.length === 0 && !isConnected) &&
-          <>
-            <div className="new-proposal-message">
-              <h2>Connect your wallet to view active proposals!</h2>
-            </div>
-            <button className="snapshot-connect-wallet" onClick={auxillaryConnect}>Connect Wallet</button>
-          </>
-        }
-        {(missedVotes.votes.length === 0 && isConnected) &&
-          <div className="new-proposal-message">
-            <h2>You're all caught up! Have a great day 🌅</h2>
-          </div>
-        }
-      </div>
-      <div className="snapshot-flex-column-2">
-        <div className="myParticipation">
-          <DoughnutChart chartData={userParticipationPercentage} />
-        </div>
-        <div className="pastProposals">
-          <h1>Past proposals</h1>
-          <div className="proposalBox">
-            {pastFiveproposals.map((proposal) => {
-              return <Proposal proposal={proposal} ens={ens} />;
-            })}
           </div>
         </div>
       </div>
-    </div>
+    </>
 
   );
 }
@@ -133,7 +136,7 @@ function Proposal({ proposal, ens }) {
 }
 
 function DoughnutChart({ chartData }) {
-  
+
 
   const data = {
     labels: ['% voted', '% did not vote'],
