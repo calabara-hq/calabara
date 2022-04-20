@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react'
 import '../../css/gatekeeper-toggle.css'
 import { useSelector, useDispatch } from 'react-redux';
-//import RoleSelectModal from '../../helpers/modal/role-select-modal';
 import RoleSelectModal from './role-select-modal';
 
 
@@ -30,35 +29,19 @@ function RuleSelect({ appliedRules, setAppliedRules, ruleError, setRuleError }) 
 function GatekeeperRule({ element, rule_id, appliedRules, setAppliedRules, ruleError, setRuleError }) {
 
   const [isGatekeeperOn, setIsGatekeeperOn] = useState(appliedRules[rule_id] != undefined)
-  const dispatch = useDispatch();
-  const [areDetailsVisible, setAreDetailsVisible] = useState(false);
   const [roleModalOpen, setRoleModalOpen] = useState(false)
 
-  const open = () => { setRoleModalOpen(true) }
-  const close = () => { setRoleModalOpen(false) }
-
-
-  const addressesEndRef = useRef(null);
-  const gatekeeperErrorRef = useRef(null);
-
-  const scrollToBottom = () => {
-    addressesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  const open = () => {
+    setRoleModalOpen(true)
+  }
+  const close = (event, reason) => {
+    if (reason && reason === 'backdropClick') return
+    setRoleModalOpen(false)
   }
 
-  const scrollToError = () => {
-    gatekeeperErrorRef.current?.scrollIntoView({ behavior: "smooth", block: "end" })
-  }
 
   useEffect(() => {
     setIsGatekeeperOn(appliedRules[rule_id] != undefined)
-
-
-
-
-
-
-
-
 
   }, [appliedRules])
 

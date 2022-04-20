@@ -91,10 +91,11 @@ export default function SettingsManager() {
         <div className="settings-manager">
             {fieldsReady &&
                 <>
+                    <SettingsComponentSelector standardProps={standardProps} infoErrorController={infoErrorController} adminErrorController={adminErrorController} />
+
                     {fields.ens != '' &&
                         <SaveComponent standardProps={standardProps} infoErrorController={infoErrorController} adminErrorController={adminErrorController} />
                     }
-                    <SettingsComponentSelector standardProps={standardProps} infoErrorController={infoErrorController} adminErrorController={adminErrorController} />
                 </>
             }
         </div>
@@ -262,11 +263,11 @@ function OrganizationInfoComponent({ standardProps, hasImageChanged, setHasImage
 
 
     function b64toBlob(dataURI) {
-    
+
         var byteString = atob(dataURI.split(',')[1]);
         var ab = new ArrayBuffer(byteString.length);
         var ia = new Uint8Array(ab);
-        
+
         for (var i = 0; i < byteString.length; i++) {
             ia[i] = byteString.charCodeAt(i);
         }
@@ -286,7 +287,7 @@ function OrganizationInfoComponent({ standardProps, hasImageChanged, setHasImage
                 const blob = b64toBlob(e.target.result);
                 const blobUrl = URL.createObjectURL(blob);
                 console.log(blobUrl)
-                setFields({ logo: e.target.result, logoPath: fields.logo, logoBlob: blobUrl})
+                setFields({ logo: e.target.result, logoPath: fields.logo, logoBlob: blobUrl })
                 setLogo(blobUrl)
             }
 
@@ -546,7 +547,7 @@ function OrganizationGatekeeperComponent({ standardProps }) {
                         })}
 
                     </div>
-                    {modalOpen && <DeleteGkRuleModal modalOpen={modalOpen} handleClose={handleModalClose} handleDeleteGkRule={handleDeleteGkRule} idx={deleteModalIndex}/>}
+                    {modalOpen && <DeleteGkRuleModal modalOpen={modalOpen} handleClose={handleModalClose} handleDeleteGkRule={handleDeleteGkRule} idx={deleteModalIndex} />}
                     <div className="gatekeeper-option-buttons">
                         <button className="erc20-option" onClick={() => { handleAddGatekeeperClick('erc20') }}>erc20</button>
                         <button className="erc721-option" onClick={() => { handleAddGatekeeperClick('erc721') }}>erc721</button>

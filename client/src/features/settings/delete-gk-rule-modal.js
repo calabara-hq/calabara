@@ -16,8 +16,9 @@ const style = {
     boxShadow: 20,
     p: 4,
     borderRadius: '20px',
-    width: '30vw',
-    padding: '30px'
+    maxWidth: '500px',
+    minWidth: '340px',
+    padding: '20px'
 };
 
 

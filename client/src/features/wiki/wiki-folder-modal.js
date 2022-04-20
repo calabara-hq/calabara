@@ -7,6 +7,8 @@ import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RuleSelect } from '../manage-widgets/gatekeeper-toggle';
 import '../../css/wiki-modal.css'
+import '../../css/settings-buttons.css'
+import Glyphicon from '@strongdm/glyphicon'
 
 
 import { selectWikiList, removeFromWikiList, renameWikiList, addToWikiList } from './wiki-reducer';
@@ -25,7 +27,8 @@ const style = {
     borderRadius: '20px',
     maxHeight: '90vh',
     overflowY: 'scroll',
-    maxWidth: '1130px'
+    maxWidth: '1130px',
+    minWidth: '350px'
 };
 
 
@@ -121,8 +124,10 @@ export default function WikiModal({ modalOpen, handleClose, groupID }) {
                 onClose={() => {handleClose({type: 'standard'})}}
             >
                 <Box className="wiki-modal" sx={style}>
-                    <h2>{groupID ? 'Edit Folder' : 'New Folder'}</h2>
                     <div className="wiki-folder-modal-container">
+                    <button className="exit-btn" onClick={() => {handleClose({type: 'standard'})}}><Glyphicon glyph="remove" /></button>
+                    <h2>{groupID ? 'Edit Folder' : 'New Folder'}</h2>
+
                         <WikiFolderName groupID={groupID} groupingName={groupingName} setGroupingName={setGroupingName} isFolderError={isFolderError} setIsFolderError={setIsFolderError} handleClose={handleClose} />
                         <WikiFolderRules handleSave={handleSave} appliedRules={appliedRules} setAppliedRules={setAppliedRules} />
                     </div>

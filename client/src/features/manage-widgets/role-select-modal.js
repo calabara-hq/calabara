@@ -18,8 +18,8 @@ const style = {
     boxShadow: 10,
     p: 4,
     borderRadius: '20px',
-    width: 'fit-content',
-    minWidth: '30vw',
+    maxWidth: '500px',
+    minWidth: '340px',
     padding: '20px'
 };
 
@@ -29,10 +29,10 @@ export default function RoleSelectModal({ modalOpen, handleClose, handleAddDisco
 
     return (
         <div>
+            
             <Modal
-                
                 open={modalOpen}
-                onClose={() => { handleClose({ type: 'standard' }) }}
+                onClose={(event, reason) => { handleClose(event, reason) }}
 
             >
                 <Box className="role-select-modal" sx={style}>
