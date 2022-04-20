@@ -1,6 +1,7 @@
 import React, { useEffect, useReducer, useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useHistory, useParams } from 'react-router-dom'
+import BackButton from '../back-button/back-button'
 import axios from 'axios'
 import '../../css/settings.css'
 import { signTransaction, validAddress, erc20GetSymbolAndDecimal, erc721GetSymbol } from '../wallet/wallet'
@@ -88,17 +89,20 @@ export default function SettingsManager() {
         setFieldsReady(true)
     }, [])
     return (
-        <div className="settings-manager">
-            {fieldsReady &&
-                <>
-                    <SettingsComponentSelector standardProps={standardProps} infoErrorController={infoErrorController} adminErrorController={adminErrorController} />
+        <>
+            <BackButton link={fields.ens != '' ? 'dashboard' : '/explore'} text={"back"} />
+            <div className="settings-manager">
+                {fieldsReady &&
+                    <>
+                        <SettingsComponentSelector standardProps={standardProps} infoErrorController={infoErrorController} adminErrorController={adminErrorController} />
 
-                    {fields.ens != '' &&
-                        <SaveComponent standardProps={standardProps} infoErrorController={infoErrorController} adminErrorController={adminErrorController} />
-                    }
-                </>
-            }
-        </div>
+                        {fields.ens != '' &&
+                            <SaveComponent standardProps={standardProps} infoErrorController={infoErrorController} adminErrorController={adminErrorController} />
+                        }
+                    </>
+                }
+            </div>
+        </>
     )
 }
 

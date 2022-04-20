@@ -11,6 +11,7 @@ import Editor from 'react-medium-editor';
 import DragList from '../drag-n-drop/dragList'
 import Glyphicon from '@strongdm/glyphicon'
 import WikiModal from './wiki-folder-modal'
+import BackButton from '../back-button/back-button'
 
 
 //redux
@@ -70,7 +71,7 @@ export default function WikiDisplay({ mode }) {
 
 
   const close = async (cleanup) => {
-    if(cleanup.type === 'standard'){
+    if (cleanup.type === 'standard') {
       setModalOpen(false);
       setGroupID(null)
     }
@@ -160,30 +161,32 @@ export default function WikiDisplay({ mode }) {
 
 
   return (
-
-    <div className={"wiki-display-container"}>
-      <div className={"wiki-popout-sidebar " + (currentWikiId == -1 ? 'wiki-closed' : 'wiki-open')}>
-        <button onClick={fireWikiPopout}>documents</button>
-      </div>
-      <div className={"wiki-sidebar " + (currentWikiId == -1 ? 'wiki-closed' : 'wiki-open')}>
-        <div className="wiki-sidebar-heading">
-          <h2> Docs </h2>
-          {isAdmin && <button onClick={newWikiGroupingClick}><Glyphicon glyph="folder-open" /></button>}
+    <>
+    <BackButton link={'dashboard'} text={"back to dashboard"}/>
+      <div className={"wiki-display-container"}>
+        <div className={"wiki-popout-sidebar " + (currentWikiId == -1 ? 'wiki-closed' : 'wiki-open')}>
+          <button onClick={fireWikiPopout}>documents</button>
         </div>
-        {isMetadataLoaded &&
-          <>
-            {isAdmin &&
-              <DragList editWikiGroupingClick={editWikiGroupingClick} setCurrentWikiId={setCurrentWikiId} />
-            }
-            {!isAdmin &&
-              <TestWikiVisibility wikiList={wikiList} setCurrentWikiId={setCurrentWikiId} dashboardRuleResults={dashboardRuleResults} />
-            }
-          </>
-        }
+        <div className={"wiki-sidebar " + (currentWikiId == -1 ? 'wiki-closed' : 'wiki-open')}>
+          <div className="wiki-sidebar-heading">
+            <h2> Docs </h2>
+            {isAdmin && <button onClick={newWikiGroupingClick}><Glyphicon glyph="folder-open" /></button>}
+          </div>
+          {isMetadataLoaded &&
+            <>
+              {isAdmin &&
+                <DragList editWikiGroupingClick={editWikiGroupingClick} setCurrentWikiId={setCurrentWikiId} />
+              }
+              {!isAdmin &&
+                <TestWikiVisibility wikiList={wikiList} setCurrentWikiId={setCurrentWikiId} dashboardRuleResults={dashboardRuleResults} />
+              }
+            </>
+          }
+        </div>
+        <RenderWiki isWikiLoaded={isWikiLoaded} isAdmin={isAdmin} currentWikiId={currentWikiId} wikiDisplayTitle={wikiDisplayTitle} wikiDisplayContent={wikiDisplayContent} />
+        {modalOpen && <WikiModal modalOpen={modalOpen} handleClose={close} groupID={groupID} />}
       </div>
-      <RenderWiki isWikiLoaded={isWikiLoaded} isAdmin={isAdmin} currentWikiId={currentWikiId} wikiDisplayTitle={wikiDisplayTitle} wikiDisplayContent={wikiDisplayContent} />
-      {modalOpen && <WikiModal modalOpen={modalOpen} handleClose={close} groupID={groupID} />}
-    </div>
+    </>
 
   );
 }
@@ -262,7 +265,7 @@ function ShowWikiInSidebar({ setCurrentWikiId, group_data }) {
         </div>}
       {group_data.list.map((el, idx) => {
         return (
-          <div key = {idx} className={"wiki " + (!isFolderOpen ? 'hidden' : 'undefined')} onClick={() => { setCurrentWikiId(el.id) }}>
+          <div key={idx} className={"wiki " + (!isFolderOpen ? 'hidden' : 'undefined')} onClick={() => { setCurrentWikiId(el.id) }}>
             <p>{el.title}</p>
           </div>
         )

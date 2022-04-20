@@ -1,0 +1,23 @@
+.back-button-container{
+    margin: 20px auto;
+    width: 90%;
+
+}
+
+.back-button-container > span::before{
+    font-family: 'Font Awesome 5 Free';
+    margin-right: 10px;
+    content: "\f060";
+    font-weight: 900;
+}
+
+.back-button-container > span{
+    cursor: pointer;
+    color: grey;
+    font-size: 16px;
+}
+
+
+.back-button-container > span:hover{
+    color: #d2d2d2;
+}

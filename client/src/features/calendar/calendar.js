@@ -5,6 +5,7 @@ import { useHistory, useParams } from "react-router-dom"
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import CalendarModal from './calendar-modal.js';
+import BackButton from '../back-button/back-button';
 import axios from 'axios'
 
 
@@ -88,6 +89,7 @@ export default function Events() {
 
   return (
     <>
+    <BackButton link={'/' + ens + '/dashboard'} text={"back to dashboard"}/>
 
       <div className="calendarContainer">
         <Calendar
