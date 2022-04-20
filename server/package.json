@@ -11,17 +11,23 @@
   "license": "ISC",
   "devDependencies": {
     "express": "^4.17.1",
-    "nodemon": "^2.0.13"
+    "nodemon": "^2.0.15"
   },
   "dependencies": {
+    "@discordjs/rest": "^0.3.0",
+    "@notionhq/client": "^1.0.4",
+    "axios": "^0.26.1",
     "body-parser": "^1.19.0",
     "co-views": "^2.1.0",
     "cors": "^2.8.5",
+    "discord.js": "^13.6.0",
     "dotenv": "^14.3.2",
     "fs": "0.0.1-security",
     "googleapis": "^89.0.0",
     "http": "0.0.1-security",
     "https": "^1.0.0",
+    "node-fetch": "^2.0.0",
+    "notion-client": "^4.19.1",
     "path": "^0.12.7",
     "pg": "^8.7.1"
   }

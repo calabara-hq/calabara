@@ -5,18 +5,18 @@ import { SettingsCheckpointBar, FinalizeSettingsCheckpointBar } from '../../feat
 import Wallet, { validAddress, erc20GetSymbolAndDecimal, erc721GetSymbol, signTransaction, connectWallet } from '../../features//wallet/wallet'
 import * as WebWorker from '../../app/worker-client';
 import { useHistory, useParams } from 'react-router-dom'
-import HelpModal from '../../helpers/modal/helpModal'
 import '../../css/manage-widgets.css'
 import '../../css/settings-buttons.css'
 import '../../css/status-messages.css'
 import snapshotLogo from '../../img/snapshot.svg'
 import wikiLogo from '../../img/wiki.svg'
 import calendarLogo from '../../img/calendar.svg'
-import otterspaceLogo from '../../img/otterspace.png'
 import ManageInstalledWidgetsTab from './update-installed-widgets.js'
 import CalendarConfiguration from './calendar-configuration'
 import SnapshotConfiguration from './snapshot-configuration'
 import { RuleSelect } from './gatekeeper-toggle';
+import { showNotification } from '../notifications/notifications'
+
 
 
 import { useSelector, useDispatch } from 'react-redux';
@@ -37,7 +37,7 @@ import {
 export default function ManageWidgets() {
   const [functionality, setFunctionality] = useState(0)
   const [saveVisible, setSaveVisible] = useState(false)
-  const [tabHeader, setTabHeader] = useState('manage widgets')
+  const [tabHeader, setTabHeader] = useState('manage apps')
   const dispatch = useDispatch();
   const history = useHistory();
   const {ens} = useParams();
@@ -84,7 +84,7 @@ function FunctionalitySelect({ functionality, setFunctionality, setTabHeader }) 
 
 function ManageWidgetsEntrypoint({ setFunctionality, setTabHeader }) {
   useEffect(() => {
-    setTabHeader('manage widgets')
+    setTabHeader('manage apps')
   }, [])
 
   const installedWidgets = useSelector(selectInstalledWidgets);
@@ -94,13 +94,13 @@ function ManageWidgetsEntrypoint({ setFunctionality, setTabHeader }) {
     <div className="manage-widgets-content">
       {installedWidgets.length > 0 &&
         <div className="manage-installed" onClick={() => { setFunctionality(1) }}>
-          <h2>manage installed widgets</h2>
+          <h2>manage installed apps</h2>
           <h2><Glyphicon glyph="cog" /></h2>
         </div>
       }
       {installableWidgets.length > 0 &&
         <div className="add-new-widget" onClick={() => { setFunctionality(2) }}>
-          <h2>install new widgets</h2>
+          <h2>install new apps</h2>
           <h2><Glyphicon glyph="plus" /></h2>
         </div>
       }
@@ -151,7 +151,7 @@ function SelectNewWidget({ setProgress, setSelected, selected, setFunctionality,
   const installableWidgets = useSelector(selectInstallableWidgets);
 
   useEffect(() => {
-    setTabHeader('install new widgets')
+    setTabHeader('install new apps')
     setSelected('')
   }, [])
 
@@ -159,7 +159,7 @@ function SelectNewWidget({ setProgress, setSelected, selected, setFunctionality,
 
   useEffect(() => {
 
-    if (selected.name == 'wiki' || selected.name == 'otterspace onboarding') {
+    if (selected.name == 'wiki') {
       // no additional setup. Go straight to finalize.
       setProgress(3);
     }
@@ -171,7 +171,7 @@ function SelectNewWidget({ setProgress, setSelected, selected, setFunctionality,
   return (
     <div className="install-new-tab">
       <div className="tab-message neutral">
-        <p>Select a widget to add to the dashboard</p>
+        <p>Select an app to add to the dashboard</p>
       </div>
       <div className="installable-widgets-container">
         {installableWidgets.map((el, idx) => {
@@ -220,7 +220,6 @@ function ConfigureGatekeeper({ setProgress, selected, appliedRules, setAppliedRu
         return;
       }
     }
-
     setProgress(3)
 
   }
@@ -234,7 +233,7 @@ function ConfigureGatekeeper({ setProgress, selected, appliedRules, setAppliedRu
         :
         <>
           <div className="tab-message neutral">
-            <p>Toggle the switches to apply gatekeeper rules to this widget. If multiple rules are applied, the gatekeeper will pass if the connected wallet passes 1 or more rules.</p>
+            <p>Toggle the switches to apply gatekeeper rules to this app. If multiple rules are applied, the gatekeeper will pass if the connected wallet passes 1 or more rules.</p>
           </div>
           <RuleSelect ruleError={ruleError} setRuleError={setRuleError} appliedRules={appliedRules} setAppliedRules={setAppliedRules} />
         </>
@@ -262,19 +261,20 @@ function FinalMessage({ setProgress, selected, appliedRules, metadata, setSelect
   const history = useHistory()
 
   useEffect(() => {
-    setTabHeader('finalize')
+    setTabHeader('')
   }, [])
 
   const finalize = async () => {
 
     const req = axios.post('/addWidget', { ens: ens, name: selected.name, metadata: metadata, gatekeeper_rules: appliedRules })
 
+    showNotification('saved successfully', 'success', 'successfully added application')
     dispatch(updateWidgets(1, { ens: ens, name: selected.name, metadata: metadata, gatekeeper_rules: appliedRules, notify: 0 }))
     history.push('dashboard')
   }
 
   const handlePrevious = () => {
-    console.log(selected.name)
+    
     if (selected.name == 'wiki') {
       setSelected('')
       setProgress(0);
@@ -318,11 +318,6 @@ function InstallableWidget({ el, selected, setSelected }) {
     link = 'https://docs.calabara.com/v1/widgets/calendar-description'
   }
 
-  if (el.name == 'otterspace onboarding') {
-    imgSource = otterspaceLogo
-    description = 'otterspace onboarding app'
-    link = 'https://app.otterspace.xyz/dao_landing/sharkdao-1641723620621x716200186443409800'
-  }
 
   const handleClick = () => {
     setSelected(el);

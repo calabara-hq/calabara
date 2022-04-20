@@ -4,7 +4,7 @@ import { listEvents } from '../../helpers/google-calendar'
 import { useHistory, useParams } from "react-router-dom"
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
-import HelpModal from '../../helpers/modal/helpModal';
+import CalendarModal from './calendar-modal.js';
 import axios from 'axios'
 
 
@@ -100,7 +100,7 @@ export default function Events() {
         />
       </div>
       <div>
-        {modalOpen && <HelpModal handleClose={close} tab="calendarEvent" eventData={eventData} />}
+        {modalOpen && <CalendarModal modalOpen={modalOpen} handleClose={close} eventData={eventData}/>}
       </div>
 
     </>

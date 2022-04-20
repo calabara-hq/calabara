@@ -7,9 +7,7 @@ import { useHistory, useParams } from "react-router-dom"
 
 function Nav({homepage}) {
   // button will be different depending on if this is the homepage '/' or not
-  console.log(homepage)
   const history = useHistory();
-  console.log(history)
 
   return (
     <>

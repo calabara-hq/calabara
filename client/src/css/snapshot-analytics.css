@@ -9,7 +9,8 @@
   flex-wrap: wrap;
   margin-bottom: 2em;
   border: 2px solid #24262e;
-  border-radius: 10px;
+  border-radius: 4px;
+  background-color: #22272e;
 }
 
 .analyticsContainer > * {
@@ -29,19 +30,15 @@
 }
 
 .newProposals{
-  border-right: 2px solid #24262e;
-  border-bottom: 2px solid #24262e;
+  border-right: 2px solid black;
 }
 
 
 .myParticipation{
   cursor: pointer;
-  border-bottom: 2px solid #24262e;
+  border-bottom: 2px solid black;
 }
 
-.pastProposals{
-  border-bottom: 2px solid #24262e;
-}
 
 .pastProposals h1{
   margin-left: 20px;

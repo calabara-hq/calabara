@@ -8,50 +8,49 @@ import WikiDisplay from '../wiki/wiki-display'
 import Events from '../calendar/calendar'
 import ReactEditor from '../wiki/wiki-edit'
 import Settings from '../settings/settings'
+import SettingsManager from '../settings/settings'
 import ManageWidgets from '../manage-widgets/manage-widgets'
+export default function Container() {
 
 
 
-export default function Container(){
+  return (
+    <div className='application-container'>
+
+      <Route path="/:ens/dashboard">
+        <Dashboard />
+      </Route>
 
 
-
-  return(
-    <div className='container'>
-
-
-    <Route path="/:ens/dashboard">
-    <Dashboard/>
-    </Route>
-
-    <Route path="/explore">
-    <Cards/>
-    </Route>
-
-    <Route path="/:ens/snapshot">
-    <Analytics/>
-    </Route>
-
-    <Route path="/:ens/calendar/:calendarId">
-    <Events/>
-    </Route>
+      <Route path="/explore">
+        <Cards />
+      </Route>
 
 
-    <Route path="/:ens/docs">
-    <WikiDisplay/>
-    </Route>
+      <Route path="/:ens/snapshot">
+        <Analytics />
+      </Route>
 
-    <Route path="/:ens/settings">
-    <Settings urlSlug={'hello slug'}/>
-    </Route>
+      <Route path="/:ens/calendar/:calendarId">
+        <Events />
+      </Route>
 
-    <Route path="/:ens/manageWidgets">
-    <ManageWidgets/>
-    </Route>
 
-    <Route path="/:ens/docs-edit/:grouping/:file">
-    <ReactEditor/>
-    </Route>
+      <Route path="/:ens/docs">
+        <WikiDisplay />
+      </Route>
+
+      <Route path="/:ens/settings">
+        <SettingsManager />
+      </Route>
+
+      <Route path="/:ens/manageWidgets">
+        <ManageWidgets />
+      </Route>
+
+      <Route path="/:ens/docs-edit/:grouping/:file">
+        <ReactEditor />
+      </Route>
 
     </div>
   )

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { getProposals, didAddressVote, userParticipation } from '../../helpers/snapshot_api'
+import { createClient, getProposals, didAddressVote, userParticipation } from '../../helpers/snapshot_api'
 import '../../css/snapshot-analytics.css'
 import { useParams } from "react-router-dom"
 import { useSelector, useDispatch } from 'react-redux';
@@ -44,16 +44,22 @@ function Analytics() {
   useEffect(() => {
     (async () => {
       if (dataPulled) {
-        WebWorker.processImages();
+        console.log('RUNNING')
         const isMemberOf = dispatch(isMember(ens))
-        const votes = await didAddressVote(ens, walletAddress);
+        const client = createClient();
+        console.log(client)
+        
+        const votes = await didAddressVote(client, ens, walletAddress);
         console.log(votes)
         setMissedVotes({ votes: votes })
-        const percentage = await userParticipation(ens, walletAddress)
+        const percentage = await userParticipation(client, ens, walletAddress)
+        console.log(percentage)
         setUserParticipationPercentage(percentage)
 
-        const past5 = await getProposals(ens, 'closed', 5)
+        const past5 = await getProposals(client, ens, 'closed', 5)
+        console.log(past5)
         setPastFiveProposals(past5)
+        
       }
 
     })();
@@ -70,7 +76,7 @@ function Analytics() {
             <h3> These are active proposals you haven't voted on yet.</h3>
             <div className="proposalBox">
               {missedVotes.votes.map((proposal, idx) => {
-                return <Proposal proposal={proposal} ens={ens} />;
+                return <Proposal key={idx} proposal={proposal} ens={ens} />;
               })}
             </div>
           </>
@@ -127,7 +133,7 @@ function Proposal({ proposal, ens }) {
 }
 
 function DoughnutChart({ chartData }) {
-  console.log(chartData)
+  
 
   const data = {
     labels: ['% voted', '% did not vote'],

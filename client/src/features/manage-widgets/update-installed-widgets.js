@@ -3,18 +3,19 @@ import { useSelector, useDispatch } from 'react-redux';
 import calendarLogo from '../../img/calendar.svg'
 import snapshotLogo from '../../img/snapshot.svg'
 import wikiLogo from '../../img/wiki.svg'
-import otterspaceLogo from '../../img/otterspace.png'
 import axios from 'axios'
 import { useParams } from 'react-router-dom';
 import '../../css/manage-widgets.css'
 import '../../css/settings-buttons.css'
 import { RuleSelect } from './gatekeeper-toggle';
 import CalendarConfiguration from './calendar-configuration';
+import { showNotification } from '../notifications/notifications';
 import {
   selectInstalledWidgets,
   updateWidgets,
   updateWidgetGatekeeper,
 } from '../../features/dashboard/dashboard-widgets-reducer';
+
 
 
 
@@ -24,7 +25,7 @@ export default function ManageInstalledWidgetsTab({ setFunctionality, setTabHead
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    setTabHeader('manage installed widgets')
+    setTabHeader('manage installed apps')
   }, [])
 
 
@@ -57,7 +58,7 @@ function SelectInstalledWidget({ setProgress, setSelected, selected, setFunction
   const installedWidgets = useSelector(selectInstalledWidgets);
 
   useEffect(() => {
-    setTabHeader('Manage installed widgets')
+    setTabHeader('Manage installed apps')
     setSelected('')
   }, [])
 
@@ -72,7 +73,7 @@ function SelectInstalledWidget({ setProgress, setSelected, selected, setFunction
   return (
     <div className="manage-installed-widgets-tab">
       <div className="tab-message neutral">
-        <p>Select a widget you would like to manage</p>
+        <p>Select an app you would like to manage</p>
       </div>
       <div className="installable-widgets-container">
         {installedWidgets.map((el) => {
@@ -112,11 +113,7 @@ function InstalledWidget({ el, selected, setSelected }) {
     link = 'https://docs.calabara.com/v1/widgets/calendar-description'
   }
 
-  if (el.name == 'otterspace onboarding') {
-    imgSource = otterspaceLogo
-    description = 'otterspace onboarding app'
-    link = 'https://app.otterspace.xyz/dao_landing/sharkdao-1641723620621x716200186443409800'
-  }
+
 
   return (
 
@@ -198,11 +195,11 @@ function WidgetSummary({ selected, setSettingsStep, setProgress, setTabHeader })
           }
         </div>
         <div className="standard-contents">
-          {selected.name != 'wiki' || selected.name != 'otterspace onboarding' &&
+          {selected.name != 'wiki' &&
             <>
               <div className="standard-description">
                 <p>Gatekeeper</p>
-                <p>Manage gatekeeper rules applied to this widget.</p>
+                <p>Manage gatekeeper rules applied to this app.</p>
               </div>
               <button onClick={() => { setSettingsStep(2) }}>modify</button>
             </>
@@ -276,7 +273,7 @@ function GatekeeperSettings({ selected, setSettingsStep, setTabHeader }) {
     for (const [key, value] of Object.entries(appliedRules)) {
       if (value == '') {
         setRuleError({ id: key })
-        console.log('rule error on ', key)
+        
         return;
       }
     }
@@ -289,13 +286,14 @@ function GatekeeperSettings({ selected, setSettingsStep, setTabHeader }) {
     for (const [key, value] of Object.entries(appliedRules)) {
       if (value == '') {
         setRuleError({ id: key })
-        console.log('rule error on ', key)
+        
         return;
       }
     }
     
     await axios.post('/updateWidgetGatekeeperRules', { ens: ens, gk_rules: appliedRules, name: selected.name });
     dispatch(updateWidgetGatekeeper(selected.name, appliedRules))
+    showNotification('saved successfully', 'success', 'your changes were successfully saved')
     setSettingsStep(0);
   }
 
@@ -303,7 +301,7 @@ function GatekeeperSettings({ selected, setSettingsStep, setTabHeader }) {
   return (
     <div className="manage-widgets-configure-gatekeeper-tab">
       <div className="tab-message neutral">
-        <p>Toggle the switches to apply gatekeeper rules to this widget. If multiple rules are applied, the gatekeeper will pass if the connected wallet passes any of the rules. <u onClick={() => { window.open('https://docs.calabara.com/gatekeeper') }}>Learn more</u></p>
+        <p>Toggle the switches to apply gatekeeper rules to this app. If multiple rules are applied, the gatekeeper will pass if the connected wallet passes any of the rules. <u onClick={() => { window.open('https://docs.calabara.com/gatekeeper') }}>Learn more</u></p>
       </div>
       <RuleSelect ruleError={ruleError} setRuleError={setRuleError} appliedRules={appliedRules} setAppliedRules={setAppliedRules} />
       <div className="manage-widgets-next-previous-ctr">

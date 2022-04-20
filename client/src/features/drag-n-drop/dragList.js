@@ -68,7 +68,7 @@ function DragList({setCurrentWikiId, editWikiGroupingClick, lists, setLists}) {
 
 
   const onDragEnd = async (result) => {
-    console.log(result)
+    
     if (!result.destination) {
       return;
     }

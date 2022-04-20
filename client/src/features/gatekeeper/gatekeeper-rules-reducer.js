@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import queryGatekeeper from './gatekeeper.js'
+import {queryGatekeeper} from './gatekeeper.js'
 
 export const gatekeeperRules = createSlice({
   name: 'gatekeeperRules',
@@ -32,13 +32,13 @@ export const selectDashboardRuleResults = state => state.gatekeeperRules.ruleRes
 export const populateDashboardRules = (ens) => async (dispatch, getState, axios) => {
 
   const res = await axios.get('/dashboardRules/' + ens);
-    console.log(res.data)
+  
     dispatch(setDashboardRules(res.data))
 }
 
 export const applyDashboardRules = (walletAddress) => async (dispatch, getState, axios) => {
 
-    let { dashboardWidgets, gatekeeperRules, connectivity } = getState();
+    let { gatekeeperRules, connectivity, user } = getState();
 
     if(!connectivity.connected){
       // wallet not connected, clear rule results
@@ -51,7 +51,7 @@ export const applyDashboardRules = (walletAddress) => async (dispatch, getState,
             ruleTestResults[key] = "";
         
     }) 
-    const result = await queryGatekeeper(walletAddress, gatekeeperRules.dashboardRules, ruleTestResults)
+    const result = await queryGatekeeper(walletAddress, gatekeeperRules.dashboardRules, ruleTestResults, user.discord_id)
     dispatch(setDashboardResults(result))
    }
   }

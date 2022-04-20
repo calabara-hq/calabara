@@ -1,37 +1,63 @@
-.wiki-tab-header{
-    font-size: 20px;
-    margin-top: 20px;
-    margin-bottom: 30px;
-    color: white;
-}
-.newWikiGrouping{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 0 auto;
-  }
-  
-  .newFolder{
-    display: flex;
-    flex-direction: column;
-    max-width: 95%;
-  }
-  
-  .newFolder > div:first-child{
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 30px;
-  }
-  
-  
-  .newFolder p{
-    color: white;
-    font-size: 16px;
-  }
 
-  .help-modal-next-previous-ctr{
-    position: absolute;
-    bottom: 0;
-    width: 99%;
-    display: flex;
-  }
+.wiki-modal > div > h2{
+  color: #d2d2d2;
+  margin: 0;
+  margin-bottom: 20px;
+  margin-left: 10%;
+}
+
+
+.wiki-folder-modal-container{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  grid-gap: 20px;
+}
+/*
+.wiki-folder-modal-container > * {
+  margin-bottom: 30px;
+}
+*/
+
+.wiki-folder-modal-container > .folder-name-delete-flex{
+  display: flex;
+  flex-direction: row;
+  width: 80%;
+  margin: 0 auto;
+  align-items: center;
+  flex-wrap: wrap;
+  grid-gap: 10px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid #24262e;
+}
+
+
+.wiki-folder-modal-container > .folder-name-delete-flex > .folder-name{
+  justify-content: flex-start;
+  color: #d2d2d2;
+}
+
+
+.wiki-folder-modal-container input{
+  padding: 1rem 2rem;
+  border: double 2px transparent;
+  border-radius: 30px;
+  background-image: linear-gradient(#141416, #141416), 
+                    linear-gradient(to right, #e00f8e, #2d66dc);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  color: white;
+  font-size: 1.5rem;
+  outline: none;
+}
+
+input.error{
+border: 2px solid rgb(235, 87, 87);
+}
+
+
+
+
+.wiki-folder-modal-container > .folder-name-delete-flex > .dangerzone{
+  justify-self: flex-end;
+}
