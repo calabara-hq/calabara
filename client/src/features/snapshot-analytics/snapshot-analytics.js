@@ -86,15 +86,15 @@ function Analytics() {
           }
           {(missedVotes.votes.length === 0 && !isConnected) &&
             <>
-              <div className="new-proposal-message">
-                <h2>Connect your wallet to view active proposals!</h2>
+              <div className="new-proposal-message connect-wallet">
+                <p>Connect your wallet to view active proposals!</p>
               </div>
               <button className="snapshot-connect-wallet" onClick={auxillaryConnect}>Connect Wallet</button>
             </>
           }
           {(missedVotes.votes.length === 0 && isConnected) &&
-            <div className="new-proposal-message">
-              <h2>You're all caught up! Have a great day 🌅</h2>
+            <div className="new-proposal-message caught-up">
+              <p>You're all caught up! Have a great day 🌅</p>
             </div>
           }
         </div>

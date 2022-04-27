@@ -33,7 +33,6 @@ export default function SuccessfulDiscordRedirect() {
 
 
             if (authType === 'bot') {
-               // const resp = await axios.post('/discord/addGuild', { wallet, guild_id });
                const resp = await axios.post('/discord/oauthFlow', { type: authType, code: code, ens: ens, wallet: userWallet, redirect_uri: window.location.origin + window.location.pathname });
                 setOauthMode('bot')
             }

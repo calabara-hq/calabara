@@ -1,13 +1,13 @@
 const express = require('express');
 const axios = require('axios')
 const fetch = require('node-fetch')
-const db = require('./db-init')
+const db = require('../helpers/db-init.js')
 const dotenv = require('dotenv')
 const discordApp = express();
 discordApp.use(express.json())
 
-const { getServerRoles, getGuildUserRoles } = require('./discord-bot/discord-bot.js')
-require('./discord-bot/deploy-commands.js')
+const { getServerRoles, getGuildUserRoles } = require('../discord-bot/discord-bot.js')
+require('../discord-bot/deploy-commands.js')
 
 dotenv.config();
 
@@ -69,6 +69,7 @@ discordApp.post('/oauthFlow', async function (req, res, next) {
   })
 
   const oauthData = await response.json();
+  console.log(oauthData)
 
   if (type === 'user') {
     // send the access code and retrieve a user id
@@ -76,6 +77,7 @@ discordApp.post('/oauthFlow', async function (req, res, next) {
   }
 
   else if (type === 'bot') {
+    console.log('HERE')
     await addDiscordBot(ens, oauthData, wallet)
   }
 

@@ -7,14 +7,16 @@ const fs = require('fs');
 const asyncfs = require('fs').promises;
 const views = require('co-views')
 const bodyParser = require('body-parser')
-const googleCalendar = require('./google-calendar')
+const googleCalendar = require('../helpers/google-calendar')
 const dotenv = require('dotenv');
 const axios = require('axios');
-const db = require('./db-init')
+const db = require('../helpers/db-init')
 const util = require('util')
 
-const { discordApp, getGuildRoles } = require('./discord-routes.js')
-
+const { discordApp, getGuildRoles } = require('./discord-routes')
+const { verifySignature, verifySignerIsAdmin } = require('../helpers/edcsa-auth')
+const { authentication } = require('./authentication')
+const { authenticateToken } = require('../middlewares/jwt-middleware')
 
 
 
@@ -44,6 +46,7 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.json())
 
 app.use('/discord', discordApp)
+app.use('/authentication', authentication)
 
 
 
@@ -401,20 +404,27 @@ app.get('/fetchWikis/*', async function (req, res, next) {
 
 })
 
-
-
 app.post('/deleteOrganization', async function (req, res, next) {
-  const { ens } = req.body;
+  const { ens, sig, msg, walletAddress } = req.body;
 
+  let is_signature_valid_and_admin = await verifySignerIsAdmin(sig, msg, walletAddress, ens)
+  
+  if (!is_signature_valid_and_admin ){
+    res.send({ error: true, message: 'invalid signature' })
+    res.status(401)
+  }
+  else {
 
+    await db.query('delete from organizations where ens = $1', [ens]);
 
-  await db.query('delete from organizations where ens = $1', [ens]);
-
-  await asyncfs.rmdir('org-repository/' + ens, { recursive: true });
-
-  res.status(200)
-  res.send('ok')
-
+    try {
+      await asyncfs.rmdir('org-repository/' + ens, { recursive: true });
+    } catch (e) {
+      console.log(e)
+    }
+    res.status(200)
+    res.send({ error: false })
+  }
 
 
 });
@@ -422,9 +432,9 @@ app.post('/deleteOrganization', async function (req, res, next) {
 app.post('/registerUser', async function (req, res, next) {
   const { address } = req.body;
 
-  let result = await db.query('insert into users (address) values ($1) on conflict (address) do update set address = $1 returning discord', [address]).then(clean);
+  let result = await db.query('insert into users (address) values $1 on conflict (address) do update set address = $1 returning discord', [address]).then(clean);
 
-  res.send(JSON.stringify(result.discord));
+  res.send({ discordId: JSON.stringify(result.discord) });
   res.status(200);
 })
 
@@ -440,77 +450,78 @@ app.post('/valid_wl', async function (req, res, next) {
 
 })
 
+
 app.post('/updateSettings', async function (req, res, next) {
-  const fields = req.body
+  const { fields, sig, msg, walletAddress } = req.body
   let logoPath;
 
-  console.log(fields)
-
-  // prep the logo path if a logo was provided
-  if (fields.logo) {
-
-    if (fields.logo.startsWith('img/logos/')) {
-      console.log('HEY IT LOOKS LIKE THIS BITCH')
-      // if they haven't changed from the default, leave it as-is
-      logoPath = fields.logo
-    }
-    else {
-      logoPath = await dataUrlToFile(fields.logo, encodeURIComponent(fields.ens))
-    }
+  let is_signature_valid_and_admin = await verifySignerIsAdmin(sig, msg, walletAddress, fields.ens)
+  if (!is_signature_valid_and_admin) {
+    res.send({ error: true, message: 'invalid signature' });
+    res.status(401);
   }
   else {
-    // give them a default logo if they haven't provided one
-    logoPath = 'img/logos/default-logo.svg'
-  }
+    console.log(fields)
+    // prep the logo path if a logo was provided
+    if (fields.logo) {
+
+      if (fields.logo.startsWith('img/logos/')) {
+        // if they haven't changed from the default, leave it as-is
+        logoPath = fields.logo
+      }
+      else {
+        logoPath = await dataUrlToFile(fields.logo, encodeURIComponent(fields.ens))
+      }
+    }
+    else {
+      // give them a default logo if they haven't provided one
+      logoPath = 'img/logos/default-logo.svg'
+    }
 
 
-  await db.query('insert into organizations (name, members, website, discord, logo, addresses, verified, ens)\
+    await db.query('insert into organizations (name, members, website, discord, logo, addresses, verified, ens)\
   values ($1, $2, $3, $4, $5, $6, $7, $8)\
   on conflict (ens)\
   do update set name=$1, members=$2, website=$3, discord=$4, logo=$5, addresses=$6, verified=$7', [fields.name, fields.members || 0, fields.website, fields.discord, logoPath, fields.addresses, false, fields.ens])
 
 
-  // we allow updates to discord, so if discord exists in the db already, we have to update the entry at that rule_id
+    // we allow updates to discord, so if discord exists in the db already, we have to update the entry at that rule_id
 
 
-  for (var rule in fields.gatekeeper.rules) {
-    if (fields.gatekeeper.rules[rule].gatekeeperType === 'discord') {
-      let rule_id = await db.query('select rule_id from gatekeeper_rules where ens=$1 and rule ->> \'gatekeeperType\' = \'discord\'', [fields.ens]).then(clean);
-      if (rule_id) {
-        console.log('found rule id')
-        db.query('update gatekeeper_rules set rule = $2 where rule_id = $1', [rule_id.rule_id, fields.gatekeeper.rules[rule]]);
+    for (var rule in fields.gatekeeper.rules) {
+      if (fields.gatekeeper.rules[rule].gatekeeperType === 'discord') {
+        let rule_id = await db.query('select rule_id from gatekeeper_rules where ens=$1 and rule ->> \'gatekeeperType\' = \'discord\'', [fields.ens]).then(clean);
+        if (rule_id) {
+          console.log('found rule id')
+          db.query('update gatekeeper_rules set rule = $2 where rule_id = $1', [rule_id.rule_id, fields.gatekeeper.rules[rule]]);
+        }
+        else {
+          console.log('rule id not found')
+          await db.query('insert into gatekeeper_rules (ens, rule) values($1, $2)', [fields.ens, fields.gatekeeper.rules[rule]])
+        }
       }
+
       else {
-        console.log('rule id not found')
         await db.query('insert into gatekeeper_rules (ens, rule) values($1, $2)', [fields.ens, fields.gatekeeper.rules[rule]])
       }
     }
 
-    else {
-      await db.query('insert into gatekeeper_rules (ens, rule) values($1, $2)', [fields.ens, fields.gatekeeper.rules[rule]])
+    //if we deleted any rules, now is the time to remove them from affected widgets
+    console.log(fields.gatekeeper.rulesToDelete)
+
+    for (const i in fields.gatekeeper.rulesToDelete) {
+      const res = await db.query('delete from gatekeeper_rules where rule_id = $1 returning rule', [fields.gatekeeper.rulesToDelete[i]]).then(clean)
+      if (res.rule.gatekeeperType === 'discord') {
+        await db.query('delete from discord_guilds where ens = $1', [fields.ens])
+      }
+      await db.query("update widgets set gatekeeper_rules = gatekeeper_rules #- $1 where ens = $2", ['{' + fields.gatekeeper.rulesToDelete[i] + '}', fields.ens])
+
     }
-  }
 
-  //if we deleted any rules, now is the time to remove them from affected widgets
-  console.log(fields.gatekeeper.rulesToDelete)
-
-  for (const i in fields.gatekeeper.rulesToDelete) {
-    const res = await db.query('delete from gatekeeper_rules where rule_id = $1 returning rule', [fields.gatekeeper.rulesToDelete[i]]).then(clean)
-    if (res.rule.gatekeeperType === 'discord') {
-      await db.query('delete from discord_guilds where ens = $1', [fields.ens])
-    }
-    await db.query("update widgets set gatekeeper_rules = gatekeeper_rules #- $1 where ens = $2", ['{' + fields.gatekeeper.rulesToDelete[i] + '}', fields.ens])
+    res.send({ error: false })
+    res.status(200);
 
   }
-
-
-
-  res.send({ error: 0 })
-
-
-  res.status(200);
-
-
 });
 
 // insert the new widget into an organizations widget collection
@@ -685,7 +696,12 @@ app.post('/updateWikiLists', async function (req, res, next) {
 
 });
 
+app.post('/sample_jwt_route', authenticateToken, async function (req, res, next) {
+  console.log(req.user.address)
+  res.status(200);
+  res.send('OK')
 
+});
 
 
 

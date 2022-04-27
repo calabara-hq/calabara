@@ -250,7 +250,6 @@ function OrganizationInfoComponent({ standardProps, hasImageChanged, setHasImage
     const [logoPath, setLogoPath] = useState(fields.logo);
 
 
-
     const updateName = (e) => {
         if (nameErrorMsg.error) {
             setNameErrorMsg({ error: false, msg: "" });
@@ -300,41 +299,32 @@ function OrganizationInfoComponent({ standardProps, hasImageChanged, setHasImage
     }
 
 
+
     const handleDeleteOrganization = async () => {
-        var result = await signTransaction(walletAddress, { mode: 'delete' }, lockedAdminAddresses)
-        switch (result) {
-            case 0:
-                showNotification('error', 'error', 'user cancelled signature request');
+        let message = 'delete organization dashboard'
+        var result = await signTransaction(message, lockedAdminAddresses)
+
+        switch (result.status) {
+            case 'error':
+                showNotification('error', 'error', result.errorMsg);
                 break;
-            case 1:
-                showNotification('error', 'error', 'metamask error');
-                break;
-            case 2:
-                showNotification('error', 'error', 'signature request rejected. Wallet is not an organization admin');
-                break;
-            case 3:
-                dispatch(deleteOrganization(fields.ens));
-                showNotification('success', 'success', 'organization successfully deleted')
-                history.push('/explore')
-                break;
+            case 'success':
+                // await axios.post('/verifySigner', {sig: result.sig, msg: result.msg, walletAddress: walletAddress})
+                let deleteResult = await axios.post('/deleteOrganization', { ens: ens, sig: result.sig, msg: result.msg, walletAddress: walletAddress });
+                switch (deleteResult.status) {
+                    case 401:
+                        showNotification('error', 'error', 'invalid signature');
+                        break;
+                    case 200:
+                        dispatch(deleteOrganization(fields.ens));
+                        showNotification('success', 'success', 'organization successfully deleted')
+                        history.push('/explore')
+                        break;
+
+                }
         }
     }
 
-    /*
-        useEffect(() => {
-            if (ens !== 'new' && !hasImageChanged && fields.logo) {
-                WebWorker.settingsProcessLogo(dispatch, logoCache).then(result => {
-                    const reader = new FileReader();
-                    reader.onload = () => {
-                        let base64data = reader.result;
-                        setFields({ logo: base64data })
-                    }
-                    reader.readAsDataURL(result);
-                    setHasImageChanged(true)
-                })
-            }
-        }, [fields.logo])
-    */
 
     return (
         <div className="org-profile-tab" ref={infoRef}>
@@ -994,11 +984,18 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
     }
     const calculateColor = (decimal) => {
         if (decimal == 0) {
-            return ['rgba(211, 211, 211, 1)', 'rgba(18, 52, 86, 0.3)']
+            return 'rgba(211, 211, 211, 1)'
         }
-        return ['rgb(' + ((decimal >> 16) & 0xff) + ',' + ((decimal >> 8) & 0xff) + ',' + (decimal & 0xff) + ')',
-        'rgba(' + ((decimal >> 16) & 0xff) + ',' + ((decimal >> 8) & 0xff) + ',' + (decimal & 0xff) + ',0.3)']
+        return 'rgb(' + ((decimal >> 16) & 0xff) + ',' + ((decimal >> 8) & 0xff) + ',' + (decimal & 0xff) + ')'
     }
+
+    const calculateBackgroundColor = (decimal) => {
+        if (decimal == 0) {
+            return 'rgba(18, 52, 86, 0.3)'
+        }
+        return 'rgba(' + ((decimal >> 16) & 0xff) + ',' + ((decimal >> 8) & 0xff) + ',' + (decimal & 0xff) + ',0.3)'
+    }
+
 
 
     const addDiscordRule = () => {
@@ -1072,7 +1069,7 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
                         <div className="discord-guild-roles">
                             <p className="discord-roles-header">server roles</p>
                             {guildRoles.map((val) => {
-                                return <span style={{ backgroundColor: calculateColor(val.color)[1], color: calculateColor(val.color)[0] }}><p>{val.name}</p></span>
+                                return <span style={{ backgroundColor: calculateBackgroundColor(val.color), color: calculateColor(val.color) }}><p>{val.name}</p></span>
                             })}
                         </div>
                     </div>
@@ -1201,46 +1198,38 @@ function SaveComponent({ standardProps, infoErrorController, adminErrorControlle
 
 
         let ruleDuplicates = fields.gatekeeper.rules.filter(({ gatekeeperAddress: gk_addy1, guildId: gid1 }) => !Object.values(existingGatekeeperRules).some(({ gatekeeperAddress: gk_addy2, guildId: gid2 }) => (gk_addy2 === gk_addy1 && gid1 === gid2)))
-        //let discordDuplicates = fields.gatekeeper.rules.filter(({ guildId: gid1 }) => !Object.values(existingGatekeeperRules).some(({ guildId: gid2 }) => gid1 === gid2))
 
 
 
 
         finalSubmission.gatekeeper.rules = ruleDuplicates
 
-        var compressedSubmission = JSON.parse(JSON.stringify(finalSubmission))
-        compressedSubmission.logo = compressedSubmission.logo.substring(0, 25) + '...';
+        let message = 'update settings'
 
-
-
-
-
-        var result = await signTransaction(compressedSubmission, whitelist);
-        switch (result) {
-            case 0:
-                showNotification('error', 'error', 'user cancelled signature request');
+        var result = await signTransaction(message, whitelist);
+        switch (result.status) {
+            case 'error':
+                showNotification('error', 'error', result.errorMsg);
                 break;
-            case 1:
-                showNotification('error', 'error', 'metamask error');
-                break;
-            case 2:
-                showNotification('error', 'error', 'signature request rejected. Wallet is not an organization admin');
-                break;
-            case 3:
-                await postData(finalSubmission);
-                if (ens === 'new') dispatch(addOrganization({ name: fields.name, members: 0, logo: fields.logo, verified: false, ens: fields.ens }));
-                else if (ens !== 'new') {
-                    dispatch(updateDashboardInfo({ name: fields.name, website: fields.website, logo: fields.logoPath || fields.logo, logoBlob: fields.logoBlob, discord: fields.discord, addresses: finalSubmission.addresses }))
-                    dispatch(populateDashboardRules(fields.ens))
+            case 'success':
+                // await axios.post('/verifySigner', {sig: result.sig, msg: result.msg, walletAddress: walletAddress})
+                let settingsResult = await axios.post('/updateSettings', { fields: finalSubmission, sig: result.sig, msg: result.msg, walletAddress: walletAddress });
+                console.log(settingsResult)
+                switch (settingsResult.status) {
+                    case 401:
+                        showNotification('error', 'error', 'invalid signature');
+                        break;
+                    case 200:
+                        if (ens === 'new') dispatch(addOrganization({ name: fields.name, members: 0, logo: fields.logo, verified: false, ens: fields.ens }));
+                        else if (ens !== 'new') {
+                            dispatch(updateDashboardInfo({ name: fields.name, website: fields.website, logo: fields.logoPath || fields.logo, logoBlob: fields.logoBlob, discord: fields.discord, addresses: finalSubmission.addresses }))
+                            dispatch(populateDashboardRules(fields.ens))
+                        }
+                        showNotification('saved successfully', 'success', 'your changes were successfully saved')
+                        handleClose();
+                        break;
 
                 }
-                showNotification('saved successfully', 'success', 'your changes were successfully saved')
-                handleClose();
-                break;
-            case 4:
-                showNotification('error', 'error', 'please connect your wallet to write data');
-
-
 
         }
     }

@@ -4,6 +4,8 @@ import Onboard from 'bnc-onboard'
 import { showNotification } from '../notifications/notifications';
 import Identicon from '../identicon/identicon';
 import store from '../../app/store.js'
+import axios from 'axios';
+import jwt_decode from 'jwt-decode'
 
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -16,7 +18,8 @@ import {
   manageAccountChange,
 } from './wallet-reducer';
 
-import { registerUser } from '../user/user-reducer';
+import { registerUser, selectNonce, setNonce } from '../user/user-reducer';
+import { authenticated_post } from '../common/common';
 
 
 
@@ -196,64 +199,43 @@ async function checkERC721Balance(walletAddress, contractAddress) {
 }
 
 
-async function signTransaction(message, whitelist) {
-  const data = message;
-
+async function signTransaction(message, whitelist, nonce) {
   let state = onboard.getState();
 
   // if web3.currentProvider == null, ask user to sign in.
 
 
-  /* error codes --> 
-
-    0 --> user canceled transaction
-    1 --> metamask error
-    2 --> invalid permissions
-    3 --> success
-    4 --> not connected
-
-  */
-
-
-
   const transact = async () => {
     let address = await validAddress(state.address);
-    const msgParams = [
-      {
-        type: 'string',
-        name: 'Message',
-        value: JSON.stringify(data)
-      },
-    ]
+    const msg = web3.utils.utf8ToHex(`Signing one time message with nonce: ${12345678}`)
 
-    var params = [msgParams, address]
-    var method = 'eth_signTypedData'
-    return web3.currentProvider.send({ method, params, address }, async function (err, result) {
-      if (err) {
-        return 0;
+    try {
+      let signature = await web3.eth.personal.sign(msg, address);
+      for (var i in whitelist) {
+        if (whitelist[i].endsWith('.eth')) {
+          whitelist[i] = await web3.eth.ens.getAddress(whitelist[i])
+        }
+        if (whitelist[i] == address) {
+          return { status: 'success', sig: signature, msg: msg }
+        }
       }
-      if (result.error) {
-        return 1;
+      // user doesn't have permission to sign this transaction
+      return { status: 'error', errorMsg: 'Signature rejected. Wallet is not an organization admin' }
+    } catch (err) {
+      if (err.code === 4001) {
+        return { status: 'error', errorMsg: 'User denied signature request' }
       }
       else {
-        for (var i in whitelist) {
-          if (whitelist[i].endsWith('.eth')) {
-            whitelist[i] = await web3.eth.ens.getAddress(whitelist[i])
-          }
-          if (whitelist[i] == address) {
-            return 3;
-          }
-        }
-        // user doesn't have permission to sign this transaction
-        return 2;
+        return { status: 'error', errorMsg: 'MetaMask error' }
       }
-    })
+    }
   }
+
 
   if (!state.address) {
     const res = await onboard.walletSelect();
     if (!res) {
-      return 4;
+      return { status: 'error', errorMsg: 'please connect your wallet to write data' }
     }
     else {
       await onboard.walletCheck();
@@ -267,6 +249,35 @@ async function signTransaction(message, whitelist) {
     return transact();
   }
 }
+
+async function initialSignature(nonce) {
+  let state = onboard.getState();
+
+
+  const transact = async () => {
+    let address = await validAddress(state.address);
+    const msg = web3.utils.utf8ToHex(`Signing one time message with nonce: ${nonce}`)
+
+    try {
+      let signature = await web3.eth.personal.sign(msg, address);
+
+      return { status: 'success', sig: signature, msg: msg }
+    } catch (err) {
+      if (err.code === 4001) {
+        return { status: 'error', errorMsg: 'User denied signature request' }
+      }
+      else {
+        return { status: 'error', errorMsg: 'MetaMask error' }
+      }
+    }
+  }
+
+
+  return transact();
+}
+
+
+
 
 const auxillaryConnect = async () => {
   const res = await onboard.walletSelect();
@@ -305,17 +316,70 @@ function Wallet() {
 
 
 
+  const authenticationFlow = async (walletAddress) => {
+    // once a user has connected, check their jwt. 
+    // if jwt is expired or null, send request to server with wallet address.
+    // on the server, generate & store a random nonce and return it 
+    // ask the user to sign a message with the nonce
+    // send the signature back to the server
+    // send the user a jwt and store it    
+    const nonce_from_server = await axios.post('/authentication/generate_nonce', { address: walletAddress })
+    const signatureResult = await initialSignature(nonce_from_server.data.nonce);
+    try {
+      let jwt_result = await axios.post('/authentication/generate_jwt', { sig: signatureResult.sig, address: walletAddress })
+      console.log(jwt_result)
+      localStorage.setItem('jwt', jwt_result.data.jwt)
+      showNotification('success', 'success', 'successfully authenticated')
+      dispatch(setConnected(walletAddress))
+      dispatch(registerUser(walletAddress))
+    } catch (e) {
+      showNotification('error', 'error', 'unauthorized signature')
+    }
+
+  }
+
+  // pull current jwt from local storage and check it's expiration
+
+  const checkCurrentJwt = async () => {
+    const token = localStorage.getItem('jwt');
+    try {
+      const { exp } = jwt_decode(token);
+      if (Date.now() >= exp * 1000) {
+        return false;
+      }
+    } catch (err) {
+      return false;
+    }
+    return true;
+  }
+
 
   useEffect(async () => {
     (async () => {
       const selected = localStorage.getItem('selectedWallet');
       if (selected != '' && selected != undefined && selected != 'undefined') {
-        await onboard.walletSelect(selected);
-        await onboard.walletCheck();
-        const state = onboard.getState();
-        const checkSumAddr = web3Infura.utils.toChecksumAddress(state.address)
-        dispatch(setConnected(checkSumAddr))
-        dispatch(registerUser(checkSumAddr))
+        const res = await onboard.walletSelect(selected);
+        if (res) {
+          await onboard.walletCheck();
+          const state = onboard.getState();
+          const checkSumAddr = web3Infura.utils.toChecksumAddress(state.address)
+          let is_jwt_valid = await checkCurrentJwt()
+
+          // we'll auto connect if possible. otherwise just wait for connect click
+
+          if (is_jwt_valid) {
+            dispatch(setConnected(checkSumAddr))
+            dispatch(registerUser(checkSumAddr))
+          }
+          //await authenticationFlow(checkSumAddr)
+          /*
+          let signatureResult = await initialSignature();
+          console.log(signatureResult)
+          const checkSumAddr = web3Infura.utils.toChecksumAddress(state.address)
+          dispatch(setConnected(checkSumAddr))
+          dispatch(registerUser(checkSumAddr))
+          */
+        }
       }
     })();
   }, [])
@@ -328,17 +392,19 @@ function Wallet() {
   }, [isConnected])
 
 
+  /*
+    useEffect(async () => {
+      if (account_change === true && !isConnected) {
+        const state = onboard.getState();
+        const checkSumAddr = web3Infura.utils.toChecksumAddress(state.address)
+        dispatch(setConnected(checkSumAddr))
+        dispatch(registerUser(checkSumAddr))
+        dispatch(setAccountChange(false))
+  
+      }
+    }, [account_change])
+  */
 
-  useEffect(async () => {
-    if (account_change === true && !isConnected) {
-      const state = onboard.getState();
-      const checkSumAddr = web3Infura.utils.toChecksumAddress(state.address)
-      dispatch(setConnected(checkSumAddr))
-      dispatch(registerUser(checkSumAddr))
-      dispatch(setAccountChange(false))
-
-    }
-  }, [account_change])
 
   const handleConnectClick = async () => {
     if (!isConnected) {
@@ -347,8 +413,19 @@ function Wallet() {
         await onboard.walletCheck();
         const state = onboard.getState();
         const checkSumAddr = web3Infura.utils.toChecksumAddress(state.address)
-        dispatch(setConnected(checkSumAddr))
-        dispatch(registerUser(checkSumAddr))
+        let is_jwt_valid = await checkCurrentJwt()
+
+        // we'll auto connect if possible.
+
+        if (is_jwt_valid) {
+          dispatch(setConnected(checkSumAddr))
+          dispatch(registerUser(checkSumAddr))
+        }
+        // otherwise, start the auth flow and get a new token
+
+        else {
+          await authenticationFlow(checkSumAddr)
+        }
       }
     }
     else if (isConnected) {
@@ -363,6 +440,7 @@ function Wallet() {
       dispatch(setDisconnected());
       setConnectBtnTxt('Connect wallet')
       setIsMoreExpanded(false);
+      localStorage.removeItem('jwt')
     }
   }
 

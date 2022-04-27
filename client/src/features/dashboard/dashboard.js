@@ -7,7 +7,7 @@ import Glyphicon from '@strongdm/glyphicon'
 import calendarLogo from '../../img/calendar.svg'
 import snapshotLogo from '../../img/snapshot.svg'
 import wikiLogo from '../../img/wiki.svg'
-import { batchFetchDashboardData, fetchUserMembership } from '../common/common'
+import { authenticated_post, batchFetchDashboardData, fetchUserMembership } from '../common/common'
 import { showNotification } from '../notifications/notifications'
 
 
@@ -81,6 +81,7 @@ export default function Dashboard() {
       return;
     }
   }
+  
 
   useEffect(() => {
     batchFetchDashboardData(ens, info, dispatch);
@@ -109,6 +110,7 @@ export default function Dashboard() {
 
   return (
     <div className="dashboard-wrapper">
+      <button onClick={() => {authenticated_post('/sample_jwt_route', {dummy: 'dummy'})}}>jwt_route</button>
       {info && <InfoCard ens={ens} info={info} membership={membership} />}
       <section className="widget-cards">
 
@@ -182,16 +184,20 @@ function InfoCard({ info, ens }) {
 
 
   useEffect(() => {
+    console.log(dashboardRules)
+    console.log(discord_id)
+    let promptDiscord = false
     Object.keys(dashboardRules).map((key) => {
       if (dashboardRules[key].gatekeeperType === 'discord') {
         if (!discord_id) {
-          setPromptDiscordLink(isConnected)
+          promptDiscord = isConnected;
         }
         else if (discord_id && isConnected) {
-          setPromptDiscordLink(false)
+          promptDiscord = false;
         }
       }
     })
+    setPromptDiscordLink(promptDiscord)
   }, [dashboardRules, discord_id, isConnected])
 
 

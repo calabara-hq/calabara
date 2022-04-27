@@ -78,11 +78,7 @@ export const deleteOrganization = (ens) => async (dispatch, getState, axios) => 
       break;
     }
   }
-
-
-
   dispatch(populateOrganizations(cardsCopy))
-  await axios.post('/deleteOrganization', { ens: ens });
 }
 
 export const populateInitialMembership = (walletAddress) => async (dispatch, getState, axios) => {

@@ -43,6 +43,7 @@ import {
   selectDashboardRuleResults,
   setDashboardRules,
 } from '../gatekeeper/gatekeeper-rules-reducer'
+import { showNotification } from '../notifications/notifications.js';
 
 
 export const batchFetchDashboardData = async (ens, info, dispatch) => {
@@ -66,4 +67,14 @@ export const fetchUserMembership = async (walletAddress, membershipPulled, dispa
   if (!membershipPulled && walletAddress) {
     dispatch(populateInitialMembership(walletAddress));
   }
+}
+
+export const authenticated_post = async (endpoint, body) => {
+  try {
+    let res = await axios.post(endpoint, body, { headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt')}` } })
+    return res
+  } catch (e) {
+    showNotification('hint', 'hint', 'please connect your wallet')
+  }
+
 }
