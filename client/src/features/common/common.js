@@ -44,6 +44,7 @@ import {
   setDashboardRules,
 } from '../gatekeeper/gatekeeper-rules-reducer'
 import { showNotification } from '../notifications/notifications.js';
+import { signMessage } from '../wallet/wallet.js';
 
 
 export const batchFetchDashboardData = async (ens, info, dispatch) => {
@@ -70,11 +71,32 @@ export const fetchUserMembership = async (walletAddress, membershipPulled, dispa
 }
 
 export const authenticated_post = async (endpoint, body) => {
+  
   try {
     let res = await axios.post(endpoint, body, { headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt')}` } })
     return res
   } catch (e) {
-    showNotification('hint', 'hint', 'please connect your wallet')
+    switch(e.response.status){
+      case 401:
+        showNotification('error', 'error', 'unauthorized')
+        break;
+      case 403:
+        showNotification('error', 'error', 'this wallet is not an organization admin')
+        break;
+    }
+    return null
   }
+  
+}
 
+export const secure_sign = async (walletAddress) => {
+  const nonce_from_server = await axios.post('/authentication/generate_nonce', { address: walletAddress })
+  const signatureResult = await signMessage(nonce_from_server.data.nonce);
+  try {
+    let jwt_result = await axios.post('/authentication/generate_jwt', { sig: signatureResult.sig, address: walletAddress })
+    localStorage.setItem('jwt', jwt_result.data.jwt)
+    return jwt_result.data.jwt
+  } catch (e) {
+    return null
+  }
 }

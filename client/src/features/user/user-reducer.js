@@ -10,28 +10,10 @@ export const user = createSlice({
         setDiscordId: (state, data) => {
             state.discord_id = data.payload;
         },
-        setNonce: (state, data) => {
-            state.nonce = data.payload;
-        },
     },
 });
 
 export const { setDiscordId, setNonce } = user.actions;
 export const selectDiscordId = state => state.user.discord_id;
-
-
-export const registerUser = (walletAddress) => async (dispatch, axios) => {
-    /*
-    const result = await axios.post('/user/registerUser', { address: walletAddress });
-    if (result.data.discordId === 'null') {
-        dispatch(setDiscordId(null))
-    }
-    else {
-        dispatch(setDiscordId(result.data.discordId))
-    }
-    */
-}
-
-
 
 export default user.reducer;

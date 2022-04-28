@@ -78,8 +78,10 @@ export default function WikiDisplay({ mode }) {
 
     else if (cleanup.type === 'delete') {
       await axios.post('/wiki/deleteWikiGrouping', { ens: cleanup.ens, groupID: cleanup.groupID })
+      setModalOpen(false)
       dispatch(removeFromWikiList(cleanup.groupID));
       setCurrentWikiId(-1);
+      setGroupID(null)
 
     }
   }

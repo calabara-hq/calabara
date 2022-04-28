@@ -4,7 +4,7 @@ import { useHistory, useParams } from 'react-router-dom'
 import BackButton from '../back-button/back-button'
 import axios from 'axios'
 import '../../css/settings.css'
-import { signTransaction, validAddress, erc20GetSymbolAndDecimal, erc721GetSymbol } from '../wallet/wallet'
+import {  validAddress, erc20GetSymbolAndDecimal, erc721GetSymbol } from '../wallet/wallet'
 import { showNotification } from '../notifications/notifications'
 import { selectConnectedAddress } from '../wallet/wallet-reducer'
 import { populateDashboardInfo, selectDashboardInfo, updateDashboardInfo } from '../dashboard/dashboard-info-reducer'
@@ -13,6 +13,7 @@ import { deleteOrganization, addOrganization, selectLogoCache, populateLogoCache
 import * as WebWorker from '../../app/worker-client';
 import Glyphicon from '@strongdm/glyphicon'
 import DeleteGkRuleModal from './delete-gk-rule-modal'
+import { authenticated_post, secure_sign } from '../common/common'
 
 export default function SettingsManager() {
     const [fieldsReady, setFieldsReady] = useState(false)
@@ -34,13 +35,11 @@ export default function SettingsManager() {
         {}
     )
 
-    const lockedAdminAddresses = dashboardInfo.addresses || [];
 
 
     const standardProps = {
         fields,
         setFields,
-        lockedAdminAddresses
     }
 
     const infoErrorController = {
@@ -238,7 +237,7 @@ function OrganizationENSComponent({ standardProps }) {
 }
 
 function OrganizationInfoComponent({ standardProps, hasImageChanged, setHasImageChanged, infoErrorController }) {
-    const { fields, setFields, lockedAdminAddresses } = standardProps
+    const { fields, setFields } = standardProps
     const { nameErrorMsg, setNameErrorMsg, websiteErrorMsg, setWebsiteErrorMsg, infoRef } = infoErrorController;
     const imageUploader = useRef(null);
     const walletAddress = useSelector(selectConnectedAddress);
@@ -301,27 +300,14 @@ function OrganizationInfoComponent({ standardProps, hasImageChanged, setHasImage
 
 
     const handleDeleteOrganization = async () => {
-        let message = 'delete organization dashboard'
-        var result = await signTransaction(message, lockedAdminAddresses)
-
-        switch (result.status) {
-            case 'error':
-                showNotification('error', 'error', result.errorMsg);
-                break;
-            case 'success':
-                // await axios.post('/verifySigner', {sig: result.sig, msg: result.msg, walletAddress: walletAddress})
-                let deleteResult = await axios.post('/settings/deleteOrganization', { ens: ens, sig: result.sig, msg: result.msg, walletAddress: walletAddress });
-                switch (deleteResult.status) {
-                    case 401:
-                        showNotification('error', 'error', 'invalid signature');
-                        break;
-                    case 200:
-                        dispatch(deleteOrganization(fields.ens));
-                        showNotification('success', 'success', 'organization successfully deleted')
-                        history.push('/explore')
-                        break;
-
-                }
+        let result = await secure_sign(walletAddress)
+        if (result) {
+            let deleteResult = await authenticated_post('/settings/deleteOrganization', { ens: ens, sig: result.sig, msg: result.msg, walletAddress: walletAddress });
+            if (deleteResult) {
+                dispatch(deleteOrganization(fields.ens));
+                showNotification('success', 'success', 'organization successfully deleted')
+                history.push('/explore')
+            }
         }
     }
 
@@ -444,7 +430,7 @@ function AdminAddressInput({ addressErrors, parentAddress, index, updateElementI
 }
 
 function OrganizationGatekeeperComponent({ standardProps }) {
-    const { fields, setFields, lockedAdminAddresses } = standardProps;
+    const { fields, setFields } = standardProps;
     const [gatekeeperInnerProgress, setGatekeeperInnerProgress] = useState(0);
     const existingRules = useSelector(selectDashboardRules);
     const [addGatekeeperOptionClick, setAddGatekeeperOptionClick] = useState('none')
@@ -940,13 +926,14 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
         setBotFailureMessage('')
         //pass guildId as autofill
         let popout;
+        let state = encodeURIComponent(JSON.stringify({walletAddress: walletAddress, integrationType: 'bot', ens: ens}))
         if (process.env.NODE_ENV === 'development') {
-            popout = window.open(`https://discord.com/api/oauth2/authorize?client_id=895719351406190662&permissions=0&redirect_uri=https%3A%2F%2Flocalhost%3A3000%2Foauth%2Fdiscord&response_type=code&scope=identify%20bot%20applications.commands&state=${walletAddress},bot,${ens}`, 'popUpWindow', 'height=700,width=600,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes')
+            popout = window.open(`https://discord.com/api/oauth2/authorize?client_id=895719351406190662&permissions=0&redirect_uri=https%3A%2F%2Flocalhost%3A3000%2Foauth%2Fdiscord&response_type=code&scope=identify%20bot%20applications.commands&state=${state}`, 'popUpWindow', 'height=700,width=600,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes')
 
         }
 
         else if (process.env.NODE_ENV === 'production') {
-            popout = window.open(`https://discord.com/api/oauth2/authorize?client_id=895719351406190662&permissions=0&redirect_uri=https%3A%2F%2Flocalhost%3A3000%2Foauth%2Fdiscord&response_type=code&scope=identify%20bot%20applications.commands&state=${walletAddress},bot,${ens}`, 'popUpWindow', 'height=700,width=600,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes')
+            popout = window.open(`https://discord.com/api/oauth2/authorize?client_id=895719351406190662&permissions=0&redirect_uri=https%3A%2F%2Flocalhost%3A3000%2Foauth%2Fdiscord&response_type=code&scope=identify%20bot%20applications.commands&state=${state}`, 'popUpWindow', 'height=700,width=600,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes')
         }
 
         var pollTimer = window.setInterval(async function () {
@@ -1088,7 +1075,7 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
 }
 
 function SaveComponent({ standardProps, infoErrorController, adminErrorController }) {
-    const { fields, setFields, lockedAdminAddresses } = standardProps;
+    const { fields, setFields } = standardProps;
     const { setNameErrorMsg, setWebsiteErrorMsg, infoRef } = infoErrorController;
     const { addressErrors, setAddressErrors, addresses, setAddresses, adminRef } = adminErrorController;
     const walletAddress = useSelector(selectConnectedAddress)
@@ -1170,18 +1157,6 @@ function SaveComponent({ standardProps, infoErrorController, adminErrorControlle
             return;
         }
 
-        let whitelist = [];
-        if (ens === 'new') {
-            // add wallet address to whitelist if this is a new org. 
-            // this will allow user to write data on initial setup.
-            whitelist = [walletAddress]
-        }
-
-        else if (ens !== 'new') {
-            // DO NOT push wallet address to whitelist. Only use the locked addresses.
-            whitelist = lockedAdminAddresses;
-        }
-
 
         // in both cases for new and existing orgs, we want to push the resolved ens and walletAddress, then remove duplicates
         const resolvedEns = await validAddress(fields.ens);
@@ -1206,31 +1181,18 @@ function SaveComponent({ standardProps, infoErrorController, adminErrorControlle
 
         let message = 'update settings'
 
-        var result = await signTransaction(message, whitelist);
-        switch (result.status) {
-            case 'error':
-                showNotification('error', 'error', result.errorMsg);
-                break;
-            case 'success':
-                // await axios.post('/verifySigner', {sig: result.sig, msg: result.msg, walletAddress: walletAddress})
-                let settingsResult = await axios.post('/updateSettings', { fields: finalSubmission, sig: result.sig, msg: result.msg, walletAddress: walletAddress });
-                console.log(settingsResult)
-                switch (settingsResult.status) {
-                    case 401:
-                        showNotification('error', 'error', 'invalid signature');
-                        break;
-                    case 200:
-                        if (ens === 'new') dispatch(addOrganization({ name: fields.name, members: 0, logo: fields.logo, verified: false, ens: fields.ens }));
-                        else if (ens !== 'new') {
-                            dispatch(updateDashboardInfo({ name: fields.name, website: fields.website, logo: fields.logoPath || fields.logo, logoBlob: fields.logoBlob, discord: fields.discord, addresses: finalSubmission.addresses }))
-                            dispatch(populateDashboardRules(fields.ens))
-                        }
-                        showNotification('saved successfully', 'success', 'your changes were successfully saved')
-                        handleClose();
-                        break;
-
+        var result = await secure_sign(walletAddress);
+        if (result) {
+            let settingsResult = await authenticated_post('/settings/updateSettings', { ens: fields.ens, fields: finalSubmission, sig: result.sig, msg: result.msg, walletAddress: walletAddress });
+            if (settingsResult) {
+                if (ens === 'new') dispatch(addOrganization({ name: fields.name, members: 0, logo: fields.logo, verified: false, ens: fields.ens }));
+                else if (ens !== 'new') {
+                    dispatch(updateDashboardInfo({ name: fields.name, website: fields.website, logo: fields.logoPath || fields.logo, logoBlob: fields.logoBlob, discord: fields.discord, addresses: finalSubmission.addresses }))
+                    dispatch(populateDashboardRules(fields.ens))
                 }
-
+                showNotification('saved successfully', 'success', 'your changes were successfully saved')
+                handleClose();
+            }
         }
     }
 

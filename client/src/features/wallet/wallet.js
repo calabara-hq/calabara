@@ -18,7 +18,7 @@ import {
   manageAccountChange,
 } from './wallet-reducer';
 
-import { registerUser, selectNonce, setNonce } from '../user/user-reducer';
+import registerUser from '../user/user';
 import { authenticated_post } from '../common/common';
 
 
@@ -198,7 +198,6 @@ async function checkERC721Balance(walletAddress, contractAddress) {
 
 }
 
-
 async function signTransaction(message, whitelist, nonce) {
   let state = onboard.getState();
 
@@ -250,7 +249,7 @@ async function signTransaction(message, whitelist, nonce) {
   }
 }
 
-async function initialSignature(nonce) {
+async function signMessage(nonce) {
   let state = onboard.getState();
 
 
@@ -324,14 +323,14 @@ function Wallet() {
     // send the signature back to the server
     // send the user a jwt and store it    
     const nonce_from_server = await axios.post('/authentication/generate_nonce', { address: walletAddress })
-    const signatureResult = await initialSignature(nonce_from_server.data.nonce);
+    const signatureResult = await signMessage(nonce_from_server.data.nonce);
     try {
       let jwt_result = await axios.post('/authentication/generate_jwt', { sig: signatureResult.sig, address: walletAddress })
       console.log(jwt_result)
       localStorage.setItem('jwt', jwt_result.data.jwt)
       showNotification('success', 'success', 'successfully authenticated')
       dispatch(setConnected(walletAddress))
-      dispatch(registerUser(walletAddress))
+      await registerUser(walletAddress)
     } catch (e) {
       showNotification('error', 'error', 'unauthorized signature')
     }
@@ -353,6 +352,7 @@ function Wallet() {
     return true;
   }
 
+  
 
   useEffect(async () => {
     (async () => {
@@ -369,7 +369,7 @@ function Wallet() {
 
           if (is_jwt_valid) {
             dispatch(setConnected(checkSumAddr))
-            dispatch(registerUser(checkSumAddr))
+            await registerUser(checkSumAddr)
           }
           //await authenticationFlow(checkSumAddr)
           /*
@@ -419,7 +419,7 @@ function Wallet() {
 
         if (is_jwt_valid) {
           dispatch(setConnected(checkSumAddr))
-          dispatch(registerUser(checkSumAddr))
+          await registerUser(checkSumAddr)
         }
         // otherwise, start the auth flow and get a new token
 
@@ -476,4 +476,4 @@ function Wallet() {
 }
 
 export default Wallet;
-export { auxillaryConnect, getAddress, validAddress, erc20GetSymbolAndDecimal, erc721GetSymbol, signTransaction, checkERC20Balance, checkERC721Balance }
+export { auxillaryConnect, getAddress, validAddress, erc20GetSymbolAndDecimal, erc721GetSymbol, signMessage, signTransaction, checkERC20Balance, checkERC721Balance }

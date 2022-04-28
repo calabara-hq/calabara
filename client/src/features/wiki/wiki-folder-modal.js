@@ -57,6 +57,7 @@ export default function WikiModal({ modalOpen, handleClose, groupID }) {
 
 
     useEffect(() => {
+        console.log(groupID)
         if (groupID != null) {
             setAppliedRules({ type: 'update_all', payload: wikiList[groupID].gk_rules })
             setGroupingName(wikiList[groupID].group_name)
@@ -147,7 +148,7 @@ function WikiFolderName({ groupID, groupingName, setGroupingName, isFolderError,
 
     const deleteGrouping = async () => {
     
-        handleClose({type: 'delete', ens: ens, groupID, groupID});
+        handleClose({type: 'delete', ens: ens, groupID: groupID});
     }
     return (
         <div className="folder-name-delete-flex">

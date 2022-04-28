@@ -266,7 +266,7 @@ function FinalMessage({ setProgress, selected, appliedRules, metadata, setSelect
 
   const finalize = async () => {
 
-    const req = axios.post('/addWidget', { ens: ens, name: selected.name, metadata: metadata, gatekeeper_rules: appliedRules })
+    const req = axios.post('/dashboard/addWidget', { ens: ens, name: selected.name, metadata: metadata, gatekeeper_rules: appliedRules })
 
     showNotification('saved successfully', 'success', 'successfully added application')
     dispatch(updateWidgets(1, { ens: ens, name: selected.name, metadata: metadata, gatekeeper_rules: appliedRules, notify: 0 }))

@@ -44,7 +44,7 @@ export const dashboardWidgets = createSlice({
 export const { setInstalledWidgets, setInstallableWidgets, setVisibleWidgets, setNotification, dashboardWidgetsReset } = dashboardWidgets.actions;
 
 
-export const populateVisibleWidgets = () => async (dispatch, getState) => {
+export const populateVisibleWidgets = (isAdmin) => async (dispatch, getState) => {
 
   let { dashboardWidgets, gatekeeperRules } = getState();
 
@@ -62,37 +62,46 @@ export const populateVisibleWidgets = () => async (dispatch, getState) => {
   */
 
 
+  // if they are an admin, just show them everything
+  if (isAdmin) {
+    filteredWidgets = dashboardWidgets.installedWidgets;
+  }
+
+
   // check the gatekeeper configured for each widget
-  dashboardWidgets.installedWidgets.map(function (widget) {
+
+  else {
+    dashboardWidgets.installedWidgets.map(function (widget) {
 
 
-    if (Object.keys(widget.gatekeeper_rules).length == 0) {
-      // no rules set. add all to filtered widgets
-      filteredWidgets.push(widget);
-    }
-    else {
-      for (const [key, value] of Object.entries(widget.gatekeeper_rules)) {
-        // if value is an object, it's a discord rule
-        if (typeof value === 'object') {
-          // map over role values and check if any of them match the rule_id's that are in gatekeeper ruleResults
-          // only run comparisons once we have values for ruleResults
-          const roleTestResult = testDiscordRoles(value, gatekeeperRules.ruleResults[key])
-          if (roleTestResult === 'pass') {
-            filteredWidgets.push(widget);
-            break;
+      if (Object.keys(widget.gatekeeper_rules).length == 0) {
+        // no rules set. add all to filtered widgets
+        filteredWidgets.push(widget);
+      }
+      else {
+        for (const [key, value] of Object.entries(widget.gatekeeper_rules)) {
+          // if value is an object, it's a discord rule
+          if (typeof value === 'object') {
+            // map over role values and check if any of them match the rule_id's that are in gatekeeper ruleResults
+            // only run comparisons once we have values for ruleResults
+            const roleTestResult = testDiscordRoles(value, gatekeeperRules.ruleResults[key])
+            if (roleTestResult === 'pass') {
+              filteredWidgets.push(widget);
+              break;
+            }
           }
-        }
 
-        // otherwise, it's an erc20/erc721 rule
-        else {
-          if (gatekeeperRules.ruleResults[key] >= value) {
-            filteredWidgets.push(widget)
-            break;
+          // otherwise, it's an erc20/erc721 rule
+          else {
+            if (gatekeeperRules.ruleResults[key] >= value) {
+              filteredWidgets.push(widget)
+              break;
+            }
           }
         }
       }
-    }
-  })
+    })
+  }
 
   dispatch(setVisibleWidgets(filteredWidgets))
 

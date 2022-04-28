@@ -81,7 +81,7 @@ export default function Dashboard() {
       return;
     }
   }
-  
+
 
   useEffect(() => {
     batchFetchDashboardData(ens, info, dispatch);
@@ -98,19 +98,20 @@ export default function Dashboard() {
 
   useEffect(() => {
     // if there are widgets installed, we need to test the rules with the connected wallet.
+
     dispatch(applyDashboardRules(walletAddress))
   }, [walletAddress, discordId, gatekeeperRules])
 
 
   useEffect(() => {
-    dispatch(populateVisibleWidgets())
-  }, [gatekeeperRuleResults])
+    dispatch(populateVisibleWidgets(isAdmin))
+  }, [gatekeeperRuleResults, isAdmin])
 
   useEffect(() => { }, [isAdmin])
 
   return (
     <div className="dashboard-wrapper">
-      <button onClick={() => {authenticated_post('/dashboard/sample_jwt_route', {dummy: 'dummy'})}}>jwt_route</button>
+      <button onClick={() => { authenticated_post('/dashboard/sample_jwt_route', { dummy: 'dummy' }) }}>jwt_route</button>
       {info && <InfoCard ens={ens} info={info} membership={membership} />}
       <section className="widget-cards">
 
@@ -139,8 +140,6 @@ function InfoCard({ info, ens }) {
   const isMemberOf = dispatch(isMember(ens))
   const [isInfoLoaded, setIsInfoLoaded] = useState(false)
   const imgRef = createRef(null);
-
-  const [logo, setLogo] = useState(info.logo)
 
   function handleJoinOrg() {
     dispatch(addMembership(walletAddress, ens))
@@ -210,12 +209,13 @@ function InfoCard({ info, ens }) {
 
   const linkDiscord = () => {
     let popout;
+    let state = encodeURIComponent(JSON.stringify({ walletAddress: walletAddress, integrationType: 'user', ens: ens }))
     if (process.env.NODE_ENV === 'development') {
-      popout = window.open(`https://discord.com/api/oauth2/authorize?client_id=895719351406190662&redirect_uri=https%3A%2F%2Flocalhost%3A3000%2Foauth%2Fdiscord&response_type=code&scope=identify&state=${walletAddress},user,${ens}`, 'popUpWindow', 'height=700,width=600,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes')
+      popout = window.open(`https://discord.com/api/oauth2/authorize?client_id=895719351406190662&redirect_uri=https%3A%2F%2Flocalhost%3A3000%2Foauth%2Fdiscord&response_type=code&scope=identify&state=${state}`, 'popUpWindow', 'height=700,width=600,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes')
     }
 
     else if (process.env.NODE_ENV === 'production') {
-      popout = window.open(`https://discord.com/api/oauth2/authorize?client_id=895719351406190662&redirect_uri=https%3A%2F%2Fcalabara.com%2Foauth%2Fdiscord&response_type=code&scope=identify&state=${walletAddress},user,${ens}`, 'popUpWindow', 'height=700,width=600,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes')
+      popout = window.open(`https://discord.com/api/oauth2/authorize?client_id=895719351406190662&redirect_uri=https%3A%2F%2Fcalabara.com%2Foauth%2Fdiscord&response_type=code&scope=identify&state=${state}`, 'popUpWindow', 'height=700,width=600,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes')
 
     }
 
