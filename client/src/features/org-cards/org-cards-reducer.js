@@ -62,7 +62,7 @@ export const deleteMembership = (walletAddress, ens) => async (dispatch, getStat
   const toDeleteIndex = newData.findIndex(toDelete)
   newData.splice(toDeleteIndex, 1)
   dispatch(populateMembership(newData))
-  await axios.post('/removeSubscription/', { address: walletAddress, ens: ens });
+  await axios.post('/organizations/removeSubscription/', { address: walletAddress, ens: ens });
 
 
 }
@@ -83,14 +83,14 @@ export const deleteOrganization = (ens) => async (dispatch, getState, axios) => 
 
 export const populateInitialMembership = (walletAddress) => async (dispatch, getState, axios) => {
 
-  var subs = await axios.get('/getSubscriptions/' + walletAddress);
+  var subs = await axios.get('/organizations/getSubscriptions/' + walletAddress);
   dispatch(populateMembership(subs.data))
 
 }
 
 export const addMembership = (walletAddress, ens) => async (dispatch, getState, axios) => {
 
-  var subs = await axios.post('/addSubscription/', { address: walletAddress, ens: ens });
+  var subs = await axios.post('/organizations/addSubscription/', { address: walletAddress, ens: ens });
   dispatch(join(ens))
 
 }

@@ -48,7 +48,7 @@ import { showNotification } from '../notifications/notifications.js';
 
 export const batchFetchDashboardData = async (ens, info, dispatch) => {
   if (info.ens !== ens) {
-    const resp = await axios.get('/dashboardBatchData/' + ens)
+    const resp = await axios.get('/dashboard/dashboardBatchData/' + ens)
     dispatch(populateInfo(resp.data.dashboardData.orgInfo))
     dispatch(setDashboardRules(resp.data.dashboardData.rules))
     dispatch(setInstalledWidgets(resp.data.dashboardData.widgets.installed))
@@ -58,7 +58,7 @@ export const batchFetchDashboardData = async (ens, info, dispatch) => {
 
 export const fetchOrganizations = async (cardsPulled, dispatch) => {
   if (!cardsPulled) {
-    var orgs = await axios.get('/organizations');
+    var orgs = await axios.get('/organizations/organizations');
     dispatch(populateOrganizations(orgs.data))
   }
 }

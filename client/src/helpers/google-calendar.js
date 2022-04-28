@@ -16,7 +16,7 @@ async function listEvents(calendarID, maxResults){
   const endTime = startTime.calcEnd()
   
 
-  var result = await axios.post('/fetchCalendarEvents', {calendarID: calendarID, startTime: startTime, endTime: endTime})
+  var result = await axios.post('/dashboard/fetchCalendarEvents', {calendarID: calendarID, startTime: startTime, endTime: endTime})
 
   
   return result

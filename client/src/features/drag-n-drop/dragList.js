@@ -27,13 +27,6 @@ const ListGrid = styled.div`
 `;
 
 
-
-async function isGatekeeperEnabled(ens){
-  const result = await axios.get('/isGatekeeperEnabled/' + ens);
-  return result.data
-
-}
-
 // ok. we need to update the db to record when a wiki entry switches access levels, or when the default wiki is switched.
 // removeFromList and addToList WILL catch these events, but they are too verbose. I.e. they will fire when an element is dragged out and brought back to the same place.
 // we can write a helper function to check for more granular criteria.
@@ -87,7 +80,7 @@ function DragList({setCurrentWikiId, editWikiGroupingClick, lists, setLists}) {
     );
     dispatch(updateWikiList(listCopy));
 
-    await axios.post('/updateWikiLists', {ens: ens, file_id: result.draggableId, new_grouping: result.destination.droppableId})
+    await axios.post('/wiki/updateWikiLists', {ens: ens, file_id: result.draggableId, new_grouping: result.destination.droppableId})
 
   };
 

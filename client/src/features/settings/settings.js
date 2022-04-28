@@ -168,7 +168,7 @@ function OrganizationENSComponent({ standardProps }) {
                 }
                 else {
                     // check if this ens already exists in the system
-                    const doesExist = await axios.get('/doesEnsExist/' + ens)
+                    const doesExist = await axios.get('/organizations/doesEnsExist/' + ens)
                     if (doesExist.data) {
                         // already exists. set error msg
                         setErrorMsg({ error: true, msg: "A dashboard with this ens already exists" })
@@ -201,7 +201,7 @@ function OrganizationENSComponent({ standardProps }) {
         // check for beta whitelist
 
 
-        const wl_res = await axios.post('/valid_wl', { address: walletAddress })
+        const wl_res = await axios.post('/user/valid_wl', { address: walletAddress })
 
         if (wl_res.data == false) {
             setResolvedAddress('')
@@ -310,7 +310,7 @@ function OrganizationInfoComponent({ standardProps, hasImageChanged, setHasImage
                 break;
             case 'success':
                 // await axios.post('/verifySigner', {sig: result.sig, msg: result.msg, walletAddress: walletAddress})
-                let deleteResult = await axios.post('/deleteOrganization', { ens: ens, sig: result.sig, msg: result.msg, walletAddress: walletAddress });
+                let deleteResult = await axios.post('/settings/deleteOrganization', { ens: ens, sig: result.sig, msg: result.msg, walletAddress: walletAddress });
                 switch (deleteResult.status) {
                     case 401:
                         showNotification('error', 'error', 'invalid signature');
@@ -1104,7 +1104,7 @@ function SaveComponent({ standardProps, infoErrorController, adminErrorControlle
         }
         else {
 
-            const exists = await axios.post('/doesNameExist', { name: fields.name, ens: fields.ens })
+            const exists = await axios.post('/organizations/doesNameExist', { name: fields.name, ens: fields.ens })
             if (exists.data) {
                 //name already exists
                 setNameErrorMsg({ error: true, msg: "an organization with this name already exists" })
@@ -1150,7 +1150,7 @@ function SaveComponent({ standardProps, infoErrorController, adminErrorControlle
     }
 
     const postData = async (submission) => {
-        var out = await axios.post('/updateSettings', submission);
+        var out = await axios.post('/settings/updateSettings', submission);
     }
 
     const handleClose = () => {

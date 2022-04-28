@@ -64,13 +64,13 @@ export const deleteWiki = (id, grouping, index) => async (dispatch, getState, ax
 
   listCopy[grouping].list.splice(index, 1);
   dispatch(setWikiList(listCopy))
-  await axios.post('/deleteWiki/', {file_id: id});
+  await axios.post('/wiki/deleteWiki/', {file_id: id});
 
 
 }
 
 export const populateInitialWikiList = (ens) => async (dispatch, getState, axios) => {
-  const result = await axios.get('/fetchWikis/' + ens)
+  const result = await axios.get('/wiki/fetchWikis/' + ens)
   
   dispatch(setEns(ens))
   dispatch(setWikiList(result.data))

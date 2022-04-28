@@ -33,7 +33,7 @@ export default function CalendarConfiguration({ mode, metadata, setMetadata, set
     }
 
     async function submitCalendarID() {
-        var result = await axios.post('/fetchCalendarMetaData', { calendarID: calendarID })
+        var result = await axios.post('/dashboard/fetchCalendarMetaData', { calendarID: calendarID })
         if (result.data == 'FAIL') {
             return 'fail'
         }
@@ -43,7 +43,7 @@ export default function CalendarConfiguration({ mode, metadata, setMetadata, set
     }
 
     async function testGrantedAccess() {
-        var result = await axios.post('/fetchCalendarMetaData', { calendarID: calendarID })
+        var result = await axios.post('/dashboard/fetchCalendarMetaData', { calendarID: calendarID })
         
         if (result.data == 'FAIL') {
             return 'fail'
@@ -71,7 +71,7 @@ export default function CalendarConfiguration({ mode, metadata, setMetadata, set
 
                 // found the calendar and we can advance out of this inner loop
                 setMetadata({ calendarID: calendarID });
-                await axios.post('/updateWidgetMetadata', { ens: ens, metadata: { calendarID: calendarID }, name: 'calendar' });
+                await axios.post('/dashboard/updateWidgetMetadata', { ens: ens, metadata: { calendarID: calendarID }, name: 'calendar' });
                 dispatch(updateWidgetMetadata('calendar', { calendarID: calendarID }))
                 if (mode === 'new') {
                     setProgress(3);
@@ -97,7 +97,7 @@ export default function CalendarConfiguration({ mode, metadata, setMetadata, set
             }
             else if (res == 'success') {
                 setMetadata({ calendarID: calendarID });
-                await axios.post('/updateWidgetMetadata', { ens: ens, metadata: { calendarID: calendarID }, name: 'calendar' });
+                await axios.post('/dashboard/updateWidgetMetadata', { ens: ens, metadata: { calendarID: calendarID }, name: 'calendar' });
                 dispatch(updateWidgetMetadata('calendar', { calendarID: calendarID }))
                 if (mode === 'new') {
                     setProgress(3);

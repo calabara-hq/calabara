@@ -1,20 +1,9 @@
 const dotenv = require('dotenv')
 const db = require('./db-init.js')
 const ethUtil = require('ethereumjs-util')
-
+const { clean } = require('../helpers/common')
 
 dotenv.config();
-
-
-
-function clean(data) {
-    if (data.rows.length == 0) { return null }
-    else if (data.rows.length == 1) { return data.rows[0] }
-    else { return data.rows }
-
-}
-
-
 
 const verifySignature = async (sig, msg, walletAddress) => {
     let hexMsg = ethUtil.fromUtf8(msg)

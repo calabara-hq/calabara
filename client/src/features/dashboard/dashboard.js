@@ -110,7 +110,7 @@ export default function Dashboard() {
 
   return (
     <div className="dashboard-wrapper">
-      <button onClick={() => {authenticated_post('/sample_jwt_route', {dummy: 'dummy'})}}>jwt_route</button>
+      <button onClick={() => {authenticated_post('/dashboard/sample_jwt_route', {dummy: 'dummy'})}}>jwt_route</button>
       {info && <InfoCard ens={ens} info={info} membership={membership} />}
       <section className="widget-cards">
 
@@ -312,7 +312,7 @@ export function WidgetCard({ gatekeeperPass, orgInfo, widget, btnState, setBtnSt
   }
 
   async function handleDeleteWidget() {
-    var request = await axios.post('/removeWidget', { ens: ens, name: name })
+    var request = await axios.post('/dashboard/removeWidget', { ens: ens, name: name })
     dispatch(updateWidgets(0, widget));
 
   }

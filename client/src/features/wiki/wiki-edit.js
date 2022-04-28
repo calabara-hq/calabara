@@ -39,7 +39,7 @@ export default function WikiEditor(){
       }
       else{
         // load data from server
-        const wiki = await axios.get('/readWiki/' + file)
+        const wiki = await axios.get('/wiki/readWiki/' + file)
         setFileData(wiki.data);
         setIsLoaded(true);
        }
@@ -87,12 +87,11 @@ function ReactEditor({data}){
 
       data.filedata.title = title;
       data.filedata.content = content;
-    //var req = await axios.post('/writeWikiInitial', {ens: ens, data: JSON.stringify({title: title, content: content})})
     if(file == 'new'){
-      await axios.post('/writeWikiInitial', {ens: ens, data: data})
+      await axios.post('/wiki/writeWikiInitial', {ens: ens, data: data})
     }
     else{
-      await axios.post('/updateWiki', {file_id: file, data: JSON.stringify({title: title, content: content})})
+      await axios.post('/wiki/updateWiki', {file_id: file, data: JSON.stringify({title: title, content: content})})
     }
     setTimeout(() => {
       setPending(false);

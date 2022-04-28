@@ -77,7 +77,7 @@ export default function WikiDisplay({ mode }) {
     }
 
     else if (cleanup.type === 'delete') {
-      await axios.post('/deleteWikiGrouping', { ens: cleanup.ens, groupID: cleanup.groupID })
+      await axios.post('/wiki/deleteWikiGrouping', { ens: cleanup.ens, groupID: cleanup.groupID })
       dispatch(removeFromWikiList(cleanup.groupID));
       setCurrentWikiId(-1);
 
@@ -90,7 +90,7 @@ export default function WikiDisplay({ mode }) {
 
 
   async function readWiki(file_id) {
-    const wiki = await axios.get('/readWiki/' + file_id)
+    const wiki = await axios.get('/wiki/readWiki/' + file_id)
     setWikiDisplayTitle(wiki.data.filedata.title)
     setWikiDisplayContent(wiki.data.filedata.content)
     setIsWikiLoaded(true);

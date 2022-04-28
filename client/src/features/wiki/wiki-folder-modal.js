@@ -86,7 +86,7 @@ export default function WikiModal({ modalOpen, handleClose, groupID }) {
 
             if (groupID == null) {
                 // it's a new folder
-                axios.post('/addWikiGrouping', { ens: ens, groupingName: groupingName, gk_rules: appliedRules }).then((response) => {
+                axios.post('/wiki/addWikiGrouping', { ens: ens, groupingName: groupingName, gk_rules: appliedRules }).then((response) => {
                     dispatch(addToWikiList({
                         group_id: response.data.group_id,
                         value: {
@@ -99,7 +99,7 @@ export default function WikiModal({ modalOpen, handleClose, groupID }) {
             }
             else {
                 // it's an update to existing folder
-                axios.post('/updateWikiGrouping', { groupID: groupID, ens: ens, groupingName: groupingName, gk_rules: appliedRules }).then((response) => {
+                axios.post('/wiki/updateWikiGrouping', { groupID: groupID, ens: ens, groupingName: groupingName, gk_rules: appliedRules }).then((response) => {
                     dispatch(renameWikiList({
                         group_id: groupID,
                         value: {

@@ -43,7 +43,7 @@ export const selectDashboardInfo = state => state.dashboardInfo.info;
 
 export const populateDashboardInfo = (ens) => async (dispatch, getState, axios) => {
 
-  const res = await axios.get('/dashboardInfo/' + ens);
+  const res = await axios.get('/dashboard/dashboardInfo/' + ens);
   dispatch(populateInfo(res.data.orgInfo))
 }
 

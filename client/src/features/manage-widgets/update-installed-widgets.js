@@ -175,7 +175,7 @@ function WidgetSummary({ selected, setSettingsStep, setProgress, setTabHeader })
 
   const deleteWidget = async () => {
     dispatch(updateWidgets(0, selected));
-    await axios.post('/removeWidget', { ens: ens, name: selected.name })
+    await axios.post('/dashboard/removeWidget', { ens: ens, name: selected.name })
     setProgress(0);
   }
 
@@ -291,7 +291,7 @@ function GatekeeperSettings({ selected, setSettingsStep, setTabHeader }) {
       }
     }
     
-    await axios.post('/updateWidgetGatekeeperRules', { ens: ens, gk_rules: appliedRules, name: selected.name });
+    await axios.post('/dashboard/updateWidgetGatekeeperRules', { ens: ens, gk_rules: appliedRules, name: selected.name });
     dispatch(updateWidgetGatekeeper(selected.name, appliedRules))
     showNotification('saved successfully', 'success', 'your changes were successfully saved')
     setSettingsStep(0);

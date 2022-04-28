@@ -21,13 +21,15 @@ export const selectDiscordId = state => state.user.discord_id;
 
 
 export const registerUser = (walletAddress) => async (dispatch, axios) => {
-    const result = await axios.post('/registerUser', { address: walletAddress });
+    /*
+    const result = await axios.post('/user/registerUser', { address: walletAddress });
     if (result.data.discordId === 'null') {
         dispatch(setDiscordId(null))
     }
     else {
         dispatch(setDiscordId(result.data.discordId))
     }
+    */
 }
 
 
