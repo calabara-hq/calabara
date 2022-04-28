@@ -22,7 +22,7 @@ wiki.get('/readWiki/*', async function (req, res, next) {
 
     var result = await db.query('select title, id, location, grouping from wikis where id = $1', [file_id]).then(clean)
 
-    var file_data = await asyncfs.readFile(path.normalize(path.join(serverRoot, '/', result.location, file_id, '.json')), 'utf8')
+    var file_data = await asyncfs.readFile(path.normalize(path.join(serverRoot, '/', result.location, file_id + '.json')), 'utf8')
     res.status(200);
     res.send({ metadata: result, filedata: JSON.parse(file_data) })
 });
@@ -68,7 +68,7 @@ wiki.post('/writeWikiInitial', async function (req, res, next) {
 
 
     const { ens, data } = req.body;
-    const folderpath = path.normalize(path.join(serverRoot, '/org-repository/', ens, '/wiki/', data.metadata.grouping, '/'))
+    const folderpath = path.normalize(path.join('org-repository/', ens, '/wiki/', data.metadata.grouping, '/'))
     const title = data.filedata.title
 
 
@@ -76,10 +76,10 @@ wiki.post('/writeWikiInitial', async function (req, res, next) {
 
 
     try {
-        await asyncfs.mkdir(folderpath, { recursive: true })
+        await asyncfs.mkdir(path.normalize(path.join(serverRoot, folderpath)), { recursive: true })
     }
     catch (e) { console.log(e) }
-    await asyncfs.writeFile(folderpath + result.id + '.json', JSON.stringify({ title: data.filedata.title, content: data.filedata.content }));
+    await asyncfs.writeFile(path.normalize(path.join(serverRoot, folderpath, result.id + '.json')), JSON.stringify({ title: data.filedata.title, content: data.filedata.content }));
     res.status(200);
     res.send('OK')
 
@@ -90,7 +90,7 @@ wiki.post('/updateWiki', async function (req, res, next) {
 
     const { file_id, data } = req.body;
     const result = await db.query('update wikis set title = $1 where id = $2 returning location', [JSON.parse(data).title, file_id]).then(clean)
-    await asyncfs.writeFile(path.normalize(path.join(serverRoot, result.location, file_id, '.json')), data);
+    await asyncfs.writeFile(path.normalize(path.join(serverRoot, result.location, file_id + '.json')), data);
     res.status(200);
     res.send('OK')
 
@@ -102,7 +102,7 @@ wiki.post('/deleteWiki', async function (req, res, next) {
     // the new orderedList will maintain an order that will inform us about which element needs to become the new leader
     const { file_id } = req.body;
     const result = await db.query('delete from wikis where id = $1 returning location', [file_id]).then(clean);
-    await asyncfs.unlink(path.normalize(path.join(serverRoot, result.location, file_id, '.json')))
+    await asyncfs.unlink(path.normalize(path.join(serverRoot, result.location, file_id + '.json')))
 
 
 });
@@ -135,7 +135,7 @@ wiki.post('/deleteWikiGrouping', async function (req, res, next) {
 
     const result = await db.query('delete from wiki_groupings where group_id = $1', [groupID]);
     try {
-        await asyncfs.rmdir(path.normalize(path.join(serverRoot, 'org-repository/', ens, '/wiki/', groupID)), { recursive: true });
+        await asyncfs.rm(path.normalize(path.join(serverRoot, 'org-repository/', ens, '/wiki/', groupID)), { recursive: true });
     } catch (e) { console.log(e) }
 
     res.send('OK')

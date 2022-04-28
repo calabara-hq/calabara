@@ -8,6 +8,9 @@ discordApp.use(express.json())
 
 const { getServerRoles, getGuildUserRoles } = require('../discord-bot/discord-bot.js')
 require('../discord-bot/deploy-commands.js')
+const { authenticateToken } = require('../middlewares/jwt-middleware')
+const { isAdmin } = require('../middlewares/admin-middleware')
+
 
 dotenv.config();
 
@@ -50,7 +53,7 @@ const addDiscordBot = async (ens, oauthData, wallet) => {
 }
 
 
-discordApp.post('/oauthFlow', async function (req, res, next) {
+discordApp.post('/botOauthFlow', authenticateToken, isAdmin, async function (req, res, next) {
   const { type, code, redirect_uri, wallet, ens } = req.body;
   const data = {
     'client_id': CLIENT_ID,
@@ -69,22 +72,42 @@ discordApp.post('/oauthFlow', async function (req, res, next) {
   })
 
   const oauthData = await response.json();
-  console.log(oauthData)
 
-  if (type === 'user') {
-    // send the access code and retrieve a user id
-    await addDiscordUser(oauthData, wallet)
-  }
 
-  else if (type === 'bot') {
-    console.log('HERE')
-    await addDiscordBot(ens, oauthData, wallet)
-  }
+  await addDiscordBot(ens, oauthData, wallet)
+
 
   res.send('success')
   res.status(200)
 })
 
+discordApp.post('/userOauthFlow', authenticateToken, async function (req, res, next) {
+  const { type, code, redirect_uri, wallet, ens } = req.body;
+  const data = {
+    'client_id': CLIENT_ID,
+    'client_secret': CLIENT_SECRET,
+    'grant_type': 'authorization_code',
+    'code': code,
+    'redirect_uri': redirect_uri
+  }
+
+  var response = await fetch('https://discord.com/api/oauth2/token', {
+    method: 'POST',
+    body: new URLSearchParams(data),
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+  })
+
+  const oauthData = await response.json();
+
+  // send the access code and retrieve a user id
+  await addDiscordUser(oauthData, wallet)
+
+
+  res.send('success')
+  res.status(200)
+})
 
 
 
@@ -106,11 +129,11 @@ const getGuildRoles = async (guild_id) => {
 
 discordApp.post('/getUserRoles', async function (req, res, next) {
   const { user_id, guild_id } = req.body;
-  try{
-  let resp = await getGuildUserRoles(guild_id, user_id)
-  res.send(resp)
-  res.status(200)
-  }catch(e){
+  try {
+    let resp = await getGuildUserRoles(guild_id, user_id)
+    res.send(resp)
+    res.status(200)
+  } catch (e) {
     res.send('error')
     res.status(200)
   }
@@ -118,10 +141,10 @@ discordApp.post('/getUserRoles', async function (req, res, next) {
 
 
 discordApp.post('/getUserDiscord', async function (req, res, next) {
-const { walletAddress } = req.body;
-const resp = await db.query('select discord from users where address = $1', [walletAddress]).then(clean)
-res.send(JSON.stringify(resp.discord));
-res.status(200);
+  const { walletAddress } = req.body;
+  const resp = await db.query('select discord from users where address = $1', [walletAddress]).then(clean)
+  res.send(JSON.stringify(resp.discord));
+  res.status(200);
 
 });
 

@@ -12,7 +12,7 @@ function authenticateToken(req, res, next) {
 
   jwt.verify(token, JWT_TOKEN_SECRET, (err, user) => {
 
-    if (err) return res.sendStatus(403)
+    if (err) return res.sendStatus(401)
 
     req.user = user
 

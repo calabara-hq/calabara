@@ -2,9 +2,11 @@ const express = require('express');
 const db = require('../helpers/db-init.js')
 const dotenv = require('dotenv')
 const path = require('path')
+const asyncfs = require('fs').promises;
 const settings = express();
 settings.use(express.json())
-const { authenticateToken } = require('../middlewares/jwt-middleware.js');
+const { authenticateToken } = require('../middlewares/jwt-middleware');
+const { isAdmin } = require('../middlewares/admin-middleware')
 const { clean } = require('../helpers/common')
 
 const serverRoot = path.normalize(path.join(__dirname, '../'));
@@ -20,9 +22,10 @@ async function dataUrlToFile(url, filename) {
 
     try {
         var buffer = Buffer.from(',' + data, 'base64');
-        var filepath = path.normalize(path.join(serverRoot, '/img/logos/', filename, '.', ext));
-        await asyncfs.writeFile(filepath, buffer);
-        return filepath
+        const child_path = path.normalize(path.join('img/logos/', filename + '.' + ext))
+        var full_path = path.normalize(path.join(serverRoot, child_path));
+        await asyncfs.writeFile(full_path, buffer);
+        return child_path
 
     } catch (e) {
         console.log(e)
@@ -31,9 +34,9 @@ async function dataUrlToFile(url, filename) {
 
 
 const prepLogo = async (logo, ens) => {
-    if (fields.logo) {
+    if (logo) {
 
-        if (fields.logo.startsWith('img/logos/')) {
+        if (logo.startsWith('img/logos/')) {
             // if they haven't changed from the default, leave it as-is
             return logo
         }
@@ -48,11 +51,11 @@ const prepLogo = async (logo, ens) => {
     }
 }
 
-settings.post('/updateSettings', authenticateToken, async function (req, res, next) {
+settings.post('/updateSettings', authenticateToken, isAdmin, async function (req, res, next) {
     const { fields, sig, msg, walletAddress } = req.body
-    let logoPath = prepLogo(fields.logo);
 
     // prep the logo path if a logo was provided
+    let logoPath = await prepLogo(fields.logo, fields.ens);
 
 
     await db.query('insert into organizations (name, members, website, discord, logo, addresses, verified, ens)\
@@ -72,7 +75,6 @@ settings.post('/updateSettings', authenticateToken, async function (req, res, ne
                 db.query('update gatekeeper_rules set rule = $2 where rule_id = $1', [rule_id.rule_id, fields.gatekeeper.rules[rule]]);
             }
             else {
-                console.log('rule id not found')
                 await db.query('insert into gatekeeper_rules (ens, rule) values($1, $2)', [fields.ens, fields.gatekeeper.rules[rule]])
             }
         }
@@ -99,27 +101,18 @@ settings.post('/updateSettings', authenticateToken, async function (req, res, ne
 
 });
 
-settings.post('/deleteOrganization', async function (req, res, next) {
+settings.post('/deleteOrganization', authenticateToken, isAdmin, async function (req, res, next) {
     const { ens, sig, msg, walletAddress } = req.body;
 
-    let is_signature_valid_and_admin = await verifySignerIsAdmin(sig, msg, walletAddress, ens)
+    await db.query('delete from organizations where ens = $1', [ens]);
 
-    if (!is_signature_valid_and_admin) {
-        res.send({ error: true, message: 'invalid signature' })
-        res.status(401)
+    try {
+        await asyncfs.rm(path.normalize(path.join(serverRoot, '/org-repository/', ens)), { recursive: true });
+    } catch (e) {
+        console.log(e)
     }
-    else {
-
-        await db.query('delete from organizations where ens = $1', [ens]);
-
-        try {
-            await asyncfs.rmdir(path.normalize(path.join(serverRoot, '/org-repository/', ens)), { recursive: true });
-        } catch (e) {
-            console.log(e)
-        }
-        res.status(200)
-        res.send({ error: false })
-    }
+    res.status(200)
+    res.send({ error: false })
 });
 
 module.exports.settings = settings;
