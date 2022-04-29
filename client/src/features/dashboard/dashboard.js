@@ -197,7 +197,7 @@ function InfoCard({ info, ens }) {
       }
     })
     setPromptDiscordLink(promptDiscord)
-  }, [dashboardRules, discord_id, isConnected])
+  }, [dashboardRules, discord_id])
 
 
 
@@ -257,7 +257,6 @@ function InfoCard({ info, ens }) {
         </div>
       }
     </div>
-
   )
 
 }

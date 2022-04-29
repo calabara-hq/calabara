@@ -11,7 +11,16 @@ const notifyOptions = {
 const notify = Notify(notifyOptions);
 
 const showNotification = (eventCode, type, message) => {
-  const { update, dismiss } = notify.notification({eventCode: eventCode, type: type, message: message})
+  const { update, dismiss } = notify.notification({ eventCode: eventCode, type: type, message: message })
+
+
+  if (type === 'error') {
+    setTimeout(() => {
+      dismiss();
+    }, 5000)
+  }
+
+
 }
 
 

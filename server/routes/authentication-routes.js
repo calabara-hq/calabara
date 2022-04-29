@@ -5,7 +5,9 @@ const authentication = express();
 authentication.use(express.json())
 const { verifySignature } = require('../helpers/edcsa-auth.js');
 const jwt = require('jsonwebtoken');
-const { authenticateToken } = require('../middlewares/jwt-middleware.js');
+
+dotenv.config();
+
 
 const JWT_TOKEN_SECRET = process.env.JWT_TOKEN_SECRET;
 
@@ -71,16 +73,6 @@ authentication.post('/generate_jwt', async function (req, res, next) {
         res.status(401)
         res.send('error')
     }
-
-
-
-    /*
-    let nonce = randomNonce(25)
-    await db.query('insert into users (address, nonce) values ($1, $2) on conflict (address) do update set nonce = $2', [address, nonce]);
-  
-    res.send({ nonce: nonce });
-    res.status(200);
-    */
 })
 
 
