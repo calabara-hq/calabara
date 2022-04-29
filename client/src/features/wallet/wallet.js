@@ -6,6 +6,9 @@ import Identicon from '../identicon/identicon';
 import store from '../../app/store.js'
 import axios from 'axios';
 import jwt_decode from 'jwt-decode'
+import { secure_sign } from '../common/common';
+import { erc20abi } from './erc20abi';
+import { erc721abi } from './erc721abi';
 
 import { useSelector, useDispatch } from 'react-redux';
 import {
@@ -19,7 +22,6 @@ import {
 } from './wallet-reducer';
 
 import registerUser from '../user/user';
-import { authenticated_post } from '../common/common';
 
 
 
@@ -83,89 +85,7 @@ async function validAddress(address) {
 }
 
 
-const erc20abi = [
 
-  {
-    "constant": true,
-    "inputs": [
-      {
-        "name": "_owner",
-        "type": "address"
-      }
-    ],
-    "name": "balanceOf",
-    "outputs": [
-      {
-        "name": "balance",
-        "type": "uint256"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "symbol",
-    "outputs": [
-      {
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "constant": true,
-    "inputs": [],
-    "name": "decimals",
-    "outputs": [
-      {
-        "name": "",
-        "type": "uint8"
-      }
-    ],
-    "payable": false,
-    "stateMutability": "view",
-    "type": "function"
-  }]
-
-const erc721abi = [
-  {
-    'inputs': [{ 'internalType': 'address', 'name': 'owner', 'type': 'address' }],
-    'name': 'balanceOf',
-    'outputs': [{ 'internalType': 'uint256', 'name': '', 'type': 'uint256' }],
-    'payable': false, 'stateMutability': 'view', 'type': 'function', 'constant': true
-  },
-  {
-    'inputs': [],
-    'name': 'name',
-    'outputs': [{ 'internalType': 'string', 'name': '', 'type': 'string' }],
-    'stateMutability': 'view', 'type': 'function', 'constant': true
-  },
-  {
-    'inputs': [{ 'internalType': 'uint256', 'name': 'tokenId', 'type': 'uint256' }],
-    'name': 'ownerOf',
-    'outputs': [{ 'internalType': 'address', 'name': '', 'type': 'address' }],
-    'payable': false, 'stateMutability': 'view', 'type': 'function', 'constant': true
-  },
-  {
-    'inputs': [],
-    'name': 'symbol',
-    'outputs': [{ 'internalType': 'string', 'name': '', 'type': 'string' }],
-    'stateMutability': 'view', 'type': 'function', 'constant': true
-  },
-  {
-    'inputs': [],
-    'name': 'totalSupply',
-    'outputs': [{ 'internalType': 'uint256', 'name': '', 'type': 'uint256' }],
-    'stateMutability': 'view', 'type': 'function', 'constant': true
-  },
-]
 
 
 async function erc20GetSymbolAndDecimal(address) {
@@ -198,81 +118,20 @@ async function checkERC721Balance(walletAddress, contractAddress) {
 
 }
 
-async function signTransaction(message, whitelist, nonce) {
-  let state = onboard.getState();
-
-  // if web3.currentProvider == null, ask user to sign in.
-
-
-  const transact = async () => {
-    let address = await validAddress(state.address);
-    const msg = web3.utils.utf8ToHex(`Signing one time message with nonce: ${12345678}`)
-
-    try {
-      let signature = await web3.eth.personal.sign(msg, address);
-      for (var i in whitelist) {
-        if (whitelist[i].endsWith('.eth')) {
-          whitelist[i] = await web3.eth.ens.getAddress(whitelist[i])
-        }
-        if (whitelist[i] == address) {
-          return { status: 'success', sig: signature, msg: msg }
-        }
-      }
-      // user doesn't have permission to sign this transaction
-      return { status: 'error', errorMsg: 'Signature rejected. Wallet is not an organization admin' }
-    } catch (err) {
-      if (err.code === 4001) {
-        return { status: 'error', errorMsg: 'User denied signature request' }
-      }
-      else {
-        return { status: 'error', errorMsg: 'MetaMask error' }
-      }
-    }
-  }
-
-
-  if (!state.address) {
-    const res = await onboard.walletSelect();
-    if (!res) {
-      return { status: 'error', errorMsg: 'please connect your wallet to write data' }
-    }
-    else {
-      await onboard.walletCheck();
-      state = onboard.getState();
-      store.dispatch(setConnected(state.address))
-      return transact();
-    }
-
-  }
-  else {
-    return transact();
-  }
-}
 
 async function signMessage(nonce) {
   let state = onboard.getState();
 
+  let address = await validAddress(state.address);
+  const msg = web3.utils.utf8ToHex(`Signing one time message with nonce: ${nonce}`)
 
-  const transact = async () => {
-    let address = await validAddress(state.address);
-    const msg = web3.utils.utf8ToHex(`Signing one time message with nonce: ${nonce}`)
+  try {
+    let signature = await web3.eth.personal.sign(msg, address);
 
-    try {
-      let signature = await web3.eth.personal.sign(msg, address);
-
-      return { status: 'success', sig: signature, msg: msg }
-    } catch (err) {
-      if (err.code === 4001) {
-        return { status: 'error', errorMsg: 'User denied signature request' }
-      }
-      else {
-        return { status: 'error', errorMsg: 'MetaMask error' }
-      }
-    }
+    return { status: 'success', sig: signature, msg: msg }
+  } catch (err) {
+    throw err
   }
-
-
-  return transact();
 }
 
 
@@ -298,30 +157,14 @@ function Wallet() {
   const dispatch = useDispatch();
   const [connectBtnTxt, setConnectBtnTxt] = useState('Connect wallet');
   const [isMoreExpanded, setIsMoreExpanded] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false)
 
-
-
-  // if a user has previously connected, this function will auto re-connect them without having to open the modal.
-  // if localstorage doesn't remember them or they disconnected, don't force autoconnect. wait for connect button click
-  // this should be called on page load.
-
-
-  const connectCleanup = () => {
-    const state = onboard.getState();
-    const checkSumAddr = web3Infura.utils.toChecksumAddress(state.address)
-    dispatch(setConnected(checkSumAddr))
-    setConnectBtnTxt(state.address.substring(0, 6) + '...' + state.address.substring(38, 42))
-  }
+  const open = () => { setModalOpen(true) }
+  const close = () => { setModalOpen(false) }
 
 
 
   const authenticationFlow = async (walletAddress) => {
-    // once a user has connected, check their jwt. 
-    // if jwt is expired or null, send request to server with wallet address.
-    // on the server, generate & store a random nonce and return it 
-    // ask the user to sign a message with the nonce
-    // send the signature back to the server
-    // send the user a jwt and store it    
     const nonce_from_server = await axios.post('/authentication/generate_nonce', { address: walletAddress })
     const signatureResult = await signMessage(nonce_from_server.data.nonce);
     try {
@@ -352,7 +195,6 @@ function Wallet() {
     return true;
   }
 
-  
 
   useEffect(async () => {
     (async () => {
@@ -371,14 +213,7 @@ function Wallet() {
             dispatch(setConnected(checkSumAddr))
             await registerUser(checkSumAddr)
           }
-          //await authenticationFlow(checkSumAddr)
-          /*
-          let signatureResult = await initialSignature();
-          console.log(signatureResult)
-          const checkSumAddr = web3Infura.utils.toChecksumAddress(state.address)
-          dispatch(setConnected(checkSumAddr))
-          dispatch(registerUser(checkSumAddr))
-          */
+
         }
       }
     })();
@@ -392,49 +227,46 @@ function Wallet() {
   }, [isConnected])
 
 
-  /*
-    useEffect(async () => {
-      if (account_change === true && !isConnected) {
-        const state = onboard.getState();
-        const checkSumAddr = web3Infura.utils.toChecksumAddress(state.address)
-        dispatch(setConnected(checkSumAddr))
-        dispatch(registerUser(checkSumAddr))
-        dispatch(setAccountChange(false))
-  
-      }
-    }, [account_change])
-  */
-
 
   const handleConnectClick = async () => {
-    if (!isConnected) {
-      const res = await onboard.walletSelect();
-      if (res) {
-        await onboard.walletCheck();
-        const state = onboard.getState();
-        const checkSumAddr = web3Infura.utils.toChecksumAddress(state.address)
-        let is_jwt_valid = await checkCurrentJwt()
+    if (isConnected) return setIsMoreExpanded(!isMoreExpanded)
 
-        // we'll auto connect if possible.
 
-        if (is_jwt_valid) {
+    const selected = localStorage.getItem('selectedWallet');
+    let res;
+    if (selected && selected != 'undefined') {
+      res = await onboard.walletSelect(selected);
+    }
+    else {
+      res = await onboard.walletSelect();
+    }
+    if (res) {
+      await onboard.walletCheck();
+      const state = onboard.getState();
+      const checkSumAddr = web3Infura.utils.toChecksumAddress(state.address)
+      console.log(checkSumAddr)
+      let is_jwt_valid = await checkCurrentJwt()
+
+      // we'll auto connect if possible.
+
+      if (is_jwt_valid) {
+        dispatch(setConnected(checkSumAddr))
+        await registerUser(checkSumAddr)
+      }
+      // otherwise, start the auth flow and get a new token
+
+      else {
+        let sig_res = await secure_sign(checkSumAddr)
+        if (sig_res) {
           dispatch(setConnected(checkSumAddr))
           await registerUser(checkSumAddr)
         }
-        // otherwise, start the auth flow and get a new token
-
-        else {
-          await authenticationFlow(checkSumAddr)
-        }
       }
-    }
-    else if (isConnected) {
-      setIsMoreExpanded(!isMoreExpanded)
     }
   }
 
 
-  const handleDisconnectClick = async (e) => {
+  const handleDisconnectClick = async () => {
     if (isConnected) {
       onboard.walletReset();
       dispatch(setDisconnected());
@@ -443,6 +275,19 @@ function Wallet() {
       localStorage.removeItem('jwt')
     }
   }
+
+
+  useEffect(() => {
+    (async () => {
+      if (account_change === true && !isConnected) {
+        setConnectBtnTxt('Connect wallet')
+        setIsMoreExpanded(false);
+        localStorage.removeItem('jwt')
+        dispatch(setAccountChange(false))
+      }
+    })();
+  }, [account_change])
+
 
 
   const handleBlur = (e) => {
@@ -469,11 +314,10 @@ function Wallet() {
           <button onClick={handleDisconnectClick}>disconnect</button>
         </div>
       }
-
     </div>
   )
 
 }
 
 export default Wallet;
-export { auxillaryConnect, getAddress, validAddress, erc20GetSymbolAndDecimal, erc721GetSymbol, signMessage, signTransaction, checkERC20Balance, checkERC721Balance }
+export { auxillaryConnect, getAddress, validAddress, erc20GetSymbolAndDecimal, erc721GetSymbol, signMessage, checkERC20Balance, checkERC721Balance }

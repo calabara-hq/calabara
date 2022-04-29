@@ -71,12 +71,12 @@ export const fetchUserMembership = async (walletAddress, membershipPulled, dispa
 }
 
 export const authenticated_post = async (endpoint, body) => {
-  
+
   try {
     let res = await axios.post(endpoint, body, { headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt')}` } })
     return res
   } catch (e) {
-    switch(e.response.status){
+    switch (e.response.status) {
       case 401:
         showNotification('error', 'error', 'unauthorized')
         break;
@@ -86,17 +86,37 @@ export const authenticated_post = async (endpoint, body) => {
     }
     return null
   }
-  
+
 }
+
+// once a user has connected, check their jwt. 
+// if jwt is expired or null, send request to server with wallet address.
+// on the server, generate & store a random nonce and return it 
+// ask the user to sign a message with the nonce
+// send the signature back to the server
+// send the user a jwt and store it    
+
 
 export const secure_sign = async (walletAddress) => {
   const nonce_from_server = await axios.post('/authentication/generate_nonce', { address: walletAddress })
-  const signatureResult = await signMessage(nonce_from_server.data.nonce);
+
   try {
-    let jwt_result = await axios.post('/authentication/generate_jwt', { sig: signatureResult.sig, address: walletAddress })
-    localStorage.setItem('jwt', jwt_result.data.jwt)
-    return jwt_result.data.jwt
-  } catch (e) {
-    return null
+    const signatureResult = await signMessage(nonce_from_server.data.nonce);
+
+    try {
+      let jwt_result = await axios.post('/authentication/generate_jwt', { sig: signatureResult.sig, address: walletAddress })
+      localStorage.setItem('jwt', jwt_result.data.jwt)
+      return jwt_result.data.jwt
+    } catch (e) {
+      return null
+    }
+  } catch (err) {
+    if (err.code === 4001) {
+      showNotification('error', 'error', 'User denied signature request')
+    }
+    else {
+      showNotification('error', 'error', 'Metamask error')
+    }
+    return null;
   }
 }
