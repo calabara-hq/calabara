@@ -4,7 +4,7 @@ import { useHistory, useParams } from 'react-router-dom'
 import BackButton from '../back-button/back-button'
 import axios from 'axios'
 import '../../css/settings.css'
-import {  validAddress, erc20GetSymbolAndDecimal, erc721GetSymbol } from '../wallet/wallet'
+import { validAddress, erc20GetSymbolAndDecimal, erc721GetSymbol } from '../wallet/wallet'
 import { showNotification } from '../notifications/notifications'
 import { selectConnectedAddress } from '../wallet/wallet-reducer'
 import { populateDashboardInfo, selectDashboardInfo, updateDashboardInfo } from '../dashboard/dashboard-info-reducer'
@@ -300,9 +300,9 @@ function OrganizationInfoComponent({ standardProps, hasImageChanged, setHasImage
 
 
     const handleDeleteOrganization = async () => {
-        let result = await secure_sign(walletAddress)
+        let result = await secure_sign(walletAddress, dispatch)
         if (result) {
-            let deleteResult = await authenticated_post('/settings/deleteOrganization', { ens: ens, sig: result.sig, msg: result.msg, walletAddress: walletAddress });
+            let deleteResult = await authenticated_post('/settings/deleteOrganization', { ens: ens, sig: result.sig, msg: result.msg, walletAddress: walletAddress }, dispatch);
             if (deleteResult) {
                 dispatch(deleteOrganization(fields.ens));
                 showNotification('success', 'success', 'organization successfully deleted')
@@ -926,7 +926,7 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
         setBotFailureMessage('')
         //pass guildId as autofill
         let popout;
-        let state = encodeURIComponent(JSON.stringify({walletAddress: walletAddress, integrationType: 'bot', ens: ens}))
+        let state = encodeURIComponent(JSON.stringify({ walletAddress: walletAddress, integrationType: 'bot', ens: ens }))
         if (process.env.NODE_ENV === 'development') {
             popout = window.open(`https://discord.com/api/oauth2/authorize?client_id=895719351406190662&permissions=0&redirect_uri=https%3A%2F%2Flocalhost%3A3000%2Foauth%2Fdiscord&response_type=code&scope=identify%20bot%20applications.commands&state=${state}`, 'popUpWindow', 'height=700,width=600,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes')
 
@@ -1136,9 +1136,6 @@ function SaveComponent({ standardProps, infoErrorController, adminErrorControlle
         return
     }
 
-    const postData = async (submission) => {
-        var out = await axios.post('/settings/updateSettings', submission);
-    }
 
     const handleClose = () => {
         history.push('/' + fields.ens + '/dashboard')
@@ -1160,10 +1157,7 @@ function SaveComponent({ standardProps, infoErrorController, adminErrorControlle
 
         // in both cases for new and existing orgs, we want to push the resolved ens and walletAddress, then remove duplicates
         const resolvedEns = await validAddress(fields.ens);
-        finalSubmission.addresses.push(resolvedEns, walletAddress)
-
-        // now remove the duplicates
-        finalSubmission.addresses = [...new Set(finalSubmission.addresses)]
+        finalSubmission.addresses.push(resolvedEns)
 
         // set the fields in case user wants to go backwards
 
@@ -1179,20 +1173,15 @@ function SaveComponent({ standardProps, infoErrorController, adminErrorControlle
 
         finalSubmission.gatekeeper.rules = ruleDuplicates
 
-        let message = 'update settings'
-
-        var result = await secure_sign(walletAddress);
-        if (result) {
-            let settingsResult = await authenticated_post('/settings/updateSettings', { ens: fields.ens, fields: finalSubmission, sig: result.sig, msg: result.msg, walletAddress: walletAddress });
-            if (settingsResult) {
-                if (ens === 'new') dispatch(addOrganization({ name: fields.name, members: 0, logo: fields.logo, verified: false, ens: fields.ens }));
-                else if (ens !== 'new') {
-                    dispatch(updateDashboardInfo({ name: fields.name, website: fields.website, logo: fields.logoPath || fields.logo, logoBlob: fields.logoBlob, discord: fields.discord, addresses: finalSubmission.addresses }))
-                    dispatch(populateDashboardRules(fields.ens))
-                }
-                showNotification('saved successfully', 'success', 'your changes were successfully saved')
-                handleClose();
+        let settingsResult = await authenticated_post('/settings/updateSettings', { ens: fields.ens, fields: finalSubmission, walletAddress: walletAddress }, dispatch);
+        if (settingsResult) {
+            if (ens === 'new') dispatch(addOrganization({ name: fields.name, members: 0, logo: fields.logo, verified: false, ens: fields.ens }));
+            else if (ens !== 'new') {
+                dispatch(updateDashboardInfo({ name: fields.name, website: fields.website, logo: fields.logoPath || fields.logo, logoBlob: fields.logoBlob, discord: fields.discord, addresses: settingsResult.data.adminAddresses }))
+                dispatch(populateDashboardRules(fields.ens))
             }
+            showNotification('saved successfully', 'success', 'your changes were successfully saved')
+            handleClose();
         }
     }
 

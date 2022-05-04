@@ -5,7 +5,8 @@ const path = require('path')
 const wiki = express();
 const asyncfs = require('fs').promises;
 wiki.use(express.json())
-const { authenticateToken } = require('../middlewares/jwt-middleware.js');
+const { authenticateToken } = require('../middlewares/jwt-middleware');
+const { isAdmin } = require('../middlewares/admin-middleware')
 const {clean, asArray} = require('../helpers/common')
 
 
@@ -64,7 +65,7 @@ wiki.get('/fetchWikis/*', async function (req, res, next) {
 
 })
 
-wiki.post('/writeWikiInitial', async function (req, res, next) {
+wiki.post('/writeWikiInitial', authenticateToken, isAdmin, async function (req, res, next) {
 
 
     const { ens, data } = req.body;
@@ -86,7 +87,7 @@ wiki.post('/writeWikiInitial', async function (req, res, next) {
 });
 
 
-wiki.post('/updateWiki', async function (req, res, next) {
+wiki.post('/updateWiki', authenticateToken, isAdmin, async function (req, res, next) {
 
     const { file_id, data } = req.body;
     const result = await db.query('update wikis set title = $1 where id = $2 returning location', [JSON.parse(data).title, file_id]).then(clean)
@@ -97,7 +98,7 @@ wiki.post('/updateWiki', async function (req, res, next) {
 
 });
 
-wiki.post('/deleteWiki', async function (req, res, next) {
+wiki.post('/deleteWiki', authenticateToken, isAdmin, async function (req, res, next) {
 
     // the new orderedList will maintain an order that will inform us about which element needs to become the new leader
     const { file_id } = req.body;
@@ -107,7 +108,7 @@ wiki.post('/deleteWiki', async function (req, res, next) {
 
 });
 
-wiki.post('/addWikiGrouping', async function (req, res, next) {
+wiki.post('/addWikiGrouping', authenticateToken, isAdmin, async function (req, res, next) {
     const { ens, groupingName, gk_rules } = req.body;
 
     const result = await db.query('insert into wiki_groupings (name, ens, gk_rules) values ($1, $2, $3) returning group_id', [groupingName, ens, gk_rules]).then(clean)
@@ -123,14 +124,14 @@ wiki.post('/addWikiGrouping', async function (req, res, next) {
     res.send(result)
 })
 
-wiki.post('/updateWikiGrouping', async function (req, res, next) {
+wiki.post('/updateWikiGrouping', authenticateToken, isAdmin, async function (req, res, next) {
     const { groupID, ens, groupingName, gk_rules } = req.body;
 
     const result = await db.query('update wiki_groupings set name=$1, ens=$2, gk_rules=$3 where group_id = $4', [groupingName, ens, gk_rules, groupID])
     res.send('OK')
 })
 
-wiki.post('/deleteWikiGrouping', async function (req, res, next) {
+wiki.post('/deleteWikiGrouping', authenticateToken, isAdmin, async function (req, res, next) {
     const { ens, groupID } = req.body;
 
     const result = await db.query('delete from wiki_groupings where group_id = $1', [groupID]);
@@ -141,7 +142,7 @@ wiki.post('/deleteWikiGrouping', async function (req, res, next) {
     res.send('OK')
 })
 
-wiki.post('/updateWikiLists', async function (req, res, next) {
+wiki.post('/updateWikiLists', authenticateToken, isAdmin, async function (req, res, next) {
 
     const { ens, file_id, new_grouping } = req.body;
     const result = await db.query('update wikis set grouping = $1 where id = $2', [new_grouping, file_id])

@@ -10,7 +10,6 @@ import wikiLogo from '../../img/wiki.svg'
 import { authenticated_post, batchFetchDashboardData, fetchUserMembership } from '../common/common'
 import { showNotification } from '../notifications/notifications'
 
-
 //redux
 import { useSelector, useDispatch } from 'react-redux';
 
@@ -93,7 +92,7 @@ export default function Dashboard() {
       checkAdmin(walletAddress)
       fetchUserMembership(walletAddress, membershipPulled, dispatch)
     }
-  }, [walletAddress, info])
+  }, [isConnected, walletAddress, info])
 
 
   useEffect(() => {
@@ -109,9 +108,9 @@ export default function Dashboard() {
 
   useEffect(() => { }, [isAdmin])
 
+
   return (
     <div className="dashboard-wrapper">
-      <button onClick={() => { authenticated_post('/dashboard/sample_jwt_route', { dummy: 'dummy' }) }}>jwt_route</button>
       {info && <InfoCard ens={ens} info={info} membership={membership} />}
       <section className="widget-cards">
 
@@ -183,8 +182,6 @@ function InfoCard({ info, ens }) {
 
 
   useEffect(() => {
-    console.log(dashboardRules)
-    console.log(discord_id)
     let promptDiscord = false
     Object.keys(dashboardRules).map((key) => {
       if (dashboardRules[key].gatekeeperType === 'discord') {
@@ -311,8 +308,8 @@ export function WidgetCard({ gatekeeperPass, orgInfo, widget, btnState, setBtnSt
   }
 
   async function handleDeleteWidget() {
-    var request = await axios.post('/dashboard/removeWidget', { ens: ens, name: name })
-    dispatch(updateWidgets(0, widget));
+    let res = await authenticated_post('/dashboard/removeWidget', { ens: ens, name: name }, dispatch)
+    if(res) dispatch(updateWidgets(0, widget));
 
   }
 

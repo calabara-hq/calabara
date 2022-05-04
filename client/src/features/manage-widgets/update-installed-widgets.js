@@ -15,6 +15,7 @@ import {
   updateWidgets,
   updateWidgetGatekeeper,
 } from '../../features/dashboard/dashboard-widgets-reducer';
+import { authenticated_post } from '../common/common';
 
 
 
@@ -122,7 +123,7 @@ function InstalledWidget({ el, selected, setSelected }) {
       <div className="installable-widget-text">
         <p>{el.name == 'wiki' ? 'docs' : el.name}</p>
         <p>{description}</p>
-        <u onClick={(e) => { window.open(link);e.stopPropagation();}}>Learn more</u>
+        <u onClick={(e) => { window.open(link); e.stopPropagation(); }}>Learn more</u>
       </div>
     </div>
   )
@@ -162,9 +163,9 @@ function WidgetSummary({ selected, setSettingsStep, setProgress, setTabHeader })
   const { ens } = useParams();
 
   useEffect(() => {
-     if (selected != '' && Object.keys(selected.metadata).length > 0) {
-       setMetadataExists(true)
-     }
+    if (selected != '' && Object.keys(selected.metadata).length > 0) {
+      setMetadataExists(true)
+    }
   }, [selected])
 
 
@@ -174,8 +175,9 @@ function WidgetSummary({ selected, setSettingsStep, setProgress, setTabHeader })
   })
 
   const deleteWidget = async () => {
-    dispatch(updateWidgets(0, selected));
-    await axios.post('/dashboard/removeWidget', { ens: ens, name: selected.name })
+    let res = await authenticated_post('/dashboard/removeWidget', { ens: ens, name: selected.name }, dispatch)
+    if (res) dispatch(updateWidgets(0, selected));
+
     setProgress(0);
   }
 
@@ -273,7 +275,7 @@ function GatekeeperSettings({ selected, setSettingsStep, setTabHeader }) {
     for (const [key, value] of Object.entries(appliedRules)) {
       if (value == '') {
         setRuleError({ id: key })
-        
+
         return;
       }
     }
@@ -286,15 +288,17 @@ function GatekeeperSettings({ selected, setSettingsStep, setTabHeader }) {
     for (const [key, value] of Object.entries(appliedRules)) {
       if (value == '') {
         setRuleError({ id: key })
-        
+
         return;
       }
     }
-    
-    await axios.post('/dashboard/updateWidgetGatekeeperRules', { ens: ens, gk_rules: appliedRules, name: selected.name });
-    dispatch(updateWidgetGatekeeper(selected.name, appliedRules))
-    showNotification('saved successfully', 'success', 'your changes were successfully saved')
-    setSettingsStep(0);
+
+    let res = await authenticated_post('/dashboard/updateWidgetGatekeeperRules', { ens: ens, gk_rules: appliedRules, name: selected.name }, dispatch);
+    if (res) {
+      dispatch(updateWidgetGatekeeper(selected.name, appliedRules))
+      showNotification('saved successfully', 'success', 'your changes were successfully saved')
+      setSettingsStep(0);
+    }
   }
 
 

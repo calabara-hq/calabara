@@ -1,0 +1,11 @@
+
+
+/*
+
+bring wallet modal to front when wiki folder modal is open
+
+*/
+
+.aside.svelte-rntogh{
+    z-index: 5;
+}

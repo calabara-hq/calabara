@@ -31,6 +31,7 @@ import {
   selectInstallableWidgets,
   updateWidgets,
 } from '../../features/dashboard/dashboard-widgets-reducer';
+import { authenticated_post } from '../common/common'
 
 
 
@@ -40,20 +41,20 @@ export default function ManageWidgets() {
   const [tabHeader, setTabHeader] = useState('manage apps')
   const dispatch = useDispatch();
   const history = useHistory();
-  const {ens} = useParams();
+  const { ens } = useParams();
 
   // don't allow direct URL access
   const checkHistory = () => {
-    if(history.action === 'POP'){
-        history.push('/' + ens + '/dashboard')
+    if (history.action === 'POP') {
+      history.push('/' + ens + '/dashboard')
     }
   }
 
 
 
-  useEffect(()=>{
+  useEffect(() => {
     checkHistory();
-  },[])
+  }, [])
 
   return (
     <div className="manage-widgets-container">
@@ -266,15 +267,16 @@ function FinalMessage({ setProgress, selected, appliedRules, metadata, setSelect
 
   const finalize = async () => {
 
-    const req = axios.post('/dashboard/addWidget', { ens: ens, name: selected.name, metadata: metadata, gatekeeper_rules: appliedRules })
-
-    showNotification('saved successfully', 'success', 'successfully added application')
-    dispatch(updateWidgets(1, { ens: ens, name: selected.name, metadata: metadata, gatekeeper_rules: appliedRules, notify: 0 }))
-    history.push('dashboard')
+    const res = await authenticated_post('/dashboard/addWidget', { ens: ens, name: selected.name, metadata: metadata, gatekeeper_rules: appliedRules }, dispatch)
+    if (res) {
+      showNotification('saved successfully', 'success', 'successfully added application')
+      dispatch(updateWidgets(1, { ens: ens, name: selected.name, metadata: metadata, gatekeeper_rules: appliedRules, notify: 0 }))
+      history.push('dashboard')
+    }
   }
 
   const handlePrevious = () => {
-    
+
     if (selected.name == 'wiki') {
       setSelected('')
       setProgress(0);
@@ -288,7 +290,7 @@ function FinalMessage({ setProgress, selected, appliedRules, metadata, setSelect
     <div className="manage-widgets-final-message-tab">
       <div>
         <h1>🎉🎉🎉</h1>
-        <h2>That was easy. Click <b>finish</b> to add {(selected.name == 'wiki' ? 'docs' : selected.name )} to the dashboard.</h2>
+        <h2>That was easy. Click <b>finish</b> to add {(selected.name == 'wiki' ? 'docs' : selected.name)} to the dashboard.</h2>
       </div>
       <div className="manage-widgets-next-previous-ctr">
         <button className={"previous-btn"} onClick={handlePrevious}><i class="fas fa-long-arrow-alt-left"></i></button>

@@ -28,7 +28,7 @@ const clean = (data) => {
 }
 
 const generate_access_token = (address) => {
-    return jwt.sign({ address: address }, JWT_TOKEN_SECRET, { expiresIn: 1800 });
+    return jwt.sign({ address: address }, JWT_TOKEN_SECRET, { expiresIn: 20 });
 }
 
 
@@ -51,8 +51,9 @@ authentication.post('/generate_jwt', async function (req, res, next) {
 
     // verify the signature
     try {
+        console.log(sig, msg, address)
         let signatureResult = await verifySignature(sig, msg, address)
-
+        console.log(signatureResult)
         // update the nonce
 
         const new_nonce = randomNonce(25);

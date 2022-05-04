@@ -6,7 +6,8 @@ export const connectivity = createSlice({
   initialState: {
     connected: false,
     address: '',
-    account_change: false
+    account_change: false,
+    is_token_expired: false
   },
   reducers: {
 
@@ -22,13 +23,16 @@ export const connectivity = createSlice({
 
     setAccountChange: (state, data) => {
       state.account_change = data.payload;
-    }
+    },
 
+    setIsTokenExpired: (state, data) => {
+      state.is_token_expired = data.payload;
+    }
 
   },
 });
 
-export const { setConnected, setDisconnected, setAccountChange } = connectivity.actions;
+export const { setConnected, setDisconnected, setAccountChange, setIsTokenExpired } = connectivity.actions;
 
 
 
@@ -39,6 +43,7 @@ export const { setConnected, setDisconnected, setAccountChange } = connectivity.
 export const selectConnectedBool = state => state.connectivity.connected;
 export const selectConnectedAddress = state => state.connectivity.address;
 export const selectAccountChange = state => state.connectivity.account_change;
+export const selectIsTokenExpired = state => state.connectivity.is_token_expired;
 
 export const manageAccountChange = (newAddress) => async (dispatch, getState, axios) => {
   let { connectivity } = getState();

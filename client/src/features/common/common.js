@@ -6,6 +6,7 @@ import store from '../../app/store.js'
 import {
   selectConnectedBool,
   selectConnectedAddress,
+  setIsTokenExpired
 } from '../wallet/wallet-reducer';
 
 import {
@@ -44,7 +45,7 @@ import {
   setDashboardRules,
 } from '../gatekeeper/gatekeeper-rules-reducer'
 import { showNotification } from '../notifications/notifications.js';
-import { signMessage } from '../wallet/wallet.js';
+import { auxillaryConnect, signMessage } from '../wallet/wallet.js';
 
 
 export const batchFetchDashboardData = async (ens, info, dispatch) => {
@@ -70,15 +71,23 @@ export const fetchUserMembership = async (walletAddress, membershipPulled, dispa
   }
 }
 
-export const authenticated_post = async (endpoint, body) => {
+export const authenticated_post = async (endpoint, body, dispatch, jwt) => {
 
   try {
-    let res = await axios.post(endpoint, body, { headers: { 'Authorization': `Bearer ${localStorage.getItem('jwt')}` } })
+    let res = await axios.post(endpoint, body, { headers: { 'Authorization': `Bearer ${jwt || localStorage.getItem('jwt')}` } })
     return res
   } catch (e) {
     switch (e.response.status) {
       case 401:
-        showNotification('error', 'error', 'unauthorized')
+        dispatch(setIsTokenExpired(true))
+        showNotification('hint', 'hint', 'please connect your wallet')
+
+        // if wallet isn't connected, lets ask them to connect and retry
+        let connect_res = await auxillaryConnect();
+        if (connect_res) {
+          let sig_res = await secure_sign(connect_res, dispatch);
+          if (sig_res) return authenticated_post(endpoint, body, dispatch, sig_res)
+        }
         break;
       case 403:
         showNotification('error', 'error', 'this wallet is not an organization admin')
@@ -97,14 +106,17 @@ export const authenticated_post = async (endpoint, body) => {
 // send the user a jwt and store it    
 
 
-export const secure_sign = async (walletAddress) => {
+export const secure_sign = async (walletAddress, dispatch) => {
   const nonce_from_server = await axios.post('/authentication/generate_nonce', { address: walletAddress })
-
+  console.log(nonce_from_server)
   try {
     const signatureResult = await signMessage(nonce_from_server.data.nonce);
+    console.log(signatureResult)
 
     try {
       let jwt_result = await axios.post('/authentication/generate_jwt', { sig: signatureResult.sig, address: walletAddress })
+      console.log(jwt_result)
+      dispatch(setIsTokenExpired(false))
       localStorage.setItem('jwt', jwt_result.data.jwt)
       return jwt_result.data.jwt
     } catch (e) {

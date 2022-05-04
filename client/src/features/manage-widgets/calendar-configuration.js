@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux';
 import {
     updateWidgetMetadata,
 } from '../../features/dashboard/dashboard-widgets-reducer';
+import { authenticated_post } from '../common/common';
 
 export default function CalendarConfiguration({ mode, metadata, setMetadata, setProgress, setSettingsStep, setTabHeader }) {
     const [configProgress, setConfigProgress] = useState(0)
@@ -44,7 +45,7 @@ export default function CalendarConfiguration({ mode, metadata, setMetadata, set
 
     async function testGrantedAccess() {
         var result = await axios.post('/dashboard/fetchCalendarMetaData', { calendarID: calendarID })
-        
+
         if (result.data == 'FAIL') {
             return 'fail'
         }
@@ -71,18 +72,20 @@ export default function CalendarConfiguration({ mode, metadata, setMetadata, set
 
                 // found the calendar and we can advance out of this inner loop
                 setMetadata({ calendarID: calendarID });
-                await axios.post('/dashboard/updateWidgetMetadata', { ens: ens, metadata: { calendarID: calendarID }, name: 'calendar' });
-                dispatch(updateWidgetMetadata('calendar', { calendarID: calendarID }))
-                if (mode === 'new') {
-                    setProgress(3);
-                }
-                else if(mode === 'update'){
-                    setSettingsStep(0);
+                let response = await axios.post('/dashboard/updateWidgetMetadata', { ens: ens, metadata: { calendarID: calendarID }, name: 'calendar' }, dispatch);
+                if (response) {
+                    dispatch(updateWidgetMetadata('calendar', { calendarID: calendarID }))
+                    if (mode === 'new') {
+                        setProgress(3);
+                    }
+                    else if (mode === 'update') {
+                        setSettingsStep(0);
+                    }
                 }
             }
             else {
                 // the calendar is not public, ask them to set it to public
-                
+
                 setConfigProgress(1);
             }
 
@@ -97,13 +100,15 @@ export default function CalendarConfiguration({ mode, metadata, setMetadata, set
             }
             else if (res == 'success') {
                 setMetadata({ calendarID: calendarID });
-                await axios.post('/dashboard/updateWidgetMetadata', { ens: ens, metadata: { calendarID: calendarID }, name: 'calendar' });
-                dispatch(updateWidgetMetadata('calendar', { calendarID: calendarID }))
-                if (mode === 'new') {
-                    setProgress(3);
-                }
-                else if(mode === 'update'){
-                    setSettingsStep(0);
+                let response = await authenticated_post('/dashboard/updateWidgetMetadata', { ens: ens, metadata: { calendarID: calendarID }, name: 'calendar' }, dispatch);
+                if (response) {
+                    dispatch(updateWidgetMetadata('calendar', { calendarID: calendarID }))
+                    if (mode === 'new') {
+                        setProgress(3);
+                    }
+                    else if (mode === 'update') {
+                        setSettingsStep(0);
+                    }
                 }
             }
 

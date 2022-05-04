@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import '../../css/discord-oauth-redirect.css'
 import { authenticated_post } from '../common/common';
-
+import { useDispatch } from 'react-redux';
 
 
 
@@ -13,7 +13,7 @@ export default function SuccessfulDiscordRedirect() {
     const [didUserDenyBot, setDidUserDenyBot] = useState(false)
     const [didUserDenyIdentify, setDidUserDenyIdentify] = useState(false)
     const [oauthMode, setOauthMode] = useState('')
-
+    const dispatch = useDispatch();
 
     useEffect(() => {
         (async () => {
@@ -35,12 +35,12 @@ export default function SuccessfulDiscordRedirect() {
 
 
             if (authType === 'bot') {
-                const resp = await authenticated_post('/discord/botOauthFlow', { type: authType, code: code, ens: ens, wallet: userWallet, redirect_uri: window.location.origin + window.location.pathname });
+                const resp = await authenticated_post('/discord/botOauthFlow', { type: authType, code: code, ens: ens, wallet: userWallet, redirect_uri: window.location.origin + window.location.pathname }, dispatch);
                 setOauthMode('bot')
                 if (!resp) setAuthError(true)
             }
             else if (authType === 'user') {
-                const resp = await authenticated_post('/discord/userOauthFlow', { type: authType, code: code, wallet: userWallet, redirect_uri: window.location.origin + window.location.pathname });
+                const resp = await authenticated_post('/discord/userOauthFlow', { type: authType, code: code, wallet: userWallet, redirect_uri: window.location.origin + window.location.pathname }, dispatch);
                 setOauthMode('user')
                 if (!resp) setAuthError(true)
 

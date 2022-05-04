@@ -12,6 +12,7 @@ import {
   selectWikiList,
   updateWikiList,
 } from '../wiki/wiki-reducer';
+import { authenticated_post } from "../common/common";
 
 const DragDropContextContainer = styled.div`
   padding: 20px;
@@ -49,19 +50,19 @@ const addToList = (list, index, element) => {
 
 
 
-function DragList({setCurrentWikiId, editWikiGroupingClick, lists, setLists}) {
-  const {ens} = useParams();
+function DragList({ setCurrentWikiId, editWikiGroupingClick, lists, setLists }) {
+  const { ens } = useParams();
   const history = useHistory();
   const dispatch = useDispatch();
   const wikiList = useSelector(selectWikiList);
 
 
-// watch elements and update db on change
-// since we use length, we only need to watch 1 of them
+  // watch elements and update db on change
+  // since we use length, we only need to watch 1 of them
 
 
   const onDragEnd = async (result) => {
-    
+
     if (!result.destination) {
       return;
     }
@@ -78,9 +79,9 @@ function DragList({setCurrentWikiId, editWikiGroupingClick, lists, setLists}) {
       result.destination.index,
       removedElement
     );
-    dispatch(updateWikiList(listCopy));
 
-    await axios.post('/wiki/updateWikiLists', {ens: ens, file_id: result.draggableId, new_grouping: result.destination.droppableId})
+    let res = await authenticated_post('/wiki/updateWikiLists', { ens: ens, file_id: result.draggableId, new_grouping: result.destination.droppableId }, dispatch)
+    if (res) dispatch(updateWikiList(listCopy));
 
   };
 
@@ -95,14 +96,14 @@ function DragList({setCurrentWikiId, editWikiGroupingClick, lists, setLists}) {
               elements={wikiList[listKey].list}
               key={listKey}
               prefix={listKey}
-              group_name = {wikiList[listKey].group_name}
+              group_name={wikiList[listKey].group_name}
               history={history}
             />
           ))}
-        
+
         </ListGrid>
       </DragDropContext>
-    
+
     </DragDropContextContainer>
   );
 }

@@ -17,6 +17,7 @@ const verifySignature = async (sig, msg, walletAddress) => {
     );
     const addressBuffer = ethUtil.publicToAddress(publicKey);
     const signer = ethUtil.toChecksumAddress(ethUtil.bufferToHex(addressBuffer));
+    console.log('signer here', signer)
     return(signer === walletAddress)
 
 

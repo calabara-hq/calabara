@@ -52,7 +52,17 @@ const prepLogo = async (logo, ens) => {
 }
 
 settings.post('/updateSettings', authenticateToken, isAdmin, async function (req, res, next) {
-    const { fields, sig, msg, walletAddress } = req.body
+    const { fields } = req.body
+    const walletAddress = req.user.address;
+    const isAdmin = req.user.isAdmin;
+    const isNewOrganization = req.user.isNewOrganization
+
+    // if it's a new organization, we need to push the users wallet address as well
+    if(isNewOrganization) fields.addresses.push(walletAddress)
+
+    // now remove the duplicate addresses if there are any
+    fields.addresses = [...new Set(fields.addresses)]
+
 
     // prep the logo path if a logo was provided
     let logoPath = await prepLogo(fields.logo, fields.ens);
@@ -85,7 +95,6 @@ settings.post('/updateSettings', authenticateToken, isAdmin, async function (req
     }
 
     //if we deleted any rules, now is the time to remove them from affected widgets
-    console.log(fields.gatekeeper.rulesToDelete)
 
     for (const i in fields.gatekeeper.rulesToDelete) {
         const res = await db.query('delete from gatekeeper_rules where rule_id = $1 returning rule', [fields.gatekeeper.rulesToDelete[i]]).then(clean)
@@ -96,7 +105,8 @@ settings.post('/updateSettings', authenticateToken, isAdmin, async function (req
 
     }
 
-    res.send({ error: false })
+    // send the admin addresses back since we may have manipulated them server-side
+    res.send({ adminAddresses: fields.addresses })
     res.status(200);
 
 });

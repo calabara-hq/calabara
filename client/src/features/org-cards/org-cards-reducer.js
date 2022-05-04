@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { authenticated_post } from '../common/common';
 
 // keep a list of orgs this user is a member of
 
@@ -32,7 +33,7 @@ export const organizations = createSlice({
     },
 
     // cache the explore page logos
-    populateLogoCache: (state, data) =>{
+    populateLogoCache: (state, data) => {
       state.logoCache[data.payload.imageURL] = data.payload.blob
     }
 
@@ -55,15 +56,15 @@ export const isMember = ens => (dispatch, getState) => {
 
 export const deleteMembership = (walletAddress, ens) => async (dispatch, getState, axios) => {
 
-
-  const { organizations } = getState();
-  var newData = JSON.parse(JSON.stringify(organizations.memberOf))
-  const toDelete = (el) => el == ens;
-  const toDeleteIndex = newData.findIndex(toDelete)
-  newData.splice(toDeleteIndex, 1)
-  dispatch(populateMembership(newData))
-  await axios.post('/organizations/removeSubscription/', { address: walletAddress, ens: ens });
-
+  let res = await authenticated_post('/organizations/removeSubscription/', { address: walletAddress, ens: ens }, dispatch);
+  if (res) {
+    const { organizations } = getState();
+    var newData = JSON.parse(JSON.stringify(organizations.memberOf))
+    const toDelete = (el) => el == ens;
+    const toDeleteIndex = newData.findIndex(toDelete)
+    newData.splice(toDeleteIndex, 1)
+    dispatch(populateMembership(newData))
+  }
 
 }
 
@@ -90,8 +91,8 @@ export const populateInitialMembership = (walletAddress) => async (dispatch, get
 
 export const addMembership = (walletAddress, ens) => async (dispatch, getState, axios) => {
 
-  var subs = await axios.post('/organizations/addSubscription/', { address: walletAddress, ens: ens });
-  dispatch(join(ens))
+  let res = await authenticated_post('/organizations/addSubscription/', { address: walletAddress, ens: ens }, dispatch);
+  if (res) dispatch(join(ens))
 
 }
 

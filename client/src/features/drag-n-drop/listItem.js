@@ -41,6 +41,7 @@ const ListItem = ({ item, index, setCurrentWikiId }) => {
 
   const history = useHistory();
   const dispatch = useDispatch();
+  const { ens } = useParams();
   const header = item.title;
 
   const [isWikiEllipsesClicked, setIsWikiEllipsesClicked] = useState(false)
@@ -51,7 +52,7 @@ const ListItem = ({ item, index, setCurrentWikiId }) => {
   }
 
   const handleDelete = (e) => {
-    dispatch(deleteWiki(item.id, item.grouping, index))
+    dispatch(deleteWiki(item.id, item.grouping, index, ens))
     e.stopPropagation();
 
 

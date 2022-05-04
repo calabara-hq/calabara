@@ -5,9 +5,11 @@ const path = require('path')
 const dashboard = express();
 dashboard.use(express.json())
 const { authenticateToken } = require('../middlewares/jwt-middleware.js');
+const { isAdmin } = require('../middlewares/admin-middleware')
 const { clean, asArray } = require('../helpers/common')
 const { getGuildRoles } = require('./discord-routes')
-const googleCalendar = require('../helpers/google-calendar')
+const googleCalendar = require('../helpers/google-calendar');
+const { default: axios } = require('axios');
 
 
 const getDashboardInfo = async (ens) => {
@@ -90,7 +92,7 @@ dashboard.get('/dashboardRules/*', async function (req, res, next) {
 
 
 // insert the new widget into a dashboard widget collection
-dashboard.post('/addWidget', async function (req, res, next) {
+dashboard.post('/addWidget', authenticateToken, isAdmin, async function (req, res, next) {
 
     const { ens, name, metadata, widget_logo, gatekeeper_rules } = req.body;
     await db.query('insert into widgets (ens, name, metadata, gatekeeper_rules) values ($1, $2, $3, $4)', [ens, name, metadata, gatekeeper_rules]);
@@ -101,7 +103,7 @@ dashboard.post('/addWidget', async function (req, res, next) {
 });
 
 // remove the new widget from a dashboard widget collection
-dashboard.post('/removeWidget', async function (req, res, next) {
+dashboard.post('/removeWidget', authenticateToken, isAdmin, async function (req, res, next) {
 
 
     const { ens, name } = req.body;
@@ -112,7 +114,7 @@ dashboard.post('/removeWidget', async function (req, res, next) {
 });
 
 
-dashboard.post('/updateWidgetMetadata', async function (req, res, next) {
+dashboard.post('/updateWidgetMetadata', authenticateToken, isAdmin, async function (req, res, next) {
     const { ens, metadata, name } = req.body;
 
     var result = await db.query('update widgets set metadata = $1 where ens=$2 and name=$3', [metadata, ens, name])
@@ -120,7 +122,7 @@ dashboard.post('/updateWidgetMetadata', async function (req, res, next) {
     res.send('ok')
 })
 
-dashboard.post('/updateWidgetGatekeeperRules', async function (req, res, next) {
+dashboard.post('/updateWidgetGatekeeperRules', authenticateToken, isAdmin, async function (req, res, next) {
     const { ens, gk_rules, name } = req.body;
 
     var result = await db.query('update widgets set gatekeeper_rules = $1 where ens=$2 and name=$3', [gk_rules, ens, name])
@@ -147,11 +149,5 @@ dashboard.post('/fetchCalendarEvents', async function (req, res, next) {
 
 });
 
-dashboard.post('/sample_jwt_route', authenticateToken, async function (req, res, next) {
-    console.log(req.user.address)
-    res.status(200);
-    res.send('OK')
-
-});
 
 module.exports.dashboard = dashboard;

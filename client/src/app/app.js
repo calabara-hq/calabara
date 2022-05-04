@@ -8,8 +8,6 @@ import SuccessfulDiscordRedirect from '../features/discord/bot-oauth-redirect'
 
 
 export default function App() {
-
-
   return (
 
     <Router>

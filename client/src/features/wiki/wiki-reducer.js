@@ -1,10 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
-
+import { authenticated_post } from '../common/common'
 
 export const wiki_data = createSlice({
   name: 'wiki_data',
   initialState: {
-    wikiList:{
+    wikiList: {
       /*
       ens: ens,
       groupings: {}
@@ -26,8 +26,8 @@ export const wiki_data = createSlice({
       },
       */
     },
-    organization:{
-      
+    organization: {
+
     },
   },
   reducers: {
@@ -43,12 +43,12 @@ export const wiki_data = createSlice({
     setEns: (state, data) => {
       state.organization.ens = data.payload;
     }
-    
+
 
   },
 });
 
-export const {setWikiList, addToWikiList, setEns} = wiki_data.actions;
+export const { setWikiList, addToWikiList, setEns } = wiki_data.actions;
 export const selectWikiList = state => state.wiki_data.wikiList;
 export const selectWikiListOrganization = state => state.wiki_data.organization;
 
@@ -56,22 +56,24 @@ export const selectWikiListOrganization = state => state.wiki_data.organization;
 
 
 
-export const deleteWiki = (id, grouping, index) => async (dispatch, getState, axios) => {
+export const deleteWiki = (id, grouping, index, ens) => async (dispatch, getState, axios) => {
 
   const { wiki_data } = getState();
 
-  let listCopy = JSON.parse(JSON.stringify(wiki_data.wikiList));
+  let res = await authenticated_post('/wiki/deleteWiki/', { ens: ens, file_id: id }, dispatch);
 
-  listCopy[grouping].list.splice(index, 1);
-  dispatch(setWikiList(listCopy))
-  await axios.post('/wiki/deleteWiki/', {file_id: id});
+  if (res) {
+    let listCopy = JSON.parse(JSON.stringify(wiki_data.wikiList));
 
+    listCopy[grouping].list.splice(index, 1);
+    dispatch(setWikiList(listCopy))
+  }
 
 }
 
 export const populateInitialWikiList = (ens) => async (dispatch, getState, axios) => {
   const result = await axios.get('/wiki/fetchWikis/' + ens)
-  
+
   dispatch(setEns(ens))
   dispatch(setWikiList(result.data))
 
@@ -102,8 +104,8 @@ export const renameWikiList = (newList) => async (dispatch, getState, axios) => 
 
   let listCopy = JSON.parse(JSON.stringify(wiki_data.wikiList))
 
-  
-  
+
+
 
 
   listCopy[newList.group_id] = newList.value;

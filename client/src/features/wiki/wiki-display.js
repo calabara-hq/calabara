@@ -40,7 +40,7 @@ import {
 } from '../gatekeeper/gatekeeper-rules-reducer'
 
 import { testDiscordRoles } from '../gatekeeper/gatekeeper'
-import { batchFetchDashboardData } from '../common/common'
+import { authenticated_post, batchFetchDashboardData } from '../common/common'
 
 export default function WikiDisplay({ mode }) {
   const { ens } = useParams();
@@ -77,12 +77,13 @@ export default function WikiDisplay({ mode }) {
     }
 
     else if (cleanup.type === 'delete') {
-      await axios.post('/wiki/deleteWikiGrouping', { ens: cleanup.ens, groupID: cleanup.groupID })
-      setModalOpen(false)
-      dispatch(removeFromWikiList(cleanup.groupID));
-      setCurrentWikiId(-1);
-      setGroupID(null)
-
+      let res = await authenticated_post('/wiki/deleteWikiGrouping', { ens: cleanup.ens, groupID: cleanup.groupID }, dispatch)
+      if (res) {
+        setModalOpen(false)
+        dispatch(removeFromWikiList(cleanup.groupID));
+        setCurrentWikiId(-1);
+        setGroupID(null)
+      }
     }
   }
 
@@ -164,7 +165,7 @@ export default function WikiDisplay({ mode }) {
 
   return (
     <>
-    <BackButton link={'dashboard'} text={"back to dashboard"}/>
+      <BackButton link={'dashboard'} text={"back to dashboard"} />
       <div className={"wiki-display-container"}>
         <div className={"wiki-popout-sidebar " + (currentWikiId == -1 ? 'wiki-closed' : 'wiki-open')}>
           <button onClick={fireWikiPopout}>documents</button>

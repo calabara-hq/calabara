@@ -19,9 +19,12 @@ import {
   setAccountChange,
   selectAccountChange,
   manageAccountChange,
+  selectIsTokenExpired,
 } from './wallet-reducer';
 
 import registerUser from '../user/user';
+import { useInterval } from '../../hooks/useInterval';
+import { windowEndpoint } from 'comlink';
 
 
 
@@ -135,17 +138,17 @@ async function signMessage(nonce) {
 }
 
 
-
-
 const auxillaryConnect = async () => {
   const res = await onboard.walletSelect();
   if (!res) {
-    return;
+    return null;
   }
   else {
     await onboard.walletCheck();
     const state = onboard.getState();
-    store.dispatch(setConnected(state.address))
+    const checkSumAddr = web3Infura.utils.toChecksumAddress(state.address)
+    store.dispatch(setConnected(checkSumAddr))
+    return checkSumAddr
   }
 }
 
@@ -154,6 +157,7 @@ function Wallet() {
   const isConnected = useSelector(selectConnectedBool);
   const walletAddress = useSelector(selectConnectedAddress);
   const account_change = useSelector(selectAccountChange);
+  const is_token_expired = useSelector(selectIsTokenExpired)
   const dispatch = useDispatch();
   const [connectBtnTxt, setConnectBtnTxt] = useState('Connect wallet');
   const [isMoreExpanded, setIsMoreExpanded] = useState(false);
@@ -164,25 +168,11 @@ function Wallet() {
 
 
 
-  const authenticationFlow = async (walletAddress) => {
-    const nonce_from_server = await axios.post('/authentication/generate_nonce', { address: walletAddress })
-    const signatureResult = await signMessage(nonce_from_server.data.nonce);
-    try {
-      let jwt_result = await axios.post('/authentication/generate_jwt', { sig: signatureResult.sig, address: walletAddress })
-      console.log(jwt_result)
-      localStorage.setItem('jwt', jwt_result.data.jwt)
-      showNotification('success', 'success', 'successfully authenticated')
-      dispatch(setConnected(walletAddress))
-      await registerUser(walletAddress)
-    } catch (e) {
-      showNotification('error', 'error', 'unauthorized signature')
-    }
 
-  }
 
   // pull current jwt from local storage and check it's expiration
 
-  const checkCurrentJwt = async () => {
+  const checkCurrentJwt = () => {
     const token = localStorage.getItem('jwt');
     try {
       const { exp } = jwt_decode(token);
@@ -196,6 +186,13 @@ function Wallet() {
   }
 
 
+  useInterval(async () => {
+    console.log('running on interval')
+    let jwt_valid = checkCurrentJwt();
+    if (!jwt_valid) handleDisconnectClick();
+  }, 15000)
+
+
   useEffect(async () => {
     (async () => {
       const selected = localStorage.getItem('selectedWallet');
@@ -205,7 +202,7 @@ function Wallet() {
           await onboard.walletCheck();
           const state = onboard.getState();
           const checkSumAddr = web3Infura.utils.toChecksumAddress(state.address)
-          let is_jwt_valid = await checkCurrentJwt()
+          let is_jwt_valid = checkCurrentJwt()
 
           // we'll auto connect if possible. otherwise just wait for connect click
 
@@ -256,7 +253,7 @@ function Wallet() {
       // otherwise, start the auth flow and get a new token
 
       else {
-        let sig_res = await secure_sign(checkSumAddr)
+        let sig_res = await secure_sign(checkSumAddr, dispatch)
         if (sig_res) {
           dispatch(setConnected(checkSumAddr))
           await registerUser(checkSumAddr)
@@ -276,6 +273,7 @@ function Wallet() {
     }
   }
 
+  // manage user switches wallet accounts
 
   useEffect(() => {
     (async () => {
@@ -288,6 +286,15 @@ function Wallet() {
     })();
   }, [account_change])
 
+  // manage user token expiration
+
+  useEffect(() => {
+    if (is_token_expired) {
+      dispatch(setDisconnected());
+      setConnectBtnTxt('Connect wallet')
+      localStorage.removeItem('jwt')
+    }
+  }, [is_token_expired])
 
 
   const handleBlur = (e) => {
