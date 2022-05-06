@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
-import Tooltip from '@mui/material/Tooltip';
 import Button from '@mui/material/Button';
 
-import { useHistory, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import {
     updateWidgetMetadata,
@@ -76,7 +75,7 @@ export default function CalendarConfiguration({ mode, metadata, setMetadata, set
                 if (response) {
                     dispatch(updateWidgetMetadata('calendar', { calendarID: calendarID }))
                     if (mode === 'new') {
-                        setProgress(3);
+                        setProgress(2);
                     }
                     else if (mode === 'update') {
                         setProgress(0);
@@ -104,7 +103,7 @@ export default function CalendarConfiguration({ mode, metadata, setMetadata, set
                 if (response) {
                     dispatch(updateWidgetMetadata('calendar', { calendarID: calendarID }))
                     if (mode === 'new') {
-                        setProgress(3);
+                        setProgress(2);
                     }
                     else if (mode === 'update') {
                         setProgress(0);

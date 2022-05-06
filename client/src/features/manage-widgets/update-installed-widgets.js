@@ -51,7 +51,7 @@ export default function ManageInstalledWidgetsTab({ setFunctionality, setTabHead
   return (
     <>
       {progress == 0 && <SelectInstalledWidget setProgress={setProgress} selected={selected} setSelected={setSelected} setFunctionality={setFunctionality} setTabHeader={setTabHeader} />}
-      {progress == 1 && <ManageWidget setProgress={setProgress} selected={selected} setTabHeader={setTabHeader} />}
+      {progress == 1 && <ManageWidget setProgress={setProgress} selected={selected} setTabHeader={setTabHeader} setFunctionality={setFunctionality} />}
     </>
   )
 }
@@ -131,7 +131,7 @@ function InstalledWidget({ el, selected, setSelected }) {
 }
 
 
-function ManageWidget({ selected, setProgress, setTabHeader }) {
+function ManageWidget({ selected, setProgress, setTabHeader, setFunctionality }) {
 
   // show 2 divs: gatekeeper settings and metadata settings (if applicable). 
   // only calendar will have metadata for now
@@ -141,10 +141,11 @@ function ManageWidget({ selected, setProgress, setTabHeader }) {
   const [settingsStep, setSettingsStep] = useState(0);
 
 
+
   return (
     <>
       {settingsStep == 0 &&
-        <WidgetSummary selected={selected} setSettingsStep={setSettingsStep} setProgress={setProgress} setTabHeader={setTabHeader} />
+        <WidgetSummary selected={selected} setSettingsStep={setSettingsStep} setProgress={setProgress} setTabHeader={setTabHeader} setFunctionality={setFunctionality} />
       }
       {settingsStep == 1 &&
         <MetadataSettings selected={selected} setProgress={setProgress} setSettingsStep={setSettingsStep} setTabHeader={setTabHeader} />
@@ -156,10 +157,12 @@ function ManageWidget({ selected, setProgress, setTabHeader }) {
   )
 }
 
-function WidgetSummary({ selected, setSettingsStep, setProgress, setTabHeader }) {
+function WidgetSummary({ selected, setSettingsStep, setProgress, setTabHeader, setFunctionality }) {
 
   const [metadataExists, setMetadataExists] = useState(false);
   const availableRules = useSelector(selectDashboardRules)
+  const installedWidgets = useSelector(selectInstalledWidgets)
+
   const dispatch = useDispatch();
 
   const { ens } = useParams();
@@ -177,11 +180,20 @@ function WidgetSummary({ selected, setSettingsStep, setProgress, setTabHeader })
   })
 
   const deleteWidget = async () => {
+    console.log(installedWidgets)
+    let num_widgets = installedWidgets.length - 1;
     let res = await authenticated_post('/dashboard/removeWidget', { ens: ens, name: selected.name }, dispatch)
-    if (res) dispatch(updateWidgets(0, selected));
-    showNotification('success', 'success', 'application successfully deleted')
+    if (res) {
+      dispatch(updateWidgets(0, selected));
+      showNotification('success', 'success', 'application successfully deleted')
 
-    setProgress(0);
+      if (num_widgets > 0) setProgress(0);
+
+      else {
+        setFunctionality(0);
+      }
+    }
+
   }
 
   return (
@@ -200,7 +212,7 @@ function WidgetSummary({ selected, setSettingsStep, setProgress, setTabHeader })
           }
         </div>
         <div className="standard-contents">
-          {(selected.name != 'wiki' && availableRules.length > 0) && 
+          {(selected.name != 'wiki' && Object.keys(availableRules).length > 0) &&
             <>
               <div className="standard-description">
                 <p>Gatekeeper</p>

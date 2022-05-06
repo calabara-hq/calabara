@@ -36,7 +36,7 @@ export default function Container() {
       </Route>
 
 
-      <Route path="/:ens/docs">
+      <Route path="/:ens/docs/">
         <WikiDisplay />
       </Route>
 

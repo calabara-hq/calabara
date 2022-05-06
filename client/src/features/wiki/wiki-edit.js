@@ -94,7 +94,6 @@ function ReactEditor({ data }) {
     else {
       res = await authenticated_post('/wiki/updateWiki', { ens: ens, file_id: file, data: JSON.stringify({ title: title, content: content }) }, dispatch)
     }
-    console.error(res)
     if (res) {
       setPending(true)
       setTimeout(() => {
@@ -146,6 +145,8 @@ function ReactEditor({ data }) {
         className="react-editor"
         onKeyDown={handleKeyDown}
         onChange={newContent => updateContent(newContent)}
+        options={{targetBlank: true, anchor: {linkValidation: true}}}
+
       />
 
     </>

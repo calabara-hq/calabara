@@ -68,12 +68,12 @@ settings.post('/updateSettings', authenticateToken, isAdmin, async function (req
     let logoPath = await prepLogo(fields.logo, fields.ens);
 
 
-    await db.query('insert into organizations (name, members, website, discord, logo, addresses, verified, ens)\
+    let insert_result = await db.query('insert into organizations (name, members, website, discord, logo, addresses, verified, ens)\
     values ($1, $2, $3, $4, $5, $6, $7, $8)\
     on conflict (ens)\
     do update set name=$1, members=$2, website=$3, discord=$4, logo=$5, addresses=$6, verified=$7', [fields.name, fields.members || 0, fields.website, fields.discord, logoPath, fields.addresses, false, fields.ens])
 
-
+    console.log(insert_result)
     // we allow updates to discord, so if discord exists in the db already, we have to update the entry at that rule_id
 
 
