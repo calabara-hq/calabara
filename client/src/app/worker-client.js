@@ -71,7 +71,7 @@ const settingsProcessLogo = async function (dispatch, logoCache) {
   imgElement.removeAttribute('data-src')
   imgElement.setAttribute('src', objectURL);
   dispatch(populateLogoCache({ imageURL: 'dummy', blob: objectURL }))
-  console.log(imageURL)
+  
   return blob;
 }
 

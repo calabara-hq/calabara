@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { authenticated_post } from '../common/common'
 
 export const wiki_data = createSlice({
   name: 'wiki_data',
@@ -56,18 +55,12 @@ export const selectWikiListOrganization = state => state.wiki_data.organization;
 
 
 
-export const deleteWiki = (id, grouping, index, ens) => async (dispatch, getState, axios) => {
+export const deleteWiki = (grouping, index) => async (dispatch, getState) => {
 
   const { wiki_data } = getState();
-
-  let res = await authenticated_post('/wiki/deleteWiki/', { ens: ens, file_id: id }, dispatch);
-
-  if (res) {
-    let listCopy = JSON.parse(JSON.stringify(wiki_data.wikiList));
-
-    listCopy[grouping].list.splice(index, 1);
-    dispatch(setWikiList(listCopy))
-  }
+  let listCopy = JSON.parse(JSON.stringify(wiki_data.wikiList));
+  listCopy[grouping].list.splice(index, 1);
+  dispatch(setWikiList(listCopy))
 
 }
 

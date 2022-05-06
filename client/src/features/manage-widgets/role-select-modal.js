@@ -64,7 +64,7 @@ function RoleSelect({ handleAddDiscordRule, handleClose, existingRoles }) {
         else{
             clean = [];
         }
-        console.log(clean)
+        
         handleAddDiscordRule(clean);
         handleClose();
     }

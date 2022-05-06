@@ -83,7 +83,6 @@ function ReactEditor({ data }) {
   const dispatch = useDispatch();
 
   async function publishDocument() {
-    setPending(true)
 
 
     data.filedata.title = title;
@@ -95,7 +94,9 @@ function ReactEditor({ data }) {
     else {
       res = await authenticated_post('/wiki/updateWiki', { ens: ens, file_id: file, data: JSON.stringify({ title: title, content: content }) }, dispatch)
     }
+    console.error(res)
     if (res) {
+      setPending(true)
       setTimeout(() => {
         setPending(false);
         history.push('/' + ens + '/docs')

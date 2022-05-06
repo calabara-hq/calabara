@@ -6,6 +6,6 @@ bring wallet modal to front when wiki folder modal is open
 
 */
 
-.aside.svelte-rntogh{
-    z-index: 5;
+.bn-onboard-custom.bn-onboard-modal{
+    z-index: 9999;
 }

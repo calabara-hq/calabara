@@ -187,7 +187,7 @@ function Wallet() {
 
 
   useInterval(async () => {
-    console.log('running on interval')
+    
     let jwt_valid = checkCurrentJwt();
     if (!jwt_valid) handleDisconnectClick();
   }, 15000)
@@ -241,7 +241,7 @@ function Wallet() {
       await onboard.walletCheck();
       const state = onboard.getState();
       const checkSumAddr = web3Infura.utils.toChecksumAddress(state.address)
-      console.log(checkSumAddr)
+      
       let is_jwt_valid = await checkCurrentJwt()
 
       // we'll auto connect if possible.

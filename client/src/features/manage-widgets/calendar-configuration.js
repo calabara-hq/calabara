@@ -72,14 +72,14 @@ export default function CalendarConfiguration({ mode, metadata, setMetadata, set
 
                 // found the calendar and we can advance out of this inner loop
                 setMetadata({ calendarID: calendarID });
-                let response = await axios.post('/dashboard/updateWidgetMetadata', { ens: ens, metadata: { calendarID: calendarID }, name: 'calendar' }, dispatch);
+                let response = await authenticated_post('/dashboard/updateWidgetMetadata', { ens: ens, metadata: { calendarID: calendarID }, name: 'calendar' }, dispatch);
                 if (response) {
                     dispatch(updateWidgetMetadata('calendar', { calendarID: calendarID }))
                     if (mode === 'new') {
                         setProgress(3);
                     }
                     else if (mode === 'update') {
-                        setSettingsStep(0);
+                        setProgress(0);
                     }
                 }
             }
@@ -107,7 +107,7 @@ export default function CalendarConfiguration({ mode, metadata, setMetadata, set
                         setProgress(3);
                     }
                     else if (mode === 'update') {
-                        setSettingsStep(0);
+                        setProgress(0);
                     }
                 }
             }
@@ -118,11 +118,12 @@ export default function CalendarConfiguration({ mode, metadata, setMetadata, set
     }
 
     function handlePrevious() {
+        console.log(configProgress)
         if (configProgress == 1) {
             setConfigProgress(0);
         }
         else {
-            setSettingsStep(0)
+            setProgress(0)
         }
     }
 

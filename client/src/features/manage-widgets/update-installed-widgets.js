@@ -16,6 +16,7 @@ import {
   updateWidgetGatekeeper,
 } from '../../features/dashboard/dashboard-widgets-reducer';
 import { authenticated_post } from '../common/common';
+import { selectDashboardRules } from '../gatekeeper/gatekeeper-rules-reducer';
 
 
 
@@ -158,6 +159,7 @@ function ManageWidget({ selected, setProgress, setTabHeader }) {
 function WidgetSummary({ selected, setSettingsStep, setProgress, setTabHeader }) {
 
   const [metadataExists, setMetadataExists] = useState(false);
+  const availableRules = useSelector(selectDashboardRules)
   const dispatch = useDispatch();
 
   const { ens } = useParams();
@@ -177,6 +179,7 @@ function WidgetSummary({ selected, setSettingsStep, setProgress, setTabHeader })
   const deleteWidget = async () => {
     let res = await authenticated_post('/dashboard/removeWidget', { ens: ens, name: selected.name }, dispatch)
     if (res) dispatch(updateWidgets(0, selected));
+    showNotification('success', 'success', 'application successfully deleted')
 
     setProgress(0);
   }
@@ -197,7 +200,7 @@ function WidgetSummary({ selected, setSettingsStep, setProgress, setTabHeader })
           }
         </div>
         <div className="standard-contents">
-          {selected.name != 'wiki' &&
+          {(selected.name != 'wiki' && availableRules.length > 0) && 
             <>
               <div className="standard-description">
                 <p>Gatekeeper</p>

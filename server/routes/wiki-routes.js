@@ -102,8 +102,11 @@ wiki.post('/deleteWiki', authenticateToken, isAdmin, async function (req, res, n
 
     // the new orderedList will maintain an order that will inform us about which element needs to become the new leader
     const { file_id } = req.body;
+    console.log(file_id)
     const result = await db.query('delete from wikis where id = $1 returning location', [file_id]).then(clean);
     await asyncfs.unlink(path.normalize(path.join(serverRoot, result.location, file_id + '.json')))
+    res.status(200)
+    res.send('OK')
 
 
 });

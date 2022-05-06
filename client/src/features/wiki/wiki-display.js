@@ -147,6 +147,7 @@ export default function WikiDisplay({ mode }) {
   }, [currentWikiId])
 
 
+  useEffect(() => {},[isAdmin])
 
   const newWikiGroupingClick = () => {
     open();
@@ -161,6 +162,7 @@ export default function WikiDisplay({ mode }) {
     setCurrentWikiId(-1)
     setIsWikiLoaded(false)
   }
+
 
 
   return (

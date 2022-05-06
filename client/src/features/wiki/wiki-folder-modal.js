@@ -59,7 +59,7 @@ export default function WikiModal({ modalOpen, handleClose, groupID }) {
 
 
     useEffect(() => {
-        console.log(groupID)
+        
         if (groupID != null) {
             setAppliedRules({ type: 'update_all', payload: wikiList[groupID].gk_rules })
             setGroupingName(wikiList[groupID].group_name)

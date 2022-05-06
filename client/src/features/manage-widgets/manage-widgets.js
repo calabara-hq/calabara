@@ -282,59 +282,66 @@ function FinalMessage({ setProgress, selected, appliedRules, metadata, setSelect
       setProgress(0);
     }
 
-    else { setProgress(2) }
-  }
+    else if (availableRules.length > 0) {
+        setProgress(2)
+      }
+
+    else {
+      setProgress(1);
+    }
+
+    }
 
 
-  return (
-    <div className="manage-widgets-final-message-tab">
-      <div>
-        <h1>🎉🎉🎉</h1>
-        <h2>That was easy. Click <b>finish</b> to add {(selected.name == 'wiki' ? 'docs' : selected.name)} to the dashboard.</h2>
+    return (
+      <div className="manage-widgets-final-message-tab">
+        <div>
+          <h1>🎉🎉🎉</h1>
+          <h2>That was easy. Click <b>finish</b> to add {(selected.name == 'wiki' ? 'docs' : selected.name)} to the dashboard.</h2>
+        </div>
+        <div className="manage-widgets-next-previous-ctr">
+          <button className={"previous-btn"} onClick={handlePrevious}><i class="fas fa-long-arrow-alt-left"></i></button>
+          <button className={"finish-btn enable"} onClick={finalize}>finish</button>
+        </div>
       </div>
-      <div className="manage-widgets-next-previous-ctr">
-        <button className={"previous-btn"} onClick={handlePrevious}><i class="fas fa-long-arrow-alt-left"></i></button>
-        <button className={"finish-btn enable"} onClick={finalize}>Finish</button>
+    )
+  }
+
+  function InstallableWidget({ el, selected, setSelected }) {
+    let imgSource, description, link
+
+    if (el.name == 'snapshot') {
+      imgSource = snapshotLogo
+      description = 'Help members stay up to date on proposals'
+      link = 'https://docs.calabara.com/v1/widgets/snapshot-description';
+    }
+    if (el.name == 'wiki') {
+      imgSource = wikiLogo
+      description = 'Token-gate documents and updates'
+      link = 'https://docs.calabara.com/v1/widgets/docs-description'
+
+    }
+    if (el.name == 'calendar') {
+      imgSource = calendarLogo
+      description = 'Integrate a google calendar'
+      link = 'https://docs.calabara.com/v1/widgets/calendar-description'
+    }
+
+
+    const handleClick = () => {
+      setSelected(el);
+    }
+
+    return (
+
+      <div className={"installable-widget " + (selected.name == el.name ? 'selected' : '')} onClick={handleClick}>
+        <img src={imgSource} />
+        <div className="installable-widget-text">
+          <p>{el.name == 'wiki' ? 'docs' : el.name}</p>
+          <p>{description}</p>
+          <u onClick={(e) => { window.open(link); e.stopPropagation(); }}>Learn more</u>
+        </div>
       </div>
-    </div>
-  )
-}
-
-function InstallableWidget({ el, selected, setSelected }) {
-  let imgSource, description, link
-
-  if (el.name == 'snapshot') {
-    imgSource = snapshotLogo
-    description = 'Help members stay up to date on proposals'
-    link = 'https://docs.calabara.com/v1/widgets/snapshot-description';
+    )
   }
-  if (el.name == 'wiki') {
-    imgSource = wikiLogo
-    description = 'Token-gate documents and updates'
-    link = 'https://docs.calabara.com/v1/widgets/docs-description'
-
-  }
-  if (el.name == 'calendar') {
-    imgSource = calendarLogo
-    description = 'Integrate a google calendar'
-    link = 'https://docs.calabara.com/v1/widgets/calendar-description'
-  }
-
-
-  const handleClick = () => {
-    setSelected(el);
-  }
-
-  return (
-
-    <div className={"installable-widget " + (selected.name == el.name ? 'selected' : '')} onClick={handleClick}>
-      <img src={imgSource} />
-      <div className="installable-widget-text">
-        <p>{el.name == 'wiki' ? 'docs' : el.name}</p>
-        <p>{description}</p>
-        <u onClick={(e) => { window.open(link); e.stopPropagation(); }}>Learn more</u>
-      </div>
-    </div>
-  )
-}
 

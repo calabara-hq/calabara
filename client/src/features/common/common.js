@@ -108,14 +108,15 @@ export const authenticated_post = async (endpoint, body, dispatch, jwt) => {
 
 export const secure_sign = async (walletAddress, dispatch) => {
   const nonce_from_server = await axios.post('/authentication/generate_nonce', { address: walletAddress })
-  console.log(nonce_from_server)
+  console.log(nonce_from_server.data.nonce)
+  
   try {
     const signatureResult = await signMessage(nonce_from_server.data.nonce);
-    console.log(signatureResult)
+    console.log(signatureResult.sig)
 
     try {
       let jwt_result = await axios.post('/authentication/generate_jwt', { sig: signatureResult.sig, address: walletAddress })
-      console.log(jwt_result)
+      
       dispatch(setIsTokenExpired(false))
       localStorage.setItem('jwt', jwt_result.data.jwt)
       return jwt_result.data.jwt
