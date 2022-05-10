@@ -10,8 +10,7 @@ const initialState = {
     discord: "",
     verified: "",
     addresses: [],
-    
-  }
+  }, 
 }
 
 export const dashboardInfo = createSlice({

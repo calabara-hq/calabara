@@ -1,12 +1,15 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { queryGatekeeper } from './gatekeeper.js'
 
+const initialState ={
+  dashboardRules: {},
+  ruleResults: {},
+}
+
+
 export const gatekeeperRules = createSlice({
   name: 'gatekeeperRules',
-  initialState: {
-    dashboardRules: {},
-    ruleResults: {},
-  },
+  initialState,
   reducers: {
 
     setDashboardRules: (state, data) => {
@@ -17,6 +20,7 @@ export const gatekeeperRules = createSlice({
       state.ruleResults = data.payload;
     },
 
+    gatekeeperReset: () => initialState
 
   },
 });
@@ -24,7 +28,7 @@ export const gatekeeperRules = createSlice({
 
 
 
-export const { setDashboardRules, setDashboardResults } = gatekeeperRules.actions;
+export const { setDashboardRules, setDashboardResults, gatekeeperReset } = gatekeeperRules.actions;
 export const selectDashboardRules = state => state.gatekeeperRules.dashboardRules;
 export const selectDashboardRuleResults = state => state.gatekeeperRules.ruleResults;
 

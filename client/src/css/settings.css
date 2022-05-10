@@ -341,6 +341,11 @@ input.error{
   border-radius: 8px;
   padding: 10px 50px;
 }
+
+.admins-content button:hover{
+  background-color: rgba(169, 152, 255, 0.2);
+}
+
 /***** end admins tab *****/
 
 /***** begin gatekeeper tab *****/
@@ -553,51 +558,7 @@ input.error{
     font-size: 16px;
   }
 
-  .discord-guild-name{
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    justify-content: center;
-    align-items: center;
-  }
-  .discord-guild-name > p{
-    margin: 0;
-  }
-  
-  .discord-guild-roles{
-    display: grid;
-    margin-top: 30px;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-gap: 10px;
-  }
 
-  .discord-guild-roles > p{
-    margin: 0;
-  }
-
-  .discord-guild-roles > span{
-    border-radius: 8px;
-    text-align: center;
-    padding: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .discord-guild-roles > span > p{
-    margin: 0;
-  }
-
-  .discord-guild-name > .discord-add-bot{
-    border-radius: 8px;
-    border: none;
-    color: #d2d2d2;
-    background-color: rgb(56, 74, 255);
-    padding: 10px 10px;
-  }
-
-  .discord-guild-name > .discord-add-bot:hover{
-    background-color: rgba(56, 74, 255, 0.7);
-  }
 
   /***** end gatekeeper tab *****/
 

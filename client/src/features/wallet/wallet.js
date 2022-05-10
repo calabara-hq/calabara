@@ -138,17 +138,25 @@ async function signMessage(nonce) {
 }
 
 
+
+
 const auxillaryConnect = async () => {
-  const res = await onboard.walletSelect();
-  if (!res) {
-    return null;
-  }
-  else {
+  let selected = localStorage.getItem('selectedWallet')
+  if (selected != '' && selected != undefined && selected != 'undefined') {
+    let res = await onboard.walletSelect(selected);
+    if (!res) {
+      let wallet_res = await onboard.walletSelect();
+      if (!wallet_res) {
+        return null;
+      }
+    }
     await onboard.walletCheck();
     const state = onboard.getState();
     const checkSumAddr = web3Infura.utils.toChecksumAddress(state.address)
+
     store.dispatch(setConnected(checkSumAddr))
-    return checkSumAddr
+    await registerUser(checkSumAddr)
+    return checkSumAddr;
   }
 }
 
@@ -187,7 +195,7 @@ function Wallet() {
 
 
   useInterval(async () => {
-    
+
     let jwt_valid = checkCurrentJwt();
     if (!jwt_valid) handleDisconnectClick();
   }, 15000)
@@ -241,7 +249,7 @@ function Wallet() {
       await onboard.walletCheck();
       const state = onboard.getState();
       const checkSumAddr = web3Infura.utils.toChecksumAddress(state.address)
-      
+
       let is_jwt_valid = await checkCurrentJwt()
 
       // we'll auto connect if possible.

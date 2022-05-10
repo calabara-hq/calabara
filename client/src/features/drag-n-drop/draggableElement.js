@@ -5,8 +5,8 @@ import styled from "styled-components";
 import Glyphicon from '@strongdm/glyphicon'
 
 const ColumnHeader = styled.div`
-  text-transform: uppercase;
   margin-bottom: 20px;
+  font-size: 17px;
 `;
 
 const DroppableStyles = styled.div`

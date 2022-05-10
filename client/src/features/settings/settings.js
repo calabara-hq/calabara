@@ -4,16 +4,18 @@ import { useHistory, useParams } from 'react-router-dom'
 import BackButton from '../back-button/back-button'
 import axios from 'axios'
 import '../../css/settings.css'
+import '../../css/discord-add-bot.css'
 import { validAddress, erc20GetSymbolAndDecimal, erc721GetSymbol } from '../wallet/wallet'
 import { showNotification } from '../notifications/notifications'
 import { selectConnectedAddress } from '../wallet/wallet-reducer'
-import { populateDashboardInfo, selectDashboardInfo, updateDashboardInfo } from '../dashboard/dashboard-info-reducer'
-import { populateDashboardRules, selectDashboardRules } from '../gatekeeper/gatekeeper-rules-reducer'
+import { dashboardInfo, dashboardInfoReset, populateDashboardInfo, selectDashboardInfo, updateDashboardInfo } from '../dashboard/dashboard-info-reducer'
+import { gatekeeperReset, populateDashboardRules, selectDashboardRules } from '../gatekeeper/gatekeeper-rules-reducer'
 import { deleteOrganization, addOrganization, selectLogoCache, populateLogoCache } from '../org-cards/org-cards-reducer'
 import * as WebWorker from '../../app/worker-client';
 import Glyphicon from '@strongdm/glyphicon'
 import DeleteGkRuleModal from './delete-gk-rule-modal'
 import { authenticated_post, secure_sign } from '../common/common'
+
 
 export default function SettingsManager() {
     const [fieldsReady, setFieldsReady] = useState(false)
@@ -89,7 +91,7 @@ export default function SettingsManager() {
     }, [])
     return (
         <>
-            <BackButton link={fields.ens != '' ? 'dashboard' : '/explore'} text={"back"} />
+            <BackButton link={ens != 'new' ? 'dashboard' : '/explore'} text={"back"} />
             <div className="settings-manager">
                 {fieldsReady &&
                     <>
@@ -432,7 +434,7 @@ function AdminAddressInput({ addressErrors, parentAddress, index, updateElementI
 function OrganizationGatekeeperComponent({ standardProps }) {
     const { fields, setFields } = standardProps;
     const [gatekeeperInnerProgress, setGatekeeperInnerProgress] = useState(0);
-    const existingRules = useSelector(selectDashboardRules);
+    const existingRules = Object.keys(useSelector(selectDashboardRules));
     const [addGatekeeperOptionClick, setAddGatekeeperOptionClick] = useState('none')
     const [doesDiscordExist, setDoesDiscordExist] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
@@ -465,7 +467,7 @@ function OrganizationGatekeeperComponent({ standardProps }) {
         if (existingRules[array_index] != null) {
             // rule exists, need to keep track of the rule we want to delete
             gatekeeperCopy.splice(array_index, 1)
-            setFields({ gatekeeper: { rules: gatekeeperCopy, rulesToDelete: fields.gatekeeper.rulesToDelete.concat(array_index) } })
+            setFields({ gatekeeper: { rules: gatekeeperCopy, rulesToDelete: fields.gatekeeper.rulesToDelete.concat(existingRules[array_index]) } })
         }
 
         else {
@@ -889,7 +891,7 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
     const [popoutFired, setPopoutFired] = useState(false);
     const [isBotVerified, setIsBotVerified] = useState(false);
     const [botFailureMessage, setBotFailureMessage] = useState('');
-    const walletAddress = useSelector(selectConnectedAddress)
+    const walletAddress = useSelector(selectConnectedAddress);
 
     const ens = fields.ens;
 
@@ -924,12 +926,14 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
     const addBot = async () => {
         setPopoutFired(true)
         setBotFailureMessage('')
+
         //pass guildId as autofill
         let popout;
         let state = encodeURIComponent(JSON.stringify({ walletAddress: walletAddress, integrationType: 'bot', ens: ens }))
         if (process.env.NODE_ENV === 'development') {
             //popout = window.open(`https://discord.com/api/oauth2/authorize?client_id=895719351406190662&permissions=0&redirect_uri=https%3A%2F%2Flocalhost%3A3000%2Foauth%2Fdiscord&response_type=code&scope=identify%20bot%20applications.commands&state=${state}`, 'popUpWindow', 'height=700,width=600,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes')
             popout = window.open(`https://discord.com/api/oauth2/authorize?client_id=895719351406190662&permissions=0&redirect_uri=https%3A%2F%2F192.168.1.219%3A3000%2Foauth%2Fdiscord&response_type=code&scope=identify%20bot%20applications.commands&state=${state}`, 'popUpWindow', 'height=700,width=600,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes')
+            popout.myVar = 'hehehe'
         }
 
         else if (process.env.NODE_ENV === 'production') {
@@ -1067,7 +1071,6 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
                 </>
             }
 
-
         </>
     )
 
@@ -1165,13 +1168,10 @@ function SaveComponent({ standardProps, infoErrorController, adminErrorControlle
 
         // we only want to send the new rules to the db
 
-
         let ruleDuplicates = fields.gatekeeper.rules.filter(({ gatekeeperAddress: gk_addy1, guildId: gid1 }) => !Object.values(existingGatekeeperRules).some(({ gatekeeperAddress: gk_addy2, guildId: gid2 }) => (gk_addy2 === gk_addy1 && gid1 === gid2)))
 
-
-
-
         finalSubmission.gatekeeper.rules = ruleDuplicates
+
 
         let settingsResult = await authenticated_post('/settings/updateSettings', { ens: fields.ens, fields: finalSubmission, walletAddress: walletAddress }, dispatch);
         if (settingsResult) {

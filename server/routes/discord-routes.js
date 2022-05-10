@@ -41,15 +41,17 @@ const addDiscordUser = async (oauthData, wallet) => {
   // post the userid to the users table of database
 
   await db.query('update users set discord = $1 where address = $2', [userResult.data.id, wallet])
+
+  return
 }
 
 
 
 const addDiscordBot = async (ens, oauthData, wallet) => {
   // get the user discord id and set it in user field of db for this users address.
-  const discord_id = await addDiscordUser(oauthData, wallet)
+  await addDiscordUser(oauthData, wallet)
   await db.query('insert into discord_guilds (ens, guild_id) values ($1, $2) on CONFLICT (ens) DO update set guild_id = $2', [ens, oauthData.guild.id]);
-
+  return
 }
 
 

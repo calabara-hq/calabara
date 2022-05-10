@@ -32,6 +32,8 @@ import {
   clearWidgets,
   dashboardWidgetsReset,
 } from '../dashboard/dashboard-widgets-reducer'
+
+import { gatekeeperReset } from '../gatekeeper/gatekeeper-rules-reducer'
 import { auxillaryConnect } from '../wallet/wallet'
 import { dashboardInfoReset } from '../dashboard/dashboard-info-reducer'
 
@@ -48,16 +50,17 @@ export default function Cards() {
   const dispatch = useDispatch();
 
 
-  // clear redux store so that clicking into a new dashboard doesn't briefly render stale data
-  dispatch(dashboardInfoReset);
-  dispatch(dashboardWidgetsReset);
-
 
 
   // there is room for optimization here. The webworker is fetching new resources everytime this page loads.
   // i created a cardsPulled state in the org-cards reducer that may come in handy for a solution
 
   useEffect(() => {
+    // clear redux store so that clicking into a new dashboard doesn't briefly render stale data
+    dispatch(dashboardInfoReset());
+    dispatch(dashboardWidgetsReset());
+    dispatch(dashboardInfoReset());
+    dispatch(gatekeeperReset());
     fetchOrganizations(cardsPulled, dispatch)
   }, [])
 
@@ -144,7 +147,7 @@ function DaoCard({ org, membership }) {
   return (
 
     <article className="dao-card" onClick={handleClick}>
-         <img data-src={logo} />
+      <img data-src={logo} />
       <h2> {name}</h2>
       <p>{members} members</p>
       {isConnected &&
@@ -182,7 +185,7 @@ function NewOrgButton({ isConnected }) {
 
 
     <article className="new-org" onClick={handleNewOrg}>
-      <img src={plusSign}/>
+      <img src={plusSign} />
       <h2>New</h2>
     </article>
 

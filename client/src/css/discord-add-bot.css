@@ -38,6 +38,11 @@
       background-color: rgba(169, 152, 255, 0.3);
 }
 
+.discord-add-bot:hover{
+  background-color: rgba(169, 152, 255, 0.2);
+}
+
+
 .discord-add-bot[disabled]{
   background-color: lightgrey;
   color: grey;

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import '../../css/discord-oauth-redirect.css'
 import { authenticated_post } from '../common/common';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 
 
@@ -34,15 +34,17 @@ export default function SuccessfulDiscordRedirect() {
             let ens = state.ens
 
 
+            const jwt = null;
             if (authType === 'bot') {
-                const resp = await authenticated_post('/discord/botOauthFlow', { type: authType, code: code, ens: ens, wallet: userWallet, redirect_uri: window.location.origin + window.location.pathname }, dispatch);
+                const resp = await authenticated_post('/discord/botOauthFlow', { type: authType, code: code, ens: ens, wallet: userWallet, redirect_uri: window.location.origin + window.location.pathname }, dispatch, jwt);
+                // store the guild_id so we can use it back in the settings page'
+                if (!resp) return setAuthError(true)
                 setOauthMode('bot')
-                if (!resp) setAuthError(true)
             }
             else if (authType === 'user') {
-                const resp = await authenticated_post('/discord/userOauthFlow', { type: authType, code: code, wallet: userWallet, redirect_uri: window.location.origin + window.location.pathname }, dispatch);
-                setOauthMode('user')
+                const resp = await authenticated_post('/discord/userOauthFlow', { type: authType, code: code, wallet: userWallet, redirect_uri: window.location.origin + window.location.pathname }, dispatch, jwt);
                 if (!resp) setAuthError(true)
+                setOauthMode('user')
 
             }
             else {
