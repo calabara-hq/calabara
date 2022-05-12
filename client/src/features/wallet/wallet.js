@@ -22,7 +22,7 @@ import {
 } from './wallet-reducer';
 
 import registerUser from '../user/user';
-import { useInterval } from '../../hooks/useInterval';
+import { useInterval } from '../hooks/useInterval';
 import { windowEndpoint } from 'comlink';
 
 

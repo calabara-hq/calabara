@@ -52,26 +52,6 @@
 }
 
 
-.discord-connect-wallet {
-  position: relative;
-  padding: 5px 15px;
-  border: none;
-  border-radius: 8px;
-  background-color: rgba(26, 188, 156, 0.3);
-  color: rgb(26, 188, 156);
-}
-
-.discord-connect-wallet:hover {
-  background-color: rgba(26, 188, 156, 0.2);
-}
-
-
-.discord-connect-wallet[disabled] {
-  background-color: rgba(96, 125, 139, 0.3);
-  color: rgb(96, 125, 139);
-  cursor: not-allowed;
-}
-
 .discord-roles-header {
   font-weight: bold;
   font-size: 16px;

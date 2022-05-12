@@ -65,7 +65,7 @@ export const useDiscordAuth = (scope) => {
                         })
                 }
 
-                //windowInstance?.close()
+                windowInstance?.close()
             }
         }
 

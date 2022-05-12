@@ -938,14 +938,6 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
     }
 
 
-
-    const handleConnectClick = async () => {
-        let connect_res = await auxillaryConnect();
-        if (!connect_res) {
-            showNotification('hint', 'hint', 'you must connect your wallet to perform this action')
-            return
-        }
-    }
     useEffect(() => {
         (async () => {
             if (Object.keys(userAuthorization).length > 0) {
@@ -1108,8 +1100,7 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
                             <div>
                                 <p style={{ margin: 0 }}>{guildName}</p>
                             </div>
-                            <button disabled={isConnected} className={'discord-connect-wallet'} onClick={handleConnectClick}>{isConnected ? 'wallet connected' : 'connect wallet'}</button>
-                            <button disabled={!isConnected} className={'discord-add-bot ' + (userIsAuthenticating ? 'loading' : '')} onClick={discordAuthenticateUser}>{userIsAuthenticating ? 'check popup window' : 'update server link'}</button>
+                            <button className={'discord-add-bot ' + (userIsAuthenticating ? 'loading' : '')} onClick={discordAuthenticateUser}>{userIsAuthenticating ? 'check popup window' : 'update server link'}</button>
                         </div>
                         {guildRoles &&
 
@@ -1117,8 +1108,8 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
 
                                 <p className="discord-roles-header">server roles</p>
                                 <div className="discord-guild-roles">
-                                    {guildRoles.map((val) => {
-                                        return <span style={{ backgroundColor: calculateBackgroundColor(val.color), color: calculateColor(val.color) }}><p>{val.name}</p></span>
+                                    {guildRoles.map((val, key) => {
+                                        return <span key={key} style={{ backgroundColor: calculateBackgroundColor(val.color), color: calculateColor(val.color) }}><p>{val.name}</p></span>
                                     })}
                                 </div>
 
@@ -1131,7 +1122,7 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
                                 <div className="discord-user-servers">
                                     {userServers.map((server) => {
                                         return (
-                                            <div className={"discord-server " + (selectedServer === server.id ? 'selected' : 'undefined')} onClick={() => { setSelectedServer(server.id) }}>
+                                            <div key={server.id} className={"discord-server " + (selectedServer === server.id ? 'selected' : 'undefined')} onClick={() => { setSelectedServer(server.id) }}>
                                                 <img src={server.img}></img>
                                                 <p>{server.name}</p>
                                             </div>
@@ -1147,10 +1138,10 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
                             <button className="next-btn enable" disabled={!guildName} onClick={addDiscordRule}><i className="fas fa-long-arrow-alt-right"></i></button>
                         </div>
                     }
-                    {(userServers && selectedServer) &&
+                    {(userServers) &&
                         <div className="settings-next-previous-ctr">
                             <button className="previous-btn enable" disabled={!guildName} onClick={() => { setGatekeeperInnerProgress(0); }}><i className="fas fa-long-arrow-alt-left"></i></button>
-                            <button className="add-discord-bot-btn enable" disabled={!guildName} onClick={addBot}>add bot</button>
+                            {selectedServer && <button className="add-discord-bot-btn enable" disabled={!guildName} onClick={addBot}>add bot</button>}
                         </div>
                     }
                 </>
