@@ -55,7 +55,7 @@ const addDiscordBot = async (ens, oauthData, wallet) => {
 }
 
 
-discordApp.post('/botOauthFlow', authenticateToken, isAdmin, async function (req, res, next) {
+discordApp.post('/botOauthFlow', async function (req, res, next) {
   const { type, code, redirect_uri, wallet, ens } = req.body;
   const data = {
     'client_id': CLIENT_ID,
@@ -79,12 +79,12 @@ discordApp.post('/botOauthFlow', authenticateToken, isAdmin, async function (req
   await addDiscordBot(ens, oauthData, wallet)
 
 
-  res.send('success')
+  res.send(oauthData)
   res.status(200)
 })
 
-discordApp.post('/userOauthFlow', authenticateToken, async function (req, res, next) {
-  const { type, code, redirect_uri, wallet, ens } = req.body;
+discordApp.post('/userOauthFlow', async function (req, res, next) {
+  const { code, redirect_uri, wallet } = req.body;
   const data = {
     'client_id': CLIENT_ID,
     'client_secret': CLIENT_SECRET,
@@ -104,10 +104,10 @@ discordApp.post('/userOauthFlow', authenticateToken, async function (req, res, n
   const oauthData = await response.json();
 
   // send the access code and retrieve a user id
-  await addDiscordUser(oauthData, wallet)
+  // await addDiscordUser(oauthData, wallet)
 
 
-  res.send('success')
+  res.send(oauthData)
   res.status(200)
 })
 

@@ -15,6 +15,7 @@ import * as WebWorker from '../../app/worker-client';
 import Glyphicon from '@strongdm/glyphicon'
 import DeleteGkRuleModal from './delete-gk-rule-modal'
 import { authenticated_post, secure_sign } from '../common/common'
+import { useDiscordAuth } from '../hooks/useDiscordAuth'
 
 
 export default function SettingsManager() {
@@ -892,6 +893,8 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
     const [isBotVerified, setIsBotVerified] = useState(false);
     const [botFailureMessage, setBotFailureMessage] = useState('');
     const walletAddress = useSelector(selectConnectedAddress);
+    const { onOpen, authorization, error, isAuthenticating } = useDiscordAuth("identify")
+
 
     const ens = fields.ens;
 
@@ -903,6 +906,8 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
             await fetchGuildInfo();
         })();
     }, [])
+
+
 
 
     const fetchGuildInfo = async () => {
@@ -922,23 +927,25 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
     }
 
 
-
     const addBot = async () => {
         setPopoutFired(true)
         setBotFailureMessage('')
+        onOpen();
 
         //pass guildId as autofill
+        /*
         let popout;
         let state = encodeURIComponent(JSON.stringify({ walletAddress: walletAddress, integrationType: 'bot', ens: ens }))
         if (process.env.NODE_ENV === 'development') {
             //popout = window.open(`https://discord.com/api/oauth2/authorize?client_id=895719351406190662&permissions=0&redirect_uri=https%3A%2F%2Flocalhost%3A3000%2Foauth%2Fdiscord&response_type=code&scope=identify%20bot%20applications.commands&state=${state}`, 'popUpWindow', 'height=700,width=600,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes')
-            popout = window.open(`https://discord.com/api/oauth2/authorize?client_id=895719351406190662&permissions=0&redirect_uri=https%3A%2F%2F192.168.1.219%3A3000%2Foauth%2Fdiscord&response_type=code&scope=identify%20bot%20applications.commands&state=${state}`, 'popUpWindow', 'height=700,width=600,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes')
+            popout = window.open(`https://discord.com/api/oauth2/authorize?client_id=895719351406190662&permissions=0&redirect_uri=https%3A%2F%2F${window.location.hostname + ':' + window.location.port}%2Foauth%2Fdiscord&response_type=code&scope=identify%20bot%20applications.commands&state=${state}`, 'popUpWindow', 'height=700,width=600,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes')
             popout.myVar = 'hehehe'
         }
 
         else if (process.env.NODE_ENV === 'production') {
             popout = window.open(`https://discord.com/api/oauth2/authorize?client_id=895719351406190662&permissions=0&redirect_uri=https%3A%2F%2Flocalhost%3A3000%2Foauth%2Fdiscord&response_type=code&scope=identify%20bot%20applications.commands&state=${state}`, 'popUpWindow', 'height=700,width=600,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes')
         }
+
 
         var pollTimer = window.setInterval(async function () {
             if (popout.closed !== false) {
@@ -947,6 +954,7 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
                 await verifyBot();
             }
         }, 1000);
+        */
 
     }
 

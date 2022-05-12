@@ -4,13 +4,12 @@ import Onboard from 'bnc-onboard'
 import { showNotification } from '../notifications/notifications';
 import Identicon from '../identicon/identicon';
 import store from '../../app/store.js'
-import axios from 'axios';
 import jwt_decode from 'jwt-decode'
 import { secure_sign } from '../common/common';
 import { erc20abi } from './erc20abi';
 import { erc721abi } from './erc721abi';
-
 import { useSelector, useDispatch } from 'react-redux';
+
 import {
   setConnected,
   setDisconnected,

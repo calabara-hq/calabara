@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import '../../css/discord-oauth-redirect.css'
-import { authenticated_post } from '../common/common';
 import { useDispatch, useSelector } from 'react-redux';
-
 
 
 // on successful authorization, grab the ens and guild_id from url and send a post to the server
@@ -19,38 +17,76 @@ export default function SuccessfulDiscordRedirect() {
         (async () => {
 
             // fragment is for the bot addition
-            const fragment = new URLSearchParams(window.location.hash.slice(1));
-            //const [guild_id, state] = [fragment.get('guild_id'), fragment.get('state')];
+            const target = `${window.location.origin}`
 
-            // straight search for user identify 
             const urlParams = new URLSearchParams(window.location.search);
-            const guild_id = urlParams.get('guild_id')
-            const state = JSON.parse(decodeURIComponent(urlParams.get('state')))
-            const code = urlParams.get('code')
+            const [guild_id, state, code, error, errorDescription] = [
+                urlParams.get('guild_id'),
+                urlParams.get('state'),
+                urlParams.get('code'),
+                urlParams.get('error'),
+                urlParams.get('errorDescription'),
+
+            ]
 
 
-            let userWallet = state.walletAddress
-            let authType = state.integrationType
-            let ens = state.ens
+            console.log(code)
 
-
-            const jwt = null;
-            if (authType === 'bot') {
-                const resp = await authenticated_post('/discord/botOauthFlow', { type: authType, code: code, ens: ens, wallet: userWallet, redirect_uri: window.location.origin + window.location.pathname }, dispatch, jwt);
-                // store the guild_id so we can use it back in the settings page'
-                if (!resp) return setAuthError(true)
-                setOauthMode('bot')
+            if (error) {
+                window.opener.postMessage(
+                    {
+                        type: "DC_AUTH_ERROR",
+                        data: { error, errorDescription }
+                    },
+                    target
+                )
+                return
             }
-            else if (authType === 'user') {
-                const resp = await authenticated_post('/discord/userOauthFlow', { type: authType, code: code, wallet: userWallet, redirect_uri: window.location.origin + window.location.pathname }, dispatch, jwt);
-                if (!resp) setAuthError(true)
-                setOauthMode('user')
 
-            }
-            else {
-                setDidUserDenyBot(true)
-                setDidUserDenyIdentify(true)
-            }
+            let authInfo = await axios.post('/discord/userOauthFlow', { code: code, redirect_uri: window.location.origin + window.location.pathname, wallet: '12345' })
+            if (!authInfo) return setAuthError(true)
+            console.log(authInfo)
+            window.opener.postMessage(
+                {
+                    type: "DC_AUTH_SUCCESS",
+                    data: authInfo.data,
+                },
+                target
+            )
+
+
+            //const [guild_id, state] = [fragment.get('guild_id'), fragment.get('state')];
+            /*
+                        // straight search for user identify 
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const guild_id = urlParams.get('guild_id')
+                        const state = JSON.parse(decodeURIComponent(urlParams.get('state')))
+                        const code = urlParams.get('code')
+            
+            
+                        let userWallet = state.walletAddress
+                        let authType = state.integrationType
+                        let ens = state.ens
+            
+                        const jwt = null;
+                        if (authType === 'bot') {
+                            const resp = await axios.post('/discord/botOauthFlow', { type: authType, code: code, ens: ens, wallet: userWallet, redirect_uri: window.location.origin + window.location.pathname }, dispatch, jwt);
+                            // store the guild_id so we can use it back in the settings page'
+                            console.log(resp)
+                            if (!resp) return setAuthError(true)
+                            setOauthMode('bot')
+                        }
+                        else if (authType === 'user') {
+                            const resp = await axios.post('/discord/userOauthFlow', { type: authType, code: code, wallet: userWallet, redirect_uri: window.location.origin + window.location.pathname }, dispatch, jwt);
+                            if (!resp) setAuthError(true)
+                            setOauthMode('user')
+            
+                        }
+                        else {
+                            setDidUserDenyBot(true)
+                            setDidUserDenyIdentify(true)
+                        }
+                    */
         })();
     }, [])
 
