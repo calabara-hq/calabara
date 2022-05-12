@@ -38,6 +38,8 @@ const addDiscordUser = async (oauthData, wallet) => {
     }
   })
 
+  console.log(userResult)
+
   // post the userid to the users table of database
 
   await db.query('update users set discord = $1 where address = $2', [userResult.data.id, wallet])
@@ -56,7 +58,7 @@ const addDiscordBot = async (ens, oauthData, wallet) => {
 
 
 discordApp.post('/botOauthFlow', async function (req, res, next) {
-  const { type, code, redirect_uri, wallet, ens } = req.body;
+  const { code, redirect_uri} = req.body;
   const data = {
     'client_id': CLIENT_ID,
     'client_secret': CLIENT_SECRET,
@@ -74,9 +76,6 @@ discordApp.post('/botOauthFlow', async function (req, res, next) {
   })
 
   const oauthData = await response.json();
-
-
-  await addDiscordBot(ens, oauthData, wallet)
 
 
   res.send(oauthData)
@@ -104,7 +103,6 @@ discordApp.post('/userOauthFlow', async function (req, res, next) {
   const oauthData = await response.json();
 
   // send the access code and retrieve a user id
-  // await addDiscordUser(oauthData, wallet)
 
 
   res.send(oauthData)
@@ -139,6 +137,42 @@ discordApp.post('/getUserRoles', async function (req, res, next) {
     res.send('error')
     res.status(200)
   }
+});
+
+
+// get a list of users servers which have permissions to add this bot
+discordApp.post('/getUserServers', async function (req, res, next) {
+  const { token_type, access_token } = req.body;
+  const userResult = await axios.get('https://discord.com/api/users/@me/guilds', {
+    headers: {
+      authorization: `${token_type} ${access_token}`
+    }
+  })
+  let filtered_servers = userResult.data.filter(
+    ({ owner, permissions }) => owner || (permissions & (1 << 5)) === 1 << 5
+  )
+    .map(({ icon, id, name, owner }) => ({
+      img: icon
+        ? `https://cdn.discordapp.com/icons/${id}/${icon}.png`
+        : "/img/logos/default-logo.svg",
+      id,
+      name,
+      owner,
+    }))
+
+
+  res.send(filtered_servers)
+  res.status(200)
+  /*
+  try {
+    let resp = await getGuildUserRoles(guild_id, user_id)
+    res.send(resp)
+    res.status(200)
+  } catch (e) {
+    res.send('error')
+    res.status(200)
+  }
+  */
 });
 
 
@@ -177,6 +211,27 @@ discordApp.post('/getGuildProperties', async function (req, res, next) {
 
 });
 
+
+// fetch guild name and roles for an ens
+discordApp.post('/verifyBotAdded', async function (req, res, next) {
+  const { guild_id } = req.body;
+
+
+  try {
+    var response = await axios.get(`https://discord.com/api/v6/guilds/${guild_id}`, {
+      headers: {
+        authorization: `Bot ${BOT_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+    })
+    res.send(response.data)
+    res.status(200)
+  } catch (err) {
+    res.send('unable to read roles')
+    res.status(200)
+  }
+
+});
 
 module.exports = {
   discordApp,

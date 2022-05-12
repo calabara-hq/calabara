@@ -350,13 +350,14 @@ input.error{
 
 /***** begin gatekeeper tab *****/
 .org-gatekeeper-tab{
-    margin-top: 1em;
     display: flex;
     flex-direction: column;
     grid-gap: 20px;
     justify-content: center;
     align-items: center;
     color: lightgrey;
+    width: 99%;
+    margin: 1em auto;
   }
   
   .installed-gatekeepers{

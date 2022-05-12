@@ -5,9 +5,9 @@ import BackButton from '../back-button/back-button'
 import axios from 'axios'
 import '../../css/settings.css'
 import '../../css/discord-add-bot.css'
-import { validAddress, erc20GetSymbolAndDecimal, erc721GetSymbol } from '../wallet/wallet'
+import { validAddress, erc20GetSymbolAndDecimal, erc721GetSymbol, auxillaryConnect } from '../wallet/wallet'
 import { showNotification } from '../notifications/notifications'
-import { selectConnectedAddress } from '../wallet/wallet-reducer'
+import { selectConnectedAddress, selectConnectedBool } from '../wallet/wallet-reducer'
 import { dashboardInfo, dashboardInfoReset, populateDashboardInfo, selectDashboardInfo, updateDashboardInfo } from '../dashboard/dashboard-info-reducer'
 import { gatekeeperReset, populateDashboardRules, selectDashboardRules } from '../gatekeeper/gatekeeper-rules-reducer'
 import { deleteOrganization, addOrganization, selectLogoCache, populateLogoCache } from '../org-cards/org-cards-reducer'
@@ -16,7 +16,8 @@ import Glyphicon from '@strongdm/glyphicon'
 import DeleteGkRuleModal from './delete-gk-rule-modal'
 import { authenticated_post, secure_sign } from '../common/common'
 import { useDiscordAuth } from '../hooks/useDiscordAuth'
-
+import useLocalStorage from '../hooks/useLocalStorage'
+import usePopupWindow from '../hooks/usePopupWindow'
 
 export default function SettingsManager() {
     const [fieldsReady, setFieldsReady] = useState(false)
@@ -889,11 +890,19 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
     const [guildName, setGuildName] = useState('');
     const [discordRuleState, setDiscordRuleState] = useState('')
     const [guildRoles, setGuildRoles] = useState('');
-    const [popoutFired, setPopoutFired] = useState(false);
     const [isBotVerified, setIsBotVerified] = useState(false);
     const [botFailureMessage, setBotFailureMessage] = useState('');
     const walletAddress = useSelector(selectConnectedAddress);
-    const { onOpen, authorization, error, isAuthenticating } = useDiscordAuth("identify")
+    const isConnected = useSelector(selectConnectedBool);
+    const { onOpen: userOnOpen, authorization: userAuthorization, error: userError, isAuthenticating: userIsAuthenticating } = useDiscordAuth("identify")
+    const [userAuth, setUserAuth] = useLocalStorage(`dc_auth_identify`, {})
+    const [botAuth, setBotAuth] = useLocalStorage(`dc_auth_bot`, {})
+
+    const [userServers, setUserServers] = useState(null)
+    const [selectedServer, setSelectedServer] = useState(null);
+    const { onOpen: botOnOpen, authorization: botAuthorization, error: botError, isAuthenticating: botIsAuthenticating } = useDiscordAuth('bot')
+
+
 
 
     const ens = fields.ens;
@@ -904,6 +913,8 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
     useEffect(() => {
         (async () => {
             await fetchGuildInfo();
+            setUserAuth({})
+            setBotAuth({})
         })();
     }, [])
 
@@ -927,10 +938,37 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
     }
 
 
-    const addBot = async () => {
-        setPopoutFired(true)
+
+    const handleConnectClick = async () => {
+        let connect_res = await auxillaryConnect();
+        if (!connect_res) {
+            showNotification('hint', 'hint', 'you must connect your wallet to perform this action')
+            return
+        }
+    }
+    useEffect(() => {
+        (async () => {
+            if (Object.keys(userAuthorization).length > 0) {
+                let result = await axios.post('/discord/getUserServers', { token_type: userAuthorization.token_type, access_token: userAuthorization.access_token })
+                setUserServers(result.data)
+            }
+        })();
+
+    }, [userAuthorization])
+
+    useEffect(() => {
+        (async () => {
+            if (Object.keys(botAuthorization).length > 0) {
+                console.log(botAuthorization)
+                verifyBot(botAuthorization.guild.id)
+            }
+        })();
+
+    }, [botAuthorization])
+
+    const discordAuthenticateUser = async () => {
         setBotFailureMessage('')
-        onOpen();
+        userOnOpen();
 
         //pass guildId as autofill
         /*
@@ -959,13 +997,18 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
     }
 
 
+    const addBot = async () => {
+        botOnOpen();
+    }
+
+
     // if there was a problem adding, let the user know and reset the whole process
     // otherwise, set a success message
 
-    const verifyBot = async () => {
-        const resp = await axios.post('/discord/getGuildProperties', { ens: ens })
+    const verifyBot = async (guild_id) => {
+        const resp = await axios.post('/discord/verifyBotAdded', { guild_id: guild_id })
         switch (resp.data) {
-            case 'guild does not exist':
+            case 'unable to read roles':
                 setIsBotVerified(false);
                 setBotFailureMessage('bot was not added')
                 return;
@@ -1043,7 +1086,7 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
             {discordRuleState === 'no rule' &&
                 <>
                     <div className="discord-add-bot-container">
-                        <button className={'discord-add-bot ' + (popoutFired ? 'loading' : '')} onClick={addBot}>{popoutFired ? 'check popup window' : 'add bot'}</button>
+                        <button className={'discord-add-bot ' + (userIsAuthenticating ? 'loading' : '')} onClick={discordAuthenticateUser}>{userIsAuthenticating ? 'check popup window' : 'add bot'}</button>
                     </div>
 
                     {(!isBotVerified && botFailureMessage != '') &&
@@ -1060,22 +1103,56 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
                 <>
 
                     <div className="discord-guild-info">
+                        <p className="discord-name-header">server</p>
                         <div className="discord-guild-name">
-                            <p className="discord-name-header">server name</p>
-                            <p>{guildName}</p>
-                            <button className={'discord-add-bot ' + (popoutFired ? 'loading' : '')} onClick={addBot}>{popoutFired ? 'check popup window' : 'update server link'}</button>
+                            <div>
+                                <p style={{ margin: 0 }}>{guildName}</p>
+                            </div>
+                            <button disabled={isConnected} className={'discord-connect-wallet'} onClick={handleConnectClick}>{isConnected ? 'wallet connected' : 'connect wallet'}</button>
+                            <button disabled={!isConnected} className={'discord-add-bot ' + (userIsAuthenticating ? 'loading' : '')} onClick={discordAuthenticateUser}>{userIsAuthenticating ? 'check popup window' : 'update server link'}</button>
                         </div>
-                        <div className="discord-guild-roles">
-                            <p className="discord-roles-header">server roles</p>
-                            {guildRoles.map((val) => {
-                                return <span style={{ backgroundColor: calculateBackgroundColor(val.color), color: calculateColor(val.color) }}><p>{val.name}</p></span>
-                            })}
-                        </div>
-                    </div>
+                        {guildRoles &&
 
-                    <div className="settings-next-previous-ctr">
-                        <button className="next-btn enable" disabled={!guildName} onClick={addDiscordRule}><i className="fas fa-long-arrow-alt-right"></i></button>
+                            <>
+
+                                <p className="discord-roles-header">server roles</p>
+                                <div className="discord-guild-roles">
+                                    {guildRoles.map((val) => {
+                                        return <span style={{ backgroundColor: calculateBackgroundColor(val.color), color: calculateColor(val.color) }}><p>{val.name}</p></span>
+                                    })}
+                                </div>
+
+
+                            </>
+                        }
+                        {userServers &&
+                            <>
+                                <p className="discord-roles-header">select a server</p>
+                                <div className="discord-user-servers">
+                                    {userServers.map((server) => {
+                                        return (
+                                            <div className={"discord-server " + (selectedServer === server.id ? 'selected' : 'undefined')} onClick={() => { setSelectedServer(server.id) }}>
+                                                <img src={server.img}></img>
+                                                <p>{server.name}</p>
+                                            </div>
+
+                                        )
+                                    })}
+                                </div>
+                            </>
+                        }
                     </div>
+                    {!userServers &&
+                        <div className="settings-next-previous-ctr">
+                            <button className="next-btn enable" disabled={!guildName} onClick={addDiscordRule}><i className="fas fa-long-arrow-alt-right"></i></button>
+                        </div>
+                    }
+                    {(userServers && selectedServer) &&
+                        <div className="settings-next-previous-ctr">
+                            <button className="previous-btn enable" disabled={!guildName} onClick={() => { setGatekeeperInnerProgress(0); }}><i className="fas fa-long-arrow-alt-left"></i></button>
+                            <button className="add-discord-bot-btn enable" disabled={!guildName} onClick={addBot}>add bot</button>
+                        </div>
+                    }
                 </>
             }
 

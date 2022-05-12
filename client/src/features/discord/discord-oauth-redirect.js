@@ -20,16 +20,15 @@ export default function SuccessfulDiscordRedirect() {
             const target = `${window.location.origin}`
 
             const urlParams = new URLSearchParams(window.location.search);
-            const [guild_id, state, code, error, errorDescription] = [
+            const [guild_id, code, error, errorDescription] = [
                 urlParams.get('guild_id'),
-                urlParams.get('state'),
                 urlParams.get('code'),
                 urlParams.get('error'),
                 urlParams.get('errorDescription'),
 
             ]
 
-
+            console.log(guild_id)
             console.log(code)
 
             if (error) {
@@ -43,9 +42,16 @@ export default function SuccessfulDiscordRedirect() {
                 return
             }
 
-            let authInfo = await axios.post('/discord/userOauthFlow', { code: code, redirect_uri: window.location.origin + window.location.pathname, wallet: '12345' })
+            // if we have guild_id, it's a bot. O/w it's regular user auth
+
+            let authInfo;
+            if (!guild_id) {
+                authInfo = await axios.post('/discord/userOauthFlow', { code: code, redirect_uri: window.location.origin + window.location.pathname })
+            }
+            else if (guild_id) {
+                authInfo = await axios.post('/discord/botOauthFlow', { code: code, redirect_uri: window.location.origin + window.location.pathname })
+            }
             if (!authInfo) return setAuthError(true)
-            console.log(authInfo)
             window.opener.postMessage(
                 {
                     type: "DC_AUTH_SUCCESS",

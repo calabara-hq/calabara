@@ -149,14 +149,27 @@ const auxillaryConnect = async () => {
         return null;
       }
     }
-    await onboard.walletCheck();
-    const state = onboard.getState();
-    const checkSumAddr = web3Infura.utils.toChecksumAddress(state.address)
+  }
+  else {
+    let wallet_res = await onboard.walletSelect();
+    if (!wallet_res) {
+      return null;
+    }
+  }
+  await onboard.walletCheck();
+  const state = onboard.getState();
+  const checkSumAddr = web3Infura.utils.toChecksumAddress(state.address)
 
+  let sig_res = await secure_sign(checkSumAddr, store.dispatch)
+  if (sig_res) {
+    console.log(sig_res)
     store.dispatch(setConnected(checkSumAddr))
     await registerUser(checkSumAddr)
-    return checkSumAddr;
+    return checkSumAddr
   }
+
+  return null
+
 }
 
 
