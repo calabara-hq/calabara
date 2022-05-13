@@ -559,7 +559,7 @@ function GatekeeperOptions({ setGatekeeperInnerProgress, standardProps, addGatek
     }
 
     return (
-        <div className="org-gatekeeper-tab">
+        <div className="org-gatekeeper-options">
             {addGatekeeperOptionClick == 'erc20' &&
                 <ERC20gatekeeper setGatekeeperInnerProgress={setGatekeeperInnerProgress} fields={fields} setFields={setFields} />
             }
@@ -692,52 +692,52 @@ function ERC20gatekeeper({ setGatekeeperInnerProgress, fields, setFields }) {
     }, [gatekeeperAddress])
 
     return (
-
         <>
-            <h3> erc-20 balanceOf</h3>
-            <div className="gatekeeper-address-input">
-                <p>Contract Address </p>
-                <input className={`${addressError || duplicateAddressError ? "error" : null}`} value={gatekeeperAddress} onChange={handleGatekeeperAddressChange} type="text" />
-                {addressError &&
-                    <div className="tab-message error">
-                        <p>This doesn't look like a valid contract address</p>
-                    </div>
-                }
-                {duplicateAddressError &&
-                    <div className="tab-message error">
-                        <p>Rule for this contract already exists</p>
-                    </div>
-                }
-            </div>
-
-            <div className="gatekeeper-symbol-decimal-input">
-                <div>
-                    <p>Symbol</p>
-                    <input value={gatekeeperSymbol} onChange={handleGatekeeperSymbolChange} type="text" />
-                    {symbolError &&
+            <div>
+                <h3> erc-20 balanceOf</h3>
+                <div className="gatekeeper-address-input">
+                    <p>Contract Address </p>
+                    <input className={`${addressError || duplicateAddressError ? "error" : null}`} value={gatekeeperAddress} onChange={handleGatekeeperAddressChange} type="text" />
+                    {addressError &&
                         <div className="tab-message error">
-                            <p>Please enter a symbol</p>
+                            <p>This doesn't look like a valid contract address</p>
+                        </div>
+                    }
+                    {duplicateAddressError &&
+                        <div className="tab-message error">
+                            <p>Rule for this contract already exists</p>
                         </div>
                     }
                 </div>
 
-                <div>
-                    <p>Decimal </p>
-                    <input value={gatekeeperDecimal} onChange={handleGatekeeperDecimalChange} type="text" />
-                    {decimalError &&
-                        <div className="tab-message error">
-                            <p>Please enter a decimal</p>
-                        </div>
-                    }
-                </div>
-            </div>
+                <div className="gatekeeper-symbol-decimal-input">
+                    <div>
+                        <p>Symbol</p>
+                        <input value={gatekeeperSymbol} onChange={handleGatekeeperSymbolChange} type="text" />
+                        {symbolError &&
+                            <div className="tab-message error">
+                                <p>Please enter a symbol</p>
+                            </div>
+                        }
+                    </div>
 
+                    <div>
+                        <p>Decimal </p>
+                        <input value={gatekeeperDecimal} onChange={handleGatekeeperDecimalChange} type="text" />
+                        {decimalError &&
+                            <div className="tab-message error">
+                                <p>Please enter a decimal</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+            </div>
 
             <div className="gk-detail-buttons">
                 <button className="gk-rule-cancel" onClick={() => { setGatekeeperInnerProgress(0) }}>cancel</button>
                 <button className="gk-rule-save" disabled={!enableSave} onClick={handleSave}>save</button>
             </div>
-
         </>
     )
 }
@@ -844,35 +844,37 @@ function ERC721gatekeeper({ setGatekeeperInnerProgress, fields, setFields }) {
     return (
 
         <>
-            <h3> erc-721 balanceOf</h3>
-            <div className="gatekeeper-address-input">
-                <p>Contract Address </p>
-                <input value={gatekeeperAddress} onChange={handleGatekeeperAddressChange} type="text" />
-                {addressError &&
-                    <div className="tab-message error">
-                        <p>This doesn't look like a valid contract address</p>
-                    </div>
-                }
-                {duplicateAddressError &&
-                    <div className="tab-message error">
-                        <p>Rule for this contract already exists</p>
-                    </div>
-                }
-            </div>
-
-            <div className="gatekeeper-symbol-decimal-input">
-                <div>
-                    <p>Symbol</p>
-                    <input value={gatekeeperSymbol} onChange={handleGatekeeperSymbolChange} type="text" />
-                    {symbolError &&
+            <div>
+                <h3> erc-721 balanceOf</h3>
+                <div className="gatekeeper-address-input">
+                    <p>Contract Address </p>
+                    <input value={gatekeeperAddress} onChange={handleGatekeeperAddressChange} type="text" />
+                    {addressError &&
                         <div className="tab-message error">
-                            <p>Please enter a symbol</p>
+                            <p>This doesn't look like a valid contract address</p>
+                        </div>
+                    }
+                    {duplicateAddressError &&
+                        <div className="tab-message error">
+                            <p>Rule for this contract already exists</p>
                         </div>
                     }
                 </div>
 
-                <div></div>
+                <div className="gatekeeper-symbol-decimal-input">
+                    <div>
+                        <p>Symbol</p>
+                        <input value={gatekeeperSymbol} onChange={handleGatekeeperSymbolChange} type="text" />
+                        {symbolError &&
+                            <div className="tab-message error">
+                                <p>Please enter a symbol</p>
+                            </div>
+                        }
+                    </div>
 
+                    <div></div>
+
+                </div>
             </div>
 
             <div className="gk-detail-buttons">
@@ -892,12 +894,10 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
     const [guildRoles, setGuildRoles] = useState('');
     const [isBotVerified, setIsBotVerified] = useState(false);
     const [botFailureMessage, setBotFailureMessage] = useState('');
-    const walletAddress = useSelector(selectConnectedAddress);
-    const isConnected = useSelector(selectConnectedBool);
     const { onOpen: userOnOpen, authorization: userAuthorization, error: userError, isAuthenticating: userIsAuthenticating } = useDiscordAuth("identify")
     const [userAuth, setUserAuth] = useLocalStorage(`dc_auth_identify`, {})
     const [botAuth, setBotAuth] = useLocalStorage(`dc_auth_bot`, {})
-
+    const [discordIntegrationStep, setDiscordIntegrationStep] = useState(0);
     const [userServers, setUserServers] = useState(null)
     const [selectedServer, setSelectedServer] = useState(null);
     const { onOpen: botOnOpen, authorization: botAuthorization, error: botError, isAuthenticating: botIsAuthenticating } = useDiscordAuth('bot')
@@ -913,12 +913,16 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
     useEffect(() => {
         (async () => {
             await fetchGuildInfo();
-            setUserAuth({})
-            setBotAuth({})
         })();
     }, [])
 
 
+    useEffect(() => {
+        if (discordIntegrationStep === 0) {
+            setUserAuth({})
+            setBotAuth({})
+        }
+    }, [discordIntegrationStep])
 
 
     const fetchGuildInfo = async () => {
@@ -943,6 +947,7 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
             if (Object.keys(userAuthorization).length > 0) {
                 let result = await axios.post('/discord/getUserServers', { token_type: userAuthorization.token_type, access_token: userAuthorization.access_token })
                 setUserServers(result.data)
+                setDiscordIntegrationStep(1)
             }
         })();
 
@@ -953,6 +958,8 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
             if (Object.keys(botAuthorization).length > 0) {
                 console.log(botAuthorization)
                 verifyBot(botAuthorization.guild.id)
+                addDiscordRule();
+                setDiscordIntegrationStep(0)
             }
         })();
 
@@ -1016,20 +1023,6 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
         }
 
     }
-    const calculateColor = (decimal) => {
-        if (decimal == 0) {
-            return 'rgba(211, 211, 211, 1)'
-        }
-        return 'rgb(' + ((decimal >> 16) & 0xff) + ',' + ((decimal >> 8) & 0xff) + ',' + (decimal & 0xff) + ')'
-    }
-
-    const calculateBackgroundColor = (decimal) => {
-        if (decimal == 0) {
-            return 'rgba(18, 52, 86, 0.3)'
-        }
-        return 'rgba(' + ((decimal >> 16) & 0xff) + ',' + ((decimal >> 8) & 0xff) + ',' + (decimal & 0xff) + ',0.3)'
-    }
-
 
 
     const addDiscordRule = () => {
@@ -1066,7 +1059,6 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
             }
             setFields({ gatekeeper: { rules: gatekeeperCopy } })
         }
-        setGatekeeperInnerProgress(0);
     }
 
 
@@ -1096,51 +1088,37 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
 
                     <div className="discord-guild-info">
                         <p className="discord-name-header">server</p>
-                        <div className="discord-guild-name">
-                            <div>
-                                <p style={{ margin: 0 }}>{guildName}</p>
-                            </div>
-                            <button className={'discord-add-bot ' + (userIsAuthenticating ? 'loading' : '')} onClick={discordAuthenticateUser}>{userIsAuthenticating ? 'check popup window' : 'update server link'}</button>
-                        </div>
-                        {guildRoles &&
+                        <GuildTopLevel guildName={guildName} userIsAuthenticating={userIsAuthenticating} discordAuthenticateUser={discordAuthenticateUser} discordIntegrationStep={discordIntegrationStep} />
+
+                        {discordIntegrationStep === 0 &&
 
                             <>
 
                                 <p className="discord-roles-header">server roles</p>
-                                <div className="discord-guild-roles">
-                                    {guildRoles.map((val, key) => {
-                                        return <span key={key} style={{ backgroundColor: calculateBackgroundColor(val.color), color: calculateColor(val.color) }}><p>{val.name}</p></span>
-                                    })}
-                                </div>
+                                <GuildRolesDisplay guildRoles={guildRoles} />
 
 
                             </>
                         }
-                        {userServers &&
+
+                        {discordIntegrationStep === 1 &&
                             <>
                                 <p className="discord-roles-header">select a server</p>
-                                <div className="discord-user-servers">
-                                    {userServers.map((server) => {
-                                        return (
-                                            <div key={server.id} className={"discord-server " + (selectedServer === server.id ? 'selected' : 'undefined')} onClick={() => { setSelectedServer(server.id) }}>
-                                                <img src={server.img}></img>
-                                                <p>{server.name}</p>
-                                            </div>
-
-                                        )
-                                    })}
-                                </div>
+                                <GuildServersDisplay selectedServer={selectedServer} setSelectedServer={setSelectedServer} userServers={userServers} />
                             </>
                         }
                     </div>
-                    {!userServers &&
+
+
+
+                    {discordIntegrationStep === 0 &&
                         <div className="settings-next-previous-ctr">
-                            <button className="next-btn enable" disabled={!guildName} onClick={addDiscordRule}><i className="fas fa-long-arrow-alt-right"></i></button>
+                            <button className="previous-btn enable" disabled={!guildName} onClick={() => { setGatekeeperInnerProgress(0) }}><i className="fas fa-long-arrow-alt-left"></i></button>
                         </div>
                     }
-                    {(userServers) &&
+                    {discordIntegrationStep === 1 &&
                         <div className="settings-next-previous-ctr">
-                            <button className="previous-btn enable" disabled={!guildName} onClick={() => { setGatekeeperInnerProgress(0); }}><i className="fas fa-long-arrow-alt-left"></i></button>
+                            <button className="previous-btn enable" disabled={!guildName} onClick={() => { setDiscordIntegrationStep(0) }}><i className="fas fa-long-arrow-alt-left"></i></button>
                             {selectedServer && <button className="add-discord-bot-btn enable" disabled={!guildName} onClick={addBot}>add bot</button>}
                         </div>
                     }
@@ -1152,6 +1130,58 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
 
 
 }
+
+function GuildTopLevel({ guildName, userIsAuthenticating, discordAuthenticateUser, discordIntegrationStep }) {
+    return (
+        <div className="discord-guild-name">
+            <div>
+                <p style={{ margin: 0 }}>{guildName}</p>
+            </div>
+            <button disabled={discordIntegrationStep !== 0} className={'discord-add-bot ' + (userIsAuthenticating || discordIntegrationStep === 1 ? 'loading' : '')} onClick={discordAuthenticateUser}>{userIsAuthenticating ? 'check popup window' : (discordIntegrationStep === 1 ? 'select a server' : 'update server link')}</button>
+        </div>
+    )
+}
+
+function GuildRolesDisplay({ guildRoles }) {
+    const calculateColor = (decimal) => {
+        if (decimal == 0) {
+            return 'rgba(211, 211, 211, 1)'
+        }
+        return 'rgb(' + ((decimal >> 16) & 0xff) + ',' + ((decimal >> 8) & 0xff) + ',' + (decimal & 0xff) + ')'
+    }
+
+    const calculateBackgroundColor = (decimal) => {
+        if (decimal == 0) {
+            return 'rgba(18, 52, 86, 0.3)'
+        }
+        return 'rgba(' + ((decimal >> 16) & 0xff) + ',' + ((decimal >> 8) & 0xff) + ',' + (decimal & 0xff) + ',0.3)'
+    }
+
+    return (
+        <div className="discord-guild-roles">
+            {guildRoles.map((val, key) => {
+                return <span key={key} style={{ backgroundColor: calculateBackgroundColor(val.color), color: calculateColor(val.color) }}><p>{val.name}</p></span>
+            })}
+        </div>
+    )
+}
+
+function GuildServersDisplay({ userServers, selectedServer, setSelectedServer }) {
+    return (
+        <div className="discord-user-servers">
+            {userServers.map((server) => {
+                return (
+                    <div key={server.id} className={"discord-server " + (selectedServer === server.id ? 'selected' : 'undefined')} onClick={() => { setSelectedServer(server.id) }}>
+                        <img src={server.img}></img>
+                        <p>{server.name}</p>
+                    </div>
+
+                )
+            })}
+        </div>
+    )
+}
+
 
 function SaveComponent({ standardProps, infoErrorController, adminErrorController }) {
     const { fields, setFields } = standardProps;

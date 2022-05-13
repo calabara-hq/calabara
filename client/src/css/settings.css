@@ -356,10 +356,23 @@ input.error{
     justify-content: center;
     align-items: center;
     color: lightgrey;
-    width: 99%;
-    margin: 1em auto;
+    margin-top: 1em;
+
   }
   
+  .org-gatekeeper-options{
+    display: flex;
+    flex-direction: column;
+    grid-gap: 20px;
+    justify-content: center;
+    align-items: center;
+    color: lightgrey;
+    margin-top: 1em;
+    width: 90%;
+
+  }
+
+
   .installed-gatekeepers{
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -472,6 +485,7 @@ input.error{
     flex-direction: column;
     flex-wrap: wrap;
     align-self: flex-start;
+    margin-top: 2em;
   }
   
   
@@ -482,6 +496,7 @@ input.error{
     flex-wrap: wrap;
     width: 50%;
     align-self: flex-start;
+    margin-top: 1em;
   }
   
   

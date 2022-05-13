@@ -20,6 +20,7 @@
   box-sizing: border-box;
   position: absolute;
   top: 50%;
+  right: 5%;
   width: 20px;
   height: 20px;
   margin-top: -10px;
@@ -33,11 +34,13 @@
 
 .discord-add-bot {
   position: relative;
-  padding: 5px 15px;
+  padding: 15px 0px;
   border: none;
   border-radius: 8px;
   color: rgb(169, 152, 255);
   background-color: rgba(169, 152, 255, 0.3);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+  font-size:18px;
 }
 
 .discord-add-bot:hover {
@@ -60,7 +63,6 @@
 .discord-name-header {
   font-weight: bold;
   font-size: 16px;
-
 }
 
 .discord-guild-info {
@@ -72,14 +74,13 @@
 
 .discord-guild-info>.discord-guild-name {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 2fr;
   grid-gap: 10px;
   justify-content: center;
   align-items: center;
   margin-bottom: 20px;
-  border: 1px solid grey;
-  border-radius: px;
-  padding: 10px;
+  border-bottom: 1px solid grey;
+  padding-bottom: 20px;
 }
 
 .discord-guild-info>.discord-guild-name>div:first-child {
@@ -87,6 +88,8 @@
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
+  font-size: 18px;
+  font-weight: 600;
 }
 
 .discord-guild-info>.discord-guild-name>* {
@@ -99,9 +102,6 @@
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   grid-gap: 10px;
-  border: 1px solid grey;
-  border-radius: 2px;
-  padding: 10px;
 
 }
 
@@ -137,13 +137,25 @@
 
 }
 
+@media screen and (max-width: 900px){
+  .discord-user-servers{
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media screen and (max-width: 550px){
+  .discord-user-servers{
+    grid-template-columns: 1fr;
+  }
+}
+
 .discord-server {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border: none;
+  border: 2px solid transparent;
   border-radius: 8px;
   background-color: rgb(28, 33, 40);
   padding: 5px;
