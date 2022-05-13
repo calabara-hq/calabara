@@ -894,13 +894,14 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
     const [guildRoles, setGuildRoles] = useState('');
     const [isBotVerified, setIsBotVerified] = useState(false);
     const [botFailureMessage, setBotFailureMessage] = useState('');
+    const [authTimerActive, setAuthTimerActive] = useState(false);
     const { onOpen: userOnOpen, authorization: userAuthorization, error: userError, isAuthenticating: userIsAuthenticating } = useDiscordAuth("identify")
-    const [userAuth, setUserAuth] = useLocalStorage(`dc_auth_identify`, {})
-    const [botAuth, setBotAuth] = useLocalStorage(`dc_auth_bot`, {})
+    // const [userAuth, setUserAuth] = useLocalStorage(`dc_auth_identify`, {})
+    // const [botAuth, setBotAuth] = useLocalStorage(`dc_auth_bot`, {})
     const [discordIntegrationStep, setDiscordIntegrationStep] = useState(0);
     const [userServers, setUserServers] = useState(null)
     const [selectedServer, setSelectedServer] = useState(null);
-    const { onOpen: botOnOpen, authorization: botAuthorization, error: botError, isAuthenticating: botIsAuthenticating } = useDiscordAuth('bot')
+    const { onOpen: botOnOpen, authorization: botAuthorization, error: botError, isAuthenticating: botIsAuthenticating } = useDiscordAuth('bot', selectedServer)
 
 
 
@@ -918,12 +919,66 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
 
 
     useEffect(() => {
-        if (discordIntegrationStep === 0) {
-            setUserAuth({})
-            setBotAuth({})
-        }
+        /*
+        setUserAuth({})
+        setBotAuth({})
+        */
     }, [discordIntegrationStep])
 
+    /*
+        useEffect(() => {
+            // when user auth expires, revert back to the beginning
+            console.log('auth change')
+            console.log(userAuth.expires_in)
+            if (!userAuth.expires_in) {
+                console.log(discordIntegrationStep)
+                if (discordIntegrationStep === 1) {
+                    console.log('here')
+                    alert('here!!')
+                    setGatekeeperInnerProgress(0)
+                }
+            }
+        }, [userAuth])
+    */
+
+
+    const checkAuthExpired = () => {
+        /*
+                console.log(userAuth.expires_in)
+                if (!userAuth.expires_in) return true
+                return false
+        */
+    }
+
+
+    useEffect(() => {
+        (async () => {
+            if (userAuthorization.expires_in) {
+                let result = await axios.post('/discord/getUserServers', { token_type: userAuthorization.token_type, access_token: userAuthorization.access_token })
+                setUserServers(result.data)
+                setDiscordIntegrationStep(1)
+                setAuthTimerActive(true);
+            }
+            else {
+                if (authTimerActive) {
+                    setDiscordIntegrationStep(0)
+                }
+            }
+        })();
+
+    }, [userAuthorization])
+
+    useEffect(() => {
+        (async () => {
+            if (botAuthorization.expires_in) {
+                console.log(botAuthorization)
+                verifyBot(botAuthorization.guild.id)
+                addDiscordRule();
+                setDiscordIntegrationStep(0)
+            }
+        })();
+
+    }, [botAuthorization])
 
     const fetchGuildInfo = async () => {
         const resp = await axios.post('/discord/getGuildProperties', { ens: ens });
@@ -942,32 +997,17 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
     }
 
 
-    useEffect(() => {
-        (async () => {
-            if (Object.keys(userAuthorization).length > 0) {
-                let result = await axios.post('/discord/getUserServers', { token_type: userAuthorization.token_type, access_token: userAuthorization.access_token })
-                setUserServers(result.data)
-                setDiscordIntegrationStep(1)
-            }
-        })();
-
-    }, [userAuthorization])
-
-    useEffect(() => {
-        (async () => {
-            if (Object.keys(botAuthorization).length > 0) {
-                console.log(botAuthorization)
-                verifyBot(botAuthorization.guild.id)
-                addDiscordRule();
-                setDiscordIntegrationStep(0)
-            }
-        })();
-
-    }, [botAuthorization])
-
     const discordAuthenticateUser = async () => {
-        setBotFailureMessage('')
+        let isAuthExpired = checkAuthExpired();
+        console.log(isAuthExpired)
         userOnOpen();
+        /*
+        if (isAuthExpired) return userOnOpen();
+        let result = await axios.post('/discord/getUserServers', { token_type: userAuthorization.token_type, access_token: userAuthorization.access_token })
+        setUserServers(result.data)
+        setDiscordIntegrationStep(1)
+        */
+
 
         //pass guildId as autofill
         /*
