@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import usePopupWindow from "./usePopupWindow";
-import useLocalStorage from "./useLocalStorage";
 
 const DISCORD_CLIENT_KEY = process.env.REACT_APP_DISCORD_CLIENT_KEY;
 
@@ -12,17 +11,12 @@ export const useDiscordAuth = (scope, authState, setAuthState, guild_id) => {
 
     const [error, setError] = useState(null)
 
-    console.log('re rendering discord auth for some reason. This really cant be happening every single time right')
-
     useEffect(() => {
-        console.log(authState)
         if (!authState) return
 
         const timeout = setTimeout(() => {
-            console.log('in timeout')
             setAuthState(null)
-            // Extra 60_000 is just for safety, since timeout is known to be somewhat unreliable
-        }, 10_000)
+        }, 540_000)
 
         return () => clearTimeout(timeout)
 
@@ -50,12 +44,10 @@ export const useDiscordAuth = (scope, authState, setAuthState, guild_id) => {
                 console.log(data)
                 switch (type) {
                     case "DC_AUTH_SUCCESS":
-                        if (!authState) {
-                            setAuthState({
-                                ...data,
-                                authorization: `${data.token_type} ${data.access_token}`,
-                            })
-                        }
+                        setAuthState({
+                            ...data,
+                            authorization: `${data.token_type} ${data.access_token}`,
+                        })
                         break
                     case "DC_AUTH_ERROR":
                         setError(data)

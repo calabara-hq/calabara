@@ -443,6 +443,7 @@ function OrganizationGatekeeperComponent({ standardProps }) {
     const [deleteModalIndex, setDeleteModalIndex] = useState(null);
     const [selectedServer, setSelectedServer] = useState(null);
 
+    /*
     const [botAuth, setBotAuth] = useReducer(
         (botAuth, newBotAuth) => ({ ...botAuth, ...newBotAuth }),
         null
@@ -452,6 +453,10 @@ function OrganizationGatekeeperComponent({ standardProps }) {
         (userAuth, newUserAuth) => ({ ...userAuth, ...newUserAuth }),
         null
     )
+*/
+
+    const [botAuth, setBotAuth] = useState(null)
+    const [userAuth, setUserAuth] = useState(null)
 
     const { onOpen: userOnOpen, authorization: userAuthorization, error: userError, isAuthenticating: userIsAuthenticating } = useDiscordAuth("identify", userAuth, setUserAuth)
     const { onOpen: botOnOpen, authorization: botAuthorization, error: botError, isAuthenticating: botIsAuthenticating } = useDiscordAuth('bot', botAuth, setBotAuth, selectedServer)
@@ -962,12 +967,8 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields, 
 
 
 
-
-
-
     useEffect(() => {
         (async () => {
-            console.log(userAuth)
             if (!userAuth) {
                 if (authTimerActive) {
                     setDiscordIntegrationStep(0)
@@ -976,17 +977,20 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields, 
                 }
             }
             else {
-                console.log('in here')
+                console.log('running again')
                 let result = await axios.post('/discord/getUserServers', { token_type: userAuth.token_type, access_token: userAuth.access_token })
+                console.log(result.data)
                 setUserServers(result.data)
                 setUserDiscordId(userAuth.userId)
                 setDiscordRuleState('configure rule')
                 setAuthTimerActive(true);
+                setDiscordIntegrationStep(1)
                 return
             }
         })();
 
     }, [userAuth])
+
 
     useEffect(() => {
         (async () => {
@@ -1035,6 +1039,7 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields, 
 
     }
 
+    // start here
 
     const discordAuthenticateUser = async () => {
 

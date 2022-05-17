@@ -61,39 +61,6 @@ export default function SuccessfulDiscordRedirect() {
                 target
             )
 
-
-            //const [guild_id, state] = [fragment.get('guild_id'), fragment.get('state')];
-            /*
-                        // straight search for user identify 
-                        const urlParams = new URLSearchParams(window.location.search);
-                        const guild_id = urlParams.get('guild_id')
-                        const state = JSON.parse(decodeURIComponent(urlParams.get('state')))
-                        const code = urlParams.get('code')
-            
-            
-                        let userWallet = state.walletAddress
-                        let authType = state.integrationType
-                        let ens = state.ens
-            
-                        const jwt = null;
-                        if (authType === 'bot') {
-                            const resp = await axios.post('/discord/botOauthFlow', { type: authType, code: code, ens: ens, wallet: userWallet, redirect_uri: window.location.origin + window.location.pathname }, dispatch, jwt);
-                            // store the guild_id so we can use it back in the settings page'
-                            console.log(resp)
-                            if (!resp) return setAuthError(true)
-                            setOauthMode('bot')
-                        }
-                        else if (authType === 'user') {
-                            const resp = await axios.post('/discord/userOauthFlow', { type: authType, code: code, wallet: userWallet, redirect_uri: window.location.origin + window.location.pathname }, dispatch, jwt);
-                            if (!resp) setAuthError(true)
-                            setOauthMode('user')
-            
-                        }
-                        else {
-                            setDidUserDenyBot(true)
-                            setDidUserDenyIdentify(true)
-                        }
-                    */
         })();
     }, [])
 
