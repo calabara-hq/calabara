@@ -443,18 +443,6 @@ function OrganizationGatekeeperComponent({ standardProps }) {
     const [deleteModalIndex, setDeleteModalIndex] = useState(null);
     const [selectedServer, setSelectedServer] = useState(null);
 
-    /*
-    const [botAuth, setBotAuth] = useReducer(
-        (botAuth, newBotAuth) => ({ ...botAuth, ...newBotAuth }),
-        null
-    )
-
-    const [userAuth, setUserAuth] = useReducer(
-        (userAuth, newUserAuth) => ({ ...userAuth, ...newUserAuth }),
-        null
-    )
-*/
-
     const [botAuth, setBotAuth] = useState(null)
     const [userAuth, setUserAuth] = useState(null)
 

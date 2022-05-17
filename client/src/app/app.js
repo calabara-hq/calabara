@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Nav from '../features/navbar/navbar';
 import Container from '../features/container/container'
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
@@ -8,6 +8,8 @@ import SuccessfulDiscordRedirect from '../features/discord/discord-oauth-redirec
 
 
 export default function App() {
+
+
   return (
 
     <Router>

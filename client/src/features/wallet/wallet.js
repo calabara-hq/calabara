@@ -23,7 +23,7 @@ import {
 
 import registerUser from '../user/user';
 import { useInterval } from '../hooks/useInterval';
-import { windowEndpoint } from 'comlink';
+import useWallet from '../hooks/useWallet';
 
 
 
@@ -37,6 +37,7 @@ const wallets = [
   { walletName: "metamask", preferred: true },
 ]
 
+/*
 const onboard = Onboard({
   dappId: BLOCKNATIVE_KEY,
   networkId: 1,
@@ -61,7 +62,7 @@ const onboard = Onboard({
 
   }
 })
-
+*/
 
 // fetch wallet address
 async function getAddress() {
@@ -89,57 +90,8 @@ async function validAddress(address) {
 
 
 
-
-async function erc20GetSymbolAndDecimal(address) {
-  const tokenContract = new web3Infura.eth.Contract(erc20abi, address);
-  const symbol = await tokenContract.methods.symbol().call();
-  const decimal = await tokenContract.methods.decimals().call();
-  return [symbol, decimal]
-}
-
-async function erc721GetSymbol(address) {
-  const tokenContract = new web3Infura.eth.Contract(erc721abi, address);
-  const symbol = await tokenContract.methods.symbol().call();
-  return symbol
-}
-
-// check balance of token given a wallet address and a contract address
-async function checkERC20Balance(walletAddress, contractAddress, decimal) {
-  const tokenContract = new web3Infura.eth.Contract(erc20abi, contractAddress);
-  const balance = await tokenContract.methods.balanceOf(walletAddress).call();
-  const adjusted = balance / 10 ** decimal
-  return adjusted;
-
-}
-
-
-async function checkERC721Balance(walletAddress, contractAddress) {
-  const tokenContract = new web3Infura.eth.Contract(erc721abi, contractAddress);
-  const balance = await tokenContract.methods.balanceOf(walletAddress).call();
-  return balance;
-
-}
-
-
-async function signMessage(nonce) {
-  let state = onboard.getState();
-
-  let address = await validAddress(state.address);
-  const msg = web3.utils.utf8ToHex(`Signing one time message with nonce: ${nonce}`)
-
-  try {
-    let signature = await web3.eth.personal.sign(msg, address);
-
-    return { status: 'success', sig: signature, msg: msg }
-  } catch (err) {
-    throw err
-  }
-}
-
-
-
-
 const auxillaryConnect = async () => {
+  /*
   let selected = localStorage.getItem('selectedWallet')
   if (selected != '' && selected != undefined && selected != 'undefined') {
     let res = await onboard.walletSelect(selected);
@@ -163,11 +115,15 @@ const auxillaryConnect = async () => {
   store.dispatch(setConnected(checkSumAddr))
   await registerUser(checkSumAddr)
   return checkSumAddr
+  */
 }
 
 
-
 function Wallet() {
+  const [isMoreExpanded, setIsMoreExpanded] = useState(false);
+  const {walletDisconnect, walletConnect, walletAddress, isConnected, connectBtnTxt} = useWallet();
+
+/*
   const isConnected = useSelector(selectConnectedBool);
   const walletAddress = useSelector(selectConnectedAddress);
   const account_change = useSelector(selectAccountChange);
@@ -309,7 +265,7 @@ function Wallet() {
       localStorage.removeItem('jwt')
     }
   }, [is_token_expired])
-
+*/
 
   const handleBlur = (e) => {
     if (!e.currentTarget.contains(e.relatedTarget)) {
@@ -319,7 +275,7 @@ function Wallet() {
 
 
   return (
-    <div tabIndex="0" onBlur={handleBlur} onClick={handleConnectClick} className="walletBox">
+    <div tabIndex="0" onBlur={handleBlur} onClick={walletConnect} className="walletBox">
       <div>
         {isConnected &&
           <div className="walletAvatar">
@@ -332,7 +288,7 @@ function Wallet() {
       {isMoreExpanded &&
         <div className="connectionInfo">
           <span onClick={() => { window.open('https://etherscan.io/address/' + walletAddress) }}>{connectBtnTxt}</span>
-          <button onClick={handleDisconnectClick}>disconnect</button>
+          <button onClick={walletDisconnect}>disconnect</button>
         </div>
       }
     </div>
@@ -341,4 +297,4 @@ function Wallet() {
 }
 
 export default Wallet;
-export { auxillaryConnect, getAddress, validAddress, erc20GetSymbolAndDecimal, erc721GetSymbol, signMessage, checkERC20Balance, checkERC721Balance }
+export { auxillaryConnect, getAddress, validAddress }

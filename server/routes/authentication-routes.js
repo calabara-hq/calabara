@@ -34,7 +34,8 @@ const generate_access_token = (address) => {
 
 authentication.post('/generate_nonce', async function (req, res, next) {
     const { address } = req.body;
-
+    console.log('here')
+    console.log(address)
     let nonce = randomNonce(25)
     await db.query('insert into users (address, nonce) values ($1, $2) on conflict (address) do update set nonce = $2', [address, nonce]);
 

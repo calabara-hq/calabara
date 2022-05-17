@@ -9,7 +9,7 @@ import snapshotLogo from '../../img/snapshot.svg'
 import wikiLogo from '../../img/wiki.svg'
 import { authenticated_post, batchFetchDashboardData, fetchUserMembership } from '../common/common'
 import { showNotification } from '../notifications/notifications'
-
+import useDiscordAuth from '../hooks/useDiscordAuth'
 //redux
 import { useSelector, useDispatch } from 'react-redux';
 
@@ -66,7 +66,18 @@ export default function Dashboard() {
 
   const [gatekeeperResult, setGatekeeperResult] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
+  const [userAuth, setUserAuth] = useState(null)
 
+  const { onOpen: userOnOpen, authorization: userAuthorization, error: userError, isAuthenticating: userIsAuthenticating } = useDiscordAuth("identify", userAuth, setUserAuth)
+
+  let discordIntegrationProps = {
+    userOnOpen,
+    userAuthorization,
+    userError,
+    userIsAuthenticating,
+    userAuth,
+    setUserAuth,
+  }
 
   async function checkAdmin(walletAddress) {
     if (info.ens == ens) {
@@ -111,7 +122,7 @@ export default function Dashboard() {
 
   return (
     <div className="dashboard-wrapper">
-      {info && <InfoCard ens={ens} info={info} membership={membership} />}
+      {info && <InfoCard ens={ens} info={info} membership={membership} discordIntegrationProps={discordIntegrationProps} />}
       <section className="widget-cards">
 
         {visibleWidgets.map((widget, idx) => {
@@ -127,7 +138,7 @@ export default function Dashboard() {
 }
 
 
-function InfoCard({ info, ens }) {
+function InfoCard({ info, ens, discordIntegrationProps }) {
   const isConnected = useSelector(selectConnectedBool)
   const walletAddress = useSelector(selectConnectedAddress)
   const logoCache = useSelector(selectLogoCache)
@@ -139,6 +150,16 @@ function InfoCard({ info, ens }) {
   const isMemberOf = dispatch(isMember(ens))
   const [isInfoLoaded, setIsInfoLoaded] = useState(false)
   const imgRef = createRef(null);
+
+  let {
+    userOnOpen,
+    userAuthorization,
+    userError,
+    userIsAuthenticating,
+    userAuth,
+    setUserAuth,
+  } = discordIntegrationProps
+
 
   function handleJoinOrg() {
     dispatch(addMembership(walletAddress, ens))
@@ -173,7 +194,7 @@ function InfoCard({ info, ens }) {
 
   useEffect(() => {
     if (info.logoBlob && imgRef.current != null) {
-      
+
       WebWorker.updateLogo(dispatch, info.logo, info.logoBlob)
     }
   }, [info.logoBlob, imgRef])
@@ -198,34 +219,27 @@ function InfoCard({ info, ens }) {
 
 
 
+  useEffect(() => {
+    (async () => {
+      if (!userAuth) return
+      console.log(userAuth)
+      if (isConnected) {
+        let res = await authenticated_post('/discord/addUserDiscord', { discord_id: userAuth.userId }, dispatch);
+        if (res) {
+          dispatch(setDiscordId(userAuth.userId))
+          return
+        }
+      }
 
+    })();
 
+  }, [userAuth])
   // if a users wallet is connected, check for a discord id in the server. If it's not there and 
   // there is a discord rule for this org, prompt them to link their discord acc.
 
 
   const linkDiscord = () => {
-    let popout;
-    let state = encodeURIComponent(JSON.stringify({ walletAddress: walletAddress, integrationType: 'user', ens: ens }))
-    if (process.env.NODE_ENV === 'development') {
-      //popout = window.open(`https://discord.com/api/oauth2/authorize?client_id=895719351406190662&redirect_uri=https%3A%2F%2Flocalhost%3A3000%2Foauth%2Fdiscord&response_type=code&scope=identify&state=${state}`, 'popUpWindow', 'height=700,width=600,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes')
-      popout = window.open(`https://discord.com/api/oauth2/authorize?client_id=895719351406190662&redirect_uri=https%3A%2F%2F192.168.1.219%3A3000%2Foauth%2Fdiscord&response_type=code&scope=identify&state=${state}`,'popUpWindow', 'height=700,width=600,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes' )
-    }
-
-    else if (process.env.NODE_ENV === 'production') {
-      popout = window.open(`https://discord.com/api/oauth2/authorize?client_id=895719351406190662&redirect_uri=https%3A%2F%2Fcalabara.com%2Foauth%2Fdiscord&response_type=code&scope=identify&state=${state}`, 'popUpWindow', 'height=700,width=600,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes')
-
-    }
-
-    var pollTimer = window.setInterval(async function () {
-      if (popout.closed !== false) {
-        window.clearInterval(pollTimer);
-        let isDiscordLinked = await axios.post('/discord/getUserDiscord', { walletAddress: walletAddress })
-
-        if (isDiscordLinked.data) dispatch(setDiscordId(isDiscordLinked.data))
-
-      }
-    }, 1000);
+    return userOnOpen();
   }
 
   return (
@@ -310,7 +324,7 @@ export function WidgetCard({ gatekeeperPass, orgInfo, widget, btnState, setBtnSt
 
   async function handleDeleteWidget() {
     let res = await authenticated_post('/dashboard/removeWidget', { ens: ens, name: name }, dispatch)
-    if(res) dispatch(updateWidgets(0, widget));
+    if (res) dispatch(updateWidgets(0, widget));
 
   }
 

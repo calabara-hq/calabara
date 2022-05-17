@@ -40,24 +40,12 @@ const getUserDiscordId = async (oauthData) => {
 
   return userResult
 
-  // post the userid to the users table of database
-
-  //await db.query('update users set discord = $1 where address = $2', [userResult.data.id, wallet])
-
 }
 
-
-
-const addDiscordBot = async (ens, oauthData, wallet) => {
-  // get the user discord id and set it in user field of db for this users address.
-  await addDiscordUser(oauthData, wallet)
-  await db.query('insert into discord_guilds (ens, guild_id) values ($1, $2) on CONFLICT (ens) DO update set guild_id = $2', [ens, oauthData.guild.id]);
-  return
-}
 
 
 discordApp.post('/botOauthFlow', async function (req, res, next) {
-  const { code, redirect_uri} = req.body;
+  const { code, redirect_uri } = req.body;
   const data = {
     'client_id': CLIENT_ID,
     'client_secret': CLIENT_SECRET,
@@ -163,16 +151,21 @@ discordApp.post('/getUserServers', async function (req, res, next) {
 
   res.send(filtered_servers)
   res.status(200)
-  /*
+});
+
+discordApp.post('/addUserDiscord', authenticateToken, async function (req, res, next) {
+  const { discord_id } = req.body;
+  const address = req.user.address;
+  console.log(address, discord_id)
   try {
-    let resp = await getGuildUserRoles(guild_id, user_id)
-    res.send(resp)
-    res.status(200)
-  } catch (e) {
-    res.send('error')
-    res.status(200)
+    const resp = await db.query('update users set discord = $1 where address = $2', [discord_id, address])
+    res.send('OK');
+    res.status(200);
+
+  }catch(e){
+    res.status(401)
   }
-  */
+
 });
 
 
