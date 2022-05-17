@@ -77,17 +77,26 @@ settings.post('/updateSettings', authenticateToken, isAdmin, async function (req
 
     // we allow updates to discord, so if discord exists in the db already, we have to update the entry at that rule_id
 
-
     let discord_rule_id = await db.query('select rule_id from gatekeeper_rules where ens=$1 and rule ->> \'gatekeeperType\' = \'discord\'', [fields.ens]).then(clean);
+
 
     for (var rule in fields.gatekeeper.rules) {
         if (fields.gatekeeper.rules[rule].gatekeeperType === 'discord') {
+            console.log(fields.gatekeeper.rules[rule])
+            let userId = JSON.parse(JSON.stringify(fields.gatekeeper.rules[rule].userId));
+            delete fields.gatekeeper.rules[rule].userId
+            await db.query('insert into discord_guilds (ens, guild_id) values ($1, $2) on CONFLICT (ens) DO update set guild_id = $2', [fields.ens, fields.gatekeeper.rules[rule].guildId]);
+
             if (discord_rule_id) {
                 db.query('update gatekeeper_rules set rule = $2 where rule_id = $1', [discord_rule_id.rule_id, fields.gatekeeper.rules[rule]]);
             }
             else {
                 await db.query('insert into gatekeeper_rules (ens, rule) values($1, $2)', [fields.ens, fields.gatekeeper.rules[rule]])
             }
+
+            // add the user discord id if not already there
+            await db.query('update users set discord = $1 where address = $2', [userId, walletAddress])
+
         }
 
         else {
@@ -119,7 +128,6 @@ settings.post('/deleteOrganization', authenticateToken, isAdmin, async function 
     const { ens, sig, msg, walletAddress } = req.body;
 
     await db.query('delete from organizations where ens = $1', [ens]);
-    await db.query('delete from discord_guilds where ens = $1', [fields.ens])
 
 
     try {

@@ -160,17 +160,11 @@ const auxillaryConnect = async () => {
   const state = onboard.getState();
   const checkSumAddr = web3Infura.utils.toChecksumAddress(state.address)
 
-  let sig_res = await secure_sign(checkSumAddr, store.dispatch)
-  if (sig_res) {
-    console.log(sig_res)
-    store.dispatch(setConnected(checkSumAddr))
-    await registerUser(checkSumAddr)
-    return checkSumAddr
-  }
-
-  return null
-
+  store.dispatch(setConnected(checkSumAddr))
+  await registerUser(checkSumAddr)
+  return checkSumAddr
 }
+
 
 
 function Wallet() {

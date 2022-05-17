@@ -73,6 +73,7 @@ export const fetchUserMembership = async (walletAddress, membershipPulled, dispa
 
 export const authenticated_post = async (endpoint, body, dispatch, jwt) => {
 
+
   try {
     let res = await axios.post(endpoint, body, { headers: { 'Authorization': `Bearer ${jwt || localStorage.getItem('jwt')}` } })
     return res
@@ -112,7 +113,6 @@ export const secure_sign = async (walletAddress, dispatch) => {
   
   try {
     const signatureResult = await signMessage(nonce_from_server.data.nonce);
-    console.log(signatureResult.sig)
 
     try {
       let jwt_result = await axios.post('/authentication/generate_jwt', { sig: signatureResult.sig, address: walletAddress })

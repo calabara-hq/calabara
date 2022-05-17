@@ -9,7 +9,7 @@ discordApp.use(express.json())
 const { getServerRoles, getGuildUserRoles } = require('../discord-bot/discord-bot.js')
 require('../discord-bot/deploy-commands.js')
 const { authenticateToken } = require('../middlewares/jwt-middleware')
-const { isAdmin } = require('../middlewares/admin-middleware')
+const { isAdmin } = require('../middlewares/admin-middleware');
 
 
 dotenv.config();
@@ -28,7 +28,7 @@ function clean(data) {
 
 
 
-const addDiscordUser = async (oauthData, wallet) => {
+const getUserDiscordId = async (oauthData) => {
 
   // get the user discord id
 
@@ -38,13 +38,12 @@ const addDiscordUser = async (oauthData, wallet) => {
     }
   })
 
-  console.log(userResult)
+  return userResult
 
   // post the userid to the users table of database
 
-  await db.query('update users set discord = $1 where address = $2', [userResult.data.id, wallet])
+  //await db.query('update users set discord = $1 where address = $2', [userResult.data.id, wallet])
 
-  return
 }
 
 
@@ -83,7 +82,7 @@ discordApp.post('/botOauthFlow', async function (req, res, next) {
 })
 
 discordApp.post('/userOauthFlow', async function (req, res, next) {
-  const { code, redirect_uri, wallet } = req.body;
+  const { code, redirect_uri } = req.body;
   const data = {
     'client_id': CLIENT_ID,
     'client_secret': CLIENT_SECRET,
@@ -100,8 +99,9 @@ discordApp.post('/userOauthFlow', async function (req, res, next) {
     },
   })
 
-  const oauthData = await response.json();
-
+  let oauthData = await response.json();
+  let userData = await getUserDiscordId(oauthData)
+  oauthData.userId = userData.data.id
   // send the access code and retrieve a user id
 
 
@@ -212,7 +212,7 @@ discordApp.post('/getGuildProperties', async function (req, res, next) {
 });
 
 
-// fetch guild name and roles for an ens
+// fetch guild name and roles for a guild_id
 discordApp.post('/verifyBotAdded', async function (req, res, next) {
   const { guild_id } = req.body;
 

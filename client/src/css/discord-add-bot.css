@@ -4,6 +4,10 @@
   }
 }
 
+@keyframes fade_in{
+  100% {opacity: 1;}
+}
+
 
 .discord-add-bot-container {
   display: flex;
@@ -115,6 +119,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+
 }
 
 .discord-guild-info>.discord-guild-roles>span {
@@ -123,6 +128,9 @@
   align-items: center;
   padding: 3px 3px;
   border-radius: 10px;
+  opacity: 0;
+  animation: fade_in 1.3s forwards;
+
 }
 
 .discord-guild-info>.discord-guild-roles>span>p {
@@ -164,6 +172,9 @@
   grid-gap: 10px;
   font-size: 18px;
   font-weight: bold;
+  opacity: 0;
+  animation: fade_in 1.3s forwards;
+
 }
 
 .discord-server:hover {

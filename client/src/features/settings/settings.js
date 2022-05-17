@@ -441,6 +441,38 @@ function OrganizationGatekeeperComponent({ standardProps }) {
     const [doesDiscordExist, setDoesDiscordExist] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
     const [deleteModalIndex, setDeleteModalIndex] = useState(null);
+    const [selectedServer, setSelectedServer] = useState(null);
+
+    const [botAuth, setBotAuth] = useReducer(
+        (botAuth, newBotAuth) => ({ ...botAuth, ...newBotAuth }),
+        null
+    )
+
+    const [userAuth, setUserAuth] = useReducer(
+        (userAuth, newUserAuth) => ({ ...userAuth, ...newUserAuth }),
+        null
+    )
+
+    const { onOpen: userOnOpen, authorization: userAuthorization, error: userError, isAuthenticating: userIsAuthenticating } = useDiscordAuth("identify", userAuth, setUserAuth)
+    const { onOpen: botOnOpen, authorization: botAuthorization, error: botError, isAuthenticating: botIsAuthenticating } = useDiscordAuth('bot', botAuth, setBotAuth, selectedServer)
+
+
+    let discordIntegrationProps = {
+        userOnOpen,
+        userAuthorization,
+        userError,
+        userIsAuthenticating,
+        botOnOpen,
+        botAuthorization,
+        botError,
+        botIsAuthenticating,
+        userAuth,
+        setUserAuth,
+        botAuth,
+        setBotAuth,
+        selectedServer,
+        setSelectedServer
+    }
 
     useEffect(() => {
         fields.gatekeeper.rules.map((el) => {
@@ -541,7 +573,7 @@ function OrganizationGatekeeperComponent({ standardProps }) {
                 </>
             }
             {gatekeeperInnerProgress === 1 &&
-                <GatekeeperOptions setGatekeeperInnerProgress={setGatekeeperInnerProgress} standardProps={standardProps} addGatekeeperOptionClick={addGatekeeperOptionClick} />
+                <GatekeeperOptions discordIntegrationProps={discordIntegrationProps} setGatekeeperInnerProgress={setGatekeeperInnerProgress} standardProps={standardProps} addGatekeeperOptionClick={addGatekeeperOptionClick} />
             }
 
         </div>
@@ -549,7 +581,7 @@ function OrganizationGatekeeperComponent({ standardProps }) {
 }
 
 
-function GatekeeperOptions({ setGatekeeperInnerProgress, standardProps, addGatekeeperOptionClick }) {
+function GatekeeperOptions({ setGatekeeperInnerProgress, standardProps, addGatekeeperOptionClick, discordIntegrationProps }) {
     const { fields, setFields } = standardProps
     const [gatekeeperOptionClick, setGatekeeperOptionClick] = useState('none')
 
@@ -565,7 +597,7 @@ function GatekeeperOptions({ setGatekeeperInnerProgress, standardProps, addGatek
             }
 
             {addGatekeeperOptionClick == 'discord-roles' &&
-                <DiscordRoleGatekeeper setGatekeeperInnerProgress={setGatekeeperInnerProgress} fields={fields} setFields={setFields} />
+                <DiscordRoleGatekeeper setGatekeeperInnerProgress={setGatekeeperInnerProgress} fields={fields} setFields={setFields} discordIntegrationProps={discordIntegrationProps} />
             }
 
             {addGatekeeperOptionClick == 'erc721' &&
@@ -887,23 +919,34 @@ function ERC721gatekeeper({ setGatekeeperInnerProgress, fields, setFields }) {
 
 }
 
-function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }) {
-    const [guildId, setGuildId] = useState('');
-    const [guildName, setGuildName] = useState('');
+function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields, discordIntegrationProps }) {
+    const [guildId, setGuildId] = useState(null);
+    const [guildName, setGuildName] = useState(null);
+    const [userDiscordId, setUserDiscordId] = useState(null)
     const [discordRuleState, setDiscordRuleState] = useState('')
     const [guildRoles, setGuildRoles] = useState('');
     const [isBotVerified, setIsBotVerified] = useState(false);
     const [botFailureMessage, setBotFailureMessage] = useState('');
     const [authTimerActive, setAuthTimerActive] = useState(false);
-    const { onOpen: userOnOpen, authorization: userAuthorization, error: userError, isAuthenticating: userIsAuthenticating } = useDiscordAuth("identify")
-    // const [userAuth, setUserAuth] = useLocalStorage(`dc_auth_identify`, {})
-    // const [botAuth, setBotAuth] = useLocalStorage(`dc_auth_bot`, {})
     const [discordIntegrationStep, setDiscordIntegrationStep] = useState(0);
     const [userServers, setUserServers] = useState(null)
-    const [selectedServer, setSelectedServer] = useState(null);
-    const { onOpen: botOnOpen, authorization: botAuthorization, error: botError, isAuthenticating: botIsAuthenticating } = useDiscordAuth('bot', selectedServer)
 
-
+    let {
+        userOnOpen,
+        userAuthorization,
+        userError,
+        userIsAuthenticating,
+        botOnOpen,
+        botAuthorization,
+        botError,
+        botIsAuthenticating,
+        userAuth,
+        setUserAuth,
+        botAuth,
+        setBotAuth,
+        selectedServer,
+        setSelectedServer
+    } = discordIntegrationProps
 
 
     const ens = fields.ens;
@@ -918,126 +961,88 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
     }, [])
 
 
-    useEffect(() => {
-        /*
-        setUserAuth({})
-        setBotAuth({})
-        */
-    }, [discordIntegrationStep])
-
-    /*
-        useEffect(() => {
-            // when user auth expires, revert back to the beginning
-            console.log('auth change')
-            console.log(userAuth.expires_in)
-            if (!userAuth.expires_in) {
-                console.log(discordIntegrationStep)
-                if (discordIntegrationStep === 1) {
-                    console.log('here')
-                    alert('here!!')
-                    setGatekeeperInnerProgress(0)
-                }
-            }
-        }, [userAuth])
-    */
 
 
-    const checkAuthExpired = () => {
-        /*
-                console.log(userAuth.expires_in)
-                if (!userAuth.expires_in) return true
-                return false
-        */
-    }
 
 
     useEffect(() => {
         (async () => {
-            if (userAuthorization.expires_in) {
-                let result = await axios.post('/discord/getUserServers', { token_type: userAuthorization.token_type, access_token: userAuthorization.access_token })
-                setUserServers(result.data)
-                setDiscordIntegrationStep(1)
-                setAuthTimerActive(true);
+            console.log(userAuth)
+            if (!userAuth) {
+                if (authTimerActive) {
+                    setDiscordIntegrationStep(0)
+                    setAuthTimerActive(false);
+                    return
+                }
             }
             else {
-                if (authTimerActive) {
+                console.log('in here')
+                let result = await axios.post('/discord/getUserServers', { token_type: userAuth.token_type, access_token: userAuth.access_token })
+                setUserServers(result.data)
+                setUserDiscordId(userAuth.userId)
+                setDiscordRuleState('configure rule')
+                setAuthTimerActive(true);
+                return
+            }
+        })();
+
+    }, [userAuth])
+
+    useEffect(() => {
+        (async () => {
+            if (botAuth) {
+                let guild_info = await verifyBot(botAuth.guild.id)
+                if (guild_info) {
+                    addDiscordRule(guild_info);
                     setDiscordIntegrationStep(0)
                 }
             }
         })();
 
-    }, [userAuthorization])
+    }, [botAuth])
 
-    useEffect(() => {
-        (async () => {
-            if (botAuthorization.expires_in) {
-                console.log(botAuthorization)
-                verifyBot(botAuthorization.guild.id)
-                addDiscordRule();
-                setDiscordIntegrationStep(0)
-            }
-        })();
 
-    }, [botAuthorization])
+    // parse gk rules and see if we have a guild_id already
+    const getGuildId = async () => {
+        let guild_id = fields.gatekeeper.rules.map((rule) => {
+            if (rule.gatekeeperType === 'discord') return rule.guildId
+        })
+
+
+        if (guild_id[0]) return guild_id[0]
+        return null
+    }
+
 
     const fetchGuildInfo = async () => {
-        const resp = await axios.post('/discord/getGuildProperties', { ens: ens });
-        if (resp.data === 'guild does not exist') {
-            setDiscordRuleState('no rule')
-            return
-        }
-        else {
-            setDiscordRuleState('rule exists')
+        // only run this if user hasn't updated discord server data
 
+        let guild_id = await getGuildId();
+        if (guild_id) {
+            const resp = await axios.post('/discord/verifyBotAdded', { guild_id: guild_id });
+
+            setDiscordRuleState('configure rule')
             setGuildId(resp.data.id)
             setGuildName(resp.data.name);
             setGuildRoles(resp.data.roles);
             return
         }
+        else {
+            setDiscordRuleState('no rule')
+            return
+        }
+
+
     }
 
 
     const discordAuthenticateUser = async () => {
-        let isAuthExpired = checkAuthExpired();
-        console.log(isAuthExpired)
-        userOnOpen();
-        /*
-        if (isAuthExpired) return userOnOpen();
-        let result = await axios.post('/discord/getUserServers', { token_type: userAuthorization.token_type, access_token: userAuthorization.access_token })
+
+        if (!userAuth) return userOnOpen();
+        let result = await axios.post('/discord/getUserServers', { token_type: userAuth.token_type, access_token: userAuth.access_token })
         setUserServers(result.data)
         setDiscordIntegrationStep(1)
-        */
 
-
-        //pass guildId as autofill
-        /*
-        let popout;
-        let state = encodeURIComponent(JSON.stringify({ walletAddress: walletAddress, integrationType: 'bot', ens: ens }))
-        if (process.env.NODE_ENV === 'development') {
-            //popout = window.open(`https://discord.com/api/oauth2/authorize?client_id=895719351406190662&permissions=0&redirect_uri=https%3A%2F%2Flocalhost%3A3000%2Foauth%2Fdiscord&response_type=code&scope=identify%20bot%20applications.commands&state=${state}`, 'popUpWindow', 'height=700,width=600,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes')
-            popout = window.open(`https://discord.com/api/oauth2/authorize?client_id=895719351406190662&permissions=0&redirect_uri=https%3A%2F%2F${window.location.hostname + ':' + window.location.port}%2Foauth%2Fdiscord&response_type=code&scope=identify%20bot%20applications.commands&state=${state}`, 'popUpWindow', 'height=700,width=600,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes')
-            popout.myVar = 'hehehe'
-        }
-
-        else if (process.env.NODE_ENV === 'production') {
-            popout = window.open(`https://discord.com/api/oauth2/authorize?client_id=895719351406190662&permissions=0&redirect_uri=https%3A%2F%2Flocalhost%3A3000%2Foauth%2Fdiscord&response_type=code&scope=identify%20bot%20applications.commands&state=${state}`, 'popUpWindow', 'height=700,width=600,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes')
-        }
-
-
-        var pollTimer = window.setInterval(async function () {
-            if (popout.closed !== false) {
-                window.clearInterval(pollTimer);
-                setPopoutFired(false);
-                await verifyBot();
-            }
-        }, 1000);
-        */
-
-    }
-
-
-    const addBot = async () => {
-        botOnOpen();
     }
 
 
@@ -1050,26 +1055,31 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
             case 'unable to read roles':
                 setIsBotVerified(false);
                 setBotFailureMessage('bot was not added')
-                return;
+                return null;
             default:
                 setIsBotVerified(true);
-                setDiscordRuleState('rule exists')
+                setDiscordRuleState('configure rule')
                 if (guildId !== resp.data.id) {
                     setGuildId(resp.data.id)
-                    setGuildName(resp.data.name);
-                    setGuildRoles(resp.data.roles);
+                    setGuildName(resp.data.name)
+                    setGuildRoles(resp.data.roles)
+                    return { guildId: resp.data.id, guildName: resp.data.name, guildRoles: resp.data.roles }
                 }
-                return
+                // user attempting to add already assigned server. Just re-route them to the roles section
+                setDiscordIntegrationStep(0)
+
         }
 
     }
 
 
-    const addDiscordRule = () => {
+
+    const addDiscordRule = (guild_info) => {
         const gatekeeperObj = {
             gatekeeperType: 'discord',
-            serverName: guildName,
-            guildId: guildId
+            serverName: guild_info.guildName,
+            guildId: guild_info.guildId,
+            userId: userDiscordId
         }
 
 
@@ -1109,28 +1119,30 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
         <>
             {discordRuleState === 'no rule' &&
                 <>
+                    {/*
                     <div className="discord-add-bot-container">
                         <button className={'discord-add-bot ' + (userIsAuthenticating ? 'loading' : '')} onClick={discordAuthenticateUser}>{userIsAuthenticating ? 'check popup window' : 'add bot'}</button>
                     </div>
+                */}
 
-                    {(!isBotVerified && botFailureMessage != '') &&
-                        <div style={{ width: '100%' }} className="tab-message error">
-                            <p>{botFailureMessage}</p>
-                        </div>
-                    }
-                    <div className="gk-detail-buttons" style={{ width: '100%' }}>
-                        <button className="gk-rule-cancel" style={{ width: '100%' }} onClick={() => { setGatekeeperInnerProgress(0) }}>cancel</button>
+                    <div className="discord-guild-info">
+                        <p className="discord-name-header">server</p>
+                        <GuildTopLevel guildName={guildName} userIsAuthenticating={userIsAuthenticating} discordAuthenticateUser={discordAuthenticateUser} discordIntegrationStep={discordIntegrationStep} />
+                    </div>
+
+                    <div className="settings-next-previous-ctr">
+                        <button className="previous-btn enable" onClick={() => { setGatekeeperInnerProgress(0) }}><i className="fas fa-long-arrow-alt-left"></i></button>
                     </div>
                 </>
             }
-            {(guildRoles != '' && guildName != null) &&
+            {discordRuleState === 'configure rule' &&
                 <>
 
                     <div className="discord-guild-info">
                         <p className="discord-name-header">server</p>
                         <GuildTopLevel guildName={guildName} userIsAuthenticating={userIsAuthenticating} discordAuthenticateUser={discordAuthenticateUser} discordIntegrationStep={discordIntegrationStep} />
 
-                        {discordIntegrationStep === 0 &&
+                        {(discordIntegrationStep === 0 && guildRoles.length > 0) &&
 
                             <>
 
@@ -1153,13 +1165,13 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
 
                     {discordIntegrationStep === 0 &&
                         <div className="settings-next-previous-ctr">
-                            <button className="previous-btn enable" disabled={!guildName} onClick={() => { setGatekeeperInnerProgress(0) }}><i className="fas fa-long-arrow-alt-left"></i></button>
+                            <button className="previous-btn enable" onClick={() => { setGatekeeperInnerProgress(0) }}><i className="fas fa-long-arrow-alt-left"></i></button>
                         </div>
                     }
                     {discordIntegrationStep === 1 &&
                         <div className="settings-next-previous-ctr">
-                            <button className="previous-btn enable" disabled={!guildName} onClick={() => { setDiscordIntegrationStep(0) }}><i className="fas fa-long-arrow-alt-left"></i></button>
-                            {selectedServer && <button className="add-discord-bot-btn enable" disabled={!guildName} onClick={addBot}>add bot</button>}
+                            <button className="previous-btn enable" onClick={() => { setDiscordIntegrationStep(0) }}><i className="fas fa-long-arrow-alt-left"></i></button>
+                            {selectedServer && <button className="add-discord-bot-btn enable" onClick={botOnOpen}>add bot</button>}
                         </div>
                     }
                 </>
@@ -1175,9 +1187,9 @@ function GuildTopLevel({ guildName, userIsAuthenticating, discordAuthenticateUse
     return (
         <div className="discord-guild-name">
             <div>
-                <p style={{ margin: 0 }}>{guildName}</p>
+                <p style={{ margin: 0 }}>{guildName || 'none'}</p>
             </div>
-            <button disabled={discordIntegrationStep !== 0} className={'discord-add-bot ' + (userIsAuthenticating || discordIntegrationStep === 1 ? 'loading' : '')} onClick={discordAuthenticateUser}>{userIsAuthenticating ? 'check popup window' : (discordIntegrationStep === 1 ? 'select a server' : 'update server link')}</button>
+            <button disabled={discordIntegrationStep !== 0} className={'discord-add-bot ' + (userIsAuthenticating || discordIntegrationStep === 1 ? 'loading' : '')} onClick={discordAuthenticateUser}>{userIsAuthenticating ? 'check popup window' : (discordIntegrationStep === 1 ? 'select a server' : 'new server link')}</button>
         </div>
     )
 }
