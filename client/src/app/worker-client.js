@@ -3,9 +3,6 @@ import {
   populateLogoCache
 } from '../features/org-cards/org-cards-reducer'
 
-
-import { updateDashboardInfo } from '../features/dashboard/dashboard-info-reducer'
-
 const worker = new Worker('/worker/webworker.js')
 
 /*

@@ -35,7 +35,6 @@ import {
 
 import {
   selectDashboardInfo,
-  populateDashboardInfo,
   increaseMemberCount,
   decreaseMemberCount,
 } from './dashboard-info-reducer'

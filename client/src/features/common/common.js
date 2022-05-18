@@ -23,14 +23,12 @@ import {
   selectInstalledWidgets,
   selectInstallableWidgets,
   selectVisibleWidgets,
-  updateWidgets,
   setInstalledWidgets,
   setInstallableWidgets,
 } from '../dashboard/dashboard-widgets-reducer';
 
 import {
   selectDashboardInfo,
-  populateDashboardInfo,
   increaseMemberCount,
   decreaseMemberCount,
   populateInfo,

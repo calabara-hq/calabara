@@ -57,7 +57,6 @@ export default function useWidgets() {
                         if (typeof value === 'object') {
                             // map over role values and check if any of them match the rule_id's that are in gatekeeper ruleResults
                             // only run comparisons once we have values for ruleResults
-                            alert('look here')
                             const roleTestResult = testDiscordRoles(value, ruleResults[key])
                             if (roleTestResult === 'pass') {
                                 filteredWidgets.push(widget);

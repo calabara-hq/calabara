@@ -11,7 +11,6 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import {
   selectDashboardInfo,
-  populateDashboardInfo,
 } from '../dashboard/dashboard-info-reducer'
 import { authenticated_post } from '../common/common';
 

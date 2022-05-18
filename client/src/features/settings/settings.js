@@ -8,7 +8,7 @@ import '../../css/discord-add-bot.css'
 import { validAddress, erc20GetSymbolAndDecimal, erc721GetSymbol, auxillaryConnect } from '../wallet/wallet'
 import { showNotification } from '../notifications/notifications'
 import { selectConnectedAddress, selectConnectedBool } from '../wallet/wallet-reducer'
-import { dashboardInfo, dashboardInfoReset, populateDashboardInfo, selectDashboardInfo, updateDashboardInfo } from '../dashboard/dashboard-info-reducer'
+import { dashboardInfo, dashboardInfoReset, selectDashboardInfo, updateDashboardInfo } from '../dashboard/dashboard-info-reducer'
 import { gatekeeperReset, selectDashboardRules } from '../gatekeeper/gatekeeper-rules-reducer'
 import { deleteOrganization, addOrganization, selectLogoCache, populateLogoCache } from '../org-cards/org-cards-reducer'
 import * as WebWorker from '../../app/worker-client';
@@ -19,6 +19,7 @@ import { useDiscordAuth } from '../hooks/useDiscordAuth'
 import useLocalStorage from '../hooks/useLocalStorage'
 import usePopupWindow from '../hooks/usePopupWindow'
 import useDashboardRules from '../hooks/useDashboardRules'
+import useDashboard from '../hooks/useDashboard'
 
 export default function SettingsManager() {
     const [fieldsReady, setFieldsReady] = useState(false)
@@ -1239,6 +1240,7 @@ function SaveComponent({ standardProps, infoErrorController, adminErrorControlle
     const history = useHistory();
     const { ens } = useParams();
     const {populateDashboardRules} = useDashboardRules();
+    const { updateDashboardInfo } = useDashboard();
 
     const errorCheckInfo = async () => {
         if (fields.name == "") {
@@ -1330,7 +1332,7 @@ function SaveComponent({ standardProps, infoErrorController, adminErrorControlle
         if (settingsResult) {
             if (ens === 'new') dispatch(addOrganization({ name: fields.name, members: 0, logo: fields.logo, verified: false, ens: fields.ens }));
             else if (ens !== 'new') {
-                dispatch(updateDashboardInfo({ name: fields.name, website: fields.website, logo: fields.logoPath || fields.logo, logoBlob: fields.logoBlob, discord: fields.discord, addresses: settingsResult.data.adminAddresses }))
+                updateDashboardInfo({ name: fields.name, website: fields.website, logo: fields.logoPath || fields.logo, logoBlob: fields.logoBlob, discord: fields.discord, addresses: settingsResult.data.adminAddresses })
                 populateDashboardRules(fields.ens)
             }
             showNotification('saved successfully', 'success', 'your changes were successfully saved')
