@@ -125,7 +125,7 @@ settings.post('/updateSettings', authenticateToken, isAdmin, async function (req
 });
 
 settings.post('/deleteOrganization', authenticateToken, isAdmin, async function (req, res, next) {
-    const { ens, sig, msg, walletAddress } = req.body;
+    const { ens } = req.body;
 
     await db.query('delete from organizations where ens = $1', [ens]);
 

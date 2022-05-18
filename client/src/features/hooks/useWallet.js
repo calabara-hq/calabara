@@ -7,7 +7,6 @@ import Onboard from 'bnc-onboard'
 import { showNotification } from '../notifications/notifications';
 import store from '../../app/store.js'
 import jwt_decode from 'jwt-decode'
-import { secure_sign } from '../common/common';
 import { setIsTokenExpired } from '../wallet/wallet-reducer';
 import axios from 'axios';
 

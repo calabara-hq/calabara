@@ -307,17 +307,13 @@ function OrganizationInfoComponent({ standardProps, hasImageChanged, setHasImage
 
 
     const handleDeleteOrganization = async () => {
-        /*
-        //let result = await secure_sign(walletAddress, dispatch)
-        //if (result) {
-            let deleteResult = await authenticated_post('/settings/deleteOrganization', { ens: ens, sig: result.sig, msg: result.msg, walletAddress: walletAddress });
-            if (deleteResult) {
-                deleteOrganization(fields.ens);
-                showNotification('success', 'success', 'organization successfully deleted')
-                history.push('/explore')
-          //  }
+
+        let deleteResult = await authenticated_post('/settings/updateSettings', { ens: fields.ens });
+        if (deleteResult) {
+            deleteOrganization(fields.ens);
+            showNotification('success', 'success', 'organization successfully deleted')
+            history.push('/explore')
         }
-        */
     }
 
 
