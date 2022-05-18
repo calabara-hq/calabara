@@ -8,12 +8,14 @@ import {
     updateWidgetMetadata,
 } from '../../features/dashboard/dashboard-widgets-reducer';
 import { authenticated_post } from '../common/common';
+import useWidgets from '../hooks/useWidgets';
 
 export default function CalendarConfiguration({ mode, metadata, setMetadata, setProgress, setSettingsStep, setTabHeader }) {
     const [configProgress, setConfigProgress] = useState(0)
     const [inputError, setInputError] = useState(0);
     const [calendarID, setCalendarID] = useState(metadata.calendarID || "")
     const [copyStatus, setCopyStatus] = useState('copy to clipboard');
+    const {updateWidgetMetadata} = useWidgets();
     const { ens } = useParams();
     const dispatch = useDispatch();
 
@@ -73,7 +75,7 @@ export default function CalendarConfiguration({ mode, metadata, setMetadata, set
                 setMetadata({ calendarID: calendarID });
                 let response = await authenticated_post('/dashboard/updateWidgetMetadata', { ens: ens, metadata: { calendarID: calendarID }, name: 'calendar' }, dispatch);
                 if (response) {
-                    dispatch(updateWidgetMetadata('calendar', { calendarID: calendarID }))
+                    updateWidgetMetadata('calendar', { calendarID: calendarID });
                     if (mode === 'new') {
                         setProgress(2);
                     }
@@ -101,7 +103,7 @@ export default function CalendarConfiguration({ mode, metadata, setMetadata, set
                 setMetadata({ calendarID: calendarID });
                 let response = await authenticated_post('/dashboard/updateWidgetMetadata', { ens: ens, metadata: { calendarID: calendarID }, name: 'calendar' }, dispatch);
                 if (response) {
-                    dispatch(updateWidgetMetadata('calendar', { calendarID: calendarID }))
+                    updateWidgetMetadata('calendar', { calendarID: calendarID })
                     if (mode === 'new') {
                         setProgress(2);
                     }

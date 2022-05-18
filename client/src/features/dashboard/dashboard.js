@@ -29,7 +29,6 @@ import {
 } from '../org-cards/org-cards-reducer';
 
 import {
-  populateVisibleWidgets,
   selectVisibleWidgets,
   updateWidgets,
 } from './dashboard-widgets-reducer';
@@ -43,12 +42,13 @@ import {
 
 import {
   selectDashboardRules,
-  applyDashboardRules,
   selectDashboardRuleResults,
 } from '../gatekeeper/gatekeeper-rules-reducer'
 
 import { selectDiscordId, setDiscordId } from '../user/user-reducer';
 import { FieldsOnCorrectTypeRule } from 'graphql'
+import useDashboardRules from '../hooks/useDashboardRules'
+import useWidgets from '../hooks/useWidgets'
 
 
 export default function Dashboard() {
@@ -63,7 +63,8 @@ export default function Dashboard() {
   const membership = useSelector(selectMemberOf)
   const { ens } = useParams();
   const dispatch = useDispatch();
-
+  const { applyDashboardRules } = useDashboardRules();
+  const { populateVisibleWidgets } = useWidgets();
   const [gatekeeperResult, setGatekeeperResult] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
   const [userAuth, setUserAuth] = useState(null)
@@ -108,13 +109,12 @@ export default function Dashboard() {
 
   useEffect(() => {
     // if there are widgets installed, we need to test the rules with the connected wallet.
-
-    dispatch(applyDashboardRules(walletAddress))
+     applyDashboardRules(walletAddress)
   }, [walletAddress, discordId, gatekeeperRules])
 
 
   useEffect(() => {
-    dispatch(populateVisibleWidgets(isAdmin))
+    populateVisibleWidgets(isAdmin)
   }, [gatekeeperRuleResults, isAdmin])
 
   useEffect(() => { }, [isAdmin])
@@ -301,7 +301,7 @@ export function WidgetCard({ gatekeeperPass, orgInfo, widget, btnState, setBtnSt
 
   const { name, link, widget_logo, metadata, gatekeeper_enabled, notify } = widget;
   const [hasNotification, setHasNotification] = useState(false)
-
+  const {updateWidgets} = useWidgets();
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -324,7 +324,7 @@ export function WidgetCard({ gatekeeperPass, orgInfo, widget, btnState, setBtnSt
 
   async function handleDeleteWidget() {
     let res = await authenticated_post('/dashboard/removeWidget', { ens: ens, name: name }, dispatch)
-    if (res) dispatch(updateWidgets(0, widget));
+    if (res) updateWidgets(0, widget);
 
   }
 

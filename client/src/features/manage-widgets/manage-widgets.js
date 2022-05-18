@@ -29,9 +29,9 @@ import {
 import {
   selectInstalledWidgets,
   selectInstallableWidgets,
-  updateWidgets,
 } from '../../features/dashboard/dashboard-widgets-reducer';
 import { authenticated_post } from '../common/common'
+import useWidgets from '../hooks/useWidgets'
 
 
 
@@ -260,6 +260,7 @@ function FinalMessage({ setProgress, selected, appliedRules, metadata, setSelect
   const dispatch = useDispatch();
   const availableRules = useSelector(selectDashboardRules);
   const history = useHistory()
+  const {updateWidgets} = useWidgets();
 
   useEffect(() => {
     setTabHeader('')
@@ -270,7 +271,7 @@ function FinalMessage({ setProgress, selected, appliedRules, metadata, setSelect
     const res = await authenticated_post('/dashboard/addWidget', { ens: ens, name: selected.name, metadata: metadata, gatekeeper_rules: appliedRules }, dispatch)
     if (res) {
       showNotification('saved successfully', 'success', 'successfully added application')
-      dispatch(updateWidgets(1, { ens: ens, name: selected.name, metadata: metadata, gatekeeper_rules: appliedRules, notify: 0 }))
+      updateWidgets(1, { ens: ens, name: selected.name, metadata: metadata, gatekeeper_rules: appliedRules, notify: 0 });
       history.push('dashboard')
     }
   }

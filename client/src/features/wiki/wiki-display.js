@@ -36,11 +36,12 @@ import {
 import {
   selectDashboardRuleResults,
   selectDashboardRules,
-  applyDashboardRules,
 } from '../gatekeeper/gatekeeper-rules-reducer'
 
-import { testDiscordRoles } from '../gatekeeper/gatekeeper'
+// import { testDiscordRoles } from '../hooks/useGatekeeper'
 import { authenticated_post, batchFetchDashboardData } from '../common/common'
+import useDashboardRules from '../hooks/useDashboardRules'
+import useGatekeeper from '../hooks/useGatekeeper'
 
 export default function WikiDisplay({ mode }) {
   const { ens } = useParams();
@@ -61,7 +62,7 @@ export default function WikiDisplay({ mode }) {
   const [currentWikiId, setCurrentWikiId] = useState(-1)
   const [modalOpen, setModalOpen] = useState(false);
   const [groupID, setGroupID] = useState(null)
-
+  const {applyDashboardRules} = useDashboardRules();
   useEffect(() => {
     // populate the dashboard info on pageload
     batchFetchDashboardData(ens, info, dispatch)
@@ -135,7 +136,7 @@ export default function WikiDisplay({ mode }) {
   }, [isConnected, info])
 
   useEffect(() => {
-    dispatch(applyDashboardRules(walletAddress))
+    applyDashboardRules(walletAddress)
   }, [dashboardRules, isConnected, wikiList])
 
 
@@ -218,7 +219,7 @@ function TestWikiVisibility({ setCurrentWikiId, wikiList, dashboardRuleResults }
 }
 
 function WikiRuleMap({ setCurrentWikiId, group, group_data, dashboardRuleResults }) {
-
+const {testDiscordRoles} = useGatekeeper();
 
   useEffect(() => {
   }, [dashboardRuleResults])

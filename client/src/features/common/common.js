@@ -22,7 +22,6 @@ import {
   populateInitialWidgets,
   selectInstalledWidgets,
   selectInstallableWidgets,
-  populateVisibleWidgets,
   selectVisibleWidgets,
   updateWidgets,
   setInstalledWidgets,
@@ -38,9 +37,7 @@ import {
 } from '../dashboard/dashboard-info-reducer'
 
 import {
-  populateDashboardRules,
   selectDashboardRules,
-  applyDashboardRules,
   selectDashboardRuleResults,
   setDashboardRules,
 } from '../gatekeeper/gatekeeper-rules-reducer'

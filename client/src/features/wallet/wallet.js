@@ -296,5 +296,11 @@ function Wallet() {
 
 }
 
+const erc20GetSymbolAndDecimal = () => {return null}
+const erc721GetSymbol = () => {return null}
+const signMessage = () => {return null}
+
+
+
 export default Wallet;
-export { auxillaryConnect, getAddress, validAddress }
+export { auxillaryConnect, getAddress, validAddress, erc20GetSymbolAndDecimal, erc721GetSymbol, signMessage }

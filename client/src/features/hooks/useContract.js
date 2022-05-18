@@ -8,9 +8,8 @@ const INFURA_KEY = process.env.REACT_APP_INFURA_KEY;
 let web3Infura = new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/' + INFURA_KEY))
 
 
-export default function useContract(props) {
+export default function useContract() {
 
-    const { walletAddress, contractAddress, decimal } = props;
 
     async function erc20GetSymbolAndDecimal(contractAddress) {
         const tokenContract = new web3Infura.eth.Contract(erc20abi, contractAddress);
@@ -19,7 +18,7 @@ export default function useContract(props) {
         return [symbol, decimal]
     }
 
-    async function erc721GetSymbol(address) {
+    async function erc721GetSymbol(contractAddress) {
         const tokenContract = new web3Infura.eth.Contract(erc721abi, contractAddress);
         const symbol = await tokenContract.methods.symbol().call();
         return symbol
@@ -27,9 +26,11 @@ export default function useContract(props) {
 
     // check balance of token given a wallet address and a contract address
     async function checkERC20Balance(walletAddress, contractAddress, decimal) {
+        console.log(walletAddress, contractAddress, decimal)
         const tokenContract = new web3Infura.eth.Contract(erc20abi, contractAddress);
         const balance = await tokenContract.methods.balanceOf(walletAddress).call();
         const adjusted = balance / 10 ** decimal
+        console.log(adjusted)
         return adjusted;
     }
 
@@ -41,9 +42,13 @@ export default function useContract(props) {
     }
 
     return {
-        erc20GetSymbolAndDecimal,
+        erc20GetSymbolAndDecimal: async (contractAddress) => {
+            return await erc20GetSymbolAndDecimal(contractAddress)
+        },
         erc721GetSymbol,
-        checkERC20Balance,
+        checkERC20Balance: async (walletAddress, contractAddress, decimal) => {
+            return await checkERC20Balance(walletAddress, contractAddress, decimal)
+        },
         checkERC721Balance
     }
 

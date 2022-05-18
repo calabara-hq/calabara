@@ -9,7 +9,7 @@ import { validAddress, erc20GetSymbolAndDecimal, erc721GetSymbol, auxillaryConne
 import { showNotification } from '../notifications/notifications'
 import { selectConnectedAddress, selectConnectedBool } from '../wallet/wallet-reducer'
 import { dashboardInfo, dashboardInfoReset, populateDashboardInfo, selectDashboardInfo, updateDashboardInfo } from '../dashboard/dashboard-info-reducer'
-import { gatekeeperReset, populateDashboardRules, selectDashboardRules } from '../gatekeeper/gatekeeper-rules-reducer'
+import { gatekeeperReset, selectDashboardRules } from '../gatekeeper/gatekeeper-rules-reducer'
 import { deleteOrganization, addOrganization, selectLogoCache, populateLogoCache } from '../org-cards/org-cards-reducer'
 import * as WebWorker from '../../app/worker-client';
 import Glyphicon from '@strongdm/glyphicon'
@@ -18,6 +18,7 @@ import { authenticated_post, secure_sign } from '../common/common'
 import { useDiscordAuth } from '../hooks/useDiscordAuth'
 import useLocalStorage from '../hooks/useLocalStorage'
 import usePopupWindow from '../hooks/usePopupWindow'
+import useDashboardRules from '../hooks/useDashboardRules'
 
 export default function SettingsManager() {
     const [fieldsReady, setFieldsReady] = useState(false)
@@ -1237,6 +1238,7 @@ function SaveComponent({ standardProps, infoErrorController, adminErrorControlle
     const dispatch = useDispatch();
     const history = useHistory();
     const { ens } = useParams();
+    const {populateDashboardRules} = useDashboardRules();
 
     const errorCheckInfo = async () => {
         if (fields.name == "") {
@@ -1329,7 +1331,7 @@ function SaveComponent({ standardProps, infoErrorController, adminErrorControlle
             if (ens === 'new') dispatch(addOrganization({ name: fields.name, members: 0, logo: fields.logo, verified: false, ens: fields.ens }));
             else if (ens !== 'new') {
                 dispatch(updateDashboardInfo({ name: fields.name, website: fields.website, logo: fields.logoPath || fields.logo, logoBlob: fields.logoBlob, discord: fields.discord, addresses: settingsResult.data.adminAddresses }))
-                dispatch(populateDashboardRules(fields.ens))
+                populateDashboardRules(fields.ens)
             }
             showNotification('saved successfully', 'success', 'your changes were successfully saved')
             handleClose();
