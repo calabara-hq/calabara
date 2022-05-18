@@ -5,7 +5,6 @@ import { showNotification } from '../notifications/notifications';
 import Identicon from '../identicon/identicon';
 import store from '../../app/store.js'
 import jwt_decode from 'jwt-decode'
-import { secure_sign } from '../common/common';
 import { erc20abi } from './erc20abi';
 import { erc721abi } from './erc721abi';
 import { useSelector, useDispatch } from 'react-redux';
@@ -121,7 +120,7 @@ const auxillaryConnect = async () => {
 
 function Wallet() {
   const [isMoreExpanded, setIsMoreExpanded] = useState(false);
-  const {walletDisconnect, walletConnect, walletAddress, isConnected, connectBtnTxt} = useWallet();
+  const {walletDisconnect, walletConnect, walletAddress, isConnected, connectBtnTxt, walletSignMessage} = useWallet();
 
 /*
   const isConnected = useSelector(selectConnectedBool);
@@ -223,7 +222,7 @@ function Wallet() {
       // otherwise, start the auth flow and get a new token
 
       else {
-        let sig_res = await secure_sign(checkSumAddr, dispatch)
+        let sig_res = await walletSignMessage(checkSumAddr)
         if (sig_res) {
           dispatch(setConnected(checkSumAddr))
           await registerUser(checkSumAddr)

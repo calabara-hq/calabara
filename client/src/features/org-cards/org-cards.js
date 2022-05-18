@@ -3,7 +3,6 @@ import { useHistory } from "react-router-dom"
 import '../../css/org-cards.css'
 import * as WebWorker from '../../app/worker-client'
 import { showNotification } from '../notifications/notifications'
-import { fetchOrganizations, fetchUserMembership } from '../common/common'
 import plusSign from '../../img/plus-sign.svg'
 
 
@@ -11,10 +10,7 @@ import plusSign from '../../img/plus-sign.svg'
 import { useSelector, useDispatch } from 'react-redux';
 import {
   isMember,
-  deleteMembership,
-  addMembership,
   selectMemberOf,
-  populateInitialMembership,
   populateInitialOrganizations,
   selectOrganizations,
   selectCardsPulled,
@@ -36,6 +32,8 @@ import {
 import { gatekeeperReset } from '../gatekeeper/gatekeeper-rules-reducer'
 import { auxillaryConnect } from '../wallet/wallet'
 import { dashboardInfoReset } from '../dashboard/dashboard-info-reducer'
+import useOrganization from '../hooks/useOrganization'
+import useCommon from '../hooks/useCommon'
 
 
 export default function Cards() {
@@ -46,7 +44,8 @@ export default function Cards() {
   const membershipPulled = useSelector(selectMembershipPulled);
   const membership = useSelector(selectMemberOf);
   const logoCache = useSelector(selectLogoCache);
-
+  const { fetchOrganizations } = useCommon();
+  const { fetchUserMembership } = useOrganization();
   const dispatch = useDispatch();
 
 
@@ -61,11 +60,11 @@ export default function Cards() {
     dispatch(dashboardWidgetsReset());
     dispatch(dashboardInfoReset());
     dispatch(gatekeeperReset());
-    fetchOrganizations(cardsPulled, dispatch)
+    fetchOrganizations(cardsPulled)
   }, [])
 
   useEffect(() => {
-    fetchUserMembership(walletAddress, membershipPulled, dispatch)
+    fetchUserMembership(walletAddress, membershipPulled)
   }, [walletAddress])
 
 
@@ -102,12 +101,13 @@ function DaoCard({ org, membership }) {
   const dispatch = useDispatch();
   const [members, setMembers] = useState(org.members)
   const [isMemberOf, setIsMemberOf] = useState(false)
+  const { deleteMembership, addMembership } = useOrganization();
 
   const history = useHistory();
 
   function handleJoinOrg() {
     if (isConnected) {
-      dispatch(addMembership(walletAddress, ens))
+      addMembership(walletAddress, ens)
       setMembers(members + 1);
     }
     else {
@@ -116,7 +116,7 @@ function DaoCard({ org, membership }) {
   }
 
   function handleLeaveOrg() {
-    dispatch(deleteMembership(walletAddress, ens))
+    deleteMembership(walletAddress, ens)
     setMembers(members - 1);
   }
 

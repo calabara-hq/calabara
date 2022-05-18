@@ -13,21 +13,8 @@ import '../../css/calendar.css'
 import "react-big-calendar/lib/css/react-big-calendar.css";
 
 
-import {
-  populateInitialMembership,
-} from '../org-cards/org-cards-reducer';
-
-import {
-  selectConnectedBool,
-  selectConnectedAddress,
-} from '../wallet/wallet-reducer';
-
-
 export default function Events() {
   const { ens, calendarId } = useParams();
-  const dispatch = useDispatch();
-  const isConnected = useSelector(selectConnectedBool)
-  const walletAddress = useSelector(selectConnectedAddress)
   const [calendarEvents, setCalendarEvents] = useState([])
   const [dataPulled, setDataPulled] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
@@ -36,11 +23,10 @@ export default function Events() {
   const open = () => { setModalOpen(true) }
   const close = () => { setModalOpen(false) }
 
-
+alert('look here')
 
   useEffect(() => {
     if (dataPulled == false) {
-      dispatch(populateInitialMembership(walletAddress))
       setDataPulled(true)
     }
   }, [])

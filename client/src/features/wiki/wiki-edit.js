@@ -12,7 +12,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import {
   selectDashboardInfo,
 } from '../dashboard/dashboard-info-reducer'
-import { authenticated_post } from '../common/common';
+import useCommon from '../hooks/useCommon';
 
 
 export default function WikiEditor() {
@@ -80,6 +80,7 @@ function ReactEditor({ data }) {
   const [textAreaHeight, setTextAreaHeight] = useState("auto");
   const [parentHeight, setParentHeight] = useState("auto")
   const dispatch = useDispatch();
+  const { authenticated_post } = useCommon();
 
   async function publishDocument() {
 
@@ -88,10 +89,10 @@ function ReactEditor({ data }) {
     data.filedata.content = content;
     let res;
     if (file == 'new') {
-      res = await authenticated_post('/wiki/writeWikiInitial', { ens: ens, data: data }, dispatch)
+      res = await authenticated_post('/wiki/writeWikiInitial', { ens: ens, data: data })
     }
     else {
-      res = await authenticated_post('/wiki/updateWiki', { ens: ens, file_id: file, data: JSON.stringify({ title: title, content: content }) }, dispatch)
+      res = await authenticated_post('/wiki/updateWiki', { ens: ens, file_id: file, data: JSON.stringify({ title: title, content: content }) })
     }
     if (res) {
       setPending(true)
@@ -144,7 +145,7 @@ function ReactEditor({ data }) {
         className="react-editor"
         onKeyDown={handleKeyDown}
         onChange={newContent => updateContent(newContent)}
-        options={{targetBlank: true, anchor: {linkValidation: true}}}
+        options={{ targetBlank: true, anchor: { linkValidation: true } }}
 
       />
 

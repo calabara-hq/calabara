@@ -30,8 +30,8 @@ import {
   selectInstalledWidgets,
   selectInstallableWidgets,
 } from '../../features/dashboard/dashboard-widgets-reducer';
-import { authenticated_post } from '../common/common'
 import useWidgets from '../hooks/useWidgets'
+import useCommon from '../hooks/useCommon'
 
 
 
@@ -260,7 +260,8 @@ function FinalMessage({ setProgress, selected, appliedRules, metadata, setSelect
   const dispatch = useDispatch();
   const availableRules = useSelector(selectDashboardRules);
   const history = useHistory()
-  const {updateWidgets} = useWidgets();
+  const { updateWidgets } = useWidgets();
+  const { authenticated_post } = useCommon();
 
   useEffect(() => {
     setTabHeader('')
@@ -268,7 +269,7 @@ function FinalMessage({ setProgress, selected, appliedRules, metadata, setSelect
 
   const finalize = async () => {
 
-    const res = await authenticated_post('/dashboard/addWidget', { ens: ens, name: selected.name, metadata: metadata, gatekeeper_rules: appliedRules }, dispatch)
+    const res = await authenticated_post('/dashboard/addWidget', { ens: ens, name: selected.name, metadata: metadata, gatekeeper_rules: appliedRules })
     if (res) {
       showNotification('saved successfully', 'success', 'successfully added application')
       updateWidgets(1, { ens: ens, name: selected.name, metadata: metadata, gatekeeper_rules: appliedRules, notify: 0 });
@@ -284,65 +285,65 @@ function FinalMessage({ setProgress, selected, appliedRules, metadata, setSelect
     }
 
     else if (availableRules.length > 0) {
-        setProgress(2)
-      }
+      setProgress(2)
+    }
 
     else {
       setProgress(1);
     }
 
-    }
-
-
-    return (
-      <div className="manage-widgets-final-message-tab">
-        <div>
-          <h1>🎉🎉🎉</h1>
-          <h2>That was easy. Click <b>finish</b> to add {(selected.name == 'wiki' ? 'docs' : selected.name)} to the dashboard.</h2>
-        </div>
-        <div className="manage-widgets-next-previous-ctr">
-          <button className={"previous-btn"} onClick={handlePrevious}><i class="fas fa-long-arrow-alt-left"></i></button>
-          <button className={"finish-btn enable"} onClick={finalize}>finish</button>
-        </div>
-      </div>
-    )
   }
 
-  function InstallableWidget({ el, selected, setSelected }) {
-    let imgSource, description, link
 
-    if (el.name == 'snapshot') {
-      imgSource = snapshotLogo
-      description = 'Help members stay up to date on proposals'
-      link = 'https://docs.calabara.com/v1/widgets/snapshot-description';
-    }
-    if (el.name == 'wiki') {
-      imgSource = wikiLogo
-      description = 'Token-gate documents and updates'
-      link = 'https://docs.calabara.com/v1/widgets/docs-description'
-
-    }
-    if (el.name == 'calendar') {
-      imgSource = calendarLogo
-      description = 'Integrate a google calendar'
-      link = 'https://docs.calabara.com/v1/widgets/calendar-description'
-    }
-
-
-    const handleClick = () => {
-      setSelected(el);
-    }
-
-    return (
-
-      <div className={"installable-widget " + (selected.name == el.name ? 'selected' : '')} onClick={handleClick}>
-        <img src={imgSource} />
-        <div className="installable-widget-text">
-          <p>{el.name == 'wiki' ? 'docs' : el.name}</p>
-          <p>{description}</p>
-          <u onClick={(e) => { window.open(link); e.stopPropagation(); }}>Learn more</u>
-        </div>
+  return (
+    <div className="manage-widgets-final-message-tab">
+      <div>
+        <h1>🎉🎉🎉</h1>
+        <h2>That was easy. Click <b>finish</b> to add {(selected.name == 'wiki' ? 'docs' : selected.name)} to the dashboard.</h2>
       </div>
-    )
+      <div className="manage-widgets-next-previous-ctr">
+        <button className={"previous-btn"} onClick={handlePrevious}><i class="fas fa-long-arrow-alt-left"></i></button>
+        <button className={"finish-btn enable"} onClick={finalize}>finish</button>
+      </div>
+    </div>
+  )
+}
+
+function InstallableWidget({ el, selected, setSelected }) {
+  let imgSource, description, link
+
+  if (el.name == 'snapshot') {
+    imgSource = snapshotLogo
+    description = 'Help members stay up to date on proposals'
+    link = 'https://docs.calabara.com/v1/widgets/snapshot-description';
   }
+  if (el.name == 'wiki') {
+    imgSource = wikiLogo
+    description = 'Token-gate documents and updates'
+    link = 'https://docs.calabara.com/v1/widgets/docs-description'
+
+  }
+  if (el.name == 'calendar') {
+    imgSource = calendarLogo
+    description = 'Integrate a google calendar'
+    link = 'https://docs.calabara.com/v1/widgets/calendar-description'
+  }
+
+
+  const handleClick = () => {
+    setSelected(el);
+  }
+
+  return (
+
+    <div className={"installable-widget " + (selected.name == el.name ? 'selected' : '')} onClick={handleClick}>
+      <img src={imgSource} />
+      <div className="installable-widget-text">
+        <p>{el.name == 'wiki' ? 'docs' : el.name}</p>
+        <p>{description}</p>
+        <u onClick={(e) => { window.open(link); e.stopPropagation(); }}>Learn more</u>
+      </div>
+    </div>
+  )
+}
 

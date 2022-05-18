@@ -1,6 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { authenticated_post } from '../common/common';
-
 // keep a list of orgs this user is a member of
 
 export const organizations = createSlice({
@@ -53,50 +51,6 @@ export const isMember = ens => (dispatch, getState) => {
   return result
 
 }
-
-export const deleteMembership = (walletAddress, ens) => async (dispatch, getState, axios) => {
-
-  let res = await authenticated_post('/organizations/removeSubscription/', { address: walletAddress, ens: ens }, dispatch);
-  if (res) {
-    const { organizations } = getState();
-    var newData = JSON.parse(JSON.stringify(organizations.memberOf))
-    const toDelete = (el) => el == ens;
-    const toDeleteIndex = newData.findIndex(toDelete)
-    newData.splice(toDeleteIndex, 1)
-    dispatch(populateMembership(newData))
-  }
-
-}
-
-
-export const deleteOrganization = (ens) => async (dispatch, getState, axios) => {
-  const { organizations } = getState();
-  var cardsCopy = JSON.parse(JSON.stringify(organizations['cards']));
-
-  for (var i in cardsCopy) {
-    if (cardsCopy[i].ens == ens) {
-      cardsCopy.splice(i, 1)
-      break;
-    }
-  }
-  dispatch(populateOrganizations(cardsCopy))
-}
-
-export const populateInitialMembership = (walletAddress) => async (dispatch, getState, axios) => {
-
-  var subs = await axios.get('/organizations/getSubscriptions/' + walletAddress);
-  dispatch(populateMembership(subs.data))
-
-}
-
-export const addMembership = (walletAddress, ens) => async (dispatch, getState, axios) => {
-
-  let res = await authenticated_post('/organizations/addSubscription/', { address: walletAddress, ens: ens }, dispatch);
-  if (res) dispatch(join(ens))
-
-}
-
-
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of

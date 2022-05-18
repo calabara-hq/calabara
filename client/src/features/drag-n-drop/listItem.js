@@ -3,7 +3,6 @@ import React, { useMemo, useEffect, useState } from "react";
 import styled, { css } from "styled-components";
 import { useParams, useHistory } from 'react-router-dom';
 import Glyphicon from '@strongdm/glyphicon'
-import { authenticated_post } from "../common/common";
 
 import Button from 'react-bootstrap/Button';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -11,7 +10,8 @@ import Dropdown from 'react-bootstrap/Dropdown';
 
 
 
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import useCommon from "../hooks/useCommon";
 
 import {
   deleteWiki,
@@ -43,6 +43,8 @@ const ListItem = ({ item, index, setCurrentWikiId }) => {
   const history = useHistory();
   const dispatch = useDispatch();
   const { ens } = useParams();
+  const { authenticated_post } = useCommon()
+
   const header = item.title;
 
   const [isWikiEllipsesClicked, setIsWikiEllipsesClicked] = useState(false)
@@ -54,7 +56,7 @@ const ListItem = ({ item, index, setCurrentWikiId }) => {
 
   const handleDelete = async (e) => {
     e.stopPropagation();
-    let res = await authenticated_post('/wiki/deleteWiki/', { ens: ens, file_id: item.id }, dispatch);
+    let res = await authenticated_post('/wiki/deleteWiki/', { ens: ens, file_id: item.id });
     console.log(res)
     if (res) {
       dispatch(deleteWiki(item.grouping, index))

@@ -13,9 +13,9 @@ import { showNotification } from '../notifications/notifications';
 import {
   selectInstalledWidgets,
 } from '../../features/dashboard/dashboard-widgets-reducer';
-import { authenticated_post } from '../common/common';
 import { selectDashboardRules } from '../gatekeeper/gatekeeper-rules-reducer';
 import useWidgets from '../hooks/useWidgets';
+import useCommon from '../hooks/useCommon';
 
 
 
@@ -161,7 +161,8 @@ function WidgetSummary({ selected, setSettingsStep, setProgress, setTabHeader, s
   const [metadataExists, setMetadataExists] = useState(false);
   const availableRules = useSelector(selectDashboardRules)
   const installedWidgets = useSelector(selectInstalledWidgets)
-  const {updateWidgets} = useWidgets();
+  const { updateWidgets } = useWidgets();
+  const { authenticated_post } = useCommon();
   const dispatch = useDispatch();
 
   const { ens } = useParams();
@@ -181,7 +182,7 @@ function WidgetSummary({ selected, setSettingsStep, setProgress, setTabHeader, s
   const deleteWidget = async () => {
     console.log(installedWidgets)
     let num_widgets = installedWidgets.length - 1;
-    let res = await authenticated_post('/dashboard/removeWidget', { ens: ens, name: selected.name }, dispatch)
+    let res = await authenticated_post('/dashboard/removeWidget', { ens: ens, name: selected.name })
     if (res) {
       updateWidgets(0, selected)
       showNotification('success', 'success', 'application successfully deleted')
@@ -267,7 +268,8 @@ function GatekeeperSettings({ selected, setSettingsStep, setTabHeader }) {
   const [ruleError, setRuleError] = useState('');
   const { ens } = useParams();
   const dispatch = useDispatch();
-  const {updateWidgetGatekeeper} = useWidgets();
+  const { updateWidgetGatekeeper } = useWidgets();
+  const { authenticated_post } = useCommon();
 
   useEffect(() => {
     setTabHeader('gatekeeper')
@@ -308,7 +310,7 @@ function GatekeeperSettings({ selected, setSettingsStep, setTabHeader }) {
       }
     }
 
-    let res = await authenticated_post('/dashboard/updateWidgetGatekeeperRules', { ens: ens, gk_rules: appliedRules, name: selected.name }, dispatch);
+    let res = await authenticated_post('/dashboard/updateWidgetGatekeeperRules', { ens: ens, gk_rules: appliedRules, name: selected.name });
     if (res) {
       updateWidgetGatekeeper(selected.name, appliedRules);
       showNotification('saved successfully', 'success', 'your changes were successfully saved')

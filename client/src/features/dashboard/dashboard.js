@@ -1,13 +1,11 @@
 import React, { useEffect, useState, createRef } from 'react'
 import { useHistory, useParams } from "react-router-dom"
-import axios from 'axios'
 import '../../css/dashboard.css'
 import * as WebWorker from '../../app/worker-client.js'
 import Glyphicon from '@strongdm/glyphicon'
 import calendarLogo from '../../img/calendar.svg'
 import snapshotLogo from '../../img/snapshot.svg'
 import wikiLogo from '../../img/wiki.svg'
-import { authenticated_post, batchFetchDashboardData, fetchUserMembership } from '../common/common'
 import { showNotification } from '../notifications/notifications'
 import useDiscordAuth from '../hooks/useDiscordAuth'
 //redux
@@ -21,8 +19,6 @@ import {
 
 import {
   isMember,
-  deleteMembership,
-  addMembership,
   selectMemberOf,
   selectLogoCache,
   selectMembershipPulled,
@@ -48,6 +44,8 @@ import { selectDiscordId, setDiscordId } from '../user/user-reducer';
 import { FieldsOnCorrectTypeRule } from 'graphql'
 import useDashboardRules from '../hooks/useDashboardRules'
 import useWidgets from '../hooks/useWidgets'
+import useOrganization from '../hooks/useOrganization'
+import useCommon from '../hooks/useCommon'
 
 
 export default function Dashboard() {
@@ -64,6 +62,8 @@ export default function Dashboard() {
   const dispatch = useDispatch();
   const { applyDashboardRules } = useDashboardRules();
   const { populateVisibleWidgets } = useWidgets();
+  const { batchFetchDashboardData } = useCommon();
+  const { fetchUserMembership } = useOrganization();
   const [gatekeeperResult, setGatekeeperResult] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
   const [userAuth, setUserAuth] = useState(null)
@@ -94,21 +94,21 @@ export default function Dashboard() {
 
 
   useEffect(() => {
-    batchFetchDashboardData(ens, info, dispatch);
+    batchFetchDashboardData(ens, info);
   }, [info])
 
 
   useEffect(() => {
     if (walletAddress) {
       checkAdmin(walletAddress)
-      fetchUserMembership(walletAddress, membershipPulled, dispatch)
+      fetchUserMembership(walletAddress, membershipPulled)
     }
   }, [isConnected, walletAddress, info])
 
 
   useEffect(() => {
     // if there are widgets installed, we need to test the rules with the connected wallet.
-     applyDashboardRules(walletAddress)
+    applyDashboardRules(walletAddress)
   }, [walletAddress, discordId, gatekeeperRules])
 
 
@@ -144,30 +144,28 @@ function InfoCard({ info, ens, discordIntegrationProps }) {
   const dashboardRules = useSelector(selectDashboardRules);
   const discord_id = useSelector(selectDiscordId)
   const [promptDiscordLink, setPromptDiscordLink] = useState(false);
+  const { deleteMembership, addMembership } = useOrganization();
   const history = useHistory();
   const dispatch = useDispatch();
   const isMemberOf = dispatch(isMember(ens))
   const [isInfoLoaded, setIsInfoLoaded] = useState(false)
   const imgRef = createRef(null);
+  const { authenticated_post } = useCommon();
 
   let {
     userOnOpen,
-    userAuthorization,
-    userError,
-    userIsAuthenticating,
+
     userAuth,
     setUserAuth,
   } = discordIntegrationProps
 
 
   function handleJoinOrg() {
-    dispatch(addMembership(walletAddress, ens))
-    dispatch(increaseMemberCount())
+    addMembership(walletAddress, ens)
   }
 
   function handleLeaveOrg() {
-    dispatch(deleteMembership(walletAddress, ens))
-    dispatch(decreaseMemberCount())
+    deleteMembership(walletAddress, ens)
   }
 
   function handleSettingsOpen() {
@@ -223,7 +221,7 @@ function InfoCard({ info, ens, discordIntegrationProps }) {
       if (!userAuth) return
       console.log(userAuth)
       if (isConnected) {
-        let res = await authenticated_post('/discord/addUserDiscord', { discord_id: userAuth.userId }, dispatch);
+        let res = await authenticated_post('/discord/addUserDiscord', { discord_id: userAuth.userId });
         if (res) {
           dispatch(setDiscordId(userAuth.userId))
           return
@@ -300,7 +298,8 @@ export function WidgetCard({ gatekeeperPass, orgInfo, widget, btnState, setBtnSt
 
   const { name, link, widget_logo, metadata, gatekeeper_enabled, notify } = widget;
   const [hasNotification, setHasNotification] = useState(false)
-  const {updateWidgets} = useWidgets();
+  const { updateWidgets } = useWidgets();
+  const { authenticated_post } = useCommon();
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -322,7 +321,7 @@ export function WidgetCard({ gatekeeperPass, orgInfo, widget, btnState, setBtnSt
   }
 
   async function handleDeleteWidget() {
-    let res = await authenticated_post('/dashboard/removeWidget', { ens: ens, name: name }, dispatch)
+    let res = await authenticated_post('/dashboard/removeWidget', { ens: ens, name: name })
     if (res) updateWidgets(0, widget);
 
   }

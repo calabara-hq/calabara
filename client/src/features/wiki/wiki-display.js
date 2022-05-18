@@ -39,9 +39,9 @@ import {
 } from '../gatekeeper/gatekeeper-rules-reducer'
 
 // import { testDiscordRoles } from '../hooks/useGatekeeper'
-import { authenticated_post, batchFetchDashboardData } from '../common/common'
 import useDashboardRules from '../hooks/useDashboardRules'
 import useGatekeeper from '../hooks/useGatekeeper'
+import useCommon from '../hooks/useCommon'
 
 export default function WikiDisplay({ mode }) {
   const { ens } = useParams();
@@ -63,9 +63,11 @@ export default function WikiDisplay({ mode }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [groupID, setGroupID] = useState(null)
   const {applyDashboardRules} = useDashboardRules();
+  const { batchFetchDashboardData, authenticated_post } = useCommon();
+
   useEffect(() => {
     // populate the dashboard info on pageload
-    batchFetchDashboardData(ens, info, dispatch)
+    batchFetchDashboardData(ens, info)
     dispatch(populateInitialWikiList(ens))
   }, [])
 
@@ -78,7 +80,7 @@ export default function WikiDisplay({ mode }) {
     }
 
     else if (cleanup.type === 'delete') {
-      let res = await authenticated_post('/wiki/deleteWikiGrouping', { ens: cleanup.ens, groupID: cleanup.groupID }, dispatch)
+      let res = await authenticated_post('/wiki/deleteWikiGrouping', { ens: cleanup.ens, groupID: cleanup.groupID })
       if (res) {
         setModalOpen(false)
         dispatch(removeFromWikiList(cleanup.groupID));

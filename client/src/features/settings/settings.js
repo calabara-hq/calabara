@@ -10,16 +10,15 @@ import { showNotification } from '../notifications/notifications'
 import { selectConnectedAddress, selectConnectedBool } from '../wallet/wallet-reducer'
 import { dashboardInfo, dashboardInfoReset, selectDashboardInfo, updateDashboardInfo } from '../dashboard/dashboard-info-reducer'
 import { gatekeeperReset, selectDashboardRules } from '../gatekeeper/gatekeeper-rules-reducer'
-import { deleteOrganization, addOrganization, selectLogoCache, populateLogoCache } from '../org-cards/org-cards-reducer'
+import { addOrganization, selectLogoCache, populateLogoCache } from '../org-cards/org-cards-reducer'
 import * as WebWorker from '../../app/worker-client';
 import Glyphicon from '@strongdm/glyphicon'
 import DeleteGkRuleModal from './delete-gk-rule-modal'
-import { authenticated_post, secure_sign } from '../common/common'
 import { useDiscordAuth } from '../hooks/useDiscordAuth'
-import useLocalStorage from '../hooks/useLocalStorage'
-import usePopupWindow from '../hooks/usePopupWindow'
 import useDashboardRules from '../hooks/useDashboardRules'
 import useDashboard from '../hooks/useDashboard'
+import useOrganization from '../hooks/useOrganization'
+import useCommon from '../hooks/useCommon'
 
 export default function SettingsManager() {
     const [fieldsReady, setFieldsReady] = useState(false)
@@ -253,6 +252,8 @@ function OrganizationInfoComponent({ standardProps, hasImageChanged, setHasImage
     const logoCache = useSelector(selectLogoCache);
     const [logo, setLogo] = useState(logoCache[fields.logo])
     const [logoPath, setLogoPath] = useState(fields.logo);
+    const { deleteOrganization } = useOrganization();
+    const { authenticated_post } = useCommon();
 
 
     const updateName = (e) => {
@@ -306,15 +307,17 @@ function OrganizationInfoComponent({ standardProps, hasImageChanged, setHasImage
 
 
     const handleDeleteOrganization = async () => {
-        let result = await secure_sign(walletAddress, dispatch)
-        if (result) {
-            let deleteResult = await authenticated_post('/settings/deleteOrganization', { ens: ens, sig: result.sig, msg: result.msg, walletAddress: walletAddress }, dispatch);
+        /*
+        //let result = await secure_sign(walletAddress, dispatch)
+        //if (result) {
+            let deleteResult = await authenticated_post('/settings/deleteOrganization', { ens: ens, sig: result.sig, msg: result.msg, walletAddress: walletAddress });
             if (deleteResult) {
-                dispatch(deleteOrganization(fields.ens));
+                deleteOrganization(fields.ens);
                 showNotification('success', 'success', 'organization successfully deleted')
                 history.push('/explore')
-            }
+          //  }
         }
+        */
     }
 
 
@@ -1239,8 +1242,9 @@ function SaveComponent({ standardProps, infoErrorController, adminErrorControlle
     const dispatch = useDispatch();
     const history = useHistory();
     const { ens } = useParams();
-    const {populateDashboardRules} = useDashboardRules();
+    const { populateDashboardRules } = useDashboardRules();
     const { updateDashboardInfo } = useDashboard();
+    const { authenticated_post } = useCommon();
 
     const errorCheckInfo = async () => {
         if (fields.name == "") {
@@ -1328,7 +1332,7 @@ function SaveComponent({ standardProps, infoErrorController, adminErrorControlle
         finalSubmission.gatekeeper.rules = ruleDuplicates
 
 
-        let settingsResult = await authenticated_post('/settings/updateSettings', { ens: fields.ens, fields: finalSubmission, walletAddress: walletAddress }, dispatch);
+        let settingsResult = await authenticated_post('/settings/updateSettings', { ens: fields.ens, fields: finalSubmission, walletAddress: walletAddress });
         if (settingsResult) {
             if (ens === 'new') dispatch(addOrganization({ name: fields.name, members: 0, logo: fields.logo, verified: false, ens: fields.ens }));
             else if (ens !== 'new') {

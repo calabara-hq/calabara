@@ -4,14 +4,8 @@ import '../../css/snapshot-analytics.css'
 import { useParams } from "react-router-dom"
 import { useSelector, useDispatch } from 'react-redux';
 import { Doughnut } from 'react-chartjs-2';
-import * as WebWorker from '../../app/worker-client.js'
 import { auxillaryConnect } from '../wallet/wallet';
 import BackButton from '../back-button/back-button';
-
-import {
-  isMember,
-  populateInitialMembership,
-} from '../org-cards/org-cards-reducer';
 
 import {
   selectConnectedBool,
@@ -22,7 +16,6 @@ import {
 
 function Analytics() {
 
-  const dispatch = useDispatch();
   const { ens } = useParams();
   const walletAddress = useSelector(selectConnectedAddress)
   const isConnected = useSelector(selectConnectedBool)
@@ -32,10 +25,9 @@ function Analytics() {
   const [globalParticipationPercentage, setGlobalParticipationPercentage] = useState(0)
   const [pastFiveproposals, setPastFiveProposals] = useState([])
 
-
+  alert('optimization here')
   useEffect(() => {
     if (!dataPulled && isConnected) {
-      dispatch(populateInitialMembership(walletAddress))
       setDataPulled(true)
     }
   }, [isConnected])
@@ -45,7 +37,6 @@ function Analytics() {
     (async () => {
       if (dataPulled) {
         
-        const isMemberOf = dispatch(isMember(ens))
         const client = createClient();
         
 

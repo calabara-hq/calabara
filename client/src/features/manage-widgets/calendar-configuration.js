@@ -7,8 +7,8 @@ import { useDispatch } from 'react-redux';
 import {
     updateWidgetMetadata,
 } from '../../features/dashboard/dashboard-widgets-reducer';
-import { authenticated_post } from '../common/common';
 import useWidgets from '../hooks/useWidgets';
+import useCommon from '../hooks/useCommon';
 
 export default function CalendarConfiguration({ mode, metadata, setMetadata, setProgress, setSettingsStep, setTabHeader }) {
     const [configProgress, setConfigProgress] = useState(0)
@@ -16,6 +16,7 @@ export default function CalendarConfiguration({ mode, metadata, setMetadata, set
     const [calendarID, setCalendarID] = useState(metadata.calendarID || "")
     const [copyStatus, setCopyStatus] = useState('copy to clipboard');
     const {updateWidgetMetadata} = useWidgets();
+    const { authenticated_post } = useCommon();
     const { ens } = useParams();
     const dispatch = useDispatch();
 
@@ -73,7 +74,7 @@ export default function CalendarConfiguration({ mode, metadata, setMetadata, set
 
                 // found the calendar and we can advance out of this inner loop
                 setMetadata({ calendarID: calendarID });
-                let response = await authenticated_post('/dashboard/updateWidgetMetadata', { ens: ens, metadata: { calendarID: calendarID }, name: 'calendar' }, dispatch);
+                let response = await authenticated_post('/dashboard/updateWidgetMetadata', { ens: ens, metadata: { calendarID: calendarID }, name: 'calendar' });
                 if (response) {
                     updateWidgetMetadata('calendar', { calendarID: calendarID });
                     if (mode === 'new') {
@@ -101,7 +102,7 @@ export default function CalendarConfiguration({ mode, metadata, setMetadata, set
             }
             else if (res == 'success') {
                 setMetadata({ calendarID: calendarID });
-                let response = await authenticated_post('/dashboard/updateWidgetMetadata', { ens: ens, metadata: { calendarID: calendarID }, name: 'calendar' }, dispatch);
+                let response = await authenticated_post('/dashboard/updateWidgetMetadata', { ens: ens, metadata: { calendarID: calendarID }, name: 'calendar' });
                 if (response) {
                     updateWidgetMetadata('calendar', { calendarID: calendarID })
                     if (mode === 'new') {

@@ -12,7 +12,7 @@ import {
   selectWikiList,
   updateWikiList,
 } from '../wiki/wiki-reducer';
-import { authenticated_post } from "../common/common";
+import useCommon from "../hooks/useCommon";
 
 const DragDropContextContainer = styled.div`
   padding: 20px;
@@ -55,7 +55,7 @@ function DragList({ setCurrentWikiId, editWikiGroupingClick, lists, setLists }) 
   const history = useHistory();
   const dispatch = useDispatch();
   const wikiList = useSelector(selectWikiList);
-
+  const { authenticated_post } = useCommon()
 
   // watch elements and update db on change
   // since we use length, we only need to watch 1 of them
@@ -80,7 +80,7 @@ function DragList({ setCurrentWikiId, editWikiGroupingClick, lists, setLists }) 
       removedElement
     );
 
-    let res = await authenticated_post('/wiki/updateWikiLists', { ens: ens, file_id: result.draggableId, new_grouping: result.destination.droppableId }, dispatch)
+    let res = await authenticated_post('/wiki/updateWikiLists', { ens: ens, file_id: result.draggableId, new_grouping: result.destination.droppableId })
     if (res) dispatch(updateWikiList(listCopy));
 
   };

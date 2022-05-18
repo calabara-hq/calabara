@@ -262,8 +262,8 @@ export default function useWallet() {
         walletConnect: () => {
             handleConnectClick()
         },
-        walletSignMessage: () => {
-            secure_sign()
+        walletSignMessage: async (walletAddress) => {
+            return await secure_sign(walletAddress)
         },
         walletAddress,
         isConnected,

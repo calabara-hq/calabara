@@ -14,7 +14,7 @@ import Glyphicon from '@strongdm/glyphicon'
 
 import { selectWikiList, removeFromWikiList, renameWikiList, addToWikiList } from './wiki-reducer';
 import { selectDashboardRules } from '../gatekeeper/gatekeeper-rules-reducer';
-import { authenticated_post } from '../common/common';
+import useCommon from '../hooks/useCommon';
 
 const style = {
     position: 'absolute',
@@ -56,10 +56,10 @@ export default function WikiModal({ modalOpen, handleClose, groupID }) {
     const { ens } = useParams();
     const dispatch = useDispatch();
     const [appliedRules, setAppliedRules] = useReducer(reducer, {});
-
+    const { authenticated_post } = useCommon();
 
     useEffect(() => {
-        
+
         if (groupID != null) {
             setAppliedRules({ type: 'update_all', payload: wikiList[groupID].gk_rules })
             setGroupingName(wikiList[groupID].group_name)
@@ -89,7 +89,7 @@ export default function WikiModal({ modalOpen, handleClose, groupID }) {
 
             if (groupID == null) {
                 // it's a new folder
-                let res = await authenticated_post('/wiki/addWikiGrouping', { ens: ens, groupingName: groupingName, gk_rules: appliedRules }, dispatch)
+                let res = await authenticated_post('/wiki/addWikiGrouping', { ens: ens, groupingName: groupingName, gk_rules: appliedRules })
                 if (res) {
                     dispatch(addToWikiList({
                         group_id: res.data.group_id,
@@ -105,7 +105,7 @@ export default function WikiModal({ modalOpen, handleClose, groupID }) {
             }
             else {
                 // it's an update to existing folder
-                let res = await authenticated_post('/wiki/updateWikiGrouping', { groupID: groupID, ens: ens, groupingName: groupingName, gk_rules: appliedRules }, dispatch)
+                let res = await authenticated_post('/wiki/updateWikiGrouping', { groupID: groupID, ens: ens, groupingName: groupingName, gk_rules: appliedRules })
                 if (res) {
                     dispatch(renameWikiList({
                         group_id: groupID,
