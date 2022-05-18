@@ -4,9 +4,6 @@ import Button from '@mui/material/Button';
 
 import { useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import {
-    updateWidgetMetadata,
-} from '../../features/dashboard/dashboard-widgets-reducer';
 import useWidgets from '../hooks/useWidgets';
 import useCommon from '../hooks/useCommon';
 

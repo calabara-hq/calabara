@@ -1,8 +1,6 @@
-import { setLogVerbosity } from '@apollo/client';
-import { formatError, parse } from 'graphql';
 import React, { useEffect, useState } from 'react'
 import { useSelector } from 'react-redux';
-import Select, { components } from 'react-select'
+import Select from 'react-select'
 import makeAnimated from 'react-select/animated';
 import {
   selectDashboardRules,

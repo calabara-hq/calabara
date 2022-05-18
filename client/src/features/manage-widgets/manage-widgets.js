@@ -1,9 +1,5 @@
 import React, { useState, useEffect, useRef, useReducer } from 'react'
-import axios from 'axios'
 import Glyphicon from '@strongdm/glyphicon'
-import { SettingsCheckpointBar, FinalizeSettingsCheckpointBar } from '../../features/checkpoint-bar/checkpoint-bar'
-import Wallet, { validAddress, erc20GetSymbolAndDecimal, erc721GetSymbol, signTransaction, connectWallet } from '../../features//wallet/wallet'
-import * as WebWorker from '../../app/worker-client';
 import { useHistory, useParams } from 'react-router-dom'
 import '../../css/manage-widgets.css'
 import '../../css/settings-buttons.css'
@@ -17,10 +13,7 @@ import SnapshotConfiguration from './snapshot-configuration'
 import { RuleSelect } from './gatekeeper-toggle';
 import { showNotification } from '../notifications/notifications'
 
-
-
 import { useSelector, useDispatch } from 'react-redux';
-
 
 import {
   selectDashboardRules,
@@ -30,6 +23,8 @@ import {
   selectInstalledWidgets,
   selectInstallableWidgets,
 } from '../../features/dashboard/dashboard-widgets-reducer';
+
+
 import useWidgets from '../hooks/useWidgets'
 import useCommon from '../hooks/useCommon'
 

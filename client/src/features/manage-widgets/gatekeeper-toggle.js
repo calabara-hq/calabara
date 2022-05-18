@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState } from 'react'
 import '../../css/gatekeeper-toggle.css'
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import RoleSelectModal from './role-select-modal';
 
 

@@ -1,8 +1,7 @@
 import { Droppable } from "react-beautiful-dnd";
 import ListItem from "./listItem";
-import React, { useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
-import Glyphicon from '@strongdm/glyphicon'
 
 const ColumnHeader = styled.div`
   margin-bottom: 20px;

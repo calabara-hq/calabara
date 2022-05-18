@@ -1,15 +1,7 @@
 import { Draggable } from "react-beautiful-dnd";
-import React, { useMemo, useEffect, useState } from "react";
-import styled, { css } from "styled-components";
+import React, { useState } from "react";
+import styled from "styled-components";
 import { useParams, useHistory } from 'react-router-dom';
-import Glyphicon from '@strongdm/glyphicon'
-
-import Button from 'react-bootstrap/Button';
-import Dropdown from 'react-bootstrap/Dropdown';
-
-
-
-
 import { useDispatch } from 'react-redux';
 import useCommon from "../hooks/useCommon";
 

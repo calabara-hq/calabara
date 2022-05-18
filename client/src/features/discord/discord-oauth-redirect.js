@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import '../../css/discord-oauth-redirect.css'
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 
 // on successful authorization, grab the ens and guild_id from url and send a post to the server

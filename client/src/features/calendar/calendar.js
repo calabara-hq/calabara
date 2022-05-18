@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { useSelector, useDispatch } from 'react-redux';
 import { listEvents } from '../../helpers/google-calendar'
-import { useHistory, useParams } from "react-router-dom"
+import { useParams } from "react-router-dom"
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import CalendarModal from './calendar-modal.js';

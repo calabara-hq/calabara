@@ -1,5 +1,3 @@
-import axios from 'axios';
-import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectDashboardRuleResults, selectDashboardRules } from '../gatekeeper/gatekeeper-rules-reducer';
 import useGatekeeper from './useGatekeeper';

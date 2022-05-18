@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from 'react'
 import Web3 from "web3";
 import { erc20abi } from '../wallet/erc20abi';
 import { erc721abi } from '../wallet/erc721abi';

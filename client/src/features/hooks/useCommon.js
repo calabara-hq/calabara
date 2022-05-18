@@ -1,6 +1,5 @@
 import axios from 'axios';
-import { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import { populateInfo } from '../dashboard/dashboard-info-reducer';
 import { setDashboardRules } from '../gatekeeper/gatekeeper-rules-reducer';

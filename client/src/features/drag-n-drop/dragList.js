@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import { DragDropContext } from "react-beautiful-dnd";
 import DraggableElement from "./draggableElement";
-import axios from 'axios'
 import { useParams, useHistory } from 'react-router-dom'
 
 
