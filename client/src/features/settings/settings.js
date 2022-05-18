@@ -308,7 +308,7 @@ function OrganizationInfoComponent({ standardProps, hasImageChanged, setHasImage
 
     const handleDeleteOrganization = async () => {
 
-        let deleteResult = await authenticated_post('/settings/updateSettings', { ens: fields.ens });
+        let deleteResult = await authenticated_post('/settings/deleteOrganization', { ens: fields.ens });
         if (deleteResult) {
             deleteOrganization(fields.ens);
             showNotification('success', 'success', 'organization successfully deleted')

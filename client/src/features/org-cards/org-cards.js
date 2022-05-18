@@ -1,4 +1,4 @@
-import React, { useEffect, useState, componentDidMount } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useHistory } from "react-router-dom"
 import '../../css/org-cards.css'
 import * as WebWorker from '../../app/worker-client'
@@ -9,9 +9,7 @@ import plusSign from '../../img/plus-sign.svg'
 //redux
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  isMember,
   selectMemberOf,
-  populateInitialOrganizations,
   selectOrganizations,
   selectCardsPulled,
   selectMembershipPulled,
@@ -24,13 +22,10 @@ import {
 } from '../wallet/wallet-reducer';
 
 import {
-  clearDashboardData,
-  clearWidgets,
   dashboardWidgetsReset,
 } from '../dashboard/dashboard-widgets-reducer'
 
 import { gatekeeperReset } from '../gatekeeper/gatekeeper-rules-reducer'
-import { auxillaryConnect } from '../wallet/wallet'
 import { dashboardInfoReset } from '../dashboard/dashboard-info-reducer'
 import useOrganization from '../hooks/useOrganization'
 import useCommon from '../hooks/useCommon'
@@ -101,23 +96,27 @@ function DaoCard({ org, membership }) {
   const dispatch = useDispatch();
   const [members, setMembers] = useState(org.members)
   const [isMemberOf, setIsMemberOf] = useState(false)
-  const { deleteMembership, addMembership } = useOrganization();
+  const { deleteMembership, addMembership, isMember } = useOrganization();
 
   const history = useHistory();
 
+
+  useEffect(() => {
+    setIsMemberOf(isMember(ens))
+  },[])
+
   function handleJoinOrg() {
-    if (isConnected) {
-      addMembership(walletAddress, ens)
-      setMembers(members + 1);
-    }
-    else {
-      auxillaryConnect();
-    }
+    console.log('inside join org')
+    addMembership(walletAddress, ens)
+    setMembers(members + 1);
+    setIsMemberOf(true)
+
   }
 
   function handleLeaveOrg() {
     deleteMembership(walletAddress, ens)
     setMembers(members - 1);
+    setIsMemberOf(false);
   }
 
 
@@ -136,12 +135,6 @@ function DaoCard({ org, membership }) {
       history.push('/' + ens + '/dashboard')
     }
   }
-
-  // rerender the card when membership details change
-  useEffect(() => {
-    let res = dispatch(isMember(ens))
-    setIsMemberOf(res)
-  }, [membership])
 
 
   return (

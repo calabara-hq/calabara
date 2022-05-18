@@ -37,5 +37,6 @@ export const dashboardInfo = createSlice({
 
 export const { populateInfo, increaseMemberCount, decreaseMemberCount, dashboardInfoReset } = dashboardInfo.actions;
 export const selectDashboardInfo = state => state.dashboardInfo.info;
+export const selectDashboardMemberCount = state => state.dashboardInfo.info.members;
 
 export default dashboardInfo.reducer;

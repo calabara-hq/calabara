@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectOrganizations, selectMemberOf, populateMembership, populateOrganizations, join } from '../org-cards/org-cards-reducer';
 import { decreaseMemberCount, increaseMemberCount } from '../dashboard/dashboard-info-reducer';
@@ -12,7 +11,6 @@ export default function useOrganization() {
     const dispatch = useDispatch();
 
     const isMember = (ens) => {
-        console.log(organizations)
         var result = Boolean(memberOf.find(el => { return el === ens }))
         return result
     }

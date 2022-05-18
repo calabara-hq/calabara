@@ -18,7 +18,6 @@ import {
 } from '../wallet/wallet-reducer';
 
 import {
-  isMember,
   selectMemberOf,
   selectLogoCache,
   selectMembershipPulled,
@@ -26,13 +25,10 @@ import {
 
 import {
   selectVisibleWidgets,
-  updateWidgets,
 } from './dashboard-widgets-reducer';
 
 import {
   selectDashboardInfo,
-  increaseMemberCount,
-  decreaseMemberCount,
 } from './dashboard-info-reducer'
 
 import {
@@ -41,7 +37,6 @@ import {
 } from '../gatekeeper/gatekeeper-rules-reducer'
 
 import { selectDiscordId, setDiscordId } from '../user/user-reducer';
-import { FieldsOnCorrectTypeRule } from 'graphql'
 import useDashboardRules from '../hooks/useDashboardRules'
 import useWidgets from '../hooks/useWidgets'
 import useOrganization from '../hooks/useOrganization'
@@ -138,34 +133,38 @@ export default function Dashboard() {
 
 
 function InfoCard({ info, ens, discordIntegrationProps }) {
-  const isConnected = useSelector(selectConnectedBool)
-  const walletAddress = useSelector(selectConnectedAddress)
-  const logoCache = useSelector(selectLogoCache)
+  const isConnected = useSelector(selectConnectedBool);
+  const walletAddress = useSelector(selectConnectedAddress);
+  const logoCache = useSelector(selectLogoCache);
   const dashboardRules = useSelector(selectDashboardRules);
-  const discord_id = useSelector(selectDiscordId)
+  const discord_id = useSelector(selectDiscordId);
   const [promptDiscordLink, setPromptDiscordLink] = useState(false);
-  const { deleteMembership, addMembership } = useOrganization();
+  const { deleteMembership, addMembership, isMember } = useOrganization();
   const history = useHistory();
   const dispatch = useDispatch();
-  const isMemberOf = dispatch(isMember(ens))
-  const [isInfoLoaded, setIsInfoLoaded] = useState(false)
+  const [members, setMembers] = useState(0);
+  const [isMemberOf, setIsMemberOf] = useState(false);
+  const [isInfoLoaded, setIsInfoLoaded] = useState(false);
   const imgRef = createRef(null);
   const { authenticated_post } = useCommon();
 
+
   let {
     userOnOpen,
-
     userAuth,
-    setUserAuth,
   } = discordIntegrationProps
 
 
   function handleJoinOrg() {
     addMembership(walletAddress, ens)
+    setMembers(members + 1);
+    setIsMemberOf(true)
   }
 
   function handleLeaveOrg() {
     deleteMembership(walletAddress, ens)
+    setMembers(members - 1);
+    setIsMemberOf(false)
   }
 
   function handleSettingsOpen() {
@@ -185,6 +184,8 @@ function InfoCard({ info, ens, discordIntegrationProps }) {
 
 
   useEffect(() => {
+    setIsMemberOf(isMember(ens))
+    setMembers(info.members)
     WebWorker.processImages(dispatch, logoCache);
   }, [isInfoLoaded])
 
@@ -250,7 +251,7 @@ function InfoCard({ info, ens, discordIntegrationProps }) {
               <h1> {info.name} </h1>
               {(!isMemberOf && isConnected) && <button name="join" onClick={handleJoinOrg} type="button" className="subscribe-btn">Join</button>}
               {(isMemberOf && isConnected) && <button name="leave" onClick={handleLeaveOrg} type="button" className="subscribe-btn">Leave</button>}
-              <p> {info.members} members </p>
+              <p> {members} members </p>
               <a href={'//' + info.website} target="_blank">{info.website}</a>
             </>
           }
