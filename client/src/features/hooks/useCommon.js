@@ -7,12 +7,11 @@ import { setInstallableWidgets, setInstalledWidgets } from '../dashboard/dashboa
 import { populateOrganizations } from '../org-cards/org-cards-reducer';
 import { setIsTokenExpired } from '../wallet/wallet-reducer';
 import { showNotification } from '../notifications/notifications';
-import { auxillaryConnect, signMessage } from '../wallet/wallet';
 import useWallet from './useWallet';
 
 export default function useCommon() {
     const dispatch = useDispatch();
-    const { secure_sign } = useWallet();
+    const { secure_sign, walletConnect } = useWallet();
 
     const batchFetchDashboardData = async (ens, info) => {
         if (info.ens !== ens) {
@@ -44,7 +43,7 @@ export default function useCommon() {
                     showNotification('hint', 'hint', 'please connect your wallet')
 
                     // if wallet isn't connected, lets ask them to connect and retry
-                    let connect_res = await auxillaryConnect();
+                    let connect_res = await walletConnect();
                     if (connect_res) {
                         let sig_res = await secure_sign(connect_res);
                         if (sig_res) return authenticated_post(endpoint, body, sig_res)

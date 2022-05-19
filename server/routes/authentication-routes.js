@@ -28,7 +28,7 @@ const clean = (data) => {
 }
 
 const generate_access_token = (address) => {
-    return jwt.sign({ address: address }, JWT_TOKEN_SECRET, { expiresIn: 20 });
+    return jwt.sign({ address: address }, JWT_TOKEN_SECRET, { expiresIn: 1200 });
 }
 
 

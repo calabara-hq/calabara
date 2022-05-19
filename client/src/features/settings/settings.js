@@ -5,7 +5,6 @@ import BackButton from '../back-button/back-button'
 import axios from 'axios'
 import '../../css/settings.css'
 import '../../css/discord-add-bot.css'
-import { validAddress, erc20GetSymbolAndDecimal, erc721GetSymbol, auxillaryConnect } from '../wallet/wallet'
 import { showNotification } from '../notifications/notifications'
 import { selectConnectedAddress } from '../wallet/wallet-reducer'
 import { selectDashboardInfo } from '../dashboard/dashboard-info-reducer'
@@ -18,6 +17,7 @@ import useDashboardRules from '../hooks/useDashboardRules'
 import useDashboard from '../hooks/useDashboard'
 import useOrganization from '../hooks/useOrganization'
 import useCommon from '../hooks/useCommon'
+import useWallet from '../hooks/useWallet'
 
 export default function SettingsManager() {
     const [fieldsReady, setFieldsReady] = useState(false)
@@ -153,6 +153,7 @@ function OrganizationENSComponent({ standardProps }) {
     const walletAddress = useSelector(selectConnectedAddress);
     const isConnected = useSelector(selectConnectedAddress);
     const history = useHistory();
+    const { validAddress } = useWallet();
 
     useEffect(() => {
 
@@ -609,6 +610,7 @@ function ERC20gatekeeper({ setGatekeeperInnerProgress, fields, setFields }) {
     const [duplicateAddressError, setDuplicateAddressError] = useState(false);
     const [decimalError, setDecimalError] = useState(false);
     const [symbolError, setSymbolError] = useState(false);
+    const { validAddress, erc20GetSymbolAndDecimal } = useWallet();
 
 
     const [enableSave, setEnableSave] = useState(false)
@@ -774,6 +776,7 @@ function ERC721gatekeeper({ setGatekeeperInnerProgress, fields, setFields }) {
     const [addressError, setAddressError] = useState(false);
     const [symbolError, setSymbolError] = useState(false);
     const [duplicateAddressError, setDuplicateAddressError] = useState(false);
+    const { validAddress, erc721GetSymbol } = useWallet();
 
 
 
@@ -1240,6 +1243,8 @@ function SaveComponent({ standardProps, infoErrorController, adminErrorControlle
     const { populateDashboardRules } = useDashboardRules();
     const { updateDashboardInfo } = useDashboard();
     const { authenticated_post } = useCommon();
+    const { validAddress } = useWallet();
+
 
     const errorCheckInfo = async () => {
         if (fields.name == "") {

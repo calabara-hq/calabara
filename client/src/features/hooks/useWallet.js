@@ -142,8 +142,17 @@ export default function useWallet() {
         }
     }, [is_token_expired])
 
+    // fetch wallet address
+    const getAddress = async () => {
+        try {
+            var walletAddress = await web3.eth.getAccounts();
+            return (walletAddress[0])
+        } catch (e) {
+            return 'not connected'
+        }
+    }
 
-    async function validAddress(address) {
+    const validAddress = async (address) => {
         // if it's ens, convert it
         if (address.endsWith('.eth')) {
             address = await web3Infura.eth.ens.getAddress(address)
@@ -155,8 +164,6 @@ export default function useWallet() {
             if (e) return false
         }
     }
-
-
 
     async function signMessage(nonce) {
         let state = onboard.getState();
@@ -264,9 +271,17 @@ export default function useWallet() {
         walletSignMessage: async (walletAddress) => {
             return await secure_sign(walletAddress)
         },
+        getAddress: async () => {
+            return await getAddress()
+        },
+        validAddress: async (address) => {
+           return await validAddress(address)
+        },
         walletAddress,
         isConnected,
         connectBtnTxt,
+        isMoreExpanded,
+        setIsMoreExpanded
     }
 
 }

@@ -4,13 +4,13 @@ import '../../css/snapshot-analytics.css'
 import { useParams } from "react-router-dom"
 import { useSelector } from 'react-redux';
 import { Doughnut } from 'react-chartjs-2';
-import { auxillaryConnect } from '../wallet/wallet';
 import BackButton from '../back-button/back-button';
 
 import {
   selectConnectedBool,
   selectConnectedAddress,
 } from '../wallet/wallet-reducer';
+import useWallet from '../hooks/useWallet';
 
 
 
@@ -19,42 +19,37 @@ function Analytics() {
   const { ens } = useParams();
   const walletAddress = useSelector(selectConnectedAddress)
   const isConnected = useSelector(selectConnectedBool)
-  const [dataPulled, setDataPulled] = useState(false)
   const [missedVotes, setMissedVotes] = useState({ votes: [] })
   const [userParticipationPercentage, setUserParticipationPercentage] = useState(0)
   const [globalParticipationPercentage, setGlobalParticipationPercentage] = useState(0)
   const [pastFiveproposals, setPastFiveProposals] = useState([])
+  const { walletConnect } = useWallet();
 
-  alert('optimization here')
-  useEffect(() => {
-    if (!dataPulled && isConnected) {
-      setDataPulled(true)
-    }
-  }, [isConnected])
 
+  const calcMissedVotes = async (client) => {
+    const votes = await didAddressVote(client, ens, walletAddress);
+    setMissedVotes({ votes: votes })
+  }
+
+  const calcParticipation = async (client) => {
+    const percentage = await userParticipation(client, ens, walletAddress)
+    setUserParticipationPercentage(percentage)
+  }
+
+  const calcPreviousProposals = async (client) => {
+    const past5 = await getProposals(client, ens, 'closed', 5)
+    setPastFiveProposals(past5)
+  }
 
   useEffect(() => {
     (async () => {
-      if (dataPulled) {
-        
+      if (isConnected) {
         const client = createClient();
-        
-
-        const votes = await didAddressVote(client, ens, walletAddress);
-        
-        setMissedVotes({ votes: votes })
-        const percentage = await userParticipation(client, ens, walletAddress)
-        
-        setUserParticipationPercentage(percentage)
-
-        const past5 = await getProposals(client, ens, 'closed', 5)
-        
-        setPastFiveProposals(past5)
-
+        Promise.all([calcMissedVotes(client), calcParticipation(client), calcPreviousProposals(client)])
       }
 
     })();
-  }, [dataPulled])
+  }, [isConnected])
 
 
   return (
@@ -80,7 +75,7 @@ function Analytics() {
               <div className="new-proposal-message connect-wallet">
                 <p>Connect your wallet to view active proposals!</p>
               </div>
-              <button className="snapshot-connect-wallet" onClick={auxillaryConnect}>Connect Wallet</button>
+              <button className="snapshot-connect-wallet" onClick={walletConnect}>Connect Wallet</button>
             </>
           }
           {(missedVotes.votes.length === 0 && isConnected) &&

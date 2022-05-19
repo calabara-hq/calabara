@@ -2,8 +2,6 @@ import '../../css/wiki-display.css'
 import '../../css/wiki-editor/medium-editor.css'
 import '../../css/wiki-editor/default.css'
 import '../../css/wiki-editor/custom-style.css'
-import Wallet from '../wallet/wallet'
-import calabaraLogo from '../../img/calabara-logo.svg'
 import React, { useState, useEffect } from 'react'
 import { useHistory, useParams } from "react-router-dom"
 import axios from 'axios';
@@ -44,8 +42,6 @@ import useWiki from '../hooks/useWiki'
 
 export default function WikiDisplay({ mode }) {
   const { ens } = useParams();
-  const history = useHistory();
-  const dispatch = useDispatch();
   const wikiList = useSelector(selectWikiList)
   const info = useSelector(selectDashboardInfo)
   const isConnected = useSelector(selectConnectedBool)
