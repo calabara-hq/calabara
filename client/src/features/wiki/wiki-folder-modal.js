@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useReducer } from 'react';
-import Backdrop from '@mui/material/Backdrop';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
-import axios from 'axios'
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RuleSelect } from '../manage-widgets/gatekeeper-toggle';
@@ -12,9 +10,10 @@ import '../../css/wallet-modal.css'
 import Glyphicon from '@strongdm/glyphicon'
 
 
-import { selectWikiList, removeFromWikiList, renameWikiList, addToWikiList } from './wiki-reducer';
+import { selectWikiList, renameWikiList, addToWikiList } from './wiki-reducer';
 import { selectDashboardRules } from '../gatekeeper/gatekeeper-rules-reducer';
 import useCommon from '../hooks/useCommon';
+import useWiki from '../hooks/useWiki';
 
 const style = {
     position: 'absolute',
@@ -57,6 +56,7 @@ export default function WikiModal({ modalOpen, handleClose, groupID }) {
     const dispatch = useDispatch();
     const [appliedRules, setAppliedRules] = useReducer(reducer, {});
     const { authenticated_post } = useCommon();
+    const { renameWikiList } = useWiki();
 
     useEffect(() => {
 
@@ -107,14 +107,14 @@ export default function WikiModal({ modalOpen, handleClose, groupID }) {
                 // it's an update to existing folder
                 let res = await authenticated_post('/wiki/updateWikiGrouping', { groupID: groupID, ens: ens, groupingName: groupingName, gk_rules: appliedRules })
                 if (res) {
-                    dispatch(renameWikiList({
+                    renameWikiList({
                         group_id: groupID,
                         value: {
                             group_name: groupingName,
                             gk_rules: appliedRules,
                             list: wikiList[groupID].list
                         }
-                    }))
+                    })
                     handleClose({ type: "standard" });
 
                 }

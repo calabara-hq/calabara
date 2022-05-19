@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useReducer, useRef } from 'react'
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import calendarLogo from '../../img/calendar.svg'
 import snapshotLogo from '../../img/snapshot.svg'
 import wikiLogo from '../../img/wiki.svg'
-import axios from 'axios'
 import { useParams } from 'react-router-dom';
 import '../../css/manage-widgets.css'
 import '../../css/settings-buttons.css'
@@ -163,8 +162,6 @@ function WidgetSummary({ selected, setSettingsStep, setProgress, setTabHeader, s
   const installedWidgets = useSelector(selectInstalledWidgets)
   const { updateWidgets } = useWidgets();
   const { authenticated_post } = useCommon();
-  const dispatch = useDispatch();
-
   const { ens } = useParams();
 
   useEffect(() => {
@@ -267,7 +264,6 @@ function GatekeeperSettings({ selected, setSettingsStep, setTabHeader }) {
 
   const [ruleError, setRuleError] = useState('');
   const { ens } = useParams();
-  const dispatch = useDispatch();
   const { updateWidgetGatekeeper } = useWidgets();
   const { authenticated_post } = useCommon();
 

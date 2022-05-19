@@ -4,10 +4,7 @@ import styled from "styled-components";
 import { useParams, useHistory } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import useCommon from "../hooks/useCommon";
-
-import {
-  deleteWiki,
-} from '../wiki/wiki-reducer';
+import useWiki from "../hooks/useWiki";
 
 
 
@@ -31,11 +28,9 @@ const DragItem = styled.div`
 
 
 const ListItem = ({ item, index, setCurrentWikiId }) => {
-
-  const history = useHistory();
-  const dispatch = useDispatch();
   const { ens } = useParams();
   const { authenticated_post } = useCommon()
+  const { deleteWiki } = useWiki();
 
   const header = item.title;
 
@@ -49,9 +44,8 @@ const ListItem = ({ item, index, setCurrentWikiId }) => {
   const handleDelete = async (e) => {
     e.stopPropagation();
     let res = await authenticated_post('/wiki/deleteWiki/', { ens: ens, file_id: item.id });
-    console.log(res)
     if (res) {
-      dispatch(deleteWiki(item.grouping, index))
+      deleteWiki(item.grouping, index)
     }
 
   }

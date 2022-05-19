@@ -25,8 +25,6 @@ import {
 import {
   selectWikiList,
   selectWikiListOrganization,
-  removeFromWikiList,
-  populateInitialWikiList
 } from './wiki-reducer';
 
 import {
@@ -42,6 +40,7 @@ import {
 import useDashboardRules from '../hooks/useDashboardRules'
 import useGatekeeper from '../hooks/useGatekeeper'
 import useCommon from '../hooks/useCommon'
+import useWiki from '../hooks/useWiki'
 
 export default function WikiDisplay({ mode }) {
   const { ens } = useParams();
@@ -64,11 +63,12 @@ export default function WikiDisplay({ mode }) {
   const [groupID, setGroupID] = useState(null)
   const {applyDashboardRules} = useDashboardRules();
   const { batchFetchDashboardData, authenticated_post } = useCommon();
+  const { populateInitialWikiList, removeFromWikiList } = useWiki();
 
   useEffect(() => {
     // populate the dashboard info on pageload
     batchFetchDashboardData(ens, info)
-    dispatch(populateInitialWikiList(ens))
+    populateInitialWikiList(ens)
   }, [])
 
 
@@ -82,10 +82,10 @@ export default function WikiDisplay({ mode }) {
     else if (cleanup.type === 'delete') {
       let res = await authenticated_post('/wiki/deleteWikiGrouping', { ens: cleanup.ens, groupID: cleanup.groupID })
       if (res) {
-        setModalOpen(false)
-        dispatch(removeFromWikiList(cleanup.groupID));
+        setModalOpen(false);
+        removeFromWikiList(cleanup.groupID);
         setCurrentWikiId(-1);
-        setGroupID(null)
+        setGroupID(null);
       }
     }
   }

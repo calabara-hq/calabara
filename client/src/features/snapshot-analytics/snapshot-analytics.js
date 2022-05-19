@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { createClient, getProposals, didAddressVote, userParticipation } from '../../helpers/snapshot_api'
 import '../../css/snapshot-analytics.css'
 import { useParams } from "react-router-dom"
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Doughnut } from 'react-chartjs-2';
 import { auxillaryConnect } from '../wallet/wallet';
 import BackButton from '../back-button/back-button';

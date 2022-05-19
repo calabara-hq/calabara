@@ -9,7 +9,7 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import {
   selectWikiList,
-  updateWikiList,
+  setWikiList,
 } from '../wiki/wiki-reducer';
 import useCommon from "../hooks/useCommon";
 
@@ -80,7 +80,7 @@ function DragList({ setCurrentWikiId, editWikiGroupingClick, lists, setLists }) 
     );
 
     let res = await authenticated_post('/wiki/updateWikiLists', { ens: ens, file_id: result.draggableId, new_grouping: result.destination.droppableId })
-    if (res) dispatch(updateWikiList(listCopy));
+    if (res) dispatch(setWikiList(listCopy));
 
   };
 

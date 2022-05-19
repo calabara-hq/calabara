@@ -32,9 +32,7 @@ import useCommon from '../hooks/useCommon'
 
 export default function ManageWidgets() {
   const [functionality, setFunctionality] = useState(0)
-  const [saveVisible, setSaveVisible] = useState(false)
   const [tabHeader, setTabHeader] = useState('manage apps')
-  const dispatch = useDispatch();
   const history = useHistory();
   const { ens } = useParams();
 
