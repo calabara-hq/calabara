@@ -9,8 +9,9 @@ jobs:
   test:
 
     runs-on: ubuntu-latest
-    env:
-      working-directory: ./client/
+    defaults:
+      run:
+        working-directory: ./client
     strategy:
       matrix:
         node-version: [12.x, 14.x, 16.x]
