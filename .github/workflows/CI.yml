@@ -26,4 +26,6 @@ jobs:
         cache: 'npm'
         cache-dependency-path: './client/package-lock.json'
     - run: npm i
+      env: 
+        REACT_APP_INFURA_KEY: ${{secrets.REACT_APP_INFURA_KEY}}
     - run: npm run test
