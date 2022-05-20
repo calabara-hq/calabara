@@ -15,8 +15,8 @@ export default function useOrganization() {
         return result
     }
 
-    const deleteMembership = async (walletAddress, ens) => {
-        let res = await authenticated_post('/organizations/removeSubscription/', { address: walletAddress, ens: ens });
+    const deleteMembership = async (ens) => {
+        let res = await authenticated_post('/organizations/removeSubscription/', { ens: ens });
         if (res) {
             var newData = JSON.parse(JSON.stringify(memberOf))
             const toDelete = (el) => el == ens;
@@ -46,9 +46,9 @@ export default function useOrganization() {
         dispatch(populateMembership(subs.data))
     }
 
-    const addMembership = async (walletAddress, ens) => {
+    const addMembership = async (ens) => {
 
-        let res = await authenticated_post('/organizations/addSubscription/', { address: walletAddress, ens: ens });
+        let res = await authenticated_post('/organizations/addSubscription/', {ens: ens });
         if (res) {
             dispatch(join(ens))
             dispatch(increaseMemberCount)
@@ -67,8 +67,8 @@ export default function useOrganization() {
         isMember: (ens) => {
             return isMember(ens);
         },
-        deleteMembership: (walletAddress, ens) => {
-            deleteMembership(walletAddress, ens);
+        deleteMembership: (ens) => {
+            deleteMembership(ens);
         },
         deleteOrganization: (ens) => {
             deleteOrganization(ens);
@@ -76,8 +76,8 @@ export default function useOrganization() {
         populateInitialMembership: (walletAddress) => {
             populateInitialMembership(walletAddress);
         },
-        addMembership: (walletAddress, ens) => {
-            addMembership(walletAddress, ens)
+        addMembership: (ens) => {
+            addMembership(ens)
         },
         fetchUserMembership: (walletAddress, membershipPulled) => {
             fetchUserMembership(walletAddress, membershipPulled)

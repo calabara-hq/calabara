@@ -156,13 +156,13 @@ function InfoCard({ info, ens, discordIntegrationProps }) {
 
 
   function handleJoinOrg() {
-    addMembership(walletAddress, ens)
+    addMembership(ens)
     setMembers(members + 1);
     setIsMemberOf(true)
   }
 
   function handleLeaveOrg() {
-    deleteMembership(walletAddress, ens)
+    deleteMembership(ens)
     setMembers(members - 1);
     setIsMemberOf(false)
   }

@@ -44,7 +44,9 @@ organizations.get('/doesEnsExist/*', async function (req, res, next) {
 // post a new subscription
 organizations.post('/addSubscription', authenticateToken, async function (req, res, next) {
 
-    const { address, ens } = req.body;
+    const { ens } = req.body;
+    const address = req.user.address;
+
 
     await db.query('insert into subscriptions (address, subscription) values ($1, $2)', [address, ens]);
     await db.query('update organizations set members = members + 1 where ens = $1', [ens])
@@ -56,7 +58,9 @@ organizations.post('/addSubscription', authenticateToken, async function (req, r
 // remove a new subscription
 organizations.post('/removeSubscription', authenticateToken, async function (req, res, next) {
 
-    const { address, ens } = req.body;
+    const { ens } = req.body;
+    const address = req.user.address;
+
     await db.query('delete from subscriptions where address = $1 AND subscription = $2', [address, ens]);
     await db.query('update organizations set members = members - 1 where ens = $1', [ens])
     res.status(200);
