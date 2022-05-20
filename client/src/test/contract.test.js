@@ -47,6 +47,6 @@ describe('contract interactions', () => {
     it('ERC721 balanceOf', async () => {
         let res = await myComp.checkERC721Balance('0xedcc867bc8b5febd0459af17a6f134f41f422f0c', '0x79FCDEF22feeD20eDDacbB2587640e45491b757f')
         // bc i will always have at LEAST 1 mfer
-        expect(res).greaterThan(1)
+        expect(res).greaterThan(0)
     })
 })
