@@ -74,7 +74,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --watchAll",
+    "test": "react-scripts test --watchAll=false",
     "test:unit": "NODE_ENV=test mocha --require @babel/register --require src/test/helpers.js  --require src/test/dom.js --require ignore-styles 'src/**/*.test.js'",
     "test:unit:watch": "npm run test:unit -- --watch",
     "eject": "react-scripts eject"
