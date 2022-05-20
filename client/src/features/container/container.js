@@ -5,7 +5,7 @@ import Cards from '../org-cards/org-cards'
 import Dashboard from '../dashboard/dashboard'
 import Analytics from '../snapshot-analytics/snapshot-analytics'
 import WikiDisplay from '../wiki/wiki-display'
-import Events from '../calendar/calendar'
+import Events2 from '../calendar/calendar'
 import ReactEditor from '../wiki/wiki-edit'
 import SettingsManager from '../settings/settings'
 import ManageWidgets from '../manage-widgets/manage-widgets'
@@ -31,7 +31,7 @@ export default function Container() {
       </Route>
 
       <Route path="/:ens/calendar/:calendarId">
-        <Events />
+        <Events2 />
       </Route>
 
 
