@@ -10,7 +10,7 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      working-directory: ./client
+      working-directory: './client'
     strategy:
       matrix:
         node-version: [12.x, 14.x, 16.x]
@@ -22,6 +22,7 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
-
-    - run: npm ci
+        cache: 'npm'
+        cache-dependency-path: './client/package-lock.json'
+    - run: npm i
     - run: npm run test
