@@ -1,5 +1,4 @@
 import axios from 'axios'
-import React from 'react'
 
 // get 2 months before 
 Date.prototype.calcEnd = function() {
