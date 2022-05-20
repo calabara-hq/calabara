@@ -1,5 +1,4 @@
-[![Node.js CI](https://github.com/calabara-hq/calabara/actions/workflows/CI.yml/badge.svg)](https://github.com/calabara-hq/calabara/actions/workflows/CI.yml)
-
+[![tests](https://github.com/calabara-hq/calabara/actions/workflows/CI.yml/badge.svg)](https://github.com/calabara-hq/calabara/actions/workflows/CI.yml)
 
 ## Calabara
 
