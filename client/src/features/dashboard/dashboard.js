@@ -1,16 +1,13 @@
 import React, { useEffect, useState, createRef } from 'react'
 import { useHistory, useParams } from "react-router-dom"
-import axios from 'axios'
 import '../../css/dashboard.css'
 import * as WebWorker from '../../app/worker-client.js'
 import Glyphicon from '@strongdm/glyphicon'
 import calendarLogo from '../../img/calendar.svg'
 import snapshotLogo from '../../img/snapshot.svg'
 import wikiLogo from '../../img/wiki.svg'
-import { batchFetchDashboardData, fetchUserMembership } from '../common/common'
 import { showNotification } from '../notifications/notifications'
-
-
+import useDiscordAuth from '../hooks/useDiscordAuth'
 //redux
 import { useSelector, useDispatch } from 'react-redux';
 
@@ -21,35 +18,29 @@ import {
 } from '../wallet/wallet-reducer';
 
 import {
-  isMember,
-  deleteMembership,
-  addMembership,
   selectMemberOf,
   selectLogoCache,
   selectMembershipPulled,
 } from '../org-cards/org-cards-reducer';
 
 import {
-  populateVisibleWidgets,
   selectVisibleWidgets,
-  updateWidgets,
 } from './dashboard-widgets-reducer';
 
 import {
   selectDashboardInfo,
-  populateDashboardInfo,
-  increaseMemberCount,
-  decreaseMemberCount,
 } from './dashboard-info-reducer'
 
 import {
   selectDashboardRules,
-  applyDashboardRules,
   selectDashboardRuleResults,
 } from '../gatekeeper/gatekeeper-rules-reducer'
 
 import { selectDiscordId, setDiscordId } from '../user/user-reducer';
-import { FieldsOnCorrectTypeRule } from 'graphql'
+import useDashboardRules from '../hooks/useDashboardRules'
+import useWidgets from '../hooks/useWidgets'
+import useOrganization from '../hooks/useOrganization'
+import useCommon from '../hooks/useCommon'
 
 
 export default function Dashboard() {
@@ -64,10 +55,24 @@ export default function Dashboard() {
   const membership = useSelector(selectMemberOf)
   const { ens } = useParams();
   const dispatch = useDispatch();
-
+  const { applyDashboardRules } = useDashboardRules();
+  const { populateVisibleWidgets } = useWidgets();
+  const { batchFetchDashboardData } = useCommon();
+  const { fetchUserMembership } = useOrganization();
   const [gatekeeperResult, setGatekeeperResult] = useState(false)
   const [isAdmin, setIsAdmin] = useState(false)
+  const [userAuth, setUserAuth] = useState(null)
 
+  const { onOpen: userOnOpen, authorization: userAuthorization, error: userError, isAuthenticating: userIsAuthenticating } = useDiscordAuth("identify", userAuth, setUserAuth)
+
+  let discordIntegrationProps = {
+    userOnOpen,
+    userAuthorization,
+    userError,
+    userIsAuthenticating,
+    userAuth,
+    setUserAuth,
+  }
 
   async function checkAdmin(walletAddress) {
     if (info.ens == ens) {
@@ -82,34 +87,36 @@ export default function Dashboard() {
     }
   }
 
+
   useEffect(() => {
-    batchFetchDashboardData(ens, info, dispatch);
+    batchFetchDashboardData(ens, info);
   }, [info])
 
 
   useEffect(() => {
     if (walletAddress) {
       checkAdmin(walletAddress)
-      fetchUserMembership(walletAddress, membershipPulled, dispatch)
+      fetchUserMembership(walletAddress, membershipPulled)
     }
-  }, [walletAddress, info])
+  }, [isConnected, walletAddress, info])
 
 
   useEffect(() => {
     // if there are widgets installed, we need to test the rules with the connected wallet.
-    dispatch(applyDashboardRules(walletAddress))
+    applyDashboardRules(walletAddress)
   }, [walletAddress, discordId, gatekeeperRules])
 
 
   useEffect(() => {
-    dispatch(populateVisibleWidgets())
-  }, [gatekeeperRuleResults])
+    populateVisibleWidgets(isAdmin)
+  }, [gatekeeperRuleResults, isAdmin])
 
   useEffect(() => { }, [isAdmin])
 
+
   return (
     <div className="dashboard-wrapper">
-      {info && <InfoCard ens={ens} info={info} membership={membership} />}
+      {info && <InfoCard ens={ens} info={info} membership={membership} discordIntegrationProps={discordIntegrationProps} />}
       <section className="widget-cards">
 
         {visibleWidgets.map((widget, idx) => {
@@ -125,29 +132,39 @@ export default function Dashboard() {
 }
 
 
-function InfoCard({ info, ens }) {
-  const isConnected = useSelector(selectConnectedBool)
-  const walletAddress = useSelector(selectConnectedAddress)
-  const logoCache = useSelector(selectLogoCache)
+function InfoCard({ info, ens, discordIntegrationProps }) {
+  const isConnected = useSelector(selectConnectedBool);
+  const walletAddress = useSelector(selectConnectedAddress);
+  const logoCache = useSelector(selectLogoCache);
   const dashboardRules = useSelector(selectDashboardRules);
-  const discord_id = useSelector(selectDiscordId)
+  const discord_id = useSelector(selectDiscordId);
   const [promptDiscordLink, setPromptDiscordLink] = useState(false);
+  const { deleteMembership, addMembership, isMember } = useOrganization();
   const history = useHistory();
   const dispatch = useDispatch();
-  const isMemberOf = dispatch(isMember(ens))
-  const [isInfoLoaded, setIsInfoLoaded] = useState(false)
+  const [members, setMembers] = useState(0);
+  const [isMemberOf, setIsMemberOf] = useState(false);
+  const [isInfoLoaded, setIsInfoLoaded] = useState(false);
   const imgRef = createRef(null);
+  const { authenticated_post } = useCommon();
 
-  const [logo, setLogo] = useState(info.logo)
+
+  let {
+    userOnOpen,
+    userAuth,
+  } = discordIntegrationProps
+
 
   function handleJoinOrg() {
-    dispatch(addMembership(walletAddress, ens))
-    dispatch(increaseMemberCount())
+    addMembership(ens)
+    setMembers(members + 1);
+    setIsMemberOf(true)
   }
 
   function handleLeaveOrg() {
-    dispatch(deleteMembership(walletAddress, ens))
-    dispatch(decreaseMemberCount())
+    deleteMembership(ens)
+    setMembers(members - 1);
+    setIsMemberOf(false)
   }
 
   function handleSettingsOpen() {
@@ -167,13 +184,15 @@ function InfoCard({ info, ens }) {
 
 
   useEffect(() => {
+    setIsMemberOf(isMember(ens))
+    setMembers(info.members)
     WebWorker.processImages(dispatch, logoCache);
   }, [isInfoLoaded])
 
 
   useEffect(() => {
     if (info.logoBlob && imgRef.current != null) {
-      console.log('WE ARE UPDATING SOMETHING')
+
       WebWorker.updateLogo(dispatch, info.logo, info.logoBlob)
     }
   }, [info.logoBlob, imgRef])
@@ -182,46 +201,43 @@ function InfoCard({ info, ens }) {
 
 
   useEffect(() => {
+    let promptDiscord = false
     Object.keys(dashboardRules).map((key) => {
       if (dashboardRules[key].gatekeeperType === 'discord') {
         if (!discord_id) {
-          setPromptDiscordLink(isConnected)
+          promptDiscord = isConnected;
         }
         else if (discord_id && isConnected) {
-          setPromptDiscordLink(false)
+          promptDiscord = false;
         }
       }
     })
+    setPromptDiscordLink(promptDiscord)
   }, [dashboardRules, discord_id, isConnected])
 
 
 
+  useEffect(() => {
+    (async () => {
+      if (!userAuth) return
+      console.log(userAuth)
+      if (isConnected) {
+        let res = await authenticated_post('/discord/addUserDiscord', { discord_id: userAuth.userId });
+        if (res) {
+          dispatch(setDiscordId(userAuth.userId))
+          return
+        }
+      }
 
+    })();
 
+  }, [userAuth])
   // if a users wallet is connected, check for a discord id in the server. If it's not there and 
   // there is a discord rule for this org, prompt them to link their discord acc.
 
 
   const linkDiscord = () => {
-    let popout;
-    if (process.env.NODE_ENV === 'development') {
-      popout = window.open(`https://discord.com/api/oauth2/authorize?client_id=895719351406190662&redirect_uri=https%3A%2F%2Flocalhost%3A3000%2Foauth%2Fdiscord&response_type=code&scope=identify&state=${walletAddress},user,${ens}`, 'popUpWindow', 'height=700,width=600,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes')
-    }
-
-    else if (process.env.NODE_ENV === 'production') {
-      popout = window.open(`https://discord.com/api/oauth2/authorize?client_id=895719351406190662&redirect_uri=https%3A%2F%2Fcalabara.com%2Foauth%2Fdiscord&response_type=code&scope=identify&state=${walletAddress},user,${ens}`, 'popUpWindow', 'height=700,width=600,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes')
-
-    }
-
-    var pollTimer = window.setInterval(async function () {
-      if (popout.closed !== false) {
-        window.clearInterval(pollTimer);
-        let isDiscordLinked = await axios.post('/discord/getUserDiscord', { walletAddress: walletAddress })
-
-        if (isDiscordLinked.data) dispatch(setDiscordId(isDiscordLinked.data))
-
-      }
-    }, 1000);
+    return userOnOpen();
   }
 
   return (
@@ -235,7 +251,7 @@ function InfoCard({ info, ens }) {
               <h1> {info.name} </h1>
               {(!isMemberOf && isConnected) && <button name="join" onClick={handleJoinOrg} type="button" className="subscribe-btn">Join</button>}
               {(isMemberOf && isConnected) && <button name="leave" onClick={handleLeaveOrg} type="button" className="subscribe-btn">Leave</button>}
-              <p> {info.members} members </p>
+              <p> {members} members </p>
               <a href={'//' + info.website} target="_blank">{info.website}</a>
             </>
           }
@@ -251,7 +267,6 @@ function InfoCard({ info, ens }) {
         </div>
       }
     </div>
-
   )
 
 }
@@ -284,7 +299,8 @@ export function WidgetCard({ gatekeeperPass, orgInfo, widget, btnState, setBtnSt
 
   const { name, link, widget_logo, metadata, gatekeeper_enabled, notify } = widget;
   const [hasNotification, setHasNotification] = useState(false)
-
+  const { updateWidgets } = useWidgets();
+  const { authenticated_post } = useCommon();
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -306,8 +322,8 @@ export function WidgetCard({ gatekeeperPass, orgInfo, widget, btnState, setBtnSt
   }
 
   async function handleDeleteWidget() {
-    var request = await axios.post('/removeWidget', { ens: ens, name: name })
-    dispatch(updateWidgets(0, widget));
+    let res = await authenticated_post('/dashboard/removeWidget', { ens: ens, name: name })
+    if (res) updateWidgets(0, widget);
 
   }
 

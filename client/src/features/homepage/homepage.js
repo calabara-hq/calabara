@@ -8,7 +8,6 @@ import calendar_img from '../../img/calendar.png';
 import docs_img from '../../img/docs.png';
 import snapshot_img from '../../img/snapshot.png';
 import shadowLogo from '../../img/3D-logo.svg'
-import blueprint from '../../img/blueprint.png'
 import React, { useState, useEffect } from 'react'
 
 

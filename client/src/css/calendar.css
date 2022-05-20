@@ -1,3 +1,8 @@
+@keyframes cardseq{
+  100% {opacity: 1;}
+}
+
+
 .calendarContainer{
   width: 95vw;
   margin: 0 auto;
@@ -5,27 +10,8 @@
   border: 2px solid white;
   padding: 10px;
   border-radius: 20px;
-  height: 90vh;
-}
+  height: 80vh;
+  opacity: 0;
+  animation: cardseq 0.5s forwards;
 
-.rbc-calendar{
-  max-height: 85vh;
-}
-
-.rbc-event{
-  background-color: rgb(94, 177, 126) !important;
-  border: 2px solid rgb(94, 177, 126) !important;
-}
-
-
-
-.rbc-current-time-indicator{
-  background-color: blue !important;
-  height: 3px !important;
-}
-
-.rbc-btn-group button{
-  border: 2px solid #ccc !important;
-  margin: 3px !important;
-  border-radius: 10px !important;
 }

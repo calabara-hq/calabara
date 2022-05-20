@@ -81,3 +81,20 @@
     color: lightcoral;
     
 }
+
+.add-discord-bot-btn{
+    margin-left: auto;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    padding: 5px 25px 5px 25px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    background-color: rgba(26, 188, 156, 0.3);
+    color: rgb(26, 188, 156);
+}
+  
+  .add-discord-bot-btn:hover {
+    background-color: rgba(26, 188, 156, 0.2);
+  }
+  

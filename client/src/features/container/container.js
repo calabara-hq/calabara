@@ -7,7 +7,6 @@ import Analytics from '../snapshot-analytics/snapshot-analytics'
 import WikiDisplay from '../wiki/wiki-display'
 import Events from '../calendar/calendar'
 import ReactEditor from '../wiki/wiki-edit'
-import Settings from '../settings/settings'
 import SettingsManager from '../settings/settings'
 import ManageWidgets from '../manage-widgets/manage-widgets'
 export default function Container() {
@@ -36,7 +35,7 @@ export default function Container() {
       </Route>
 
 
-      <Route path="/:ens/docs">
+      <Route path="/:ens/docs/">
         <WikiDisplay />
       </Route>
 

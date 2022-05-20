@@ -2,7 +2,7 @@ import '../../css/navbar.css'
 import Wallet from '../wallet/wallet'
 import calabaraLogo from '../../img/calabara-logo.svg'
 import React from 'react'
-import { useHistory, useParams } from "react-router-dom"
+import { useHistory } from "react-router-dom"
 
 
 function Nav({homepage}) {

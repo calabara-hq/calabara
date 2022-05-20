@@ -4,15 +4,20 @@ import { useHistory, useParams } from 'react-router-dom'
 import BackButton from '../back-button/back-button'
 import axios from 'axios'
 import '../../css/settings.css'
-import { signTransaction, validAddress, erc20GetSymbolAndDecimal, erc721GetSymbol } from '../wallet/wallet'
+import '../../css/discord-add-bot.css'
 import { showNotification } from '../notifications/notifications'
 import { selectConnectedAddress } from '../wallet/wallet-reducer'
-import { populateDashboardInfo, selectDashboardInfo, updateDashboardInfo } from '../dashboard/dashboard-info-reducer'
-import { populateDashboardRules, selectDashboardRules } from '../gatekeeper/gatekeeper-rules-reducer'
-import { deleteOrganization, addOrganization, selectLogoCache, populateLogoCache } from '../org-cards/org-cards-reducer'
-import * as WebWorker from '../../app/worker-client';
+import { selectDashboardInfo } from '../dashboard/dashboard-info-reducer'
+import { selectDashboardRules } from '../gatekeeper/gatekeeper-rules-reducer'
+import { addOrganization, selectLogoCache } from '../org-cards/org-cards-reducer'
 import Glyphicon from '@strongdm/glyphicon'
 import DeleteGkRuleModal from './delete-gk-rule-modal'
+import { useDiscordAuth } from '../hooks/useDiscordAuth'
+import useDashboardRules from '../hooks/useDashboardRules'
+import useDashboard from '../hooks/useDashboard'
+import useOrganization from '../hooks/useOrganization'
+import useCommon from '../hooks/useCommon'
+import useWallet from '../hooks/useWallet'
 
 export default function SettingsManager() {
     const [fieldsReady, setFieldsReady] = useState(false)
@@ -34,13 +39,11 @@ export default function SettingsManager() {
         {}
     )
 
-    const lockedAdminAddresses = dashboardInfo.addresses || [];
 
 
     const standardProps = {
         fields,
         setFields,
-        lockedAdminAddresses
     }
 
     const infoErrorController = {
@@ -90,7 +93,7 @@ export default function SettingsManager() {
     }, [])
     return (
         <>
-            <BackButton link={fields.ens != '' ? 'dashboard' : '/explore'} text={"back"} />
+            <BackButton link={ens != 'new' ? 'dashboard' : '/explore'} text={"back"} />
             <div className="settings-manager">
                 {fieldsReady &&
                     <>
@@ -150,6 +153,7 @@ function OrganizationENSComponent({ standardProps }) {
     const walletAddress = useSelector(selectConnectedAddress);
     const isConnected = useSelector(selectConnectedAddress);
     const history = useHistory();
+    const { validAddress } = useWallet();
 
     useEffect(() => {
 
@@ -168,7 +172,7 @@ function OrganizationENSComponent({ standardProps }) {
                 }
                 else {
                     // check if this ens already exists in the system
-                    const doesExist = await axios.get('/doesEnsExist/' + ens)
+                    const doesExist = await axios.get('/organizations/doesEnsExist/' + ens)
                     if (doesExist.data) {
                         // already exists. set error msg
                         setErrorMsg({ error: true, msg: "A dashboard with this ens already exists" })
@@ -201,7 +205,7 @@ function OrganizationENSComponent({ standardProps }) {
         // check for beta whitelist
 
 
-        const wl_res = await axios.post('/valid_wl', { address: walletAddress })
+        const wl_res = await axios.post('/user/valid_wl', { address: walletAddress })
 
         if (wl_res.data == false) {
             setResolvedAddress('')
@@ -238,7 +242,7 @@ function OrganizationENSComponent({ standardProps }) {
 }
 
 function OrganizationInfoComponent({ standardProps, hasImageChanged, setHasImageChanged, infoErrorController }) {
-    const { fields, setFields, lockedAdminAddresses } = standardProps
+    const { fields, setFields } = standardProps
     const { nameErrorMsg, setNameErrorMsg, websiteErrorMsg, setWebsiteErrorMsg, infoRef } = infoErrorController;
     const imageUploader = useRef(null);
     const walletAddress = useSelector(selectConnectedAddress);
@@ -248,7 +252,8 @@ function OrganizationInfoComponent({ standardProps, hasImageChanged, setHasImage
     const logoCache = useSelector(selectLogoCache);
     const [logo, setLogo] = useState(logoCache[fields.logo])
     const [logoPath, setLogoPath] = useState(fields.logo);
-
+    const { deleteOrganization } = useOrganization();
+    const { authenticated_post } = useCommon();
 
 
     const updateName = (e) => {
@@ -287,10 +292,10 @@ function OrganizationInfoComponent({ standardProps, hasImageChanged, setHasImage
 
             const reader = new FileReader();
             reader.onload = (e) => {
-                console.log(e.target.result)
+
                 const blob = b64toBlob(e.target.result);
                 const blobUrl = URL.createObjectURL(blob);
-                console.log(blobUrl)
+
                 setFields({ logo: e.target.result, logoPath: fields.logo, logoBlob: blobUrl })
                 setLogo(blobUrl)
             }
@@ -300,41 +305,17 @@ function OrganizationInfoComponent({ standardProps, hasImageChanged, setHasImage
     }
 
 
+
     const handleDeleteOrganization = async () => {
-        var result = await signTransaction(walletAddress, { mode: 'delete' }, lockedAdminAddresses)
-        switch (result) {
-            case 0:
-                showNotification('error', 'error', 'user cancelled signature request');
-                break;
-            case 1:
-                showNotification('error', 'error', 'metamask error');
-                break;
-            case 2:
-                showNotification('error', 'error', 'signature request rejected. Wallet is not an organization admin');
-                break;
-            case 3:
-                dispatch(deleteOrganization(fields.ens));
-                showNotification('success', 'success', 'organization successfully deleted')
-                history.push('/explore')
-                break;
+
+        let deleteResult = await authenticated_post('/settings/deleteOrganization', { ens: fields.ens });
+        if (deleteResult) {
+            deleteOrganization(fields.ens);
+            showNotification('success', 'success', 'organization successfully deleted')
+            history.push('/explore')
         }
     }
 
-    /*
-        useEffect(() => {
-            if (ens !== 'new' && !hasImageChanged && fields.logo) {
-                WebWorker.settingsProcessLogo(dispatch, logoCache).then(result => {
-                    const reader = new FileReader();
-                    reader.onload = () => {
-                        let base64data = reader.result;
-                        setFields({ logo: base64data })
-                    }
-                    reader.readAsDataURL(result);
-                    setHasImageChanged(true)
-                })
-            }
-        }, [fields.logo])
-    */
 
     return (
         <div className="org-profile-tab" ref={infoRef}>
@@ -454,13 +435,38 @@ function AdminAddressInput({ addressErrors, parentAddress, index, updateElementI
 }
 
 function OrganizationGatekeeperComponent({ standardProps }) {
-    const { fields, setFields, lockedAdminAddresses } = standardProps;
+    const { fields, setFields } = standardProps;
     const [gatekeeperInnerProgress, setGatekeeperInnerProgress] = useState(0);
-    const existingRules = useSelector(selectDashboardRules);
+    const existingRules = Object.keys(useSelector(selectDashboardRules));
     const [addGatekeeperOptionClick, setAddGatekeeperOptionClick] = useState('none')
     const [doesDiscordExist, setDoesDiscordExist] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
     const [deleteModalIndex, setDeleteModalIndex] = useState(null);
+    const [selectedServer, setSelectedServer] = useState(null);
+
+    const [botAuth, setBotAuth] = useState(null)
+    const [userAuth, setUserAuth] = useState(null)
+
+    const { onOpen: userOnOpen, authorization: userAuthorization, error: userError, isAuthenticating: userIsAuthenticating } = useDiscordAuth("identify", userAuth, setUserAuth)
+    const { onOpen: botOnOpen, authorization: botAuthorization, error: botError, isAuthenticating: botIsAuthenticating } = useDiscordAuth('bot', botAuth, setBotAuth, selectedServer)
+
+
+    let discordIntegrationProps = {
+        userOnOpen,
+        userAuthorization,
+        userError,
+        userIsAuthenticating,
+        botOnOpen,
+        botAuthorization,
+        botError,
+        botIsAuthenticating,
+        userAuth,
+        setUserAuth,
+        botAuth,
+        setBotAuth,
+        selectedServer,
+        setSelectedServer
+    }
 
     useEffect(() => {
         fields.gatekeeper.rules.map((el) => {
@@ -489,7 +495,7 @@ function OrganizationGatekeeperComponent({ standardProps }) {
         if (existingRules[array_index] != null) {
             // rule exists, need to keep track of the rule we want to delete
             gatekeeperCopy.splice(array_index, 1)
-            setFields({ gatekeeper: { rules: gatekeeperCopy, rulesToDelete: fields.gatekeeper.rulesToDelete.concat(array_index) } })
+            setFields({ gatekeeper: { rules: gatekeeperCopy, rulesToDelete: fields.gatekeeper.rulesToDelete.concat(existingRules[array_index]) } })
         }
 
         else {
@@ -561,7 +567,7 @@ function OrganizationGatekeeperComponent({ standardProps }) {
                 </>
             }
             {gatekeeperInnerProgress === 1 &&
-                <GatekeeperOptions setGatekeeperInnerProgress={setGatekeeperInnerProgress} standardProps={standardProps} addGatekeeperOptionClick={addGatekeeperOptionClick} />
+                <GatekeeperOptions discordIntegrationProps={discordIntegrationProps} setGatekeeperInnerProgress={setGatekeeperInnerProgress} standardProps={standardProps} addGatekeeperOptionClick={addGatekeeperOptionClick} />
             }
 
         </div>
@@ -569,7 +575,7 @@ function OrganizationGatekeeperComponent({ standardProps }) {
 }
 
 
-function GatekeeperOptions({ setGatekeeperInnerProgress, standardProps, addGatekeeperOptionClick }) {
+function GatekeeperOptions({ setGatekeeperInnerProgress, standardProps, addGatekeeperOptionClick, discordIntegrationProps }) {
     const { fields, setFields } = standardProps
     const [gatekeeperOptionClick, setGatekeeperOptionClick] = useState('none')
 
@@ -579,13 +585,13 @@ function GatekeeperOptions({ setGatekeeperInnerProgress, standardProps, addGatek
     }
 
     return (
-        <div className="org-gatekeeper-tab">
+        <div className="org-gatekeeper-options">
             {addGatekeeperOptionClick == 'erc20' &&
                 <ERC20gatekeeper setGatekeeperInnerProgress={setGatekeeperInnerProgress} fields={fields} setFields={setFields} />
             }
 
             {addGatekeeperOptionClick == 'discord-roles' &&
-                <DiscordRoleGatekeeper setGatekeeperInnerProgress={setGatekeeperInnerProgress} fields={fields} setFields={setFields} />
+                <DiscordRoleGatekeeper setGatekeeperInnerProgress={setGatekeeperInnerProgress} fields={fields} setFields={setFields} discordIntegrationProps={discordIntegrationProps} />
             }
 
             {addGatekeeperOptionClick == 'erc721' &&
@@ -604,6 +610,7 @@ function ERC20gatekeeper({ setGatekeeperInnerProgress, fields, setFields }) {
     const [duplicateAddressError, setDuplicateAddressError] = useState(false);
     const [decimalError, setDecimalError] = useState(false);
     const [symbolError, setSymbolError] = useState(false);
+    const { validAddress, erc20GetSymbolAndDecimal } = useWallet();
 
 
     const [enableSave, setEnableSave] = useState(false)
@@ -712,52 +719,52 @@ function ERC20gatekeeper({ setGatekeeperInnerProgress, fields, setFields }) {
     }, [gatekeeperAddress])
 
     return (
-
         <>
-            <h3> erc-20 balanceOf</h3>
-            <div className="gatekeeper-address-input">
-                <p>Contract Address </p>
-                <input className={`${addressError || duplicateAddressError ? "error" : null}`} value={gatekeeperAddress} onChange={handleGatekeeperAddressChange} type="text" />
-                {addressError &&
-                    <div className="tab-message error">
-                        <p>This doesn't look like a valid contract address</p>
-                    </div>
-                }
-                {duplicateAddressError &&
-                    <div className="tab-message error">
-                        <p>Rule for this contract already exists</p>
-                    </div>
-                }
-            </div>
-
-            <div className="gatekeeper-symbol-decimal-input">
-                <div>
-                    <p>Symbol</p>
-                    <input value={gatekeeperSymbol} onChange={handleGatekeeperSymbolChange} type="text" />
-                    {symbolError &&
+            <div>
+                <h3> erc-20 balanceOf</h3>
+                <div className="gatekeeper-address-input">
+                    <p>Contract Address </p>
+                    <input className={`${addressError || duplicateAddressError ? "error" : null}`} value={gatekeeperAddress} onChange={handleGatekeeperAddressChange} type="text" />
+                    {addressError &&
                         <div className="tab-message error">
-                            <p>Please enter a symbol</p>
+                            <p>This doesn't look like a valid contract address</p>
+                        </div>
+                    }
+                    {duplicateAddressError &&
+                        <div className="tab-message error">
+                            <p>Rule for this contract already exists</p>
                         </div>
                     }
                 </div>
 
-                <div>
-                    <p>Decimal </p>
-                    <input value={gatekeeperDecimal} onChange={handleGatekeeperDecimalChange} type="text" />
-                    {decimalError &&
-                        <div className="tab-message error">
-                            <p>Please enter a decimal</p>
-                        </div>
-                    }
-                </div>
-            </div>
+                <div className="gatekeeper-symbol-decimal-input">
+                    <div>
+                        <p>Symbol</p>
+                        <input value={gatekeeperSymbol} onChange={handleGatekeeperSymbolChange} type="text" />
+                        {symbolError &&
+                            <div className="tab-message error">
+                                <p>Please enter a symbol</p>
+                            </div>
+                        }
+                    </div>
 
+                    <div>
+                        <p>Decimal </p>
+                        <input value={gatekeeperDecimal} onChange={handleGatekeeperDecimalChange} type="text" />
+                        {decimalError &&
+                            <div className="tab-message error">
+                                <p>Please enter a decimal</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+            </div>
 
             <div className="gk-detail-buttons">
                 <button className="gk-rule-cancel" onClick={() => { setGatekeeperInnerProgress(0) }}>cancel</button>
                 <button className="gk-rule-save" disabled={!enableSave} onClick={handleSave}>save</button>
             </div>
-
         </>
     )
 }
@@ -769,6 +776,7 @@ function ERC721gatekeeper({ setGatekeeperInnerProgress, fields, setFields }) {
     const [addressError, setAddressError] = useState(false);
     const [symbolError, setSymbolError] = useState(false);
     const [duplicateAddressError, setDuplicateAddressError] = useState(false);
+    const { validAddress, erc721GetSymbol } = useWallet();
 
 
 
@@ -864,35 +872,37 @@ function ERC721gatekeeper({ setGatekeeperInnerProgress, fields, setFields }) {
     return (
 
         <>
-            <h3> erc-721 balanceOf</h3>
-            <div className="gatekeeper-address-input">
-                <p>Contract Address </p>
-                <input value={gatekeeperAddress} onChange={handleGatekeeperAddressChange} type="text" />
-                {addressError &&
-                    <div className="tab-message error">
-                        <p>This doesn't look like a valid contract address</p>
-                    </div>
-                }
-                {duplicateAddressError &&
-                    <div className="tab-message error">
-                        <p>Rule for this contract already exists</p>
-                    </div>
-                }
-            </div>
-
-            <div className="gatekeeper-symbol-decimal-input">
-                <div>
-                    <p>Symbol</p>
-                    <input value={gatekeeperSymbol} onChange={handleGatekeeperSymbolChange} type="text" />
-                    {symbolError &&
+            <div>
+                <h3> erc-721 balanceOf</h3>
+                <div className="gatekeeper-address-input">
+                    <p>Contract Address </p>
+                    <input value={gatekeeperAddress} onChange={handleGatekeeperAddressChange} type="text" />
+                    {addressError &&
                         <div className="tab-message error">
-                            <p>Please enter a symbol</p>
+                            <p>This doesn't look like a valid contract address</p>
+                        </div>
+                    }
+                    {duplicateAddressError &&
+                        <div className="tab-message error">
+                            <p>Rule for this contract already exists</p>
                         </div>
                     }
                 </div>
 
-                <div></div>
+                <div className="gatekeeper-symbol-decimal-input">
+                    <div>
+                        <p>Symbol</p>
+                        <input value={gatekeeperSymbol} onChange={handleGatekeeperSymbolChange} type="text" />
+                        {symbolError &&
+                            <div className="tab-message error">
+                                <p>Please enter a symbol</p>
+                            </div>
+                        }
+                    </div>
 
+                    <div></div>
+
+                </div>
             </div>
 
             <div className="gk-detail-buttons">
@@ -905,15 +915,35 @@ function ERC721gatekeeper({ setGatekeeperInnerProgress, fields, setFields }) {
 
 }
 
-function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }) {
-    const [guildId, setGuildId] = useState('');
-    const [guildName, setGuildName] = useState('');
+function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields, discordIntegrationProps }) {
+    const [guildId, setGuildId] = useState(null);
+    const [guildName, setGuildName] = useState(null);
+    const [userDiscordId, setUserDiscordId] = useState(null)
     const [discordRuleState, setDiscordRuleState] = useState('')
     const [guildRoles, setGuildRoles] = useState('');
-    const [popoutFired, setPopoutFired] = useState(false);
     const [isBotVerified, setIsBotVerified] = useState(false);
     const [botFailureMessage, setBotFailureMessage] = useState('');
-    const walletAddress = useSelector(selectConnectedAddress)
+    const [authTimerActive, setAuthTimerActive] = useState(false);
+    const [discordIntegrationStep, setDiscordIntegrationStep] = useState(0);
+    const [userServers, setUserServers] = useState(null)
+
+    let {
+        userOnOpen,
+        userAuthorization,
+        userError,
+        userIsAuthenticating,
+        botOnOpen,
+        botAuthorization,
+        botError,
+        botIsAuthenticating,
+        userAuth,
+        setUserAuth,
+        botAuth,
+        setBotAuth,
+        selectedServer,
+        setSelectedServer
+    } = discordIntegrationProps
+
 
     const ens = fields.ens;
 
@@ -927,45 +957,87 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
     }, [])
 
 
-    const fetchGuildInfo = async () => {
-        const resp = await axios.post('/discord/getGuildProperties', { ens: ens });
-        if (resp.data === 'guild does not exist') {
-            setDiscordRuleState('no rule')
-            return
-        }
-        else {
-            setDiscordRuleState('rule exists')
 
+    useEffect(() => {
+        (async () => {
+            if (!userAuth) {
+                if (authTimerActive) {
+                    setDiscordIntegrationStep(0)
+                    setAuthTimerActive(false);
+                    return
+                }
+            }
+            else {
+                console.log('running again')
+                let result = await axios.post('/discord/getUserServers', { token_type: userAuth.token_type, access_token: userAuth.access_token })
+                console.log(result.data)
+                setUserServers(result.data)
+                setUserDiscordId(userAuth.userId)
+                setDiscordRuleState('configure rule')
+                setAuthTimerActive(true);
+                setDiscordIntegrationStep(1)
+                return
+            }
+        })();
+
+    }, [userAuth])
+
+
+    useEffect(() => {
+        (async () => {
+            if (botAuth) {
+                let guild_info = await verifyBot(botAuth.guild.id)
+                if (guild_info) {
+                    addDiscordRule(guild_info);
+                    setDiscordIntegrationStep(0)
+                }
+            }
+        })();
+
+    }, [botAuth])
+
+
+    // parse gk rules and see if we have a guild_id already
+    const getGuildId = async () => {
+        let guild_id = fields.gatekeeper.rules.map((rule) => {
+            if (rule.gatekeeperType === 'discord') return rule.guildId
+        })
+
+
+        if (guild_id[0]) return guild_id[0]
+        return null
+    }
+
+
+    const fetchGuildInfo = async () => {
+        // only run this if user hasn't updated discord server data
+
+        let guild_id = await getGuildId();
+        if (guild_id) {
+            const resp = await axios.post('/discord/verifyBotAdded', { guild_id: guild_id });
+
+            setDiscordRuleState('configure rule')
             setGuildId(resp.data.id)
             setGuildName(resp.data.name);
             setGuildRoles(resp.data.roles);
             return
         }
+        else {
+            setDiscordRuleState('no rule')
+            return
+        }
+
+
     }
 
+    // start here
 
+    const discordAuthenticateUser = async () => {
 
-    const addBot = async () => {
-        setPopoutFired(true)
-        setBotFailureMessage('')
-        //pass guildId as autofill
-        let popout;
-        if (process.env.NODE_ENV === 'development') {
-            popout = window.open(`https://discord.com/api/oauth2/authorize?client_id=895719351406190662&permissions=0&redirect_uri=https%3A%2F%2Flocalhost%3A3000%2Foauth%2Fdiscord&response_type=code&scope=identify%20bot%20applications.commands&state=${walletAddress},bot,${ens}`, 'popUpWindow', 'height=700,width=600,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes')
-
-        }
-
-        else if (process.env.NODE_ENV === 'production') {
-            popout = window.open(`https://discord.com/api/oauth2/authorize?client_id=895719351406190662&permissions=0&redirect_uri=https%3A%2F%2Flocalhost%3A3000%2Foauth%2Fdiscord&response_type=code&scope=identify%20bot%20applications.commands&state=${walletAddress},bot,${ens}`, 'popUpWindow', 'height=700,width=600,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=yes,menubar=no,location=no,directories=no,status=yes')
-        }
-
-        var pollTimer = window.setInterval(async function () {
-            if (popout.closed !== false) {
-                window.clearInterval(pollTimer);
-                setPopoutFired(false);
-                await verifyBot();
-            }
-        }, 1000);
+        if (!userAuth) return userOnOpen();
+        let result = await axios.post('/discord/getUserServers', { token_type: userAuth.token_type, access_token: userAuth.access_token })
+        setUserServers(result.data)
+        setDiscordIntegrationStep(1)
 
     }
 
@@ -973,39 +1045,37 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
     // if there was a problem adding, let the user know and reset the whole process
     // otherwise, set a success message
 
-    const verifyBot = async () => {
-        const resp = await axios.post('/discord/getGuildProperties', { ens: ens })
+    const verifyBot = async (guild_id) => {
+        const resp = await axios.post('/discord/verifyBotAdded', { guild_id: guild_id })
         switch (resp.data) {
-            case 'guild does not exist':
+            case 'unable to read roles':
                 setIsBotVerified(false);
                 setBotFailureMessage('bot was not added')
-                return;
+                return null;
             default:
                 setIsBotVerified(true);
-                setDiscordRuleState('rule exists')
+                setDiscordRuleState('configure rule')
                 if (guildId !== resp.data.id) {
                     setGuildId(resp.data.id)
-                    setGuildName(resp.data.name);
-                    setGuildRoles(resp.data.roles);
+                    setGuildName(resp.data.name)
+                    setGuildRoles(resp.data.roles)
+                    return { guildId: resp.data.id, guildName: resp.data.name, guildRoles: resp.data.roles }
                 }
-                return
+                // user attempting to add already assigned server. Just re-route them to the roles section
+                setDiscordIntegrationStep(0)
+
         }
 
     }
-    const calculateColor = (decimal) => {
-        if (decimal == 0) {
-            return ['rgba(211, 211, 211, 1)', 'rgba(18, 52, 86, 0.3)']
-        }
-        return ['rgb(' + ((decimal >> 16) & 0xff) + ',' + ((decimal >> 8) & 0xff) + ',' + (decimal & 0xff) + ')',
-        'rgba(' + ((decimal >> 16) & 0xff) + ',' + ((decimal >> 8) & 0xff) + ',' + (decimal & 0xff) + ',0.3)']
-    }
 
 
-    const addDiscordRule = () => {
+
+    const addDiscordRule = (guild_info) => {
         const gatekeeperObj = {
             gatekeeperType: 'discord',
-            serverName: guildName,
-            guildId: guildId
+            serverName: guild_info.guildName,
+            guildId: guild_info.guildId,
+            userId: userDiscordId
         }
 
 
@@ -1035,7 +1105,6 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
             }
             setFields({ gatekeeper: { rules: gatekeeperCopy } })
         }
-        setGatekeeperInnerProgress(0);
     }
 
 
@@ -1046,43 +1115,63 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
         <>
             {discordRuleState === 'no rule' &&
                 <>
+                    {/*
                     <div className="discord-add-bot-container">
-                        <button className={'discord-add-bot ' + (popoutFired ? 'loading' : '')} onClick={addBot}>{popoutFired ? 'check popup window' : 'add bot'}</button>
+                        <button className={'discord-add-bot ' + (userIsAuthenticating ? 'loading' : '')} onClick={discordAuthenticateUser}>{userIsAuthenticating ? 'check popup window' : 'add bot'}</button>
                     </div>
-
-                    {(!isBotVerified && botFailureMessage != '') &&
-                        <div style={{ width: '100%' }} className="tab-message error">
-                            <p>{botFailureMessage}</p>
-                        </div>
-                    }
-                    <div className="gk-detail-buttons" style={{ width: '100%' }}>
-                        <button className="gk-rule-cancel" style={{ width: '100%' }} onClick={() => { setGatekeeperInnerProgress(0) }}>cancel</button>
-                    </div>
-                </>
-            }
-            {(guildRoles != '' && guildName != null) &&
-                <>
+                */}
 
                     <div className="discord-guild-info">
-                        <div className="discord-guild-name">
-                            <p className="discord-name-header">server name</p>
-                            <p>{guildName}</p>
-                            <button className={'discord-add-bot ' + (popoutFired ? 'loading' : '')} onClick={addBot}>{popoutFired ? 'check popup window' : 'update server link'}</button>
-                        </div>
-                        <div className="discord-guild-roles">
-                            <p className="discord-roles-header">server roles</p>
-                            {guildRoles.map((val) => {
-                                return <span style={{ backgroundColor: calculateColor(val.color)[1], color: calculateColor(val.color)[0] }}><p>{val.name}</p></span>
-                            })}
-                        </div>
+                        <p className="discord-name-header">server</p>
+                        <GuildTopLevel guildName={guildName} userIsAuthenticating={userIsAuthenticating} discordAuthenticateUser={discordAuthenticateUser} discordIntegrationStep={discordIntegrationStep} />
                     </div>
 
                     <div className="settings-next-previous-ctr">
-                        <button className="next-btn enable" disabled={!guildName} onClick={addDiscordRule}><i className="fas fa-long-arrow-alt-right"></i></button>
+                        <button className="previous-btn enable" onClick={() => { setGatekeeperInnerProgress(0) }}><i className="fas fa-long-arrow-alt-left"></i></button>
                     </div>
                 </>
             }
+            {discordRuleState === 'configure rule' &&
+                <>
 
+                    <div className="discord-guild-info">
+                        <p className="discord-name-header">server</p>
+                        <GuildTopLevel guildName={guildName} userIsAuthenticating={userIsAuthenticating} discordAuthenticateUser={discordAuthenticateUser} discordIntegrationStep={discordIntegrationStep} />
+
+                        {(discordIntegrationStep === 0 && guildRoles.length > 0) &&
+
+                            <>
+
+                                <p className="discord-roles-header">server roles</p>
+                                <GuildRolesDisplay guildRoles={guildRoles} />
+
+
+                            </>
+                        }
+
+                        {discordIntegrationStep === 1 &&
+                            <>
+                                <p className="discord-roles-header">select a server</p>
+                                <GuildServersDisplay selectedServer={selectedServer} setSelectedServer={setSelectedServer} userServers={userServers} />
+                            </>
+                        }
+                    </div>
+
+
+
+                    {discordIntegrationStep === 0 &&
+                        <div className="settings-next-previous-ctr">
+                            <button className="previous-btn enable" onClick={() => { setGatekeeperInnerProgress(0) }}><i className="fas fa-long-arrow-alt-left"></i></button>
+                        </div>
+                    }
+                    {discordIntegrationStep === 1 &&
+                        <div className="settings-next-previous-ctr">
+                            <button className="previous-btn enable" onClick={() => { setDiscordIntegrationStep(0) }}><i className="fas fa-long-arrow-alt-left"></i></button>
+                            {selectedServer && <button className="add-discord-bot-btn enable" onClick={botOnOpen}>add bot</button>}
+                        </div>
+                    }
+                </>
+            }
 
         </>
     )
@@ -1090,8 +1179,60 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields }
 
 }
 
+function GuildTopLevel({ guildName, userIsAuthenticating, discordAuthenticateUser, discordIntegrationStep }) {
+    return (
+        <div className="discord-guild-name">
+            <div>
+                <p style={{ margin: 0 }}>{guildName || 'none'}</p>
+            </div>
+            <button disabled={discordIntegrationStep !== 0} className={'discord-add-bot ' + (userIsAuthenticating || discordIntegrationStep === 1 ? 'loading' : '')} onClick={discordAuthenticateUser}>{userIsAuthenticating ? 'check popup window' : (discordIntegrationStep === 1 ? 'select a server' : 'new server link')}</button>
+        </div>
+    )
+}
+
+function GuildRolesDisplay({ guildRoles }) {
+    const calculateColor = (decimal) => {
+        if (decimal == 0) {
+            return 'rgba(211, 211, 211, 1)'
+        }
+        return 'rgb(' + ((decimal >> 16) & 0xff) + ',' + ((decimal >> 8) & 0xff) + ',' + (decimal & 0xff) + ')'
+    }
+
+    const calculateBackgroundColor = (decimal) => {
+        if (decimal == 0) {
+            return 'rgba(18, 52, 86, 0.3)'
+        }
+        return 'rgba(' + ((decimal >> 16) & 0xff) + ',' + ((decimal >> 8) & 0xff) + ',' + (decimal & 0xff) + ',0.3)'
+    }
+
+    return (
+        <div className="discord-guild-roles">
+            {guildRoles.map((val, key) => {
+                return <span key={key} style={{ backgroundColor: calculateBackgroundColor(val.color), color: calculateColor(val.color) }}><p>{val.name}</p></span>
+            })}
+        </div>
+    )
+}
+
+function GuildServersDisplay({ userServers, selectedServer, setSelectedServer }) {
+    return (
+        <div className="discord-user-servers">
+            {userServers.map((server) => {
+                return (
+                    <div key={server.id} className={"discord-server " + (selectedServer === server.id ? 'selected' : 'undefined')} onClick={() => { setSelectedServer(server.id) }}>
+                        <img src={server.img}></img>
+                        <p>{server.name}</p>
+                    </div>
+
+                )
+            })}
+        </div>
+    )
+}
+
+
 function SaveComponent({ standardProps, infoErrorController, adminErrorController }) {
-    const { fields, setFields, lockedAdminAddresses } = standardProps;
+    const { fields, setFields } = standardProps;
     const { setNameErrorMsg, setWebsiteErrorMsg, infoRef } = infoErrorController;
     const { addressErrors, setAddressErrors, addresses, setAddresses, adminRef } = adminErrorController;
     const walletAddress = useSelector(selectConnectedAddress)
@@ -1099,6 +1240,11 @@ function SaveComponent({ standardProps, infoErrorController, adminErrorControlle
     const dispatch = useDispatch();
     const history = useHistory();
     const { ens } = useParams();
+    const { populateDashboardRules } = useDashboardRules();
+    const { updateDashboardInfo } = useDashboard();
+    const { authenticated_post } = useCommon();
+    const { validAddress } = useWallet();
+
 
     const errorCheckInfo = async () => {
         if (fields.name == "") {
@@ -1107,7 +1253,7 @@ function SaveComponent({ standardProps, infoErrorController, adminErrorControlle
         }
         else {
 
-            const exists = await axios.post('/doesNameExist', { name: fields.name, ens: fields.ens })
+            const exists = await axios.post('/organizations/doesNameExist', { name: fields.name, ens: fields.ens })
             if (exists.data) {
                 //name already exists
                 setNameErrorMsg({ error: true, msg: "an organization with this name already exists" })
@@ -1152,9 +1298,6 @@ function SaveComponent({ standardProps, infoErrorController, adminErrorControlle
         return
     }
 
-    const postData = async (submission) => {
-        var out = await axios.post('/updateSettings', submission);
-    }
 
     const handleClose = () => {
         history.push('/' + fields.ens + '/dashboard')
@@ -1173,25 +1316,10 @@ function SaveComponent({ standardProps, infoErrorController, adminErrorControlle
             return;
         }
 
-        let whitelist = [];
-        if (ens === 'new') {
-            // add wallet address to whitelist if this is a new org. 
-            // this will allow user to write data on initial setup.
-            whitelist = [walletAddress]
-        }
-
-        else if (ens !== 'new') {
-            // DO NOT push wallet address to whitelist. Only use the locked addresses.
-            whitelist = lockedAdminAddresses;
-        }
-
 
         // in both cases for new and existing orgs, we want to push the resolved ens and walletAddress, then remove duplicates
         const resolvedEns = await validAddress(fields.ens);
-        finalSubmission.addresses.push(resolvedEns, walletAddress)
-
-        // now remove the duplicates
-        finalSubmission.addresses = [...new Set(finalSubmission.addresses)]
+        finalSubmission.addresses.push(resolvedEns)
 
         // set the fields in case user wants to go backwards
 
@@ -1199,49 +1327,20 @@ function SaveComponent({ standardProps, infoErrorController, adminErrorControlle
 
         // we only want to send the new rules to the db
 
-
         let ruleDuplicates = fields.gatekeeper.rules.filter(({ gatekeeperAddress: gk_addy1, guildId: gid1 }) => !Object.values(existingGatekeeperRules).some(({ gatekeeperAddress: gk_addy2, guildId: gid2 }) => (gk_addy2 === gk_addy1 && gid1 === gid2)))
-        //let discordDuplicates = fields.gatekeeper.rules.filter(({ guildId: gid1 }) => !Object.values(existingGatekeeperRules).some(({ guildId: gid2 }) => gid1 === gid2))
-
-
-
 
         finalSubmission.gatekeeper.rules = ruleDuplicates
 
-        var compressedSubmission = JSON.parse(JSON.stringify(finalSubmission))
-        compressedSubmission.logo = compressedSubmission.logo.substring(0, 25) + '...';
 
-
-
-
-
-        var result = await signTransaction(compressedSubmission, whitelist);
-        switch (result) {
-            case 0:
-                showNotification('error', 'error', 'user cancelled signature request');
-                break;
-            case 1:
-                showNotification('error', 'error', 'metamask error');
-                break;
-            case 2:
-                showNotification('error', 'error', 'signature request rejected. Wallet is not an organization admin');
-                break;
-            case 3:
-                await postData(finalSubmission);
-                if (ens === 'new') dispatch(addOrganization({ name: fields.name, members: 0, logo: fields.logo, verified: false, ens: fields.ens }));
-                else if (ens !== 'new') {
-                    dispatch(updateDashboardInfo({ name: fields.name, website: fields.website, logo: fields.logoPath || fields.logo, logoBlob: fields.logoBlob, discord: fields.discord, addresses: finalSubmission.addresses }))
-                    dispatch(populateDashboardRules(fields.ens))
-
-                }
-                showNotification('saved successfully', 'success', 'your changes were successfully saved')
-                handleClose();
-                break;
-            case 4:
-                showNotification('error', 'error', 'please connect your wallet to write data');
-
-
-
+        let settingsResult = await authenticated_post('/settings/updateSettings', { ens: fields.ens, fields: finalSubmission, walletAddress: walletAddress });
+        if (settingsResult) {
+            if (ens === 'new') dispatch(addOrganization({ name: fields.name, members: 0, logo: fields.logo, verified: false, ens: fields.ens }));
+            else if (ens !== 'new') {
+                updateDashboardInfo({ name: fields.name, website: fields.website, logo: fields.logoPath || fields.logo, logoBlob: fields.logoBlob, discord: fields.discord, addresses: settingsResult.data.adminAddresses })
+                populateDashboardRules(fields.ens)
+            }
+            showNotification('saved successfully', 'success', 'your changes were successfully saved')
+            handleClose();
         }
     }
 

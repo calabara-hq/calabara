@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useReducer, useRef } from 'react'
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import calendarLogo from '../../img/calendar.svg'
 import snapshotLogo from '../../img/snapshot.svg'
 import wikiLogo from '../../img/wiki.svg'
-import axios from 'axios'
 import { useParams } from 'react-router-dom';
 import '../../css/manage-widgets.css'
 import '../../css/settings-buttons.css'
@@ -12,9 +11,10 @@ import CalendarConfiguration from './calendar-configuration';
 import { showNotification } from '../notifications/notifications';
 import {
   selectInstalledWidgets,
-  updateWidgets,
-  updateWidgetGatekeeper,
 } from '../../features/dashboard/dashboard-widgets-reducer';
+import { selectDashboardRules } from '../gatekeeper/gatekeeper-rules-reducer';
+import useWidgets from '../hooks/useWidgets';
+import useCommon from '../hooks/useCommon';
 
 
 
@@ -49,7 +49,7 @@ export default function ManageInstalledWidgetsTab({ setFunctionality, setTabHead
   return (
     <>
       {progress == 0 && <SelectInstalledWidget setProgress={setProgress} selected={selected} setSelected={setSelected} setFunctionality={setFunctionality} setTabHeader={setTabHeader} />}
-      {progress == 1 && <ManageWidget setProgress={setProgress} selected={selected} setTabHeader={setTabHeader} />}
+      {progress == 1 && <ManageWidget setProgress={setProgress} selected={selected} setTabHeader={setTabHeader} setFunctionality={setFunctionality} />}
     </>
   )
 }
@@ -122,14 +122,14 @@ function InstalledWidget({ el, selected, setSelected }) {
       <div className="installable-widget-text">
         <p>{el.name == 'wiki' ? 'docs' : el.name}</p>
         <p>{description}</p>
-        <u onClick={(e) => { window.open(link);e.stopPropagation();}}>Learn more</u>
+        <u onClick={(e) => { window.open(link); e.stopPropagation(); }}>Learn more</u>
       </div>
     </div>
   )
 }
 
 
-function ManageWidget({ selected, setProgress, setTabHeader }) {
+function ManageWidget({ selected, setProgress, setTabHeader, setFunctionality }) {
 
   // show 2 divs: gatekeeper settings and metadata settings (if applicable). 
   // only calendar will have metadata for now
@@ -139,10 +139,11 @@ function ManageWidget({ selected, setProgress, setTabHeader }) {
   const [settingsStep, setSettingsStep] = useState(0);
 
 
+
   return (
     <>
       {settingsStep == 0 &&
-        <WidgetSummary selected={selected} setSettingsStep={setSettingsStep} setProgress={setProgress} setTabHeader={setTabHeader} />
+        <WidgetSummary selected={selected} setSettingsStep={setSettingsStep} setProgress={setProgress} setTabHeader={setTabHeader} setFunctionality={setFunctionality} />
       }
       {settingsStep == 1 &&
         <MetadataSettings selected={selected} setProgress={setProgress} setSettingsStep={setSettingsStep} setTabHeader={setTabHeader} />
@@ -154,17 +155,19 @@ function ManageWidget({ selected, setProgress, setTabHeader }) {
   )
 }
 
-function WidgetSummary({ selected, setSettingsStep, setProgress, setTabHeader }) {
+function WidgetSummary({ selected, setSettingsStep, setProgress, setTabHeader, setFunctionality }) {
 
   const [metadataExists, setMetadataExists] = useState(false);
-  const dispatch = useDispatch();
-
+  const availableRules = useSelector(selectDashboardRules)
+  const installedWidgets = useSelector(selectInstalledWidgets)
+  const { updateWidgets } = useWidgets();
+  const { authenticated_post } = useCommon();
   const { ens } = useParams();
 
   useEffect(() => {
-     if (selected != '' && Object.keys(selected.metadata).length > 0) {
-       setMetadataExists(true)
-     }
+    if (selected != '' && Object.keys(selected.metadata).length > 0) {
+      setMetadataExists(true)
+    }
   }, [selected])
 
 
@@ -174,9 +177,20 @@ function WidgetSummary({ selected, setSettingsStep, setProgress, setTabHeader })
   })
 
   const deleteWidget = async () => {
-    dispatch(updateWidgets(0, selected));
-    await axios.post('/removeWidget', { ens: ens, name: selected.name })
-    setProgress(0);
+    console.log(installedWidgets)
+    let num_widgets = installedWidgets.length - 1;
+    let res = await authenticated_post('/dashboard/removeWidget', { ens: ens, name: selected.name })
+    if (res) {
+      updateWidgets(0, selected)
+      showNotification('success', 'success', 'application successfully deleted')
+
+      if (num_widgets > 0) setProgress(0);
+
+      else {
+        setFunctionality(0);
+      }
+    }
+
   }
 
   return (
@@ -195,7 +209,7 @@ function WidgetSummary({ selected, setSettingsStep, setProgress, setTabHeader })
           }
         </div>
         <div className="standard-contents">
-          {selected.name != 'wiki' &&
+          {(selected.name != 'wiki' && Object.keys(availableRules).length > 0) &&
             <>
               <div className="standard-description">
                 <p>Gatekeeper</p>
@@ -250,7 +264,8 @@ function GatekeeperSettings({ selected, setSettingsStep, setTabHeader }) {
 
   const [ruleError, setRuleError] = useState('');
   const { ens } = useParams();
-  const dispatch = useDispatch();
+  const { updateWidgetGatekeeper } = useWidgets();
+  const { authenticated_post } = useCommon();
 
   useEffect(() => {
     setTabHeader('gatekeeper')
@@ -273,7 +288,7 @@ function GatekeeperSettings({ selected, setSettingsStep, setTabHeader }) {
     for (const [key, value] of Object.entries(appliedRules)) {
       if (value == '') {
         setRuleError({ id: key })
-        
+
         return;
       }
     }
@@ -286,15 +301,17 @@ function GatekeeperSettings({ selected, setSettingsStep, setTabHeader }) {
     for (const [key, value] of Object.entries(appliedRules)) {
       if (value == '') {
         setRuleError({ id: key })
-        
+
         return;
       }
     }
-    
-    await axios.post('/updateWidgetGatekeeperRules', { ens: ens, gk_rules: appliedRules, name: selected.name });
-    dispatch(updateWidgetGatekeeper(selected.name, appliedRules))
-    showNotification('saved successfully', 'success', 'your changes were successfully saved')
-    setSettingsStep(0);
+
+    let res = await authenticated_post('/dashboard/updateWidgetGatekeeperRules', { ens: ens, gk_rules: appliedRules, name: selected.name });
+    if (res) {
+      updateWidgetGatekeeper(selected.name, appliedRules);
+      showNotification('saved successfully', 'success', 'your changes were successfully saved')
+      setSettingsStep(0);
+    }
   }
 
 

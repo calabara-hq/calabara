@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
-import Tooltip from '@mui/material/Tooltip';
 import Button from '@mui/material/Button';
 
-import { useHistory, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import {
-    updateWidgetMetadata,
-} from '../../features/dashboard/dashboard-widgets-reducer';
+import useWidgets from '../hooks/useWidgets';
+import useCommon from '../hooks/useCommon';
 
 export default function CalendarConfiguration({ mode, metadata, setMetadata, setProgress, setSettingsStep, setTabHeader }) {
     const [configProgress, setConfigProgress] = useState(0)
     const [inputError, setInputError] = useState(0);
     const [calendarID, setCalendarID] = useState(metadata.calendarID || "")
     const [copyStatus, setCopyStatus] = useState('copy to clipboard');
+    const {updateWidgetMetadata} = useWidgets();
+    const { authenticated_post } = useCommon();
     const { ens } = useParams();
     const dispatch = useDispatch();
 
@@ -33,7 +33,7 @@ export default function CalendarConfiguration({ mode, metadata, setMetadata, set
     }
 
     async function submitCalendarID() {
-        var result = await axios.post('/fetchCalendarMetaData', { calendarID: calendarID })
+        var result = await axios.post('/dashboard/fetchCalendarMetaData', { calendarID: calendarID })
         if (result.data == 'FAIL') {
             return 'fail'
         }
@@ -43,8 +43,8 @@ export default function CalendarConfiguration({ mode, metadata, setMetadata, set
     }
 
     async function testGrantedAccess() {
-        var result = await axios.post('/fetchCalendarMetaData', { calendarID: calendarID })
-        
+        var result = await axios.post('/dashboard/fetchCalendarMetaData', { calendarID: calendarID })
+
         if (result.data == 'FAIL') {
             return 'fail'
         }
@@ -71,18 +71,20 @@ export default function CalendarConfiguration({ mode, metadata, setMetadata, set
 
                 // found the calendar and we can advance out of this inner loop
                 setMetadata({ calendarID: calendarID });
-                await axios.post('/updateWidgetMetadata', { ens: ens, metadata: { calendarID: calendarID }, name: 'calendar' });
-                dispatch(updateWidgetMetadata('calendar', { calendarID: calendarID }))
-                if (mode === 'new') {
-                    setProgress(3);
-                }
-                else if(mode === 'update'){
-                    setSettingsStep(0);
+                let response = await authenticated_post('/dashboard/updateWidgetMetadata', { ens: ens, metadata: { calendarID: calendarID }, name: 'calendar' });
+                if (response) {
+                    updateWidgetMetadata('calendar', { calendarID: calendarID });
+                    if (mode === 'new') {
+                        setProgress(2);
+                    }
+                    else if (mode === 'update') {
+                        setProgress(0);
+                    }
                 }
             }
             else {
                 // the calendar is not public, ask them to set it to public
-                
+
                 setConfigProgress(1);
             }
 
@@ -97,13 +99,15 @@ export default function CalendarConfiguration({ mode, metadata, setMetadata, set
             }
             else if (res == 'success') {
                 setMetadata({ calendarID: calendarID });
-                await axios.post('/updateWidgetMetadata', { ens: ens, metadata: { calendarID: calendarID }, name: 'calendar' });
-                dispatch(updateWidgetMetadata('calendar', { calendarID: calendarID }))
-                if (mode === 'new') {
-                    setProgress(3);
-                }
-                else if(mode === 'update'){
-                    setSettingsStep(0);
+                let response = await authenticated_post('/dashboard/updateWidgetMetadata', { ens: ens, metadata: { calendarID: calendarID }, name: 'calendar' });
+                if (response) {
+                    updateWidgetMetadata('calendar', { calendarID: calendarID })
+                    if (mode === 'new') {
+                        setProgress(2);
+                    }
+                    else if (mode === 'update') {
+                        setProgress(0);
+                    }
                 }
             }
 
@@ -113,11 +117,12 @@ export default function CalendarConfiguration({ mode, metadata, setMetadata, set
     }
 
     function handlePrevious() {
+        console.log(configProgress)
         if (configProgress == 1) {
             setConfigProgress(0);
         }
         else {
-            setSettingsStep(0)
+            setProgress(0)
         }
     }
 

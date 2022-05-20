@@ -2,8 +2,6 @@ import '../../css/wiki-display.css'
 import '../../css/wiki-editor/medium-editor.css'
 import '../../css/wiki-editor/default.css'
 import '../../css/wiki-editor/custom-style.css'
-import Wallet from '../wallet/wallet'
-import calabaraLogo from '../../img/calabara-logo.svg'
 import React, { useState, useEffect } from 'react'
 import { useHistory, useParams } from "react-router-dom"
 import axios from 'axios';
@@ -25,8 +23,6 @@ import {
 import {
   selectWikiList,
   selectWikiListOrganization,
-  removeFromWikiList,
-  populateInitialWikiList
 } from './wiki-reducer';
 
 import {
@@ -36,16 +32,16 @@ import {
 import {
   selectDashboardRuleResults,
   selectDashboardRules,
-  applyDashboardRules,
 } from '../gatekeeper/gatekeeper-rules-reducer'
 
-import { testDiscordRoles } from '../gatekeeper/gatekeeper'
-import { batchFetchDashboardData } from '../common/common'
+// import { testDiscordRoles } from '../hooks/useGatekeeper'
+import useDashboardRules from '../hooks/useDashboardRules'
+import useGatekeeper from '../hooks/useGatekeeper'
+import useCommon from '../hooks/useCommon'
+import useWiki from '../hooks/useWiki'
 
 export default function WikiDisplay({ mode }) {
   const { ens } = useParams();
-  const history = useHistory();
-  const dispatch = useDispatch();
   const wikiList = useSelector(selectWikiList)
   const info = useSelector(selectDashboardInfo)
   const isConnected = useSelector(selectConnectedBool)
@@ -61,11 +57,14 @@ export default function WikiDisplay({ mode }) {
   const [currentWikiId, setCurrentWikiId] = useState(-1)
   const [modalOpen, setModalOpen] = useState(false);
   const [groupID, setGroupID] = useState(null)
+  const {applyDashboardRules} = useDashboardRules();
+  const { batchFetchDashboardData, authenticated_post } = useCommon();
+  const { populateInitialWikiList, removeFromWikiList } = useWiki();
 
   useEffect(() => {
     // populate the dashboard info on pageload
-    batchFetchDashboardData(ens, info, dispatch)
-    dispatch(populateInitialWikiList(ens))
+    batchFetchDashboardData(ens, info)
+    populateInitialWikiList(ens)
   }, [])
 
 
@@ -77,10 +76,13 @@ export default function WikiDisplay({ mode }) {
     }
 
     else if (cleanup.type === 'delete') {
-      await axios.post('/deleteWikiGrouping', { ens: cleanup.ens, groupID: cleanup.groupID })
-      dispatch(removeFromWikiList(cleanup.groupID));
-      setCurrentWikiId(-1);
-
+      let res = await authenticated_post('/wiki/deleteWikiGrouping', { ens: cleanup.ens, groupID: cleanup.groupID })
+      if (res) {
+        setModalOpen(false);
+        removeFromWikiList(cleanup.groupID);
+        setCurrentWikiId(-1);
+        setGroupID(null);
+      }
     }
   }
 
@@ -90,7 +92,7 @@ export default function WikiDisplay({ mode }) {
 
 
   async function readWiki(file_id) {
-    const wiki = await axios.get('/readWiki/' + file_id)
+    const wiki = await axios.get('/wiki/readWiki/' + file_id)
     setWikiDisplayTitle(wiki.data.filedata.title)
     setWikiDisplayContent(wiki.data.filedata.content)
     setIsWikiLoaded(true);
@@ -132,7 +134,7 @@ export default function WikiDisplay({ mode }) {
   }, [isConnected, info])
 
   useEffect(() => {
-    dispatch(applyDashboardRules(walletAddress))
+    applyDashboardRules(walletAddress)
   }, [dashboardRules, isConnected, wikiList])
 
 
@@ -144,6 +146,7 @@ export default function WikiDisplay({ mode }) {
   }, [currentWikiId])
 
 
+  useEffect(() => {},[isAdmin])
 
   const newWikiGroupingClick = () => {
     open();
@@ -160,9 +163,10 @@ export default function WikiDisplay({ mode }) {
   }
 
 
+
   return (
     <>
-    <BackButton link={'dashboard'} text={"back to dashboard"}/>
+      <BackButton link={'dashboard'} text={"back to dashboard"} />
       <div className={"wiki-display-container"}>
         <div className={"wiki-popout-sidebar " + (currentWikiId == -1 ? 'wiki-closed' : 'wiki-open')}>
           <button onClick={fireWikiPopout}>documents</button>
@@ -213,7 +217,7 @@ function TestWikiVisibility({ setCurrentWikiId, wikiList, dashboardRuleResults }
 }
 
 function WikiRuleMap({ setCurrentWikiId, group, group_data, dashboardRuleResults }) {
-
+const {testDiscordRoles} = useGatekeeper();
 
   useEffect(() => {
   }, [dashboardRuleResults])

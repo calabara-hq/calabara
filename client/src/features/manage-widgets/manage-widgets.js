@@ -1,9 +1,5 @@
 import React, { useState, useEffect, useRef, useReducer } from 'react'
-import axios from 'axios'
 import Glyphicon from '@strongdm/glyphicon'
-import { SettingsCheckpointBar, FinalizeSettingsCheckpointBar } from '../../features/checkpoint-bar/checkpoint-bar'
-import Wallet, { validAddress, erc20GetSymbolAndDecimal, erc721GetSymbol, signTransaction, connectWallet } from '../../features//wallet/wallet'
-import * as WebWorker from '../../app/worker-client';
 import { useHistory, useParams } from 'react-router-dom'
 import '../../css/manage-widgets.css'
 import '../../css/settings-buttons.css'
@@ -17,10 +13,7 @@ import SnapshotConfiguration from './snapshot-configuration'
 import { RuleSelect } from './gatekeeper-toggle';
 import { showNotification } from '../notifications/notifications'
 
-
-
 import { useSelector, useDispatch } from 'react-redux';
-
 
 import {
   selectDashboardRules,
@@ -29,31 +22,32 @@ import {
 import {
   selectInstalledWidgets,
   selectInstallableWidgets,
-  updateWidgets,
 } from '../../features/dashboard/dashboard-widgets-reducer';
+
+
+import useWidgets from '../hooks/useWidgets'
+import useCommon from '../hooks/useCommon'
 
 
 
 export default function ManageWidgets() {
   const [functionality, setFunctionality] = useState(0)
-  const [saveVisible, setSaveVisible] = useState(false)
   const [tabHeader, setTabHeader] = useState('manage apps')
-  const dispatch = useDispatch();
   const history = useHistory();
-  const {ens} = useParams();
+  const { ens } = useParams();
 
   // don't allow direct URL access
   const checkHistory = () => {
-    if(history.action === 'POP'){
-        history.push('/' + ens + '/dashboard')
+    if (history.action === 'POP') {
+      history.push('/' + ens + '/dashboard')
     }
   }
 
 
 
-  useEffect(()=>{
+  useEffect(() => {
     checkHistory();
-  },[])
+  }, [])
 
   return (
     <div className="manage-widgets-container">
@@ -259,6 +253,8 @@ function FinalMessage({ setProgress, selected, appliedRules, metadata, setSelect
   const dispatch = useDispatch();
   const availableRules = useSelector(selectDashboardRules);
   const history = useHistory()
+  const { updateWidgets } = useWidgets();
+  const { authenticated_post } = useCommon();
 
   useEffect(() => {
     setTabHeader('')
@@ -266,21 +262,29 @@ function FinalMessage({ setProgress, selected, appliedRules, metadata, setSelect
 
   const finalize = async () => {
 
-    const req = axios.post('/addWidget', { ens: ens, name: selected.name, metadata: metadata, gatekeeper_rules: appliedRules })
-
-    showNotification('saved successfully', 'success', 'successfully added application')
-    dispatch(updateWidgets(1, { ens: ens, name: selected.name, metadata: metadata, gatekeeper_rules: appliedRules, notify: 0 }))
-    history.push('dashboard')
+    const res = await authenticated_post('/dashboard/addWidget', { ens: ens, name: selected.name, metadata: metadata, gatekeeper_rules: appliedRules })
+    if (res) {
+      showNotification('saved successfully', 'success', 'successfully added application')
+      updateWidgets(1, { ens: ens, name: selected.name, metadata: metadata, gatekeeper_rules: appliedRules, notify: 0 });
+      history.push('dashboard')
+    }
   }
 
   const handlePrevious = () => {
-    
+
     if (selected.name == 'wiki') {
       setSelected('')
       setProgress(0);
     }
 
-    else { setProgress(2) }
+    else if (availableRules.length > 0) {
+      setProgress(2)
+    }
+
+    else {
+      setProgress(1);
+    }
+
   }
 
 
@@ -288,11 +292,11 @@ function FinalMessage({ setProgress, selected, appliedRules, metadata, setSelect
     <div className="manage-widgets-final-message-tab">
       <div>
         <h1>🎉🎉🎉</h1>
-        <h2>That was easy. Click <b>finish</b> to add {(selected.name == 'wiki' ? 'docs' : selected.name )} to the dashboard.</h2>
+        <h2>That was easy. Click <b>finish</b> to add {(selected.name == 'wiki' ? 'docs' : selected.name)} to the dashboard.</h2>
       </div>
       <div className="manage-widgets-next-previous-ctr">
         <button className={"previous-btn"} onClick={handlePrevious}><i class="fas fa-long-arrow-alt-left"></i></button>
-        <button className={"finish-btn enable"} onClick={finalize}>Finish</button>
+        <button className={"finish-btn enable"} onClick={finalize}>finish</button>
       </div>
     </div>
   )

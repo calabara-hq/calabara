@@ -14,8 +14,8 @@ create table wiki_groupings (group_id serial, ens text, name text, gk_rules json
 
 create table wikis (id serial, ens text, title text, location text, grouping serial, primary key (id), foreign key (grouping) references wiki_groupings(group_id) on delete cascade);
 
-create table discord_guilds (id serial, ens text UNIQUE, guild_id text, primary key (id), foreign key (ens) references organizations(ens) on delete cascade);
+create table discord_guilds (id serial, ens text UNIQUE, guild_id text, primary key (id), foreign key(ens) references organizations(ens) on delete cascade);
 
-create table users (id serial, address text UNIQUE, discord text, primary key(id));
+create table users (id serial, address text UNIQUE, discord text, nonce text, primary key(id));
 
 create table whitelist (id serial, address text, primary key (id));

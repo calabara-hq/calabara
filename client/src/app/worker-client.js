@@ -3,9 +3,6 @@ import {
   populateLogoCache
 } from '../features/org-cards/org-cards-reducer'
 
-
-import { updateDashboardInfo } from '../features/dashboard/dashboard-info-reducer'
-
 const worker = new Worker('/worker/webworker.js')
 
 /*
@@ -29,12 +26,11 @@ const processImages2 = async function () {
 
 // used when settings has changed the dashboard logo
 
-const updateLogo = async function (dispatch, logoPath, logoBlob){
-      const imageURL = document.getElementById('info-logo')
-      imageURL.setAttribute('src', logoBlob);
-      dispatch(populateLogoCache({ imageURL: [logoPath], blob: logoBlob }))
+const updateLogo = async function (dispatch, logoPath, logoBlob) {
+  const imageURL = document.getElementById('info-logo')
+  imageURL.setAttribute('src', logoBlob);
+  dispatch(populateLogoCache({ imageURL: [logoPath], blob: logoBlob }))
 }
-
 
 
 const processImages = async function (dispatch, logoCache) {
@@ -71,7 +67,7 @@ const settingsProcessLogo = async function (dispatch, logoCache) {
   imgElement.removeAttribute('data-src')
   imgElement.setAttribute('src', objectURL);
   dispatch(populateLogoCache({ imageURL: 'dummy', blob: objectURL }))
-  console.log(imageURL)
+
   return blob;
 }
 

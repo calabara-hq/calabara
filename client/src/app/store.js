@@ -17,7 +17,6 @@ import rulesReducer from '../features/gatekeeper/gatekeeper-rules-reducer';
 import userReducer from '../features/user/user-reducer';
 
 
-
 const reducer = combineReducers({
   notifications: notificationReducer,
   organizations: organizationsReducer,

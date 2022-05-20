@@ -1,21 +1,15 @@
-import React, { useEffect, useState, componentDidMount } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useHistory } from "react-router-dom"
 import '../../css/org-cards.css'
 import * as WebWorker from '../../app/worker-client'
 import { showNotification } from '../notifications/notifications'
-import { fetchOrganizations, fetchUserMembership } from '../common/common'
 import plusSign from '../../img/plus-sign.svg'
 
 
 //redux
 import { useSelector, useDispatch } from 'react-redux';
 import {
-  isMember,
-  deleteMembership,
-  addMembership,
   selectMemberOf,
-  populateInitialMembership,
-  populateInitialOrganizations,
   selectOrganizations,
   selectCardsPulled,
   selectMembershipPulled,
@@ -28,12 +22,13 @@ import {
 } from '../wallet/wallet-reducer';
 
 import {
-  clearDashboardData,
-  clearWidgets,
   dashboardWidgetsReset,
 } from '../dashboard/dashboard-widgets-reducer'
-import { auxillaryConnect } from '../wallet/wallet'
+
+import { gatekeeperReset } from '../gatekeeper/gatekeeper-rules-reducer'
 import { dashboardInfoReset } from '../dashboard/dashboard-info-reducer'
+import useOrganization from '../hooks/useOrganization'
+import useCommon from '../hooks/useCommon'
 
 
 export default function Cards() {
@@ -44,13 +39,10 @@ export default function Cards() {
   const membershipPulled = useSelector(selectMembershipPulled);
   const membership = useSelector(selectMemberOf);
   const logoCache = useSelector(selectLogoCache);
-
+  const { fetchOrganizations } = useCommon();
+  const { fetchUserMembership } = useOrganization();
   const dispatch = useDispatch();
 
-
-  // clear redux store so that clicking into a new dashboard doesn't briefly render stale data
-  dispatch(dashboardInfoReset);
-  dispatch(dashboardWidgetsReset);
 
 
 
@@ -58,11 +50,16 @@ export default function Cards() {
   // i created a cardsPulled state in the org-cards reducer that may come in handy for a solution
 
   useEffect(() => {
-    fetchOrganizations(cardsPulled, dispatch)
+    // clear redux store so that clicking into a new dashboard doesn't briefly render stale data
+    dispatch(dashboardInfoReset());
+    dispatch(dashboardWidgetsReset());
+    dispatch(dashboardInfoReset());
+    dispatch(gatekeeperReset());
+    fetchOrganizations(cardsPulled)
   }, [])
 
   useEffect(() => {
-    fetchUserMembership(walletAddress, membershipPulled, dispatch)
+    fetchUserMembership(walletAddress, membershipPulled)
   }, [walletAddress])
 
 
@@ -99,22 +96,27 @@ function DaoCard({ org, membership }) {
   const dispatch = useDispatch();
   const [members, setMembers] = useState(org.members)
   const [isMemberOf, setIsMemberOf] = useState(false)
+  const { deleteMembership, addMembership, isMember } = useOrganization();
 
   const history = useHistory();
 
+
+  useEffect(() => {
+    setIsMemberOf(isMember(ens))
+  },[])
+
   function handleJoinOrg() {
-    if (isConnected) {
-      dispatch(addMembership(walletAddress, ens))
-      setMembers(members + 1);
-    }
-    else {
-      auxillaryConnect();
-    }
+    console.log('inside join org')
+    addMembership(ens)
+    setMembers(members + 1);
+    setIsMemberOf(true)
+
   }
 
   function handleLeaveOrg() {
-    dispatch(deleteMembership(walletAddress, ens))
+    deleteMembership(ens)
     setMembers(members - 1);
+    setIsMemberOf(false);
   }
 
 
@@ -134,17 +136,11 @@ function DaoCard({ org, membership }) {
     }
   }
 
-  // rerender the card when membership details change
-  useEffect(() => {
-    let res = dispatch(isMember(ens))
-    setIsMemberOf(res)
-  }, [membership])
-
 
   return (
 
     <article className="dao-card" onClick={handleClick}>
-         <img data-src={logo} />
+      <img data-src={logo} />
       <h2> {name}</h2>
       <p>{members} members</p>
       {isConnected &&
@@ -182,7 +178,7 @@ function NewOrgButton({ isConnected }) {
 
 
     <article className="new-org" onClick={handleNewOrg}>
-      <img src={plusSign}/>
+      <img src={plusSign} />
       <h2>New</h2>
     </article>
 

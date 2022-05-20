@@ -1,18 +1,19 @@
 import React, { useState, useEffect, useReducer } from 'react';
-import Backdrop from '@mui/material/Backdrop';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
-import axios from 'axios'
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { RuleSelect } from '../manage-widgets/gatekeeper-toggle';
 import '../../css/wiki-modal.css'
 import '../../css/settings-buttons.css'
+import '../../css/wallet-modal.css'
 import Glyphicon from '@strongdm/glyphicon'
 
 
-import { selectWikiList, removeFromWikiList, renameWikiList, addToWikiList } from './wiki-reducer';
+import { selectWikiList, renameWikiList, addToWikiList } from './wiki-reducer';
 import { selectDashboardRules } from '../gatekeeper/gatekeeper-rules-reducer';
+import useCommon from '../hooks/useCommon';
+import useWiki from '../hooks/useWiki';
 
 const style = {
     position: 'absolute',
@@ -54,9 +55,11 @@ export default function WikiModal({ modalOpen, handleClose, groupID }) {
     const { ens } = useParams();
     const dispatch = useDispatch();
     const [appliedRules, setAppliedRules] = useReducer(reducer, {});
-
+    const { authenticated_post } = useCommon();
+    const { renameWikiList } = useWiki();
 
     useEffect(() => {
+
         if (groupID != null) {
             setAppliedRules({ type: 'update_all', payload: wikiList[groupID].gk_rules })
             setGroupingName(wikiList[groupID].group_name)
@@ -64,10 +67,10 @@ export default function WikiModal({ modalOpen, handleClose, groupID }) {
     }, [wikiList])
 
 
-    const handleSave = () => {
+    const handleSave = async () => {
         // if there are no gatekeeper rules or name applied just close without doing anything    
         if (Object.keys(appliedRules).length == 0 && groupingName == "") {
-            handleClose({type: "standard"});
+            handleClose({ type: "standard" });
         }
 
         else {
@@ -79,38 +82,43 @@ export default function WikiModal({ modalOpen, handleClose, groupID }) {
                 }
             }
 
-            if(groupingName == ""){
+            if (groupingName == "") {
                 setIsFolderError(true)
                 return
             }
 
             if (groupID == null) {
                 // it's a new folder
-                axios.post('/addWikiGrouping', { ens: ens, groupingName: groupingName, gk_rules: appliedRules }).then((response) => {
+                let res = await authenticated_post('/wiki/addWikiGrouping', { ens: ens, groupingName: groupingName, gk_rules: appliedRules })
+                if (res) {
                     dispatch(addToWikiList({
-                        group_id: response.data.group_id,
+                        group_id: res.data.group_id,
                         value: {
                             group_name: groupingName,
                             gk_rules: appliedRules,
                             list: []
                         }
                     }))
-                });
+                    handleClose({ type: "standard" });
+
+                }
             }
             else {
                 // it's an update to existing folder
-                axios.post('/updateWikiGrouping', { groupID: groupID, ens: ens, groupingName: groupingName, gk_rules: appliedRules }).then((response) => {
-                    dispatch(renameWikiList({
+                let res = await authenticated_post('/wiki/updateWikiGrouping', { groupID: groupID, ens: ens, groupingName: groupingName, gk_rules: appliedRules })
+                if (res) {
+                    renameWikiList({
                         group_id: groupID,
                         value: {
                             group_name: groupingName,
                             gk_rules: appliedRules,
                             list: wikiList[groupID].list
                         }
-                    }))
-                });
+                    })
+                    handleClose({ type: "standard" });
+
+                }
             }
-            handleClose({type: "standard"});
         }
     }
 
@@ -121,12 +129,12 @@ export default function WikiModal({ modalOpen, handleClose, groupID }) {
         <div>
             <Modal
                 open={modalOpen}
-                onClose={() => {handleClose({type: 'standard'})}}
+                onClose={() => { handleClose({ type: 'standard' }) }}
             >
                 <Box className="wiki-modal" sx={style}>
                     <div className="wiki-folder-modal-container">
-                    <button className="exit-btn" onClick={() => {handleClose({type: 'standard'})}}><Glyphicon glyph="remove" /></button>
-                    <h2>{groupID ? 'Edit Folder' : 'New Folder'}</h2>
+                        <button className="exit-btn" onClick={() => { handleClose({ type: 'standard' }) }}><Glyphicon glyph="remove" /></button>
+                        <h2>{groupID ? 'Edit Folder' : 'New Folder'}</h2>
 
                         <WikiFolderName groupID={groupID} groupingName={groupingName} setGroupingName={setGroupingName} isFolderError={isFolderError} setIsFolderError={setIsFolderError} handleClose={handleClose} />
                         <WikiFolderRules handleSave={handleSave} appliedRules={appliedRules} setAppliedRules={setAppliedRules} />
@@ -146,8 +154,8 @@ function WikiFolderName({ groupID, groupingName, setGroupingName, isFolderError,
 
 
     const deleteGrouping = async () => {
-    
-        handleClose({type: 'delete', ens: ens, groupID, groupID});
+
+        handleClose({ type: 'delete', ens: ens, groupID: groupID });
     }
     return (
         <div className="folder-name-delete-flex">

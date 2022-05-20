@@ -10,8 +10,7 @@ const initialState = {
     discord: "",
     verified: "",
     addresses: [],
-    
-  }
+  }, 
 }
 
 export const dashboardInfo = createSlice({
@@ -38,26 +37,6 @@ export const dashboardInfo = createSlice({
 
 export const { populateInfo, increaseMemberCount, decreaseMemberCount, dashboardInfoReset } = dashboardInfo.actions;
 export const selectDashboardInfo = state => state.dashboardInfo.info;
-
-
-
-export const populateDashboardInfo = (ens) => async (dispatch, getState, axios) => {
-
-  const res = await axios.get('/dashboardInfo/' + ens);
-  dispatch(populateInfo(res.data.orgInfo))
-}
-
-export const updateDashboardInfo = (params) => async (dispatch, getState, axios) => {
-
-  const {dashboardInfo} = getState();
-
-  let infoCopy = JSON.parse(JSON.stringify(dashboardInfo.info));
-
-  infoCopy = Object.assign(infoCopy, params)
-  dispatch(populateInfo(infoCopy))
-}
-
-
-
+export const selectDashboardMemberCount = state => state.dashboardInfo.info.members;
 
 export default dashboardInfo.reducer;
