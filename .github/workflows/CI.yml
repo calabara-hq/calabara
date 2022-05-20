@@ -9,7 +9,8 @@ jobs:
   test:
 
     runs-on: ubuntu-latest
-
+    env:
+      working-directory: ./client
     strategy:
       matrix:
         node-version: [12.x, 14.x, 16.x]
@@ -22,6 +23,5 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-      working-directory: './client'
     - run: npm ci
     - run: npm run test

@@ -8,7 +8,6 @@ export default function useDashboard() {
     const updateDashboardInfo = (params) => {
 
         let infoCopy = JSON.parse(JSON.stringify(info));
-
         infoCopy = Object.assign(infoCopy, params)
         dispatch(populateInfo(infoCopy))
     }
@@ -17,6 +16,7 @@ export default function useDashboard() {
         updateDashboardInfo: (params) => {
             updateDashboardInfo(params)
         },
+        info
     }
 
 }
