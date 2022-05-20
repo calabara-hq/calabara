@@ -24,4 +24,4 @@ jobs:
         cache: 'npm'
       working-directory: './client'
     - run: npm ci
-    - run: npm test
+    - run: npm run test
