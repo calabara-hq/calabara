@@ -3,7 +3,6 @@
 <p align="center">
   <img style="width: 20rem" src="https://github.com/calabara-hq/calabara/blob/production/client/public/img/calabara-logo.png" alt="Calabara's custom image"/>
 </p>
-Our community here at Calabara is on a mission to build the best web3 tools specifically tailored for the wants and needs of DAOs. Calabara was started based on the fundamental belief that people build things better, together. We’re all unbelievably passionate about the potential of DAOs and how they will impact the way people will work. Calabara can help make this concept a reality while revolutionizing the way DAOs operate. Our software is the vessel for influencing and sharing our core beliefs and vibes with the rest of the web3 world.
 
 ## Getting Started:
 

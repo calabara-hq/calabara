@@ -1,9 +1,10 @@
 name: Node.js CI
 
 on:
-  commit:
-    branches:
-
+  push:
+    branches: [ develop ]
+  pull_request: 
+    branches: [ develop ]
 jobs:
   test:
 
@@ -21,5 +22,6 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: cd client && npm ci
-    - run: cd client && npm test
+      working-directory: './client'
+    - run: npm ci
+    - run: npm test
