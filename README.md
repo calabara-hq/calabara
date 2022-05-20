@@ -1,3 +1,6 @@
+[![Node.js CI](https://github.com/calabara-hq/calabara/actions/workflows/CI.yml/badge.svg)](https://github.com/calabara-hq/calabara/actions/workflows/CI.yml)
+
+
 ## Calabara
 
 <p align="center">
