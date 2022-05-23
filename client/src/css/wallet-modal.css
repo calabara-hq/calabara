@@ -1,0 +1,11 @@
+
+
+/*
+
+bring wallet modal to front when wiki folder modal is open
+
+*/
+
+.bn-onboard-custom.bn-onboard-modal{
+    z-index: 9999;
+}

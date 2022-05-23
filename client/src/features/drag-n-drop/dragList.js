@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import { DragDropContext } from "react-beautiful-dnd";
 import DraggableElement from "./draggableElement";
-import axios from 'axios'
 import { useParams, useHistory } from 'react-router-dom'
 
 
@@ -10,8 +9,9 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import {
   selectWikiList,
-  updateWikiList,
+  setWikiList,
 } from '../wiki/wiki-reducer';
+import useCommon from "../hooks/useCommon";
 
 const DragDropContextContainer = styled.div`
   padding: 20px;
@@ -26,13 +26,6 @@ const ListGrid = styled.div`
   position: relative;
 `;
 
-
-
-async function isGatekeeperEnabled(ens){
-  const result = await axios.get('/isGatekeeperEnabled/' + ens);
-  return result.data
-
-}
 
 // ok. we need to update the db to record when a wiki entry switches access levels, or when the default wiki is switched.
 // removeFromList and addToList WILL catch these events, but they are too verbose. I.e. they will fire when an element is dragged out and brought back to the same place.
@@ -56,19 +49,19 @@ const addToList = (list, index, element) => {
 
 
 
-function DragList({setCurrentWikiId, editWikiGroupingClick, lists, setLists}) {
-  const {ens} = useParams();
+function DragList({ setCurrentWikiId, editWikiGroupingClick, lists, setLists }) {
+  const { ens } = useParams();
   const history = useHistory();
   const dispatch = useDispatch();
   const wikiList = useSelector(selectWikiList);
+  const { authenticated_post } = useCommon()
 
-
-// watch elements and update db on change
-// since we use length, we only need to watch 1 of them
+  // watch elements and update db on change
+  // since we use length, we only need to watch 1 of them
 
 
   const onDragEnd = async (result) => {
-    console.log(result)
+
     if (!result.destination) {
       return;
     }
@@ -85,9 +78,9 @@ function DragList({setCurrentWikiId, editWikiGroupingClick, lists, setLists}) {
       result.destination.index,
       removedElement
     );
-    dispatch(updateWikiList(listCopy));
 
-    await axios.post('/updateWikiLists', {ens: ens, file_id: result.draggableId, new_grouping: result.destination.droppableId})
+    let res = await authenticated_post('/wiki/updateWikiLists', { ens: ens, file_id: result.draggableId, new_grouping: result.destination.droppableId })
+    if (res) dispatch(setWikiList(listCopy));
 
   };
 
@@ -102,14 +95,14 @@ function DragList({setCurrentWikiId, editWikiGroupingClick, lists, setLists}) {
               elements={wikiList[listKey].list}
               key={listKey}
               prefix={listKey}
-              group_name = {wikiList[listKey].group_name}
+              group_name={wikiList[listKey].group_name}
               history={history}
             />
           ))}
-        
+
         </ListGrid>
       </DragDropContext>
-    
+
     </DragDropContextContainer>
   );
 }

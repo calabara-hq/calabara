@@ -9,7 +9,7 @@ export const notificationReducer = createSlice({
   reducers: {
 
     subscribe: (state, data) => {
-      console.log('im here')
+      
       state.subscribed.push(data.payload)
     },
 

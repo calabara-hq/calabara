@@ -2,16 +2,14 @@ import '../../css/wiki-display.css'
 import '../../css/wiki-editor/medium-editor.css'
 import '../../css/wiki-editor/default.css'
 import '../../css/wiki-editor/custom-style.css'
-import Wallet from '../wallet/wallet'
-import calabaraLogo from '../../img/calabara-logo.svg'
-import React, {useState, useEffect} from 'react'
+import React, { useState, useEffect } from 'react'
 import { useHistory, useParams } from "react-router-dom"
 import axios from 'axios';
 import Editor from 'react-medium-editor';
 import DragList from '../drag-n-drop/dragList'
-import HelpModal from '../../helpers/modal/helpModal'
 import Glyphicon from '@strongdm/glyphicon'
-import moment from "moment";
+import WikiModal from './wiki-folder-modal'
+import BackButton from '../back-button/back-button'
 
 
 //redux
@@ -24,27 +22,26 @@ import {
 
 import {
   selectWikiList,
-  populateInitialWikiList,
   selectWikiListOrganization,
 } from './wiki-reducer';
 
 import {
   selectDashboardInfo,
-  populateDashboardInfo,
 } from '../dashboard/dashboard-info-reducer'
 
 import {
   selectDashboardRuleResults,
   selectDashboardRules,
-  populateDashboardRules,
-  applyDashboardRules,
 } from '../gatekeeper/gatekeeper-rules-reducer'
-import { current } from '@reduxjs/toolkit'
 
-export default function WikiDisplay({mode}) {
-  const {ens} = useParams();
-  const history = useHistory();
-  const dispatch = useDispatch();
+// import { testDiscordRoles } from '../hooks/useGatekeeper'
+import useDashboardRules from '../hooks/useDashboardRules'
+import useGatekeeper from '../hooks/useGatekeeper'
+import useCommon from '../hooks/useCommon'
+import useWiki from '../hooks/useWiki'
+
+export default function WikiDisplay({ mode }) {
+  const { ens } = useParams();
   const wikiList = useSelector(selectWikiList)
   const info = useSelector(selectDashboardInfo)
   const isConnected = useSelector(selectConnectedBool)
@@ -55,46 +52,60 @@ export default function WikiDisplay({mode}) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isMetadataLoaded, setIsMetadataLoaded] = useState(false)
   const [isWikiLoaded, setIsWikiLoaded] = useState(false);
-  const [gatekeeperPass, setGatekeeperPass] = useState(false)
   const [wikiDisplayTitle, setWikiDisplayTitle] = useState(null);
   const [wikiDisplayContent, setWikiDisplayContent] = useState(null)
   const [currentWikiId, setCurrentWikiId] = useState(-1)
   const [modalOpen, setModalOpen] = useState(false);
-  const [modalTab, setModalTab] = useState("");
-  const [modalData, setModalData] = useState("");
-
   const [groupID, setGroupID] = useState(null)
+  const {applyDashboardRules} = useDashboardRules();
+  const { batchFetchDashboardData, authenticated_post } = useCommon();
+  const { populateInitialWikiList, removeFromWikiList } = useWiki();
 
-  const close = (cleanup) => {
-    setModalOpen(false);
-    setModalTab("")
-    setGroupID(null);
-    if(cleanup == -1){
-      setCurrentWikiId(-1);
+  useEffect(() => {
+    // populate the dashboard info on pageload
+    batchFetchDashboardData(ens, info)
+    populateInitialWikiList(ens)
+  }, [])
+
+
+
+  const close = async (cleanup) => {
+    if (cleanup.type === 'standard') {
+      setModalOpen(false);
+      setGroupID(null)
+    }
+
+    else if (cleanup.type === 'delete') {
+      let res = await authenticated_post('/wiki/deleteWikiGrouping', { ens: cleanup.ens, groupID: cleanup.groupID })
+      if (res) {
+        setModalOpen(false);
+        removeFromWikiList(cleanup.groupID);
+        setCurrentWikiId(-1);
+        setGroupID(null);
+      }
     }
   }
+
+
   const open = () => setModalOpen(true);
 
-  async function showModal(){
-    (modalOpen ? close() : open())
-  }
 
 
-  async function readWiki(file_id){
-    const wiki = await axios.get('/readWiki/' + file_id)
+  async function readWiki(file_id) {
+    const wiki = await axios.get('/wiki/readWiki/' + file_id)
     setWikiDisplayTitle(wiki.data.filedata.title)
     setWikiDisplayContent(wiki.data.filedata.content)
     setIsWikiLoaded(true);
 
   }
 
-  function checkForAdmin(){
-    for(var i in info.addresses){
-      if(walletAddress == info.addresses[i]){
+  function checkForAdmin() {
+    for (var i in info.addresses) {
+      if (walletAddress == info.addresses[i]) {
         setIsAdmin(true);
         break;
       }
-      else{
+      else {
         setIsAdmin(false);
       }
     }
@@ -109,209 +120,199 @@ export default function WikiDisplay({mode}) {
   // display the default for whichever case (public or member)
 
 
-useEffect(async() =>{
-  // get the dashboard info on pageload
-  dispatch(populateInitialWikiList(ens));
-  dispatch(populateDashboardInfo(ens))
-  dispatch(populateDashboardRules(ens))
 
 
-},[])
+  // do this to make sure no stale lists from other orgs
+  useEffect(() => {
+    if (organizationEns.ens == ens) {
+      setIsMetadataLoaded(true)
+    }
+  }, [wikiList])
 
-// do this to make sure no stale lists
-useEffect(()=>{
-  if(organizationEns.ens == ens){
-    setIsMetadataLoaded(true)
+  useEffect(async () => {
+    checkForAdmin();
+  }, [isConnected, info])
+
+  useEffect(() => {
+    applyDashboardRules(walletAddress)
+  }, [dashboardRules, isConnected, wikiList])
+
+
+
+  useEffect(() => {
+    if (currentWikiId != -1) {
+      readWiki(currentWikiId)
+    }
+  }, [currentWikiId])
+
+
+  useEffect(() => {},[isAdmin])
+
+  const newWikiGroupingClick = () => {
+    open();
   }
-},[wikiList])
 
-useEffect(async() =>{
-  checkForAdmin();
-},[isConnected, info])
-
-useEffect(()=>{
-    dispatch(applyDashboardRules(walletAddress))
-},[dashboardRules, isConnected, wikiList])
-
-
-
-useEffect(() => {
-  if(currentWikiId != -1){
-    readWiki(currentWikiId)
+  const editWikiGroupingClick = (group_id) => {
+    setGroupID(group_id)
+    open();
   }
-},[currentWikiId])
 
+  const fireWikiPopout = () => {
+    setCurrentWikiId(-1)
+    setIsWikiLoaded(false)
+  }
 
-
-
-const newWikiGroupingClick = () => {
-  setModalTab('addWikiGrouping')
-  showModal();
-}
-
-const editWikiGroupingClick = (group_id) => {
-  setGroupID(group_id)
-  setModalTab('addWikiGrouping')
-  showModal();
-}
-
-const fireWikiPopout = () => {
-  setCurrentWikiId(-1)
-  setIsWikiLoaded(false)
-}
 
 
   return (
-    
-    <div className={"wiki-display-container"}>
-      <div className={"wiki-popout-sidebar " + (currentWikiId == -1 ? 'wiki-closed' : 'wiki-open')}>
-        <button onClick={fireWikiPopout}>documents</button>
-      </div>
-      <div className={"wiki-sidebar "  + (currentWikiId == -1 ? 'wiki-closed' : 'wiki-open')}>
-        <div className="wiki-sidebar-heading">
-          <h2> Docs </h2>
-          {isAdmin && <button onClick={newWikiGroupingClick}><Glyphicon glyph="folder-open"/></button> }
+    <>
+      <BackButton link={'dashboard'} text={"back to dashboard"} />
+      <div className={"wiki-display-container"}>
+        <div className={"wiki-popout-sidebar " + (currentWikiId == -1 ? 'wiki-closed' : 'wiki-open')}>
+          <button onClick={fireWikiPopout}>documents</button>
         </div>
-        {isMetadataLoaded &&
-          <>
-            {isAdmin &&
-              <DragList editWikiGroupingClick={editWikiGroupingClick} setCurrentWikiId={setCurrentWikiId}/>
-            }
-            {!isAdmin &&
-              <TestWikiVisibility wikiList={wikiList} setCurrentWikiId={setCurrentWikiId} dashboardRuleResults={dashboardRuleResults}/>
-            }
-          </>
-      }
+        <div className={"wiki-sidebar " + (currentWikiId == -1 ? 'wiki-closed' : 'wiki-open')}>
+          <div className="wiki-sidebar-heading">
+            <h2> Docs </h2>
+            {isAdmin && <button onClick={newWikiGroupingClick}><Glyphicon glyph="folder-open" /></button>}
+          </div>
+          {isMetadataLoaded &&
+            <>
+              {isAdmin &&
+                <DragList editWikiGroupingClick={editWikiGroupingClick} setCurrentWikiId={setCurrentWikiId} />
+              }
+              {!isAdmin &&
+                <TestWikiVisibility wikiList={wikiList} setCurrentWikiId={setCurrentWikiId} dashboardRuleResults={dashboardRuleResults} />
+              }
+            </>
+          }
+        </div>
+        <RenderWiki isWikiLoaded={isWikiLoaded} isAdmin={isAdmin} currentWikiId={currentWikiId} wikiDisplayTitle={wikiDisplayTitle} wikiDisplayContent={wikiDisplayContent} />
+        {modalOpen && <WikiModal modalOpen={modalOpen} handleClose={close} groupID={groupID} />}
       </div>
-      <RenderWiki isWikiLoaded={isWikiLoaded} isAdmin = {isAdmin} currentWikiId={currentWikiId} wikiDisplayTitle={wikiDisplayTitle} wikiDisplayContent={wikiDisplayContent}/>
-      {modalOpen && <HelpModal groupID={groupID} tab={modalTab} modalOpen={modalOpen} handleClose={close}/>}
-    </div>
-  
+    </>
+
   );
 }
 
 
-function TestWikiVisibility({setCurrentWikiId, wikiList, dashboardRuleResults}){
+function TestWikiVisibility({ setCurrentWikiId, wikiList, dashboardRuleResults }) {
   const isConnected = useSelector(selectConnectedBool)
- 
-
-  console.log(wikiList)
 
   useEffect(() => {
 
-  },[isConnected])
+  }, [isConnected])
 
-  return(
+  return (
     <div className="wiki-sidebar-list">
-    <div>
-      {/* map over all wiki groups*/}
-      {Object.entries(wikiList).map(([group, group_data]) => {
-       return  <A setCurrentWikiId={setCurrentWikiId} group={group} group_data={group_data} dashboardRuleResults={dashboardRuleResults}/>
-      })}
-    
+      <div>
+        {/* map over all wiki groups*/}
+        {Object.entries(wikiList).map(([group, group_data]) => {
+          return <WikiRuleMap setCurrentWikiId={setCurrentWikiId} key={group} group={group} group_data={group_data} dashboardRuleResults={dashboardRuleResults} />
+        })}
+
+      </div>
     </div>
-</div>
   )
 }
 
-function A({setCurrentWikiId, group, group_data, dashboardRuleResults}){
-
+function WikiRuleMap({ setCurrentWikiId, group, group_data, dashboardRuleResults }) {
+const {testDiscordRoles} = useGatekeeper();
 
   useEffect(() => {
-    console.log(dashboardRuleResults)
-  },[dashboardRuleResults])
+  }, [dashboardRuleResults])
 
-return(
-  <>
-  {/* if there are no gk rules, just return all the wikis */}
+  return (
+    <>
+      {/* if there are no gk rules, just return all the wikis */}
 
-  {Object.keys(group_data.gk_rules).length == 0 ? (
-    
-    <B setCurrentWikiId={setCurrentWikiId} group_data={group_data}/>
+      {Object.keys(group_data.gk_rules).length == 0 ? (
 
-  ) : (
+        <ShowWikiInSidebar key={group} setCurrentWikiId={setCurrentWikiId} group_data={group_data} />
 
-    /* else, map over gk_rules in wiki list and make visible accordingly*/
-    Object.entries(group_data.gk_rules).map(([key2, value2]) => {
-      return(
-        <>
-        {/* test the threshold for the applied rule */}
-      {dashboardRuleResults[key2] >= value2 ? (
-        <B setCurrentWikiId={setCurrentWikiId} group_data={group_data}/>
-      ) : 
-      (
-        console.log('nothing to display here')
+      ) : (
+
+        /* else, map over gk_rules in wiki list and make visible accordingly*/
+        Object.entries(group_data.gk_rules).map(([key, applied_rule]) => {
+          let isVisible;
+          if (typeof applied_rule === 'object') {
+            isVisible = testDiscordRoles(applied_rule, dashboardRuleResults[key]) === 'pass'
+          }
+          else {
+            isVisible = dashboardRuleResults[key] >= applied_rule
+          }
+          return (
+            <>
+              {isVisible &&
+                <ShowWikiInSidebar setCurrentWikiId={setCurrentWikiId} key={key} group_data={group_data} />
+              }
+            </>
+          )
+        })
       )
       }
-  
-      </>
-    )
-    })
+    </>
   )
-  }
-  </>
-)
 }
 
-function B({setCurrentWikiId, group_data}){
+function ShowWikiInSidebar({ setCurrentWikiId, group_data }) {
   const [isFolderOpen, setIsFolderOpen] = useState(false);
-  
 
 
-  return(
+
+  return (
     <>
-      {group_data.list.length > 0 && 
-      <div className={"wiki-folder rotate " + (isFolderOpen ? 'down' : undefined) }onClick={() => {setIsFolderOpen(!isFolderOpen)}}>
-        <span></span>
-        <p>{group_data.group_name}</p>
-      </div>}
+      {group_data.list.length > 0 &&
+        <div className={"wiki-folder rotate " + (isFolderOpen ? 'down' : undefined)} onClick={() => { setIsFolderOpen(!isFolderOpen) }}>
+          <span></span>
+          <p>{group_data.group_name}</p>
+        </div>}
       {group_data.list.map((el, idx) => {
-      return( 
-            <div className={"wiki " + (!isFolderOpen ? 'hidden' : 'undefined')} onClick={() => {setCurrentWikiId(el.id)}}>
-              <p>{el.title}</p>
-            </div>
-            )
-    })}
+        return (
+          <div key={idx} className={"wiki " + (!isFolderOpen ? 'hidden' : 'undefined')} onClick={() => { setCurrentWikiId(el.id) }}>
+            <p>{el.title}</p>
+          </div>
+        )
+      })}
     </>
   )
 }
 
 
 
-function RenderWiki({isWikiLoaded, isAdmin, currentWikiId, wikiDisplayTitle, wikiDisplayContent}){
+function RenderWiki({ isWikiLoaded, isAdmin, currentWikiId, wikiDisplayTitle, wikiDisplayContent }) {
   const history = useHistory();
-  console.log(isWikiLoaded)
 
-  return(
+  return (
     <>
-    <div className={"editor-display " + (currentWikiId != -1 ? 'wiki-open' : 'wiki-closed')}>
-      <div className="edit-wiki-container">
-        {isAdmin && <button onClick={() => {history.push('docs-edit/1/' + currentWikiId)}} className="edit-wiki-button"><Glyphicon glyph="pencil"/></button>}
+      <div className={"editor-display " + (currentWikiId != -1 ? 'wiki-open' : 'wiki-closed')}>
+        <div className="edit-wiki-container">
+          {isAdmin && <button onClick={() => { history.push('docs-edit/1/' + currentWikiId) }} className="edit-wiki-button"><Glyphicon glyph="pencil" /></button>}
+        </div>
+
+        {isWikiLoaded &&
+          <>
+            <div className="editor-title">
+              <div>{wikiDisplayTitle}</div>
+            </div>
+
+            <Editor
+              className="react-editor"
+              text={wikiDisplayContent}
+              options={{ disableEditing: true, toolbar: false, placeholder: false }}
+            />
+          </>
+        }
+
+        {currentWikiId != -1 && !isWikiLoaded &&
+
+          <div style={{ backgroundColor: 'lightgrey', borderRadius: '16px', height: '5rem' }} className="editor-title">
+            <div className="loading" disabled></div>
+          </div>
+        }
       </div>
 
-    {isWikiLoaded && 
-    <>
-    <div className="editor-title">
-      <div>{wikiDisplayTitle}</div>
-    </div>
 
-    <Editor
-        className="react-editor"
-        text={wikiDisplayContent}
-        options={{disableEditing: true, toolbar: false, placeholder: false}}
-       />
     </>
-     }
-
-    {currentWikiId != -1 && !isWikiLoaded &&
-   
-      <div style={{backgroundColor: 'lightgrey', borderRadius: '16px', height: '5rem'}} className="editor-title">
-        <div className="loading" disabled></div>
-      </div>
-    }
-    </div>
-
-  
-  </>
   )
 }

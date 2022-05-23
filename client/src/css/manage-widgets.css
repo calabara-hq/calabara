@@ -36,10 +36,11 @@
 
 .manage-widgets-content{
     display: flex;
-    flex-direction: column;
-    width: 100%;
+    flex-direction: row;
+    width: 90%;
     justify-content: center;
     align-items: center;
+    grid-gap: 20px;
 }
 
 .manage-widgets-content > *{
@@ -47,13 +48,15 @@
 }
 
 .manage-installed{
-  color: rgb(169, 152, 255);
-  border: 2px solid rgb(169, 152, 255);
-  background-color: rgba(169, 152, 255, 0.3);
-  border-radius: 8px;
-  width: 50%;
+  border: none;
+  border-radius: 4px;
+  background-color: #22272e;
+  padding: 5px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+  width: 40%;
   text-align: center;
   cursor: pointer;
+  color: #d2d2d2;
 }
 .manage-installed > *{
   margin-top: 10px;
@@ -61,13 +64,16 @@
 }
 
 .add-new-widget{
-  color: rgb(44, 192, 255);
-  border:2px solid rgb(44, 192, 255);
-  background-color: rgba(44, 192, 255, 0.3);
+  border: none;
+  border-radius: 4px;
+  background-color: #22272e;
+  padding: 5px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
   border-radius: 8px; 
-  width: 50%;
+  width: 40%;
   text-align: center;
   cursor: pointer;
+  color: #d2d2d2;
 }
 
 .add-new-widget > *{
@@ -75,7 +81,13 @@
   margin-bottom: 10px;
 }
 
+.manage-installed:hover{
+  background-color: rgba(34, 39, 46, 0.3);
+}
 
+.add-new-widget:hover{
+  background-color: rgba(34, 39, 46, 0.3);
+}
 
 .manage-installed-widgets-tab{
     display: flex;
@@ -142,15 +154,6 @@
 
   .widget-summary > * {
       margin-bottom: 40px;
-  }
-
-  .newWikiGrouping{
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: 100%;
-    width: 100%;
   }
 
   
@@ -339,7 +342,19 @@
 
   .cal-id-input{
     width: 100%;
+    padding: 1rem 2rem;
+    border: double 2px transparent;
+    border-radius: 30px;
+    background-image: linear-gradient(#141416, #141416), 
+                      linear-gradient(to right, #e00f8e, #2d66dc);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+    color: white;
+    font-size: 1.5rem;
+    outline: none;
   }
+
+
   
   .react-switch-checkbox {
     height: 0;
@@ -356,6 +371,7 @@
     border-radius: 100px;
     position: relative;
     transition: background-color .2s;
+    margin-bottom: 0px;
   }
   
   .react-switch-button {
@@ -432,4 +448,5 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    color: white;
   }

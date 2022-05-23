@@ -491,8 +491,12 @@ body{
   margin-bottom: 30px;
   padding: 20px 40px;
   font-size: 20px;
+  color: white;
 }
 
+.section5 > .bottom > div > p{
+  margin: 0;
+}
 
 svg path {
   stroke: #2d2e35;

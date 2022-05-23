@@ -1,10 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-
 export const wiki_data = createSlice({
   name: 'wiki_data',
   initialState: {
-    wikiList:{
+    wikiList: {
       /*
       ens: ens,
       groupings: {}
@@ -26,8 +25,8 @@ export const wiki_data = createSlice({
       },
       */
     },
-    organization:{
-      
+    organization: {
+
     },
   },
   reducers: {
@@ -43,77 +42,13 @@ export const wiki_data = createSlice({
     setEns: (state, data) => {
       state.organization.ens = data.payload;
     }
-    
+
 
   },
 });
 
-export const {setWikiList, addToWikiList, setEns} = wiki_data.actions;
+export const { setWikiList, addToWikiList, setEns } = wiki_data.actions;
 export const selectWikiList = state => state.wiki_data.wikiList;
 export const selectWikiListOrganization = state => state.wiki_data.organization;
-
-
-
-
-
-export const deleteWiki = (id, grouping, index) => async (dispatch, getState, axios) => {
-
-  const { wiki_data } = getState();
-
-  let listCopy = JSON.parse(JSON.stringify(wiki_data.wikiList));
-
-  listCopy[grouping].list.splice(index, 1);
-  dispatch(setWikiList(listCopy))
-  await axios.post('/deleteWiki/', {file_id: id});
-
-
-}
-
-export const populateInitialWikiList = (ens) => async (dispatch, getState, axios) => {
-  const result = await axios.get('/fetchWikis/' + ens)
-  console.log(result)
-  dispatch(setEns(ens))
-  dispatch(setWikiList(result.data))
-
-}
-
-export const removeFromWikiList = (groupID) => async (dispatch, getState, axios) => {
-
-  const { wiki_data } = getState();
-
-  let listCopy = JSON.parse(JSON.stringify(wiki_data.wikiList))
-  delete listCopy[groupID]
-
-
-  dispatch(setWikiList(listCopy))
-
-}
-
-
-export const updateWikiList = (newList) => async (dispatch, getState, axios) => {
-
-  dispatch(setWikiList(newList))
-
-}
-
-export const renameWikiList = (newList) => async (dispatch, getState, axios) => {
-
-  const { wiki_data } = getState();
-
-  let listCopy = JSON.parse(JSON.stringify(wiki_data.wikiList))
-
-  console.log(newList.group_id)
-  console.log(listCopy[newList.group_id])
-
-
-  listCopy[newList.group_id] = newList.value;
-
-  dispatch(setWikiList(listCopy))
-
-}
-
-
-
-
 
 export default wiki_data.reducer;

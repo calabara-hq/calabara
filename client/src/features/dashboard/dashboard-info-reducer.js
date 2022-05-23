@@ -1,21 +1,21 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+const initialState = {
+  info: {
+    name: "",
+    ens: "",
+    logo: "",
+    members: "",
+    website:"",
+    discord: "",
+    verified: "",
+    addresses: [],
+  }, 
+}
 
 export const dashboardInfo = createSlice({
   name: 'dashboardInfo',
-  initialState: {
-    info: {
-      name: "",
-      ens: "",
-      logo: "",
-      members: "",
-      website:"",
-      discord: "",
-      verified: "",
-      addresses: [],
-      
-    }
-  },
+  initialState,
   reducers: {
 
     populateInfo: (state, data) => {
@@ -29,35 +29,14 @@ export const dashboardInfo = createSlice({
     decreaseMemberCount: (state, data) => {
       state.info.members -= 1;
     },
+
+    dashboardInfoReset: () => initialState
   },
 });
 
 
-export const { populateInfo, increaseMemberCount, decreaseMemberCount } = dashboardInfo.actions;
+export const { populateInfo, increaseMemberCount, decreaseMemberCount, dashboardInfoReset } = dashboardInfo.actions;
 export const selectDashboardInfo = state => state.dashboardInfo.info;
-
-
-
-export const populateDashboardInfo = (ens) => async (dispatch, getState, axios) => {
-
-  const res = await axios.get('/dashboardInfo/' + ens);
-  console.log(res)
-  dispatch(populateInfo(res.data.orgInfo))
-}
-
-export const updateDashboardInfo = (params) => async (dispatch, getState, axios) => {
-  console.log('here!!!')
-
-  const {dashboardInfo} = getState();
-  console.log(params)
-
-  let infoCopy = JSON.parse(JSON.stringify(dashboardInfo.info));
-
-  infoCopy = Object.assign(infoCopy, params)
-  dispatch(populateInfo(infoCopy))
-}
-
-
-
+export const selectDashboardMemberCount = state => state.dashboardInfo.info.members;
 
 export default dashboardInfo.reducer;

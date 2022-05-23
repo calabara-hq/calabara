@@ -14,7 +14,7 @@ import dashboardWidgetsReducer from '../features/dashboard/dashboard-widgets-red
 import dashboardInfoReducer from '../features/dashboard/dashboard-info-reducer';
 import wikiReducer from '../features/wiki/wiki-reducer';
 import rulesReducer from '../features/gatekeeper/gatekeeper-rules-reducer';
-
+import userReducer from '../features/user/user-reducer';
 
 
 const reducer = combineReducers({
@@ -25,6 +25,7 @@ const reducer = combineReducers({
   dashboardInfo: dashboardInfoReducer,
   wiki_data: wikiReducer,
   gatekeeperRules: rulesReducer,
+  user: userReducer,
 });
 
 const persistConfig = {

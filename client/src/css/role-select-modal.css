@@ -1,0 +1,14 @@
+.role-select-save-ctr{
+    display: flex;
+    margin-top: 50px;
+}
+
+.role-select-modal-container{
+    display: flex;
+    flex-direction: column;
+}
+
+
+.exit-btn{
+    margin-left: auto;
+}

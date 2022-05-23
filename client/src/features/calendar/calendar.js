@@ -1,110 +1,91 @@
 import React, { useEffect, useState } from 'react'
-import { useSelector, useDispatch } from 'react-redux';
 import { listEvents } from '../../helpers/google-calendar'
-import { useHistory, useParams } from "react-router-dom"
-import { Calendar, momentLocalizer } from "react-big-calendar";
+import { useParams } from "react-router-dom"
+import Kalend, { CalendarView, OnNewEventClickData } from 'kalenda' // import component
+import 'kalend/dist/styles/index.css'; // import styles
 import moment from "moment";
-import HelpModal from '../../helpers/modal/helpModal';
-import axios from 'axios'
+import CalendarModal from './calendar-modal.js';
+import BackButton from '../back-button/back-button';
 
 
 import '../../css/calendar.css'
-import "react-big-calendar/lib/css/react-big-calendar.css";
-
-
-import {
-  populateInitialMembership,
-} from '../org-cards/org-cards-reducer';
-
-import {
-  selectConnectedBool,
-  selectConnectedAddress,
-} from '../wallet/wallet-reducer';
 
 
 export default function Events() {
   const { ens, calendarId } = useParams();
-  const dispatch = useDispatch();
-  const isConnected = useSelector(selectConnectedBool)
-  const walletAddress = useSelector(selectConnectedAddress)
-  const [calendarEvents, setCalendarEvents] = useState([])
-  const [dataPulled, setDataPulled] = useState(false)
-  const [modalOpen, setModalOpen] = useState(false)
-  const [eventData, setEventData] = useState('')
+  const [calendarEvents, setCalendarEvents] = useState([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [eventData, setEventData] = useState('');
+  const [currentDate, setCurrentDate] = useState('');
 
   const open = () => { setModalOpen(true) }
   const close = () => { setModalOpen(false) }
-
-
-
-  useEffect(() => {
-    if (dataPulled == false) {
-      dispatch(populateInitialMembership(walletAddress))
-      setDataPulled(true)
-    }
-  }, [])
 
 
   useEffect(() => {
 
     (async () => {
 
-      if (dataPulled) {
-        var result = await listEvents(calendarId);
-        var events = result.data.data.items;
+      var result = await listEvents(calendarId);
+      var events = result.data.data.items;
+      console.log(events)
 
-
-        /* we want our data like this
-
-            
-              events: [
-                {
-                  start: moment().toDate(),
-                  end: moment()
-                    .add(1, "hours")
-                    .toDate(),
-                  title: "Some title"
-                }
-              ]
-
-
-        */
-
-        events.map((eventItem, idx) => {
-          eventItem.start = moment(eventItem.start.dateTime).toDate();
-          eventItem.end = moment(eventItem.end.dateTime).toDate();
-          eventItem.title = eventItem.summary;
-          eventItem.timeUntil = moment.duration(moment(eventItem.start).diff(moment()))
-        })
-
-        setCalendarEvents(events)
-      }
+      events.map((eventItem, idx) => {
+        eventItem.id = idx;
+        eventItem.startAt = moment(eventItem.start.dateTime).toISOString();
+        eventItem.endAt = moment(eventItem.end.dateTime).toISOString();
+        eventItem.timeUntil = moment.duration(moment(eventItem.start).diff(moment()))
+        eventItem.color = 'blue';
+      })
+      setCurrentDate(new Date().toISOString())
+      setCalendarEvents(events)
     })();
-  }, [dataPulled])
-
-  const localizer = momentLocalizer(moment);
+  }, [])
 
 
 
+  const onSelectView = (view) => {
+    console.log(view)
+    setCurrentDate(new Date().toISOString())
+  }
+
+  const onEventClick = (data) => {
+    console.log(data)
+    setEventData({
+      start: moment(data.startAt).toDate(),
+      end: moment(data.endAt).toDate(),
+      htmlLink: data.htmlLink,
+      title: data.summary,
+      description: data.description
+    })
+    setModalOpen(true)
+  }
   return (
     <>
+      <BackButton link={'/' + ens + '/dashboard'} text={"back to dashboard"} />
 
       <div className="calendarContainer">
-        <Calendar
-          localizer={localizer}
-          defaultDate={new Date()}
-          defaultView="month"
+        <Kalend
+          disabledDragging={true}
+          autoScroll={true}
+          showTimeLine={true}
+          onPageChange={onSelectView}
           events={calendarEvents}
-          style={{ height: "100vh" }}
-          onSelectEvent={(e) => { setModalOpen(true); setEventData(e) }}
+          onEventClick={onEventClick}
+          initialDate={currentDate}
+          hourHeight={60}
+          initialView={CalendarView.WEEK}
+          timeFormat={'12'}
+          weekDayStart={'Monday'}
+          language={'en'}
+          
         />
       </div>
       <div>
-        {modalOpen && <HelpModal handleClose={close} tab="calendarEvent" eventData={eventData} />}
+        {modalOpen && <CalendarModal modalOpen={modalOpen} handleClose={close} eventData={eventData} />}
       </div>
 
     </>
   )
 
 }
-

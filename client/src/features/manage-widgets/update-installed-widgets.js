@@ -1,20 +1,21 @@
 import React, { useEffect, useState, useReducer, useRef } from 'react'
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
 import calendarLogo from '../../img/calendar.svg'
 import snapshotLogo from '../../img/snapshot.svg'
 import wikiLogo from '../../img/wiki.svg'
-import otterspaceLogo from '../../img/otterspace.png'
-import axios from 'axios'
 import { useParams } from 'react-router-dom';
 import '../../css/manage-widgets.css'
 import '../../css/settings-buttons.css'
 import { RuleSelect } from './gatekeeper-toggle';
 import CalendarConfiguration from './calendar-configuration';
+import { showNotification } from '../notifications/notifications';
 import {
   selectInstalledWidgets,
-  updateWidgets,
-  updateWidgetGatekeeper,
 } from '../../features/dashboard/dashboard-widgets-reducer';
+import { selectDashboardRules } from '../gatekeeper/gatekeeper-rules-reducer';
+import useWidgets from '../hooks/useWidgets';
+import useCommon from '../hooks/useCommon';
+
 
 
 
@@ -24,7 +25,7 @@ export default function ManageInstalledWidgetsTab({ setFunctionality, setTabHead
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    setTabHeader('manage installed widgets')
+    setTabHeader('manage installed apps')
   }, [])
 
 
@@ -48,7 +49,7 @@ export default function ManageInstalledWidgetsTab({ setFunctionality, setTabHead
   return (
     <>
       {progress == 0 && <SelectInstalledWidget setProgress={setProgress} selected={selected} setSelected={setSelected} setFunctionality={setFunctionality} setTabHeader={setTabHeader} />}
-      {progress == 1 && <ManageWidget setProgress={setProgress} selected={selected} setTabHeader={setTabHeader} />}
+      {progress == 1 && <ManageWidget setProgress={setProgress} selected={selected} setTabHeader={setTabHeader} setFunctionality={setFunctionality} />}
     </>
   )
 }
@@ -57,7 +58,7 @@ function SelectInstalledWidget({ setProgress, setSelected, selected, setFunction
   const installedWidgets = useSelector(selectInstalledWidgets);
 
   useEffect(() => {
-    setTabHeader('Manage installed widgets')
+    setTabHeader('Manage installed apps')
     setSelected('')
   }, [])
 
@@ -72,7 +73,7 @@ function SelectInstalledWidget({ setProgress, setSelected, selected, setFunction
   return (
     <div className="manage-installed-widgets-tab">
       <div className="tab-message neutral">
-        <p>Select a widget you would like to manage</p>
+        <p>Select an app you would like to manage</p>
       </div>
       <div className="installable-widgets-container">
         {installedWidgets.map((el) => {
@@ -112,11 +113,7 @@ function InstalledWidget({ el, selected, setSelected }) {
     link = 'https://docs.calabara.com/v1/widgets/calendar-description'
   }
 
-  if (el.name == 'otterspace onboarding') {
-    imgSource = otterspaceLogo
-    description = 'otterspace onboarding app'
-    link = 'https://app.otterspace.xyz/dao_landing/sharkdao-1641723620621x716200186443409800'
-  }
+
 
   return (
 
@@ -125,14 +122,14 @@ function InstalledWidget({ el, selected, setSelected }) {
       <div className="installable-widget-text">
         <p>{el.name == 'wiki' ? 'docs' : el.name}</p>
         <p>{description}</p>
-        <u onClick={(e) => { window.open(link);e.stopPropagation();}}>Learn more</u>
+        <u onClick={(e) => { window.open(link); e.stopPropagation(); }}>Learn more</u>
       </div>
     </div>
   )
 }
 
 
-function ManageWidget({ selected, setProgress, setTabHeader }) {
+function ManageWidget({ selected, setProgress, setTabHeader, setFunctionality }) {
 
   // show 2 divs: gatekeeper settings and metadata settings (if applicable). 
   // only calendar will have metadata for now
@@ -142,10 +139,11 @@ function ManageWidget({ selected, setProgress, setTabHeader }) {
   const [settingsStep, setSettingsStep] = useState(0);
 
 
+
   return (
     <>
       {settingsStep == 0 &&
-        <WidgetSummary selected={selected} setSettingsStep={setSettingsStep} setProgress={setProgress} setTabHeader={setTabHeader} />
+        <WidgetSummary selected={selected} setSettingsStep={setSettingsStep} setProgress={setProgress} setTabHeader={setTabHeader} setFunctionality={setFunctionality} />
       }
       {settingsStep == 1 &&
         <MetadataSettings selected={selected} setProgress={setProgress} setSettingsStep={setSettingsStep} setTabHeader={setTabHeader} />
@@ -157,17 +155,19 @@ function ManageWidget({ selected, setProgress, setTabHeader }) {
   )
 }
 
-function WidgetSummary({ selected, setSettingsStep, setProgress, setTabHeader }) {
+function WidgetSummary({ selected, setSettingsStep, setProgress, setTabHeader, setFunctionality }) {
 
   const [metadataExists, setMetadataExists] = useState(false);
-  const dispatch = useDispatch();
-
+  const availableRules = useSelector(selectDashboardRules)
+  const installedWidgets = useSelector(selectInstalledWidgets)
+  const { updateWidgets } = useWidgets();
+  const { authenticated_post } = useCommon();
   const { ens } = useParams();
 
   useEffect(() => {
-     if (selected != '' && Object.keys(selected.metadata).length > 0) {
-       setMetadataExists(true)
-     }
+    if (selected != '' && Object.keys(selected.metadata).length > 0) {
+      setMetadataExists(true)
+    }
   }, [selected])
 
 
@@ -177,9 +177,20 @@ function WidgetSummary({ selected, setSettingsStep, setProgress, setTabHeader })
   })
 
   const deleteWidget = async () => {
-    dispatch(updateWidgets(0, selected));
-    await axios.post('/removeWidget', { ens: ens, name: selected.name })
-    setProgress(0);
+    console.log(installedWidgets)
+    let num_widgets = installedWidgets.length - 1;
+    let res = await authenticated_post('/dashboard/removeWidget', { ens: ens, name: selected.name })
+    if (res) {
+      updateWidgets(0, selected)
+      showNotification('success', 'success', 'application successfully deleted')
+
+      if (num_widgets > 0) setProgress(0);
+
+      else {
+        setFunctionality(0);
+      }
+    }
+
   }
 
   return (
@@ -198,11 +209,11 @@ function WidgetSummary({ selected, setSettingsStep, setProgress, setTabHeader })
           }
         </div>
         <div className="standard-contents">
-          {selected.name != 'wiki' || selected.name != 'otterspace onboarding' &&
+          {(selected.name != 'wiki' && Object.keys(availableRules).length > 0) &&
             <>
               <div className="standard-description">
                 <p>Gatekeeper</p>
-                <p>Manage gatekeeper rules applied to this widget.</p>
+                <p>Manage gatekeeper rules applied to this app.</p>
               </div>
               <button onClick={() => { setSettingsStep(2) }}>modify</button>
             </>
@@ -253,7 +264,8 @@ function GatekeeperSettings({ selected, setSettingsStep, setTabHeader }) {
 
   const [ruleError, setRuleError] = useState('');
   const { ens } = useParams();
-  const dispatch = useDispatch();
+  const { updateWidgetGatekeeper } = useWidgets();
+  const { authenticated_post } = useCommon();
 
   useEffect(() => {
     setTabHeader('gatekeeper')
@@ -273,13 +285,7 @@ function GatekeeperSettings({ selected, setSettingsStep, setTabHeader }) {
 
   const handlePrevious = () => {
     // check if selected gatekeepers have a threshold value set
-    for (const [key, value] of Object.entries(appliedRules)) {
-      if (value == '') {
-        setRuleError({ id: key })
-        console.log('rule error on ', key)
-        return;
-      }
-    }
+
     setSettingsStep(0);
   }
 
@@ -289,21 +295,24 @@ function GatekeeperSettings({ selected, setSettingsStep, setTabHeader }) {
     for (const [key, value] of Object.entries(appliedRules)) {
       if (value == '') {
         setRuleError({ id: key })
-        console.log('rule error on ', key)
+
         return;
       }
     }
-    
-    await axios.post('/updateWidgetGatekeeperRules', { ens: ens, gk_rules: appliedRules, name: selected.name });
-    dispatch(updateWidgetGatekeeper(selected.name, appliedRules))
-    setSettingsStep(0);
+
+    let res = await authenticated_post('/dashboard/updateWidgetGatekeeperRules', { ens: ens, gk_rules: appliedRules, name: selected.name });
+    if (res) {
+      updateWidgetGatekeeper(selected.name, appliedRules);
+      showNotification('saved successfully', 'success', 'your changes were successfully saved')
+      setSettingsStep(0);
+    }
   }
 
 
   return (
     <div className="manage-widgets-configure-gatekeeper-tab">
       <div className="tab-message neutral">
-        <p>Toggle the switches to apply gatekeeper rules to this widget. If multiple rules are applied, the gatekeeper will pass if the connected wallet passes any of the rules. <u onClick={() => { window.open('https://docs.calabara.com/gatekeeper') }}>Learn more</u></p>
+        <p>Toggle the switches to apply gatekeeper rules to this app. If multiple rules are applied, the gatekeeper will pass if the connected wallet passes any of the rules. <u onClick={() => { window.open('https://docs.calabara.com/gatekeeper') }}>Learn more</u></p>
       </div>
       <RuleSelect ruleError={ruleError} setRuleError={setRuleError} appliedRules={appliedRules} setAppliedRules={setAppliedRules} />
       <div className="manage-widgets-next-previous-ctr">

@@ -1,20 +1,10 @@
 import { Draggable } from "react-beautiful-dnd";
-import React, { useMemo, useEffect, useState } from "react";
-import styled, { css } from "styled-components";
+import React, { useState } from "react";
+import styled from "styled-components";
 import { useParams, useHistory } from 'react-router-dom';
-import Glyphicon from '@strongdm/glyphicon'
-
-import Button from 'react-bootstrap/Button';
-import Dropdown from 'react-bootstrap/Dropdown';
-
-
-
-
-import { useSelector, useDispatch } from 'react-redux';
-
-import {
-  deleteWiki,
-} from '../wiki/wiki-reducer';
+import { useDispatch } from 'react-redux';
+import useCommon from "../hooks/useCommon";
+import useWiki from "../hooks/useWiki";
 
 
 
@@ -38,9 +28,10 @@ const DragItem = styled.div`
 
 
 const ListItem = ({ item, index, setCurrentWikiId }) => {
+  const { ens } = useParams();
+  const { authenticated_post } = useCommon()
+  const { deleteWiki } = useWiki();
 
-  const history = useHistory();
-  const dispatch = useDispatch();
   const header = item.title;
 
   const [isWikiEllipsesClicked, setIsWikiEllipsesClicked] = useState(false)
@@ -50,58 +41,60 @@ const ListItem = ({ item, index, setCurrentWikiId }) => {
     e.stopPropagation();
   }
 
-  const handleDelete = (e) => {
-    dispatch(deleteWiki(item.id, item.grouping, index))
+  const handleDelete = async (e) => {
     e.stopPropagation();
-
+    let res = await authenticated_post('/wiki/deleteWiki/', { ens: ens, file_id: item.id });
+    if (res) {
+      deleteWiki(item.grouping, index)
+    }
 
   }
 
   const focusInCurrentTarget = ({ relatedTarget, currentTarget }) => {
     if (relatedTarget === null) return false;
-    
+
     var node = relatedTarget.parentNode;
-          
+
     while (node !== null) {
       if (node === currentTarget) return true;
       node = node.parentNode;
     }
-  
+
     return false;
   }
-  
+
 
   const onBlur = (e) => {
     if (!focusInCurrentTarget(e)) {
       setIsWikiEllipsesClicked(false)
     }
   }
-  
+
 
   return (
     <>
-    <Draggable draggableId={item.id} index={index}>
-      {(provided, snapshot) => {
-        return (
-          <DragItem
-            ref={provided.innerRef}
-            snapshot={snapshot}
-            {...provided.draggableProps}
-            {...provided.dragHandleProps}
-            index={index}
-            onClick={() => setCurrentWikiId(item.id)}
+      <Draggable draggableId={item.id} index={index}>
+        {(provided, snapshot) => {
+          return (
+            <DragItem
+              ref={provided.innerRef}
+              snapshot={snapshot}
+              {...provided.draggableProps}
+              {...provided.dragHandleProps}
+              index={index}
+              onClick={() => setCurrentWikiId(item.id)}
             >
-            <CardHeader>{header}</CardHeader>
-            <button className={'drag-item-btn ' + (isWikiEllipsesClicked ? 'focus' : undefined) } onClick={handleDeleteEllipsesClick} onBlur={onBlur}>
-              <i className="fas fa-ellipsis-h"></i>
-            </button>
-            <div className={"dropdown " + (!isWikiEllipsesClicked ? 'hidden' : undefined)}>
-              <p onClick = {handleDelete} >delete</p>
-            </div>
-          </DragItem>
-        );
-      }}
-    </Draggable>
+              <CardHeader>{header}</CardHeader>
+              <button className={'drag-item-btn ' + (isWikiEllipsesClicked ? 'focus' : undefined)} onClick={handleDeleteEllipsesClick} onBlur={onBlur}>
+                <i className="fas fa-ellipsis-h"></i>
+              </button>
+              <div className={"dropdown " + (!isWikiEllipsesClicked ? 'hidden' : undefined)}>
+                <p onClick={handleDelete} >delete</p>
+              </div>
+            </DragItem>
+          );
+        }}
+      </Draggable>
     </>
   );
 };

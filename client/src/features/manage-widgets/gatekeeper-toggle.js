@@ -1,6 +1,7 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState } from 'react'
 import '../../css/gatekeeper-toggle.css'
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
+import RoleSelectModal from './role-select-modal';
 
 
 import {
@@ -10,15 +11,13 @@ import {
 function RuleSelect({ appliedRules, setAppliedRules, ruleError, setRuleError }) {
   // fetch available rules
   const availableRules = useSelector(selectDashboardRules);
-  useEffect(() => { }, [appliedRules])
-
 
 
   return (
     <div className="apply-gatekeeper-rules">
       {Object.entries(availableRules).map(([rule_id, value]) => {
         return (
-          <GatekeeperRule ruleError={ruleError} setRuleError={setRuleError} element={value} rule_id={rule_id} appliedRules={appliedRules} setAppliedRules={setAppliedRules} />
+          <GatekeeperRule ruleError={ruleError} key={rule_id} setRuleError={setRuleError} element={value} rule_id={rule_id} appliedRules={appliedRules} setAppliedRules={setAppliedRules} />
         )
       })}
     </div>
@@ -30,27 +29,24 @@ function RuleSelect({ appliedRules, setAppliedRules, ruleError, setRuleError }) 
 function GatekeeperRule({ element, rule_id, appliedRules, setAppliedRules, ruleError, setRuleError }) {
 
   const [isGatekeeperOn, setIsGatekeeperOn] = useState(appliedRules[rule_id] != undefined)
-  const dispatch = useDispatch();
-  const [areDetailsVisible, setAreDetailsVisible] = useState(false);
+  const [roleModalOpen, setRoleModalOpen] = useState(false)
 
-  const addressesEndRef = useRef(null);
-  const gatekeeperErrorRef = useRef(null);
-
-  const scrollToBottom = () => {
-    addressesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+  const open = () => {
+    setRoleModalOpen(true)
+  }
+  const close = (event, reason) => {
+    if (reason && reason === 'backdropClick') return
+    setRoleModalOpen(false)
   }
 
-  const scrollToError = () => {
-    gatekeeperErrorRef.current?.scrollIntoView({ behavior: "smooth", block: "end" })
-  }
 
   useEffect(() => {
     setIsGatekeeperOn(appliedRules[rule_id] != undefined)
+
   }, [appliedRules])
 
 
   const addRule = (e) => {
-    //console.log(e.target.value)
     setAppliedRules({ type: 'update_single', payload: { [rule_id]: "" } })
     setRuleError({ [rule_id]: "" })
   }
@@ -66,34 +62,53 @@ function GatekeeperRule({ element, rule_id, appliedRules, setAppliedRules, ruleE
     setRuleError(false)
   }
 
+  const handleAddDiscordRule = (val) => {
+
+    setAppliedRules({ type: 'update_single', payload: { [rule_id]: val } })
+  }
+
   return (
     <>
-      <div className="gk-rule">
-        <p>Symbol: {element.gatekeeperSymbol}</p>
-        <span style={{ color: "#555" }} className={'details rotate ' + (areDetailsVisible ? 'down' : undefined)} onClick={() => { setAreDetailsVisible(!areDetailsVisible) }}>details</span>
-        <div className="gk-rule-input">
-          <ToggleSwitch addRule={addRule} deleteRule={deleteRule} rule_id={rule_id} isGatekeeperOn={isGatekeeperOn} setIsGatekeeperOn={setIsGatekeeperOn} appliedRules={appliedRules} setAppliedRules={setAppliedRules} />
-          {isGatekeeperOn &&
-            <>
-              <span>threshold</span>
-              <input type="number" value={appliedRules[rule_id]} onChange={handleThresholdChange}></input>
+      <div className={'gk-rule ' + (ruleError.id == rule_id ? 'error' : 'undefined')}>
+        {(element.gatekeeperType === 'erc721' || element.gatekeeperType === 'erc20') &&
+          <>
+            <p><b>Type:</b> <span className={element.gatekeeperType}>{element.gatekeeperType}</span></p>
+            <p><b>Symbol: </b>
+              <span onClick={() => { window.open('https://etherscan.io/address/' + element.gatekeeperAddress) }} className='gatekeeper-symbol'>{element.gatekeeperSymbol}  <i className="fas fa-external-link-alt"></i></span>
+            </p>
+            <div className="toggle-flex">
+              <ToggleSwitch setRuleError={setRuleError} ruleError={ruleError} addRule={addRule} deleteRule={deleteRule} rule_id={rule_id} isGatekeeperOn={isGatekeeperOn} setIsGatekeeperOn={setIsGatekeeperOn} appliedRules={appliedRules} setAppliedRules={setAppliedRules} />
+              {isGatekeeperOn &&
+                <>
+                  <input type="number" value={appliedRules[rule_id]} placeholder="threshold" onChange={handleThresholdChange}></input>
 
-            </>
-          }
-        </div>
-
-
+                </>
+              }
+            </div>
+          </>
+        }
+        {(element.gatekeeperType === 'discord') &&
+          <>
+            <p><b>Type:</b> <span className={element.gatekeeperType}>{element.gatekeeperType}</span></p>
+            <p><b>Server:</b> {element.serverName}</p>
+            <div className="toggle-flex">
+              <ToggleSwitch setRuleError={setRuleError} ruleError={ruleError} addRule={addRule} deleteRule={deleteRule} rule_id={rule_id} isGatekeeperOn={isGatekeeperOn} setIsGatekeeperOn={setIsGatekeeperOn} appliedRules={appliedRules} setAppliedRules={setAppliedRules} />
+              {isGatekeeperOn &&
+                <>
+                  <button className="select-roles primary-gradient-button" onClick={open}>select roles</button>
+                  {roleModalOpen && <RoleSelectModal handleAddDiscordRule={handleAddDiscordRule} handleClose={close} modalOpen={roleModalOpen} existingRoles={appliedRules[rule_id] || []} />}
+                </>
+              }
+            </div>
+          </>
+        }
       </div>
-      {areDetailsVisible &&
-        <div className="rule-details">
-          <p>Type: {element.gatekeeperType}</p>
-          <p className='detail-contract'>Contract: {element.gatekeeperAddress.substring(0, 6)}...{element.gatekeeperAddress.substring(38, 42)}</p>
-          <p style={{ fontSize: '16px', cursor: 'pointer' }} onClick={() => { window.open('https://etherscan.io/address/' + element.gatekeeperAddress) }}><i class="fas fa-external-link-alt"></i></p>
-        </div>
-      }
+
       {ruleError.id == rule_id &&
-        <div className="tab-message error">
-          <p>Please enter a threshold</p>
+        <div className="tab-message error" style={{ width: '100%' }}>
+          {element.gatekeeperType !== 'discord' && <p>Please enter a threshold</p>}
+          {element.gatekeeperType === 'discord' && <p>Selected roles cannot be left blank</p>}
+
         </div>
       }
     </>
@@ -101,20 +116,21 @@ function GatekeeperRule({ element, rule_id, appliedRules, setAppliedRules, ruleE
 }
 
 
-function ToggleSwitch({ addRule, deleteRule, rule_id, isGatekeeperOn, setIsGatekeeperOn, appliedRules, setAppliedRules }) {
+function ToggleSwitch({ addRule, setRuleError, deleteRule, ruleError, rule_id, isGatekeeperOn, setIsGatekeeperOn, appliedRules, setAppliedRules }) {
 
 
   const handleToggle = () => {
 
     if (!isGatekeeperOn) {
       // gatekeeper just flipped on. Add it to applied rules
-      console.log('on')
       addRule();
     }
     else {
       //  gatekeeper just flipped off delete it from applied rules
       deleteRule();
-      console.log('off')
+      if (ruleError.id === rule_id) {
+        setRuleError({ [rule_id]: '' })
+      }
     }
     setIsGatekeeperOn(!isGatekeeperOn)
   }

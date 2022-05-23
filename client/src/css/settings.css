@@ -1,58 +1,98 @@
 
-button:disabled{
-  color: grey;
-  background-color: lightgrey;
+.settings-manager{
+    padding-bottom: 3em;
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
 }
 
-.settings-container{
-    display: flex;
-    flex-direction: row;
-}
-
-.settings-tab-selector{
+@media screen and (max-width: 1300px){
+  .settings-manager{
     display: flex;
     flex-direction: column;
-    width: 100%;
     justify-content: center;
     align-items: center;
 }
+.settings-components{
+  margin: 0 auto;
+  width: 90% !important;
+}
+.save-settings-container{
+  width: 90% !important;
+  margin: 0 auto !important;
+  margin-bottom: 1em !important;
 
-.settings-next-previous-ctr{
-  width: 80%;
-  display: flex;
 }
   
+}
 
-.settings-top-level{
+.settings-components{
     display: flex;
-    width: 80%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: auto;
+    width: 50vw;
+    margin-left: auto;
+    grid-column: 3 / 7;
+    grid-row: 1/2;
+
 }
 
-.settings-top-level > .left,
-.settings-top-level > .right{
-  display: flex;
-  flex: 1;
+.save-settings-container{
+  grid-row: 1 / 2;
+  grid-column: 7 / 10;
+  background-color: #22272e;
+  height: fit-content;
+  width: 50%;
+  margin: 0 auto;
+  padding: 20px 20px;
+  border-radius: 4px;
+  border: none;
+  color: white;
+  box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
 }
 
-.settings-top-level > p{
-  color: lightgrey;
-  font-size: 22px;
-  margin: 0;
-  padding-right: 5px;
+
+
+.save-settings-container > button{
+  background-color: rgb(56, 74, 255);
+  border: none;
+  border-radius: 4px;
+  padding: 10px 15px;
+  width: 100%;
+  margin-bottom: 0px !important;
+
+}
+
+.save-settings-container > button:hover{
+  background-color: rgba(56, 74, 255, 0.7);
 }
 
 
-
-.checkpoint{
-    width: 80%;
-    margin: 2em auto;
+.settings-components > .component{
+    background-color: #22272e;
+    height: auto;
+    width: 100%;
+    min-height: 30em;
+    margin-bottom: 3em;
+    padding: 20px 20px;
+    border-radius: 4px;
+    border: none;
+    color: white;
+    box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
 }
 
-input{
+.component-header{
+    font-size: 20px;
+    font-weight: bold;
+}
+
+
+.settings-manager input{
     padding: 1rem 2rem;
     border: double 2px transparent;
     border-radius: 30px;
-    background-image: linear-gradient(black, black), 
+    background-image: linear-gradient(#141416, #141416), 
                       linear-gradient(to right, #e00f8e, #2d66dc);
     background-origin: border-box;
     background-clip: padding-box, border-box;
@@ -66,18 +106,26 @@ input.error{
 }
 
 
+.settings-next-previous-ctr{
+    width: 95%;
+    display: flex;
+  }
+    
+/***** begin ens tab *****/
 .org-ens-tab{
-  margin-top: 1em;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
+    margin-top: 5em;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
-.org-ens-tab > * {
-  margin-top: 10px;
+.org-ens-tab > input{
+  margin-top: 1em;
 }
+/***** end ens tab *****/
+
+
 
 
 /***** begin profile tab *****/
@@ -120,7 +168,7 @@ input.error{
 }
 .profile-name-input::before{
     content: 'Name';
-    color: #555;
+    color: #d2d2d2;
     font-size: 16px;
     display: block;
     padding-bottom: 5px;
@@ -128,7 +176,7 @@ input.error{
 } 
   .profile-website-input::before{
     content: 'Website';
-    color: #555;
+    color: #d2d2d2;
     font-size: 16px;
     display: block;
     padding-bottom: 5px;
@@ -136,7 +184,7 @@ input.error{
 }
   .profile-discord-input::before{
     content: 'Discord Link';
-    color: #555;
+    color: #d2d2d2;
     font-size: 16px;
     display: block;
     padding-bottom: 5px;
@@ -144,7 +192,7 @@ input.error{
 }
   .profile-logo-input::before{
     content: 'Logo';
-    color: #555;
+    color: #d2d2d2;
     font-size: 16px;
     display: block;
     padding-bottom: 5px;
@@ -154,7 +202,8 @@ input.error{
 
 .logo-upload-btn{
     margin-bottom: 10px;
-    width: 15rem;
+    min-width: 10rem;
+    min-height: 10rem;
     height: 6rem;
     border: double 2px transparent;
     border-radius: 100px;
@@ -162,6 +211,7 @@ input.error{
                       linear-gradient(to right, #e00f8e, #2d66dc);
     background-origin: border-box;
     background-clip: padding-box, border-box;
+    padding: 3px;
   
   }
   
@@ -172,8 +222,8 @@ input.error{
   .profile-logo-input img[src]{
     display: inline;
     z-index: -100;
-    max-width: 5rem;
-    max-height: 5rem;
+    max-width: 9rem;
+    max-height: 9rem;
     border-radius: 100px;
   }
 
@@ -181,6 +231,9 @@ input.error{
     display: flex; 
     flex-direction: column;
     gap: 10px;
+    justify-self: flex-end;
+    align-self: flex-end;
+    margin-top: 20px;
   }
   
   .dangerzone > div:first-child{
@@ -267,8 +320,6 @@ input.error{
 .admins-content{
   width: 80%;
   text-align: center;
-  max-height: 20em;
-  overflow: auto;
 }
 
 .admins-content input{
@@ -290,219 +341,245 @@ input.error{
   border-radius: 8px;
   padding: 10px 50px;
 }
-/***** end admins tab *****/
 
+.admins-content button:hover{
+  background-color: rgba(169, 152, 255, 0.2);
+}
+
+/***** end admins tab *****/
 
 /***** begin gatekeeper tab *****/
 .org-gatekeeper-tab{
-  margin-top: 1em;
-  display: flex;
-  flex-direction: column;
-  grid-gap: 20px;
-  justify-content: center;
-  align-items: center;
-  color: lightgrey;
-}
+    display: flex;
+    flex-direction: column;
+    grid-gap: 20px;
+    justify-content: center;
+    align-items: center;
+    color: lightgrey;
+    margin-top: 1em;
 
-.installed-gatekeepers{
-  display: flex;
-  flex-direction: column;
-  width: 80%;
-}
+  }
+  
+  .org-gatekeeper-options{
+    display: flex;
+    flex-direction: column;
+    grid-gap: 20px;
+    justify-content: center;
+    align-items: center;
+    color: lightgrey;
+    margin-top: 1em;
+    width: 90%;
 
-.gatekeeper-option{
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  justify-content: center;
-  align-items: center;
-  grid-gap: 20px;
-}
-
-.gatekeeper-option > p{
-  color: lightgrey;
-  margin: 0;
-}
-
-.gatekeeper-details{
-  color: grey;
-  cursor: pointer;
-}
-
-.gatekeeper-details::after{
-  color: grey;
-  font-family: "Font Awesome 5 Free";
-  font-weight: 900;
-  font-size: 12px;
-  content: "\f054 ";
-  display: inline-block;
-  margin: 10px;
-  transform: rotate(90deg);
-}
-
-.gatekeeper-details.rotate::after{
-  transition: all 0.3s linear;
-}
-
-.gatekeeper-details.rotate.down::after{
-  transform: rotate(630deg);
-}
-
-.gatekeeper-option > button{
-  margin-left: auto;
-  background-color: #373e47;
-  border: none;
-  border-radius: 8px;
-  color:rgb(235, 87, 87);
-  padding: 5px 10px;
-}
-
-.rule-details{
-  animation: fadein 0.7s ease-in-out;
-  display: flex;
-  flex-direction: row;
-  text-align: center;
-  width: fit-content;
-  grid-gap: 20px;
-  border-radius: 4px;
-  padding: 5px 16px;
-  justify-content: center;
-  align-items: center;
-
-  background-color: #373e47;
-  border-radius: 6px;
-  border: none;
-}
-
-.rule-details p{
-  margin: 0 !important;
-  color: #adbac7;
-}
-
-.rule-details:nth-child(2){
-  color: red !important;
-}
-
-.rule-details > p{
-  margin: 0;
-}
-
-.add-gatekeeper{
-  margin-top: 20px;
-  width: fit-content;
-  align-self: center;
-  border: none;
-  border-radius: 8px;
-  padding: 15px 30px;
-  color: rgb(169, 152, 255);
-  background-color: rgba(169, 152, 255, 0.3);
-}
-
-.org-gatekeeper-tab > h3{
-  align-self: flex-start;
-}
-
-.org-gatekeeper-tab > h4{
-  color: lightgrey;
-}
-
-.gatekeeper-address-input{
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
-}
+  }
 
 
-.gatekeeper-symbol-decimal-input{
-  display: flex;
-  flex-direction: row;
-  grid-gap: 10px;
-  flex-wrap: wrap;
-  width: 100%;
-}
+  .installed-gatekeepers{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-gap: 20px;
+    width: 80%;
+  }
+  
 
-.gk-detail-buttons{
-  align-self: flex-end;
-  display: flex;
-  grid-gap: 5px;
-}
+  @media screen and (max-width: 900px){
+    .installed-gatekeepers{
+      grid-template-columns: 1fr 1fr;
+    }
+  }
 
-.gk-rule-cancel{
-  background-color: #373e47;
-  color:rgb(235, 87, 87);
-  border: none;
-  border-radius: 8px;
-  padding: 5px 10px;
-}
-
-.gk-rule-save{
-  border: none;
-  border-radius: 8px;
-  padding: 5px 10px;
-  background-color: rgba(0, 163, 104, 0.3);
-  color: rgb(0, 163, 104);
-  transition: background-color 0.3s ease-in-out;
-}
-
-.gk-rule-save:disabled{
-  background-color: rgba(0, 163, 104, 0.2);
-  color: rgba(0, 163, 104,0.5);
-}
-
-.available-gatekeeper-options{
-  display: flex; 
-}
-
-.available-gatekeeper-options > *{
-  margin-left: 5px;
-  margin-right: 5px;
-}
-
-.erc20-option{
-  border-radius: 10px;
-  padding: 50px;
-  color: rgb(44, 192, 255);
-  border:2px solid rgb(44, 192, 255);
-  background-color: rgba(44, 192, 255, 0.3);
-  font-size: 16px;
-  font-weight: bold;
-}
-
-.erc721-option{
-  border: none;
-  border-radius: 10px;
-  padding: 50px;
-  color: rgb(169, 152, 255);
-  border: 2px solid rgb(169, 152, 255);
-  background-color: rgba(169, 152, 255, 0.3);
-  font-size: 16px;
-  font-weight: bold;
-}
+  @media screen and (max-width: 550px){
+    .installed-gatekeepers{
+      grid-template-columns: 1fr;
+    }
+  }
 
 
-/***** end gatekeeper tab *****/
+  .installed-gatekeepers > *{
+    margin-bottom: 10px;
+  }
+  
+  .gatekeeper-option{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: space-evenly;
+    align-items: center;
+    grid-gap: 20px;
+    justify-content: flex-start;
+    align-items: flex-start;
+    border: none;
+    border-radius: 4px;
+    background-color: #1c2128;
+    padding: 5px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+
+  }
+  
+  .gatekeeper-option > .remove-gatekeeper-rule{
+    width: fit-content;
+    padding: 10px 20px;
+    
+  
+  }
+  
+  .gatekeeper-option > p{
+    color: lightgrey;
+    margin: 0;
+  }
+  
+  .gatekeeper-option > .gatekeeper-config{
+    border: none;
+    border-radius: 4px;
+    color: grey;
+    background-color: #1c2128;
+  }
+  
+  .gatekeeper-option > .gatekeeper-config:hover{
+    background-color: #768390;
+    color: #d3d3d3;
+  }
+  
+  .gatekeeper-option > p > span{
+    padding: 3px 3px;
+    border-radius: 4px;
+    font-size: 15px;
+    font-weight: 550;
+  }
+  
+  .gatekeeper-option > p > span.erc721{
+    background-color: rgba(155, 89, 182, 0.3);
+    color: rgb(155, 89, 182);
+  }
+  
+  .gatekeeper-option > p > span.discord{
+    background-color: rgba(88, 101, 242, 0.3);
+    color: rgb(88, 101, 242);
+  }
+  
+  .gatekeeper-option > p > span.erc20{
+    background-color: rgba(26, 188, 156, 0.3);
+    color: rgb(26, 188, 156);
+  }
+  .add-gatekeeper{
+    margin-top: 20px;
+    width: fit-content;
+    align-self: center;
+    border: none;
+    border-radius: 8px;
+    padding: 15px 30px;
+    color: rgb(169, 152, 255);
+    background-color: rgba(169, 152, 255, 0.3);
+  }
+  
+  .org-gatekeeper-tab > h3{
+    align-self: flex-start;
+  }
+  
+  .org-gatekeeper-tab > h4{
+    color: lightgrey;
+  }
+  
+  .gatekeeper-address-input{
+    width: 36vw;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-self: flex-start;
+    margin-top: 2em;
+  }
+  
+  
+  .gatekeeper-symbol-decimal-input{
+    display: flex;
+    flex-direction: column;
+    grid-gap: 10px;
+    flex-wrap: wrap;
+    width: 50%;
+    align-self: flex-start;
+    margin-top: 1em;
+  }
+  
+  
+  .gk-detail-buttons{
+    align-self: flex-end;
+    display: flex;
+    grid-gap: 5px;
+  }
+  
+  .gk-rule-cancel{
+    background-color: #373e47;
+    color:rgb(235, 87, 87);
+    border: none;
+    border-radius: 8px;
+    padding: 5px 10px;
+  }
+  
+  .gk-rule-save{
+    border: none;
+    border-radius: 8px;
+    padding: 5px 10px;
+    background-color: rgba(0, 163, 104, 0.3);
+    color: rgb(0, 163, 104);
+    transition: background-color 0.3s ease-in-out;
+  }
+  
+  .gk-rule-save:disabled{
+    background-color: rgba(0, 163, 104, 0.2);
+    color: rgba(0, 163, 104,0.5);
+  }
+  
+ .gatekeeper-option-buttons{
+     justify-self: flex-start;
+     align-self: flex-start;
+     margin-left: 10%;
+     display: flex;
+     flex-wrap: wrap;
+     grid-gap: 10px;
+ }
+
+ .gatekeeper-option-buttons > *{
+     margin-right: 5px;
+     font-weight: 550;
+     border: none;
+     box-shadow: 0 6px 20px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+ }
+ .gatekeeper-option-buttons > *::before{
+     content: '+';
+     margin-right: 5px;
+ }
+
+ .gatekeeper-option-buttons > *:hover{
+    box-shadow: 0 20px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+
+ }
+
+  .erc20-option{
+    border-radius: 4px;
+    padding: 5px 10px;
+    background-color: rgba(26, 188, 156, 0.3);
+    color: rgb(26, 188, 156);
+    font-size: 16px;
+  }
+  
+  .erc721-option{
+    border-radius: 4px;
+    padding: 5px 10px;
+    background-color: rgba(155, 89, 182, 0.3);
+    color: rgb(155, 89, 182);
+    font-size: 16px;
+  }
+  
+  .discord-roles-option{
+    border-radius: 4px;
+    padding: 5px 10px;
+    background-color: rgba(88, 101, 242, 0.3);
+    color: rgb(88, 101, 242);
+    font-size: 16px;
+  }
 
 
 
-/***** begin finalize tab *****/
-.org-finalize-tab{
-  margin-top: 1em;
-  display: flex;
-  flex-direction: column;
-  grid-gap: 20px;
-  justify-content: center;
-  align-items: center;
-}
+  /***** end gatekeeper tab *****/
 
-.org-finalize-tab > p{
-  font-size: 20px;
-  color: lightgrey;
-}
 
-.org-finalize-tab > h2{
-  font-size: 20px;
-  color: lightgrey;
-}
 
-/***** end finalize tab *****/
