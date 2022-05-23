@@ -4,12 +4,17 @@ const dotenv = require('dotenv')
 const path = require('path')
 const dashboard = express();
 dashboard.use(express.json())
+const asyncfs = require('fs').promises;
 const { authenticateToken } = require('../middlewares/jwt-middleware.js');
 const { isAdmin } = require('../middlewares/admin-middleware')
 const { clean, asArray } = require('../helpers/common')
 const { getGuildRoles } = require('./discord-routes')
 const googleCalendar = require('../helpers/google-calendar');
 const { default: axios } = require('axios');
+
+
+const serverRoot = path.normalize(path.join(__dirname, '../'));
+
 
 
 const getDashboardInfo = async (ens) => {
@@ -105,9 +110,15 @@ dashboard.post('/addWidget', authenticateToken, isAdmin, async function (req, re
 // remove the new widget from a dashboard widget collection
 dashboard.post('/removeWidget', authenticateToken, isAdmin, async function (req, res, next) {
 
-
+    console.log(req)
     const { ens, name } = req.body;
     await db.query('delete from widgets where ens = $1 and name = $2', [ens, name])
+    if (name === 'wiki') {
+        // remove the files and entries from DB
+        await db.query('delete from wiki_groupings where ens = $1', [ens])
+        await asyncfs.rm(path.normalize(path.join(serverRoot, 'org-repository/', ens, '/wiki')), { recursive: true });
+
+    }
     res.status(200);
     res.send('done')
 

@@ -285,13 +285,7 @@ function GatekeeperSettings({ selected, setSettingsStep, setTabHeader }) {
 
   const handlePrevious = () => {
     // check if selected gatekeepers have a threshold value set
-    for (const [key, value] of Object.entries(appliedRules)) {
-      if (value == '') {
-        setRuleError({ id: key })
 
-        return;
-      }
-    }
     setSettingsStep(0);
   }
 

@@ -532,6 +532,9 @@ input.error{
      justify-self: flex-start;
      align-self: flex-start;
      margin-left: 10%;
+     display: flex;
+     flex-wrap: wrap;
+     grid-gap: 10px;
  }
 
  .gatekeeper-option-buttons > *{
