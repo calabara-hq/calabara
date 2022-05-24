@@ -117,7 +117,7 @@ export default function CalendarConfiguration({ mode, metadata, setMetadata, set
     }
 
     function handlePrevious() {
-        console.log(configProgress)
+        
         if (configProgress == 1) {
             setConfigProgress(0);
         }

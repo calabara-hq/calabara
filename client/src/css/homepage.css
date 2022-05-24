@@ -498,7 +498,7 @@ body{
   margin: 0;
 }
 
-svg path {
+.squiggle path {
   stroke: #2d2e35;
   fill: none;
   fill-rule: evenodd;
@@ -511,6 +511,8 @@ svg path {
   stroke-dashoffset: 1000;
   animation: logo 7s linear infinite;
 }
+
+
 @keyframes logo {
   0% {
     stroke-dashoffset: 1774.6301269531;

@@ -177,7 +177,7 @@ function WidgetSummary({ selected, setSettingsStep, setProgress, setTabHeader, s
   })
 
   const deleteWidget = async () => {
-    console.log(installedWidgets)
+    
     let num_widgets = installedWidgets.length - 1;
     let res = await authenticated_post('/dashboard/removeWidget', { ens: ens, name: selected.name })
     if (res) {

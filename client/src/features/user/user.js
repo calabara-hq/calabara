@@ -10,7 +10,6 @@ const registerUser = async (walletAddress) => {
         store.dispatch(setDiscordId(null))
     }
     else {
-        
         store.dispatch(setDiscordId(result.data.discordId))
     }
 }
