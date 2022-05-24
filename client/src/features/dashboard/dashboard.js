@@ -202,25 +202,26 @@ function InfoCard({ info, ens, discordIntegrationProps }) {
 
   useEffect(() => {
     let promptDiscord = false
-    Object.keys(dashboardRules).map((key) => {
-      if (dashboardRules[key].gatekeeperType === 'discord') {
-        if (!discord_id) {
-          promptDiscord = isConnected;
+    if (isConnected) {
+      Object.keys(dashboardRules).map((key) => {
+        if (dashboardRules[key].gatekeeperType === 'discord') {
+          if (!discord_id) {
+            promptDiscord = true;
+          }
+          else if (discord_id && isConnected) {
+            promptDiscord = false;
+          }
         }
-        else if (discord_id && isConnected) {
-          promptDiscord = false;
-        }
-      }
-    })
+      })
+    }
     setPromptDiscordLink(promptDiscord)
-  }, [dashboardRules, discord_id, isConnected])
+  }, [dashboardRules, discord_id])
 
 
 
   useEffect(() => {
     (async () => {
       if (!userAuth) return
-      console.log(userAuth)
       if (isConnected) {
         let res = await authenticated_post('/discord/addUserDiscord', { discord_id: userAuth.userId });
         if (res) {
@@ -228,7 +229,6 @@ function InfoCard({ info, ens, discordIntegrationProps }) {
           return
         }
       }
-
     })();
 
   }, [userAuth])

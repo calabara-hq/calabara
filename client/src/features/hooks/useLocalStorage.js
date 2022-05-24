@@ -11,7 +11,7 @@ const getDataFromLocalstorage = (key, initialValue, shouldSaveInitial = false) =
     }
     return JSON.parse(item)
   } catch (error) {
-    console.log(error)
+    
     return initialValue
   }
 }
@@ -29,7 +29,7 @@ const useLocalStorage = (key, initialValue, shouldSaveInitial = false) => {
         window.localStorage.setItem(key, JSON.stringify(valueToStore))
       }
     } catch (error) {
-      console.log(error)
+      
     }
   }
   return [storedValue, setValue]

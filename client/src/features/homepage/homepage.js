@@ -9,10 +9,9 @@ import docs_img from '../../img/docs.png';
 import snapshot_img from '../../img/snapshot.png';
 import shadowLogo from '../../img/3D-logo.svg'
 import React, { useState, useEffect } from 'react'
-
+import '../../css/homepage.css'
 
 function Homepage() {
-  require('../../css/homepage.css')
   const [selectedWidget, setSelectedWidget] = useState('snapshot')
 
   return (
@@ -170,7 +169,7 @@ function Homepage() {
 
 function Squiggle() {
   return (
-    <svg version="1.1" width="98px" height="105.4px" viewBox="-10 -10 110 110">
+    <svg className="squiggle" version="1.1" width="98px" height="105.4px" viewBox="-10 -10 110 110">
       <defs>
       </defs>
       <g>
