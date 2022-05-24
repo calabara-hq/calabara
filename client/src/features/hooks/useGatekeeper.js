@@ -18,7 +18,7 @@ export default function useGatekeeper() {
 
             if (rules[key].gatekeeperType === 'erc20') {
                 const balance = await checkERC20Balance(walletAddress, rules[key].gatekeeperAddress, rules[key].gatekeeperDecimal)
-                console.log(balance)
+                
                 ruleResults[key] = parseFloat(balance)
 
 

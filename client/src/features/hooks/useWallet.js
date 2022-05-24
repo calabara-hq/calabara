@@ -240,7 +240,7 @@ export default function useWallet() {
             const signatureResult = await signMessage(nonce_from_server.data.nonce);
 
             try {
-                console.log(walletAddress)
+                
                 let jwt_result = await axios.post('/authentication/generate_jwt', { sig: signatureResult.sig, address: walletAddress })
                 dispatch(setIsTokenExpired(false))
                 localStorage.setItem('jwt', jwt_result.data.jwt)

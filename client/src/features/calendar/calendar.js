@@ -42,7 +42,7 @@ export default function Events() {
 
       var result = await listEvents(calendarId);
       var events = result.data.data.items;
-      console.log(events)
+      
 
       events.map((eventItem, idx) => {
         eventItem.id = idx;
@@ -59,12 +59,12 @@ export default function Events() {
 
 
   const onSelectView = (view) => {
-    console.log(view)
+    
     setCurrentDate(new Date().toISOString())
   }
 
   const onEventClick = (data) => {
-    console.log(data)
+    
     setEventData({
       start: moment(data.startAt).toDate(),
       end: moment(data.endAt).toDate(),

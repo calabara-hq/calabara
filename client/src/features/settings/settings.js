@@ -968,9 +968,9 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields, 
                 }
             }
             else {
-                console.log('running again')
+                
                 let result = await axios.post('/discord/getUserServers', { token_type: userAuth.token_type, access_token: userAuth.access_token })
-                console.log(result.data)
+                
                 setUserServers(result.data)
                 setUserDiscordId(userAuth.userId)
                 setDiscordRuleState('configure rule')

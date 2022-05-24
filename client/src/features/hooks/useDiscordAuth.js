@@ -28,7 +28,7 @@ export const useDiscordAuth = (scope, authState, setAuthState, guild_id) => {
 
     /** On a window creation, we set a new listener */
     useEffect(() => {
-        console.log('window effect')
+        
         if (!windowInstance) return
 
         const popupMessageListener = async (event) => {
@@ -45,7 +45,7 @@ export const useDiscordAuth = (scope, authState, setAuthState, guild_id) => {
             ) {
                 const { data, type } = event.data
 
-                console.log(data)
+                
                 switch (type) {
                     case "DC_AUTH_SUCCESS":
                         setAuthState({

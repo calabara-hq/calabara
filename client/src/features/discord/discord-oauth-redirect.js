@@ -28,8 +28,8 @@ export default function SuccessfulDiscordRedirect() {
 
             ]
 
-            console.log(guild_id)
-            console.log(code)
+            
+            
 
             if (error) {
                 window.opener.postMessage(
@@ -52,7 +52,7 @@ export default function SuccessfulDiscordRedirect() {
                 authInfo = await axios.post('/discord/botOauthFlow', { code: code, redirect_uri: window.location.origin + window.location.pathname })
             }
             if (!authInfo) return setAuthError(true)
-            console.log(authInfo)
+            
             window.opener.postMessage(
                 {
                     type: "DC_AUTH_SUCCESS",

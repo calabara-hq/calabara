@@ -106,7 +106,7 @@ function DaoCard({ org, membership }) {
   },[])
 
   function handleJoinOrg() {
-    console.log('inside join org')
+    
     addMembership(ens)
     setMembers(members + 1);
     setIsMemberOf(true)
