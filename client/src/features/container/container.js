@@ -9,6 +9,9 @@ import Events from '../calendar/calendar'
 import ReactEditor from '../wiki/wiki-edit'
 import SettingsManager from '../settings/settings'
 import ManageWidgets from '../manage-widgets/manage-widgets'
+import ContestSettings from '../creator-contests/contests-settings'
+
+
 export default function Container() {
 
 
@@ -25,7 +28,6 @@ export default function Container() {
         <Cards />
       </Route>
 
-
       <Route path="/:ens/snapshot">
         <Analytics />
       </Route>
@@ -33,7 +35,6 @@ export default function Container() {
       <Route path="/:ens/calendar/:calendarId">
         <Events />
       </Route>
-
 
       <Route path="/:ens/docs/">
         <WikiDisplay />
@@ -49,6 +50,10 @@ export default function Container() {
 
       <Route path="/:ens/docs-edit/:grouping/:file">
         <ReactEditor />
+      </Route>
+
+      <Route path="/:ens/contest_settings">
+        <ContestSettings />
       </Route>
 
     </div>
