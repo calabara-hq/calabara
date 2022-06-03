@@ -460,6 +460,12 @@ input.error{
     background-color: rgba(26, 188, 156, 0.3);
     color: rgb(26, 188, 156);
   }
+
+  .gatekeeper-option > p > span.ETH{
+    background-color: rgba(173, 156, 220, 0.3);
+    color: rgb(173, 156, 220);
+  }
+
   .add-gatekeeper{
     margin-top: 20px;
     width: fit-content;

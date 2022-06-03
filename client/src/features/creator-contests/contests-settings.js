@@ -9,6 +9,19 @@ const theme = {
         palette: {
             brand: '#80deea',
             mainBackground: '#303030',
+            rewards_text: [
+                '#80deea',
+                'rgb(173, 156, 220)',
+                'rgb(26, 188, 156)',
+                'rgb(155, 89, 182)',
+            ],
+            rewards_background: [
+                'rgba(128, 222, 234, 0.3)',
+                'rgba(173, 156, 220, 0.3)',
+                'rgba(26, 188, 156, 0.3)',
+                'rgba(155, 89, 182, 0.3)',
+            ],
+
         },
     },
 };
@@ -50,6 +63,7 @@ export default function ContestSettings() {
             theme={theme}
 
         >
+            {/*
             <ContestDateTimeBlock
                 date_0={date_0}
                 date_1={date_1}
@@ -60,7 +74,8 @@ export default function ContestSettings() {
                 setDate_2={setDate_2}
                 setDate_3={setDate_3}
             />
-            <SubmittorRewardsBlock />
+    */}
+            <SubmittorRewardsBlock theme={theme.rainbow} />
         </RainbowThemeContainer>
     )
 }

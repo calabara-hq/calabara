@@ -18,6 +18,7 @@ import useDashboard from '../hooks/useDashboard'
 import useOrganization from '../hooks/useOrganization'
 import useCommon from '../hooks/useCommon'
 import useWallet from '../hooks/useWallet'
+import useContract from '../hooks/useContract'
 
 export default function SettingsManager() {
     const [fieldsReady, setFieldsReady] = useState(false)
@@ -610,7 +611,8 @@ function ERC20gatekeeper({ setGatekeeperInnerProgress, fields, setFields }) {
     const [duplicateAddressError, setDuplicateAddressError] = useState(false);
     const [decimalError, setDecimalError] = useState(false);
     const [symbolError, setSymbolError] = useState(false);
-    const { validAddress, erc20GetSymbolAndDecimal } = useWallet();
+    const { validAddress } = useWallet();
+    const { erc20GetSymbolAndDecimal } = useContract();
 
 
     const [enableSave, setEnableSave] = useState(false)
@@ -776,7 +778,8 @@ function ERC721gatekeeper({ setGatekeeperInnerProgress, fields, setFields }) {
     const [addressError, setAddressError] = useState(false);
     const [symbolError, setSymbolError] = useState(false);
     const [duplicateAddressError, setDuplicateAddressError] = useState(false);
-    const { validAddress, erc721GetSymbol } = useWallet();
+    const { validAddress } = useWallet();
+    const { erc721GetSymbol } = useContract();
 
 
 
@@ -859,7 +862,7 @@ function ERC721gatekeeper({ setGatekeeperInnerProgress, fields, setFields }) {
             if (valid != false) {
                 try {
                     var symbol = await erc721GetSymbol(gatekeeperAddress)
-                    setGatekeeperSymbol(symbol)
+                    console.log(symbol)
                 } catch (e) {
 
                 }
@@ -968,9 +971,9 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields, 
                 }
             }
             else {
-                
+
                 let result = await axios.post('/discord/getUserServers', { token_type: userAuth.token_type, access_token: userAuth.access_token })
-                
+
                 setUserServers(result.data)
                 setUserDiscordId(userAuth.userId)
                 setDiscordRuleState('configure rule')
