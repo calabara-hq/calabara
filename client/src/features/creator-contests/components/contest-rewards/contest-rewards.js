@@ -81,45 +81,8 @@ const RewardsGridInput = styled.input`
     }
 `
 
-
-
-
-function reducer(state, action) {
-    switch (action.type) {
-        case 'update_single':
-            return { ...state, ...action.payload };
-        case 'update_all':
-            return { ...action.payload }
-        default:
-            throw new Error();
-    }
-}
-
-
-export default function ContestRewardsBlock({ theme }) {
-
+export default function ContestRewardsBlock({ theme, rewardOptions, setRewardOptions, rewards, setRewards, voterRewards, setVoterRewards, errorMatrix, setErrorMatrix }) {
     const [numWinners, setNumWinners] = useState(1)
-    const [winners, setWinners] = useState([])
-    const [rewardOptions, setRewardOptions] = useReducer(reducer, {});
-    const [rewards, setRewards] = useReducer(reducer, {});
-    const [errorMatrix, setErrorMatrix] = useState([]);
-    const [voterRewards, setVoterRewards] = useReducer(reducer, [])
-
-    useEffect(() => { console.log(voterRewards) }, [voterRewards])
-
-    useEffect(() => {
-        if (numWinners > 0) {
-            const generateArray = Array.from(Array(Number(numWinners)).keys())
-            setWinners(generateArray)
-            let errorMatrix = Array.from({ length: numWinners }, () => Array.from({ length: 4 }, () => null))
-            setErrorMatrix(errorMatrix)
-
-        }
-        else {
-            setWinners([])
-            setErrorMatrix([[]])
-        }
-    }, [numWinners])
 
     const handleErrors = () => {
         let err_matrix_copy = JSON.parse(JSON.stringify(errorMatrix))
@@ -135,7 +98,6 @@ export default function ContestRewardsBlock({ theme }) {
         })
 
         voter_rewards_arr.map(([key, val], index) => {
-            console.log(key)
             if (val.reward == 0) {
                 voter_rewards_arr.splice(key, 1)
             }
@@ -146,6 +108,8 @@ export default function ContestRewardsBlock({ theme }) {
     const handleWinnersIncrement = () => {
         if (numWinners < 10) {
             setNumWinners(numWinners + 1);
+            let errorMatrix = Array.from({ length: numWinners + 1 }, () => Array.from({ length: 4 }, () => null))
+            setErrorMatrix(errorMatrix)
         }
     }
     const handleWinnersDecrement = (value) => {
@@ -153,9 +117,10 @@ export default function ContestRewardsBlock({ theme }) {
             let rewards_copy = Object.entries(rewards)
             rewards_copy.pop();
             rewards_copy = Object.fromEntries(rewards_copy)
-            console.log(rewards_copy)
             setRewards({ type: 'update_all', payload: rewards_copy })
             setNumWinners(numWinners - 1);
+            let errorMatrix = Array.from({ length: numWinners - 1 }, () => Array.from({ length: 4 }, () => null))
+            setErrorMatrix(errorMatrix)
         }
     }
 
@@ -177,7 +142,7 @@ export default function ContestRewardsBlock({ theme }) {
                         <CounterButton grid_area={'num_winners'} counter={numWinners} handleIncrement={handleWinnersIncrement} handleDecrement={handleWinnersDecrement} />
                     </SubmitterRewardsHeading>
                     <SubmitterRewardsGridLayout>
-                        <SubmitterRewardsGrid winners={winners} rewards={rewards} setRewards={setRewards} rewardOptions={rewardOptions} errorMatrix={errorMatrix} setErrorMatrix={setErrorMatrix} theme={theme} />
+                        <SubmitterRewardsGrid numWinners={numWinners} rewards={rewards} setRewards={setRewards} rewardOptions={rewardOptions} errorMatrix={errorMatrix} setErrorMatrix={setErrorMatrix} theme={theme} />
                     </SubmitterRewardsGridLayout>
                     <VoterRewardsBlock num_voting_rewards={Object.values(rewards)} submitter_rewards={Object.values(rewards)} rewardOptions={rewardOptions} voterRewards={voterRewards} setVoterRewards={setVoterRewards} />
                 </>
@@ -188,7 +153,7 @@ export default function ContestRewardsBlock({ theme }) {
     )
 }
 
-function SubmitterRewardsGrid({ winners, rewardOptions, rewards, setRewards, errorMatrix, setErrorMatrix, theme }) {
+function SubmitterRewardsGrid({ numWinners, rewardOptions, rewards, setRewards, errorMatrix, setErrorMatrix, theme }) {
 
     return (
         <>
@@ -197,7 +162,7 @@ function SubmitterRewardsGrid({ winners, rewardOptions, rewards, setRewards, err
             {rewardOptions.erc20 ? <p>{rewardOptions.erc20}</p> : <b></b>}
             {rewardOptions.erc721 ? <p>{rewardOptions.erc721}</p> : <b></b>}
             {
-                winners.map((idx, val) => {
+                Array.from(Array(numWinners)).map((val, idx) => {
                     return (
                         <RewardGridRow idx={idx} theme={theme} val={val} rewards={rewards} setRewards={setRewards} rewardOptions={rewardOptions} errorMatrix={errorMatrix} setErrorMatrix={setErrorMatrix} />
                     )
@@ -208,7 +173,6 @@ function SubmitterRewardsGrid({ winners, rewardOptions, rewards, setRewards, err
 }
 
 function RewardGridRow({ theme, idx, rewards, setRewards, rewardOptions, errorMatrix, setErrorMatrix }) {
-
 
     const updateRewards = (e) => {
         const { name, value } = e.target;
@@ -239,6 +203,7 @@ function RewardGridRow({ theme, idx, rewards, setRewards, rewardOptions, errorMa
     }
 
     return (
+
         <>
 
             <GridInputContainer>
@@ -274,4 +239,5 @@ function RewardGridRow({ theme, idx, rewards, setRewards, rewardOptions, errorMa
             </GridInputContainer>
         </>
     )
+
 }

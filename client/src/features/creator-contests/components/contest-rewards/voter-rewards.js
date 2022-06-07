@@ -3,6 +3,7 @@ import styled, { keyframes } from 'styled-components'
 import CounterButton from './CounterButton';
 import Select from 'react-select'
 import { Contest_h2, Contest_h3, Contest_h4, fade_in } from '../common/common_styles';
+import { ToggleButton } from '../common/common_components';
 
 const customSelectorStyles = {
     control: (provided, state) => ({
@@ -137,12 +138,22 @@ export default function VoterRewardsBlock({ num_voting_rewards, rewardOptions, v
         if (numVoterRewards > 1) setNumVoterRewards(numVoterRewards - 1)
     }
 
+    const handleToggle = () => {
+        if (!isToggleOn) {
+            setIsToggleOn(true)
+        }
+        else {
+            setIsToggleOn(false)
+        }
+    }
+
+
 
     return (
         <>
             <TopGridWrapper>
                 <Contest_h2 grid_area={'section_title'} animated={true}>voter rewards</Contest_h2>
-                <VoterRewardsToggle isToggleOn={isToggleOn} setIsToggleOn={setIsToggleOn} />
+                <ToggleButton identifier={'voter-rewards-toggle'} isToggleOn={isToggleOn} setIsToggleOn={setIsToggleOn} handleToggle={handleToggle}/>
                 {isToggleOn &&
                     <>
                         <Contest_h3 grid_area={'voter_winners'} animated={true}>Number of Winners</Contest_h3>
@@ -162,26 +173,6 @@ export default function VoterRewardsBlock({ num_voting_rewards, rewardOptions, v
 }
 
 
-function VoterRewardsToggle({ isToggleOn, setIsToggleOn }) {
-
-    const handleToggle = () => {
-        if (!isToggleOn) {
-            setIsToggleOn(true)
-        }
-        else {
-            setIsToggleOn(false)
-        }
-    }
-
-    return (
-        <div className="gatekeeper-toggle">
-            <input checked={isToggleOn} onChange={handleToggle} className="react-switch-checkbox" id={`react-switch-toggle`} type="checkbox" />
-            <label style={{ background: isToggleOn && '#06D6A0' }} className="react-switch-label" htmlFor={`react-switch-toggle`}>
-                <span className={`react-switch-button`} />
-            </label>
-        </div>
-    )
-}
 
 function VotingRewardsRow({ possible_ranks, possible_rewards, index, voterRewards, setVoterRewards }) {
     const [rank, setRank] = useState(1);

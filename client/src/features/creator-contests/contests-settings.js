@@ -2,6 +2,7 @@ import React, { useEffect, useReducer, useRef, useState } from "react"
 import ContestDateTimeBlock from "./components/datepicker/start-end-date"
 import ContestRewardsBlock from "./components/contest-rewards/contest-rewards"
 import { RainbowThemeContainer } from 'react-rainbow-components';
+import SimpleInputs from "./components/contest_simple_inputs/contest_simple_inputs";
 
 
 const theme = {
@@ -31,6 +32,16 @@ const containerStyles = {
     width: '5rem',
 };
 
+function reducer(state, action) {
+    switch (action.type) {
+        case 'update_single':
+            return { ...state, ...action.payload };
+        case 'update_all':
+            return { ...action.payload }
+        default:
+            throw new Error();
+    }
+}
 
 
 
@@ -40,6 +51,11 @@ export default function ContestSettings() {
     const [date_1, setDate_1] = useState(false)
     const [date_2, setDate_2] = useState(false)
     const [date_3, setDate_3] = useState(false)
+
+    const [rewardOptions, setRewardOptions] = useReducer(reducer, {});
+    const [rewards, setRewards] = useReducer(reducer, {});
+    const [errorMatrix, setErrorMatrix] = useState([[null, null, null, null]]);
+    const [voterRewards, setVoterRewards] = useReducer(reducer, [])
 
     // don't run time difference checks on initial render
     const firstUpdate = useRef(true)
@@ -54,7 +70,16 @@ export default function ContestSettings() {
     }, [date_0])
 
 
-
+    const printContestData = () => {
+        let contest_obj = {
+            contest_data: {
+                reward_options: rewardOptions,
+                submitter_rewards: rewards,
+                voter_rewards: voterRewards
+            }
+        }
+        console.log(contest_obj)
+    }
 
     return (
         <RainbowThemeContainer
@@ -63,7 +88,6 @@ export default function ContestSettings() {
             theme={theme}
 
         >
-            {/*
             <ContestDateTimeBlock
                 date_0={date_0}
                 date_1={date_1}
@@ -74,8 +98,21 @@ export default function ContestSettings() {
                 setDate_2={setDate_2}
                 setDate_3={setDate_3}
             />
-    */}
-            <ContestRewardsBlock theme={theme.rainbow} />
+
+            <ContestRewardsBlock
+                rewardOptions={rewardOptions}
+                setRewardOptions={setRewardOptions}
+                rewards={rewards}
+                setRewards={setRewards}
+                voterRewards={voterRewards}
+                setVoterRewards={setVoterRewards}
+                errorMatrix={errorMatrix}
+                setErrorMatrix={setErrorMatrix}
+                theme={theme.rainbow}
+            />
+
+            <SimpleInputs/>
+            <button onClick={printContestData}> print contest data</button>
         </RainbowThemeContainer>
     )
 }
