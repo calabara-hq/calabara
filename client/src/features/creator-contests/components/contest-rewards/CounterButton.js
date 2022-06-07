@@ -2,12 +2,7 @@ import React, { useState } from 'react';
 import styled, {keyframes} from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
-
-
-const fade_in = keyframes`
-    0% {opacity: 0}
-    100% {opacity: 1}
-`
+import { fade_in } from '../common/common_styles';
 
 
 const ButtonContainer = styled.div`
@@ -25,10 +20,11 @@ const ButtonContainer = styled.div`
 const MainContainer = styled.div`
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     grid-gap: 20px;
     animation: ${fade_in} 0.6s ease-in-out;
+    grid-area: ${props => props.grid_area ? props.grid_area : ''};
 `
 
 const MinusButton = styled.button`
@@ -69,10 +65,10 @@ const PlusButton = styled.button`
     }
 `
 
-export default function CounterButton({ counter, handleIncrement, handleDecrement }) {
+export default function CounterButton({ counter, handleIncrement, handleDecrement, grid_area }) {
 
     return (
-        <MainContainer>
+        <MainContainer grid_area={grid_area}>
             <h4>{counter}</h4>
             <ButtonContainer>
                 <MinusButton onClick={handleDecrement}><FontAwesomeIcon icon={faMinus} /></MinusButton>

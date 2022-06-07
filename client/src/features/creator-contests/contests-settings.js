@@ -1,6 +1,6 @@
 import React, { useEffect, useReducer, useRef, useState } from "react"
 import ContestDateTimeBlock from "./components/datepicker/start-end-date"
-import SubmittorRewardsBlock from "./components/submittor-rewards/submittor-rewards"
+import ContestRewardsBlock from "./components/contest-rewards/contest-rewards"
 import { RainbowThemeContainer } from 'react-rainbow-components';
 
 
@@ -75,7 +75,7 @@ export default function ContestSettings() {
                 setDate_3={setDate_3}
             />
     */}
-            <SubmittorRewardsBlock theme={theme.rainbow} />
+            <ContestRewardsBlock theme={theme.rainbow} />
         </RainbowThemeContainer>
     )
 }
