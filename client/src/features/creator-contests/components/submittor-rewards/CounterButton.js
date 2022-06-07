@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
-import styled from 'styled-components'
+import styled, {keyframes} from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
+
+
+const fade_in = keyframes`
+    0% {opacity: 0}
+    100% {opacity: 1}
+`
+
 
 const ButtonContainer = styled.div`
     display: flex;
@@ -16,12 +23,12 @@ const ButtonContainer = styled.div`
     box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
 `
 const MainContainer = styled.div`
-    grid-area: num_winners;
     display: flex;
     flex-direction: row;
     justify-content: center;
     align-items: center;
     grid-gap: 20px;
+    animation: ${fade_in} 0.6s ease-in-out;
 `
 
 const MinusButton = styled.button`
@@ -62,27 +69,11 @@ const PlusButton = styled.button`
     }
 `
 
-export default function NumWinnersButton({ numWinners, setNumWinners, rewards, setRewards }) {
+export default function CounterButton({ counter, handleIncrement, handleDecrement }) {
 
-
-    const handleIncrement = () => {
-        if (numWinners < 10) {
-            setNumWinners(numWinners + 1);
-        }
-    }
-    const handleDecrement = (value) => {
-        if (numWinners > 1) {
-            let rewards_copy = Object.entries(rewards)
-            rewards_copy.pop();
-            rewards_copy = Object.fromEntries(rewards_copy)
-            console.log(rewards_copy)
-            setRewards({type: 'update_all', payload: rewards_copy})
-            setNumWinners(numWinners - 1);
-        }
-    }
     return (
         <MainContainer>
-            <h4>{numWinners}</h4>
+            <h4>{counter}</h4>
             <ButtonContainer>
                 <MinusButton onClick={handleDecrement}><FontAwesomeIcon icon={faMinus} /></MinusButton>
                 <PlusButton onClick={handleIncrement}><FontAwesomeIcon icon={faPlus} /></PlusButton>

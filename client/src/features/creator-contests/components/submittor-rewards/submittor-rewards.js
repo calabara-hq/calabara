@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useReducer } from "react";
 import styled, { keyframes } from 'styled-components'
-import NumWinnersButton from "./NumWinnersButton";
+import CounterButton from "./CounterButton";
 import RewardSelector from "./choose-rewards";
+import VoterRewardsBlock from "./voter-rewards";
 import contestLogo from '../../../../img/creator-contest.png'
 import { HelpText } from "react-rainbow-components";
-import { Grid } from "@mui/material";
 
 
 const fade_in = keyframes`
@@ -18,7 +18,6 @@ const Rewards = styled.div`
     background-color: ${props => props.theme.palette.mainBackground};
     color: #d3d3d3;
     grid-gap: 50px;
-    height: 100vh;
     width: 95vw;
     margin: 0 auto;
 
@@ -40,17 +39,20 @@ const RewardsGridBottom = styled.div`
     grid-row-gap: 20px;
     text-align: center;
     position: relative;
-
+    width: 90%;
+    margin: 0 auto;
+    padding-bottom: 30px;
+    border-bottom: 1px solid grey;
 `
 
 const NumWinnersBlock = styled.div`
     display: grid;
     grid-template-columns: repeat(4, 25%);
-    grid-template-areas: "title num_winners . .";
+    grid-template-areas: "section_title title num_winners .";
     grid-row-gap: 20px;
     text-align: center;
+    height: 5em;
     animation: ${fade_in} 0.6s ease-in-out;
-
 `
 
 const GridInputContainer = styled.div`
@@ -78,10 +80,6 @@ const RewardsGridInput = styled.input`
     &:focus, &:hover, &:active{
         border: 2px solid ${props => props.theme.palette.brand};
     }
-
-    
-
-    
 `
 
 function reducer(state, action) {
@@ -107,21 +105,15 @@ export default function SubmittorRewardsBlock({ theme }) {
 
     const [errorMatrix, setErrorMatrix] = useState([]);
 
-    const [rewardInputErrors, setRewardInputErrors] = useState({})
+    const [voterRewards, setVoterRewards] = useReducer(reducer, [])
 
-    useEffect(() => {
-        console.log(errorMatrix)
-    },[errorMatrix])
-
-    useEffect(() => {
-        console.log(rewardOptions)
-    }, [rewardOptions])
+    useEffect(() => {console.log(voterRewards)},[voterRewards])
 
     useEffect(() => {
         if (numWinners > 0) {
             const generateArray = Array.from(Array(Number(numWinners)).keys())
             setWinners(generateArray)
-            let errorMatrix = Array.from({length: numWinners},()=> Array.from({length: 4}, () => null))
+            let errorMatrix = Array.from({ length: numWinners }, () => Array.from({ length: 4 }, () => null))
             setErrorMatrix(errorMatrix)
 
         }
@@ -134,22 +126,37 @@ export default function SubmittorRewardsBlock({ theme }) {
     const handleErrors = () => {
         let err_matrix_copy = JSON.parse(JSON.stringify(errorMatrix))
         let rewards_arr = Object.values(rewards)
-        // check for non whole number nft allocations
 
+        // check for non whole number nft allocations
         rewards_arr.map((row, index) => {
             if (row.erc721 % 1 > 0) {
                 err_matrix_copy[index][3] = 'must be a whole number'
-                //setRewardInputErrors({ error: true, index: index, field: 'erc721', msg: `must be a whole number` })
-                //setRewardInputErrors({[]})
                 setErrorMatrix(err_matrix_copy)
             }
         })
     }
 
+    const handleWinnersIncrement = () => {
+        if (numWinners < 10) {
+            setNumWinners(numWinners + 1);
+        }
+    }
+    const handleWinnersDecrement = (value) => {
+        if (numWinners > 1) {
+            let rewards_copy = Object.entries(rewards)
+            rewards_copy.pop();
+            rewards_copy = Object.fromEntries(rewards_copy)
+            console.log(rewards_copy)
+            setRewards({ type: 'update_all', payload: rewards_copy })
+            setNumWinners(numWinners - 1);
+        }
+    }
+
+
     return (
         <Rewards theme={theme}>
             <RewardsGridTop>
-                <h2 style={{ gridArea: 'heading', marginLeft: '10px', borderBottom: '1px solid grey', width: 'fit-content', padding: '5px' }}>Submittor Rewards</h2>
+                <h2 style={{ gridArea: 'heading', marginLeft: '10px', borderBottom: '1px solid grey', width: 'fit-content', padding: '5px' }}>Contest Rewards</h2>
                 <img style={{ gridArea: 'logo', width: '20em', marginTop: '20px', marginLeft: 'auto' }} src={contestLogo}></img>
                 <RewardSelector rewardOptions={rewardOptions} setRewardOptions={setRewardOptions} />
 
@@ -157,8 +164,9 @@ export default function SubmittorRewardsBlock({ theme }) {
             {Object.keys(rewardOptions).length > 0 &&
                 <>
                     <NumWinnersBlock>
-                        <h3 style={{ gridArea: 'title', justifySelf: 'center', alignSelf: 'center', marginRight: '55px' }}>Number of Winners</h3>
-                        <NumWinnersButton numWinners={numWinners} setNumWinners={setNumWinners} rewards={rewards} setRewards={setRewards} />
+                        <h2 style={{ gridArea: 'section_title' }}>submitter rewards</h2>
+                        <h3 style={{ gridArea: 'title', justifySelf: 'center', alignSelf: 'center'}}>Number of Winners</h3>
+                        <CounterButton style={{gridArea: 'num_winners'}} counter={numWinners} handleIncrement={handleWinnersIncrement} handleDecrement={handleWinnersDecrement} />
                     </NumWinnersBlock>
 
                     <RewardsGridBottom>
@@ -168,13 +176,16 @@ export default function SubmittorRewardsBlock({ theme }) {
                         {rewardOptions.erc721 ? <p>{rewardOptions.erc721}</p> : <b></b>}
                         {winners.map((idx, val) => {
                             return (
-                                <RewardGridRow idx={idx} theme={theme} val={val} rewards={rewards} setRewards={setRewards} rewardOptions={rewardOptions} errorMatrix={errorMatrix} setErrorMatrix={setErrorMatrix}/>
+                                <RewardGridRow idx={idx} theme={theme} val={val} rewards={rewards} setRewards={setRewards} rewardOptions={rewardOptions} errorMatrix={errorMatrix} setErrorMatrix={setErrorMatrix} />
                             )
                         })}
 
 
                     </RewardsGridBottom>
+                    <VoterRewardsBlock num_voting_rewards={Object.values(rewards)} submitter_rewards={Object.values(rewards)} rewardOptions={rewardOptions} voterRewards={voterRewards} setVoterRewards={setVoterRewards}/>
+
                 </>
+
             }
             <button onClick={handleErrors}>submit</button>
         </Rewards>
@@ -186,15 +197,6 @@ export default function SubmittorRewardsBlock({ theme }) {
 function RewardGridRow({ theme, idx, rewards, setRewards, rewardOptions, errorMatrix, setErrorMatrix }) {
 
     const [errorMsg, setErrorMsg] = useReducer(reducer, { rank: '', ETH: '', erc20: '', erc721: '' })
-
-    /*
-    useEffect(() => {
-        if (rewardInputErrors.index == idx) {
-            setErrorMsg({ type: 'update_single', payload: { [rewardInputErrors.field]: rewardInputErrors.msg } })
-        }
-    }, [rewardInputErrors])
-*/
-
 
 
     const updateRewards = (e) => {
@@ -229,32 +231,32 @@ function RewardGridRow({ theme, idx, rewards, setRewards, rewardOptions, errorMa
         <>
 
             <GridInputContainer>
-                <RewardsGridInput name='0' theme={theme} type="number" onChange={updateRewards}></RewardsGridInput>
-                {false && <HelpText variant="error" title="error" text={<p style={{ fontSize: '16px' }}>{errorMatrix[idx][0]}</p>} />}
+                <RewardsGridInput name='0' theme={theme} type="number" onChange={updateRewards} onWheel={(e) => e.target.blur()}></RewardsGridInput>
+                {errorMatrix[idx][0] && <HelpText variant="error" title="error" text={<p style={{ fontSize: '16px' }}>{errorMatrix[idx][0]}</p>} />}
 
             </GridInputContainer>
 
             <GridInputContainer>
                 {rewardOptions.ETH ?
-                    <RewardsGridInput name='1' theme={theme} type="number" onChange={updateRewards}></RewardsGridInput>
+                    <RewardsGridInput name='1' theme={theme} type="number" onChange={updateRewards} onWheel={(e) => e.target.blur()}></RewardsGridInput>
                     : <b></b>
                 }
-                {false && <HelpText variant="error" title="error" text={<p style={{ fontSize: '16px' }}>{errorMatrix[idx][1]}</p>} />}
+                {errorMatrix[idx][1] && <HelpText variant="error" title="error" text={<p style={{ fontSize: '16px' }}>{errorMatrix[idx][1]}</p>} />}
 
             </GridInputContainer>
 
             <GridInputContainer>
                 {rewardOptions.erc20 ?
-                    <RewardsGridInput name='2' theme={theme} type="number" onChange={updateRewards}></RewardsGridInput>
+                    <RewardsGridInput name='2' theme={theme} type="number" onChange={updateRewards} onWheel={(e) => e.target.blur()}></RewardsGridInput>
                     : <b></b>
                 }
-                {false && <HelpText variant="error" title="error" text={<p style={{ fontSize: '16px' }}>{errorMatrix[idx][2]}</p>} />}
+                {errorMatrix[idx][2] && <HelpText variant="error" title="error" text={<p style={{ fontSize: '16px' }}>{errorMatrix[idx][2]}</p>} />}
 
             </GridInputContainer>
 
             <GridInputContainer>
                 {rewardOptions.erc721 ?
-                    <RewardsGridInput name='3' theme={theme} type="number" onChange={updateRewards} error={errorMatrix[idx][3]} ></RewardsGridInput>
+                    <RewardsGridInput name='3' theme={theme} type="number" onChange={updateRewards} error={errorMatrix[idx][3]} onWheel={(e) => e.target.blur()} ></RewardsGridInput>
                     : <b></b>
                 }
                 {errorMatrix[idx][3] && <HelpText variant="error" title="error" text={<p style={{ fontSize: '16px' }}>{errorMatrix[idx][3]}</p>} />}
