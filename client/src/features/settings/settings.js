@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useState, useRef } from 'react'
+import React, { useEffect, useReducer, useState, useRef, useContext } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useHistory, useParams } from 'react-router-dom'
 import BackButton from '../back-button/back-button'
@@ -88,7 +88,7 @@ export default function SettingsManager() {
             })
         }
         else if (ens === 'new') {
-            setFields({ name: '', logo: '', website: '', discord: '', addresses: [''], gatekeeper: { rules: [] }, ens: '' })
+            setFields({ name: '', logo: '', website: '', discord: '', addresses: [''], gatekeeper: { rules: [], rulesToDelete: [] }, ens: '' })
         }
         setFieldsReady(true)
     }, [])
@@ -484,9 +484,8 @@ function OrganizationGatekeeperComponent({ standardProps }) {
         // we only want to push values to rulesToDelete if the rule in question is an existing gk rule (from prior settings state). Otherwise we'll just pretend like we never added it.
         // use existing rules to get a rule_id. If rule_id == undefined, then we'll just splice it from the rules field.
         // if rule_id is defined, we'll add it to our ruleToDelete array
-
+        console.log(fields.gatekeeper)
         var gatekeeperCopy = JSON.parse(JSON.stringify(fields.gatekeeper.rules));
-        const ruleToDelete = JSON.parse(JSON.stringify(gatekeeperCopy[array_index]))
 
         if (gatekeeperCopy[array_index].gatekeeperType === 'discord') setDoesDiscordExist(false)
 
@@ -494,13 +493,13 @@ function OrganizationGatekeeperComponent({ standardProps }) {
         // if array_index for existing rules is undefined, we know it's a new rule
 
         if (existingRules[array_index] != null) {
-            // rule exists, need to keep track of the rule we want to delete
+            // rule exists from before, need to keep track of the rule we want to delete
             gatekeeperCopy.splice(array_index, 1)
             setFields({ gatekeeper: { rules: gatekeeperCopy, rulesToDelete: fields.gatekeeper.rulesToDelete.concat(existingRules[array_index]) } })
         }
 
         else {
-            // rule doesn't exist. don't have to worry about existing rules
+            // rule doesn't exist. don't have to worry about existing rules, just remove it directly
             gatekeeperCopy.splice(array_index, 1)
             setFields({ gatekeeper: { rules: gatekeeperCopy } })
         }
@@ -578,12 +577,6 @@ function OrganizationGatekeeperComponent({ standardProps }) {
 
 function GatekeeperOptions({ setGatekeeperInnerProgress, standardProps, addGatekeeperOptionClick, discordIntegrationProps }) {
     const { fields, setFields } = standardProps
-    const [gatekeeperOptionClick, setGatekeeperOptionClick] = useState('none')
-
-    const handleClick = (type) => {
-        setGatekeeperOptionClick(type)
-        setGatekeeperInnerProgress(1)
-    }
 
     return (
         <div className="org-gatekeeper-options">
@@ -673,7 +666,7 @@ function ERC20gatekeeper({ setGatekeeperInnerProgress, fields, setFields }) {
             if (fields.gatekeeper.rules.length == 0) {
                 var gatekeeperCopy = JSON.parse(JSON.stringify(fields.gatekeeper.rules));
                 gatekeeperCopy.push(gatekeeperObj)
-                setFields({ gatekeeper: { rules: gatekeeperCopy } })
+                setFields({ gatekeeper: { rules: gatekeeperCopy, rulesToDelete: fields.gatekeeper.rulesToDelete } })
                 setGatekeeperInnerProgress(0);
             }
             // check if the contract address is already being used by another rule
@@ -689,7 +682,7 @@ function ERC20gatekeeper({ setGatekeeperInnerProgress, fields, setFields }) {
                     if (i == fields.gatekeeper.rules.length - 1 && fields.gatekeeper.rules[i].gatekeeperAddress != gatekeeperObj.gatekeeperAddress) {
                         var gatekeeperCopy = JSON.parse(JSON.stringify(fields.gatekeeper.rules));
                         gatekeeperCopy.push(gatekeeperObj)
-                        setFields({ gatekeeper: { rules: gatekeeperCopy } })
+                        setFields({ gatekeeper: { rules: gatekeeperCopy, rulesToDelete: fields.gatekeeper.rulesToDelete } })
                         setGatekeeperInnerProgress(0);
                     }
                 }
@@ -826,7 +819,7 @@ function ERC721gatekeeper({ setGatekeeperInnerProgress, fields, setFields }) {
             if (fields.gatekeeper.rules.length == 0) {
                 var gatekeeperCopy = JSON.parse(JSON.stringify(fields.gatekeeper.rules));
                 gatekeeperCopy.push(gatekeeperObj)
-                setFields({ gatekeeper: { rules: gatekeeperCopy } })
+                setFields({ gatekeeper: { rules: gatekeeperCopy, rulesToDelete: fields.gatekeeper.rulesToDelete } })
                 setGatekeeperInnerProgress(0);
             }
             // check if the contract address is already being used by another rule
@@ -842,7 +835,7 @@ function ERC721gatekeeper({ setGatekeeperInnerProgress, fields, setFields }) {
                     if (i == fields.gatekeeper.rules.length - 1 && fields.gatekeeper.rules[i].gatekeeperAddress != gatekeeperObj.gatekeeperAddress) {
                         var gatekeeperCopy = JSON.parse(JSON.stringify(fields.gatekeeper.rules));
                         gatekeeperCopy.push(gatekeeperObj)
-                        setFields({ gatekeeper: { rules: gatekeeperCopy } })
+                        setFields({ gatekeeper: { rules: gatekeeperCopy, rulesToDelete: fields.gatekeeper.rulesToDelete } })
                         setGatekeeperInnerProgress(0);
                     }
                 }
@@ -932,17 +925,10 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields, 
 
     let {
         userOnOpen,
-        userAuthorization,
-        userError,
         userIsAuthenticating,
         botOnOpen,
-        botAuthorization,
-        botError,
-        botIsAuthenticating,
         userAuth,
-        setUserAuth,
         botAuth,
-        setBotAuth,
         selectedServer,
         setSelectedServer
     } = discordIntegrationProps
@@ -1088,7 +1074,7 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields, 
         // add it if there are no rules
         if (fields.gatekeeper.rules.length == 0) {
             gatekeeperCopy.push(gatekeeperObj)
-            setFields({ gatekeeper: { rules: gatekeeperCopy } })
+            setFields({ gatekeeper: { rules: gatekeeperCopy, rulesToDelete: fields.gatekeeper.rulesToDelete } })
         }
         // check if discord is already setup. If so, just replace the entry in rules
         else {
@@ -1106,7 +1092,7 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields, 
                 }
 
             }
-            setFields({ gatekeeper: { rules: gatekeeperCopy } })
+            setFields({ gatekeeper: { rules: gatekeeperCopy, rulesToDelete: fields.gatekeeper.rulesToDelete } })
         }
     }
 
@@ -1118,12 +1104,6 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields, 
         <>
             {discordRuleState === 'no rule' &&
                 <>
-                    {/*
-                    <div className="discord-add-bot-container">
-                        <button className={'discord-add-bot ' + (userIsAuthenticating ? 'loading' : '')} onClick={discordAuthenticateUser}>{userIsAuthenticating ? 'check popup window' : 'add bot'}</button>
-                    </div>
-                */}
-
                     <div className="discord-guild-info">
                         <p className="discord-name-header">server</p>
                         <GuildTopLevel guildName={guildName} userIsAuthenticating={userIsAuthenticating} discordAuthenticateUser={discordAuthenticateUser} discordIntegrationStep={discordIntegrationStep} />
