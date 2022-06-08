@@ -225,7 +225,7 @@ function ConfigureGatekeeper({ appliedRules, setAppliedRules, handleSave }) {
                     <div className="tab-message neutral">
                         <p>Toggle the switches to apply gatekeeper rules to this widget. If multiple rules are applied, the gatekeeper will pass if the connected wallet passes 1 or more rules.</p>
                     </div>
-                    <RuleSelect ruleError={ruleError} setRuleError={setRuleError} appliedRules={appliedRules} setAppliedRules={setAppliedRules} />
+                    <RuleSelect ruleError={ruleError} setRuleError={setRuleError} appliedRules={appliedRules} setAppliedRules={setAppliedRules} toggle_identifier={"wiki-rule"} />
                 </>
             }
 

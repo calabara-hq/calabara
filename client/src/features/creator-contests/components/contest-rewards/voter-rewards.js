@@ -64,6 +64,7 @@ const TopGridWrapper = styled.div`
     text-align: left;
     width: 90%;
     margin: 0 auto;
+
 `
 const VotingRewardSelectorWrap = styled.div`
     display: grid;

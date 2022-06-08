@@ -10,10 +10,9 @@ import { Contest_h2, Contest_h3, fade_in } from '../common/common_styles'
 const Rewards = styled.div`
     display: flex;
     flex-direction: column;
-    background-color: ${props => props.theme.palette.mainBackground};
     color: #d3d3d3;
     grid-gap: 50px;
-    width: 95vw;
+    width: 100%;
     margin: 0 auto;
 
 `
@@ -147,7 +146,7 @@ export default function ContestRewardsBlock({ theme, rewardOptions, setRewardOpt
                     <VoterRewardsBlock num_voting_rewards={Object.values(rewards)} submitter_rewards={Object.values(rewards)} rewardOptions={rewardOptions} voterRewards={voterRewards} setVoterRewards={setVoterRewards} />
                 </>
             }
-            <button onClick={handleErrors}>submit</button>
+            {/*<button onClick={handleErrors}>submit</button>*/}
         </Rewards>
 
     )

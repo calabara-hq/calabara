@@ -8,7 +8,7 @@ import {
   selectDashboardRules,
 } from '../../features/gatekeeper/gatekeeper-rules-reducer';
 
-function RuleSelect({ appliedRules, setAppliedRules, ruleError, setRuleError }) {
+function RuleSelect({ appliedRules, setAppliedRules, ruleError, setRuleError, toggle_identifier }) {
   // fetch available rules
   const availableRules = useSelector(selectDashboardRules);
 
@@ -17,7 +17,7 @@ function RuleSelect({ appliedRules, setAppliedRules, ruleError, setRuleError }) 
     <div className="apply-gatekeeper-rules">
       {Object.entries(availableRules).map(([rule_id, value]) => {
         return (
-          <GatekeeperRule ruleError={ruleError} key={rule_id} setRuleError={setRuleError} element={value} rule_id={rule_id} appliedRules={appliedRules} setAppliedRules={setAppliedRules} />
+          <GatekeeperRule ruleError={ruleError} key={rule_id} setRuleError={setRuleError} element={value} rule_id={rule_id} appliedRules={appliedRules} setAppliedRules={setAppliedRules} toggle_identifier={toggle_identifier}/>
         )
       })}
     </div>
@@ -26,7 +26,7 @@ function RuleSelect({ appliedRules, setAppliedRules, ruleError, setRuleError }) 
 
 
 
-function GatekeeperRule({ element, rule_id, appliedRules, setAppliedRules, ruleError, setRuleError }) {
+function GatekeeperRule({ element, rule_id, appliedRules, setAppliedRules, ruleError, setRuleError, toggle_identifier}) {
 
   const [isGatekeeperOn, setIsGatekeeperOn] = useState(appliedRules[rule_id] != undefined)
   const [roleModalOpen, setRoleModalOpen] = useState(false)
@@ -77,7 +77,7 @@ function GatekeeperRule({ element, rule_id, appliedRules, setAppliedRules, ruleE
               <span onClick={() => { window.open('https://etherscan.io/address/' + element.gatekeeperAddress) }} className='gatekeeper-symbol'>{element.gatekeeperSymbol}  <i className="fas fa-external-link-alt"></i></span>
             </p>
             <div className="toggle-flex">
-              <ToggleSwitch setRuleError={setRuleError} ruleError={ruleError} addRule={addRule} deleteRule={deleteRule} rule_id={rule_id} isGatekeeperOn={isGatekeeperOn} setIsGatekeeperOn={setIsGatekeeperOn} appliedRules={appliedRules} setAppliedRules={setAppliedRules} />
+              <ToggleSwitch setRuleError={setRuleError} ruleError={ruleError} addRule={addRule} deleteRule={deleteRule} rule_id={rule_id} isGatekeeperOn={isGatekeeperOn} setIsGatekeeperOn={setIsGatekeeperOn} appliedRules={appliedRules} setAppliedRules={setAppliedRules} toggle_identifier={toggle_identifier}/>
               {isGatekeeperOn &&
                 <>
                   <input type="number" value={appliedRules[rule_id]} placeholder="threshold" onChange={handleThresholdChange}></input>
@@ -92,7 +92,7 @@ function GatekeeperRule({ element, rule_id, appliedRules, setAppliedRules, ruleE
             <p><b>Type:</b> <span className={element.gatekeeperType}>{element.gatekeeperType}</span></p>
             <p><b>Server:</b> {element.serverName}</p>
             <div className="toggle-flex">
-              <ToggleSwitch setRuleError={setRuleError} ruleError={ruleError} addRule={addRule} deleteRule={deleteRule} rule_id={rule_id} isGatekeeperOn={isGatekeeperOn} setIsGatekeeperOn={setIsGatekeeperOn} appliedRules={appliedRules} setAppliedRules={setAppliedRules} />
+              <ToggleSwitch setRuleError={setRuleError} ruleError={ruleError} addRule={addRule} deleteRule={deleteRule} rule_id={rule_id} isGatekeeperOn={isGatekeeperOn} setIsGatekeeperOn={setIsGatekeeperOn} toggle_identifier={toggle_identifier} />
               {isGatekeeperOn &&
                 <>
                   <button className="select-roles primary-gradient-button" onClick={open}>select roles</button>
@@ -116,7 +116,7 @@ function GatekeeperRule({ element, rule_id, appliedRules, setAppliedRules, ruleE
 }
 
 
-function ToggleSwitch({ addRule, setRuleError, deleteRule, ruleError, rule_id, isGatekeeperOn, setIsGatekeeperOn, appliedRules, setAppliedRules }) {
+function ToggleSwitch({ addRule, setRuleError, deleteRule, ruleError, rule_id, isGatekeeperOn, setIsGatekeeperOn, toggle_identifier }) {
 
 
   const handleToggle = () => {
@@ -140,8 +140,8 @@ function ToggleSwitch({ addRule, setRuleError, deleteRule, ruleError, rule_id, i
 
   return (
     <div className="gatekeeper-toggle">
-      <input checked={isGatekeeperOn} onChange={handleToggle} className="react-switch-checkbox" id={`react-switch-toggle${rule_id}`} type="checkbox" />
-      <label style={{ background: isGatekeeperOn && '#06D6A0' }} className="react-switch-label" htmlFor={`react-switch-toggle${rule_id}`}>
+      <input checked={isGatekeeperOn} onChange={handleToggle} className="react-switch-checkbox" id={`react-switch-toggle-${toggle_identifier}-${rule_id}`} type="checkbox" />
+      <label style={{ background: isGatekeeperOn && '#06D6A0' }} className="react-switch-label" htmlFor={`react-switch-toggle-${toggle_identifier}-${rule_id}`}>
         <span className={`react-switch-button`} />
       </label>
     </div>

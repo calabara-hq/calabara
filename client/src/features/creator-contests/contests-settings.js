@@ -1,9 +1,10 @@
 import React, { useEffect, useReducer, useRef, useState } from "react"
 import ContestDateTimeBlock from "./components/datepicker/start-end-date"
 import ContestRewardsBlock from "./components/contest-rewards/contest-rewards"
+import ContestParticipantRestrictions from "./components/contest_gatekeeper/particpant_restrictions";
 import { RainbowThemeContainer } from 'react-rainbow-components';
 import SimpleInputs from "./components/contest_simple_inputs/contest_simple_inputs";
-
+import styled from 'styled-components'
 
 const theme = {
     rainbow: {
@@ -26,6 +27,18 @@ const theme = {
         },
     },
 };
+
+
+
+const ContestSettingsWrap = styled.div`
+    width: 95vw;
+    margin: 0 auto;
+    background-color: #22272e;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    grid-gap: 500px;
+`
 
 const containerStyles = {
     maxWidth: 300,
@@ -88,31 +101,33 @@ export default function ContestSettings() {
             theme={theme}
 
         >
-            <ContestDateTimeBlock
-                date_0={date_0}
-                date_1={date_1}
-                date_2={date_2}
-                date_3={date_3}
-                setDate_0={setDate_0}
-                setDate_1={setDate_1}
-                setDate_2={setDate_2}
-                setDate_3={setDate_3}
-            />
+            <ContestSettingsWrap theme={theme}>
+                <ContestDateTimeBlock
+                    date_0={date_0}
+                    date_1={date_1}
+                    date_2={date_2}
+                    date_3={date_3}
+                    setDate_0={setDate_0}
+                    setDate_1={setDate_1}
+                    setDate_2={setDate_2}
+                    setDate_3={setDate_3}
+                />
 
-            <ContestRewardsBlock
-                rewardOptions={rewardOptions}
-                setRewardOptions={setRewardOptions}
-                rewards={rewards}
-                setRewards={setRewards}
-                voterRewards={voterRewards}
-                setVoterRewards={setVoterRewards}
-                errorMatrix={errorMatrix}
-                setErrorMatrix={setErrorMatrix}
-                theme={theme.rainbow}
-            />
-
-            <SimpleInputs/>
-            <button onClick={printContestData}> print contest data</button>
+                <ContestRewardsBlock
+                    rewardOptions={rewardOptions}
+                    setRewardOptions={setRewardOptions}
+                    rewards={rewards}
+                    setRewards={setRewards}
+                    voterRewards={voterRewards}
+                    setVoterRewards={setVoterRewards}
+                    errorMatrix={errorMatrix}
+                    setErrorMatrix={setErrorMatrix}
+                    theme={theme.rainbow}
+                />
+                <ContestParticipantRestrictions/>
+                <SimpleInputs />
+                <button onClick={printContestData}> print contest data</button>
+            </ContestSettingsWrap >
         </RainbowThemeContainer>
     )
 }
