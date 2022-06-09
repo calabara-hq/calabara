@@ -14,6 +14,8 @@ const { dashboard } = require('./routes/dashboard-routes')
 const { organizations } = require('./routes/organization-routes')
 const { wiki } = require('./routes/wiki-routes')
 const { user } = require('./routes/user-routes')
+const { image } = require('./routes/image-routes')
+
 dotenv.config();
 
 
@@ -44,6 +46,7 @@ app.use('/dashboard', dashboard)
 app.use('/organizations', organizations)
 app.use('/wiki', wiki)
 app.use('/user', user)
+app.use('/image', image)
 
 app.get('/img/*', function (req, res, next) {
     res.sendFile(path.join(imgPath, req.url.split('/').slice(2).join('/')))

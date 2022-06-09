@@ -2,6 +2,7 @@ import React, { useEffect, useReducer, useRef, useState } from "react"
 import ContestDateTimeBlock from "./components/datepicker/start-end-date"
 import ContestRewardsBlock from "./components/contest-rewards/contest-rewards"
 import ContestParticipantRestrictions from "./components/contest_gatekeeper/particpant_restrictions";
+import PromptBuilder from "./components/prompt_builder/prompt_builder";
 import { RainbowThemeContainer } from 'react-rainbow-components';
 import SimpleInputs from "./components/contest_simple_inputs/contest_simple_inputs";
 import styled from 'styled-components'
@@ -70,6 +71,31 @@ export default function ContestSettings() {
     const [errorMatrix, setErrorMatrix] = useState([[null, null, null, null]]);
     const [voterRewards, setVoterRewards] = useReducer(reducer, [])
 
+    const [submitterAppliedRules, setSubmitterAppliedRules] = useReducer(reducer, {});
+    const [voterAppliedRules, setVoterAppliedRules] = useReducer(reducer, {});
+    const [submitterRuleError, setSubmitterRuleError] = useState(false);
+    const [voterRuleError, setVoterRuleError] = useState(false);
+
+
+    /*
+
+        participant restriction error handling
+    
+        const handleNext = () => {
+            // check if selected gatekeepers have a threshold value set
+            for (const [key, value] of Object.entries(appliedRules)) {
+              if (value == '') {
+                setRuleError({ id: key })
+                return;
+              }
+            }
+            setProgress(3)
+        
+          }
+    
+          */
+
+
     // don't run time difference checks on initial render
     const firstUpdate = useRef(true)
 
@@ -88,7 +114,9 @@ export default function ContestSettings() {
             contest_data: {
                 reward_options: rewardOptions,
                 submitter_rewards: rewards,
-                voter_rewards: voterRewards
+                voter_rewards: voterRewards,
+                submitter_restrictions: submitterAppliedRules,
+                voter_restrictions: voterAppliedRules
             }
         }
         console.log(contest_obj)
@@ -124,8 +152,20 @@ export default function ContestSettings() {
                     setErrorMatrix={setErrorMatrix}
                     theme={theme.rainbow}
                 />
-                <ContestParticipantRestrictions/>
+
+                <ContestParticipantRestrictions
+                    submitterAppliedRules={submitterAppliedRules}
+                    setSubmitterAppliedRules={setSubmitterAppliedRules}
+                    voterAppliedRules={voterAppliedRules}
+                    setVoterAppliedRules={setVoterAppliedRules}
+                    submitterRuleError={submitterRuleError}
+                    setSubmitterRuleError={setSubmitterRuleError}
+                    voterRuleError={voterRuleError}
+                    setVoterRuleError={setVoterRuleError}
+                />
+
                 <SimpleInputs />
+                <PromptBuilder/>
                 <button onClick={printContestData}> print contest data</button>
             </ContestSettingsWrap >
         </RainbowThemeContainer>
