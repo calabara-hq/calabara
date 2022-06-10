@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useReducer, useRef } from 'react'
+import React, { useState, useEffect, useReducer, useRef, useCallback } from 'react'
 import Editor from 'react-medium-editor';
 import { EDITOR_JS_TOOLS } from './editor_tools';
 import { createReactEditorJS } from 'react-editor-js'
@@ -98,10 +98,14 @@ function PromptEditor({ }) {
         }
     }
 
+    const handleInitialize = useCallback((instance) => {
 
-    useEffect(() => {
+
+    })
+
+    const handleSubmit = () => {
         console.log(contentRef)
-    }, [contentRef])
+    }
 
     const EditorWrap = styled.div`
         background-color: white;
@@ -115,19 +119,11 @@ function PromptEditor({ }) {
     const ReactEdtorJS = createReactEditorJS();
     return (
         <EditorWrap>
-            <EditorButtons />
+            <button style={{ marginLeft: 'auto' }}>cancel</button>
+            <button onClick={handleSubmit}>submit</button>
             <ReactEdtorJS ref={contentRef} tools={EDITOR_JS_TOOLS} />
         </EditorWrap>
 
 
-    )
-}
-
-function EditorButtons({ }) {
-    return (
-        <div style={{display: 'flex'}}>
-            <button style={{marginLeft: 'auto'}}>cancel</button>
-            <button>submit</button>
-        </div>
     )
 }
