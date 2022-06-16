@@ -1,6 +1,7 @@
 import React from 'react'
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
+import { BrowserRouter as Router, Switch, Route, Link, useLocation } from 'react-router-dom'
 import '../../css/container.css'
+import Nav from '../navbar/navbar'
 import Cards from '../org-cards/org-cards'
 import Dashboard from '../dashboard/dashboard'
 import Analytics from '../snapshot-analytics/snapshot-analytics'
@@ -10,14 +11,23 @@ import ReactEditor from '../wiki/wiki-edit'
 import SettingsManager from '../settings/settings'
 import ManageWidgets from '../manage-widgets/manage-widgets'
 import ContestSettings from '../creator-contests/contests-settings'
+import Homepage from '../homepage/homepage'
 
 
 export default function Container() {
 
+  const location = useLocation();
 
+  const homepage = location.pathname === '/'
 
   return (
     <div className='application-container'>
+
+      <Nav homepage={homepage} />
+
+      <Route exact path="/">
+        <Homepage />
+      </Route>
 
       <Route path="/:ens/dashboard">
         <Dashboard />
@@ -55,7 +65,6 @@ export default function Container() {
       <Route path="/:ens/contest_settings">
         <ContestSettings />
       </Route>
-
     </div>
   )
 }

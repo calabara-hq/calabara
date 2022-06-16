@@ -2,8 +2,8 @@ import React from 'react';
 import Nav from '../features/navbar/navbar';
 import Container from '../features/container/container'
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
-import Homepage from '../features/homepage/homepage'
 import SuccessfulDiscordRedirect from '../features/discord/discord-oauth-redirect'
+import Homepage from '../features/homepage/homepage';
 
 
 export default function App() {
@@ -13,17 +13,11 @@ export default function App() {
 
     <Router>
       <Switch>
-        <Route exact path="/">
-          <Nav homepage={true} />
-          <Homepage />
-        </Route>
-
         <Route path="/oauth/discord">
           <SuccessfulDiscordRedirect />
         </Route>
 
         <Route path="/*">
-          <Nav homepage={false} />
           <Container />
         </Route>
 

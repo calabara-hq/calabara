@@ -1,5 +1,4 @@
 
-   
    @function stars($n) {
      $value: '#{random(2000)}px #{random(2000)}px #767676';
      @for $i from 2 through $n {

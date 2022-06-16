@@ -2,202 +2,377 @@ import logo_sketch from '../../img/calabara-sketch.png'
 import docs_logo from '../../img/wiki.svg';
 import snapshot_logo from '../../img/snapshot.svg';
 import calendar_logo from '../../img/calendar.svg';
-import gatekeeper_img from '../../img/gatekeeper.png';
-import dashboard_img from '../../img/dashboard.png';
-import calendar_img from '../../img/calendar.png';
-import docs_img from '../../img/docs.png';
-import snapshot_img from '../../img/snapshot.png';
-import shadowLogo from '../../img/3D-logo.svg'
-import React, { useState, useEffect } from 'react'
-import '../../css/homepage.css'
+import contest_logo from '../../img/creator-contest.png'
+import gatekeeper_img from '../../img/gatekeeper-toggle.png';
+import blueprint_img from '../../img/blueprint.png'
+import inTheLab from '../../img/contest-mockup.png'
+import React from 'react'
+import styled, { keyframes } from 'styled-components'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faVial, faBook } from '@fortawesome/free-solid-svg-icons'
+import { faGithub, faDiscord, faTwitter } from '@fortawesome/free-brands-svg-icons'
+import '../../css/stars.scss'
+
+
+const float = keyframes`
+	from { transform: translate(0,  0px); }
+  65%  { transform: translate(0, 25px); }
+  to   { transform: translate(0, 0px); } 
+  `
+
+const Left = styled.div`
+  flex: 1 1 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  > * {
+      margin-bottom: 30px;
+    }
+`
+const Right = styled.div`
+  flex: 1 1 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  > * {
+      margin-bottom: 30px;
+    }
+`
+
+const Top = styled.div`
+  flex: 1 1 50%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 95%;
+  margin: 0 auto;
+
+  > * {
+      margin-bottom: 30px;
+    }
+
+  @media (max-width: 1000px){
+    flex-direction: column-reverse;
+    margin-bottom: 40px;
+  }
+`
+const Bottom = styled.div`
+  flex: 1 1 50%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 95%;
+  margin: 0 auto;
+
+  > * {
+      margin-bottom: 30px;
+    }
+
+  @media (max-width: 1000px){
+    flex-direction: column;
+  }
+`
+
+const HomePageWrap = styled.div`
+  font-family: 'Ubuntu', sans-sans-serif;
+  display: flex;
+  flex-direction: column;
+  grid-gap: 20px;
+  margin: 0 auto;
+`
+
 
 function Homepage() {
-  const [selectedWidget, setSelectedWidget] = useState('snapshot')
 
   return (
-    <div classNameName="homepageContainer">
-      <section className="section1">
-        <div className="left">
-          <div>
-            <div className="section1-header">
-              <h1>A mission for community led web3 coordination tools</h1>
-            </div>
-
-          </div>
-        </div>
-        <div className="right">
-          <img className="bigimg" src={logo_sketch} alt="didn't work" />
-        </div>
-
-      </section>
-
-      <section className="section2">
-        <div>
-          <div className="section2-banner">
-            <h1>Our Story</h1>
-            <img src={shadowLogo} />
-          </div>
-          <div className="section2-content">
-            <p>We're a DAO of web3 creatives working together to invent, design, and build the tools that will help communities achieve their missions.</p>
-            <p>As web3 communities continue to push the boundaries and set their sights on more ambitious goals, we'll need flexible tools that keep the pace. From coordination amongst subDAOs / committees to web3 docs, we're focused on building community-first, open source software that empowers coordination and collaboration.</p>
-            <p>We're our own users, sorting through the same roadblocks that many other communities face. By collaborating with other communities, we can build the tools that we all need, the way we want. We're flexible, forkable, and fast.</p>
-            <p>V1 is our first iteration. It's an ultra simple platform that lays the foundation for what's to come. You can read more about V1 below.</p>
-          </div>
-          <div className="section2-footer">
-            <div className="section2-blueprint">
-              <div className="blueprint-row1">
-                <p>Calabara</p>
-              </div>
-              <div className="blueprint-row2">
-                <div>
-                  <p>Title</p>
-                </div>
-                <p>Blueprint</p>
-              </div>
-              <div className="blueprint-row3">
-                <p>Document Number</p>
-                <p>00-0001 Rev. A</p>
-                <p>xxxxx</p>
-
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="section3">
-        <div className="top">
-          <div className="left">
-            <img src={dashboard_img} />
-          </div>
-          <div className="right">
-            <h1>Community Dashboards</h1>
-            <div>
-              <p>Create dashboards for your favorite organizations. Dashboards can be populated with applications that help fellow members keep up with the latest calendar events, snapshot votes, and community documents.</p>
-            </div>
-          </div>
-        </div>
-        <div className="bottom">
-          <div className="left">
-            <h1>Token Gating</h1>
-            <div>
-              <p>Give potential frens the pitch. Give OG's the alpha. Use gatekeeper rules to enforce ERC-721 & ERC-20 token balance checks that uniquely affect each application.</p>
-            </div>
-          </div>
-
-          <div className="right">
-            <img src={gatekeeper_img} />
-          </div>
-
-        </div>
-      </section>
-
-      <section className="section4">
-        <div className="left">
-          <div className="top">
-            <h1>V1 🎉</h1>
-            <p>V1 is focused on helping contributors and members keep up with the latest community events, announcements, and proposals. Click through the supported applications below to learn more about them.</p>
-          </div>
-          <div className="bottom">
-            <div className="widgets-container">
-              <article onClick={() => { setSelectedWidget('snapshot') }} className={"homepage-widget-card " + (selectedWidget == 'snapshot' ? 'selected' : undefined)} >
-                <div className="homepage-card-image">
-                  <img src={snapshot_logo} />
-                </div>
-              </article>
-              <article onClick={() => { setSelectedWidget('calendar') }} className={"homepage-widget-card " + (selectedWidget == 'calendar' ? 'selected' : undefined)} >
-                <div className="homepage-card-image">
-                  <img src={calendar_logo} />
-                </div>
-              </article>
-              <article onClick={() => { setSelectedWidget('docs') }} className={"homepage-widget-card " + (selectedWidget == 'docs' ? 'selected' : undefined)} >
-                <div className="homepage-card-image">
-                  <img src={docs_logo} />
-                </div>
-              </article>
-
-            </div>
-            <div className="widget-description">
-              <h1>{selectedWidget}</h1>
-              {selectedWidget == 'snapshot' && <p>The snapshot app provides a useful display of proposals, personalized for the connected wallet. Members can quickly see ongoing proposals which they haven't voted on yet, as well as data about their participation and past proposals.</p>}
-              {selectedWidget == 'calendar' && <p>Calendar offers a simple event interface that hooks into google calendar. Members can view upcoming events all in one spot.</p>}
-              {selectedWidget == 'docs' && <p>Docs allows dashboard admins to create token gated folders and documents. Token checks can be used to provide member wallets with written updates and newbie wallets with the community basics.</p>}
-            </div>
-          </div>
-        </div>
-        <div className="right">
-          <div className="widget-img">
-            {selectedWidget == 'snapshot' && <img src={snapshot_img} />}
-            {selectedWidget == 'calendar' && <img src={calendar_img} />}
-            {selectedWidget == 'docs' && <img src={docs_img} />}
-
-          </div>
-        </div>
-
-      </section>
-
-      <section className="section5">
-        <div className="top">
-          <div>
-            <h1>Roadmap</h1>
-            <Squiggle />
-          </div>
-        </div>
-        <div className="bottom">
-          <div>
-            <p>Establish initial core team of contributors and build V1</p>
-          </div>
-          <div>
-            <p>Release V1. Read/write access for select pilot communities. Read only for public</p>
-          </div>
-          <div style={{ border: '2px solid #A998FF' }}>
-            <p>Rapid development cycle. Iterate, improve, and build on top of V1</p>
-          </div>
-          <div>
-            <p>Public launch</p>
-          </div>
-
-        </div>
-      </section>
-
-
-    </div>
+    <HomePageWrap>
+      <Section1 />
+      <Section2 />
+      <Section3 />
+      <Footer />
+    </HomePageWrap>
   )
 
 }
 
 
-function Squiggle() {
+function Section1() {
+
+  const Section1Wrap = styled.section`
+    height: 100vh;
+    background-color: #141416;
+    display: flex;
+    flex-wrap: wrap;
+    text-align: center;
+  `
+  const Section1Text = styled.div`
+    text-align: left;
+    font-size: 3em;
+    color: #e2e2e2;
+    margin: 0 auto;
+    width: 15ch;
+    padding: 5px;
+    background-color: #141416;
+
+    @media (max-width: 850px) {
+      text-align: center;
+    }
+  `
+  const Section1Img = styled.img`
+    max-width: 90%;
+    min-width: 28em;
+  `
+
   return (
-    <svg className="squiggle" version="1.1" width="98px" height="105.4px" viewBox="-10 -10 110 110">
-      <defs>
-      </defs>
-      <g>
-        <g>
-          <path d="M49.9,4.1c-11.6-6-19.2,8.4-23,17.2c-3,6.8-5.3,13.9-7.5,21c-2.5,8-5,17.1-0.6,25c3.6,6.5,10.9,10,18.1,7.3
-          c7.6-2.8,12.7-10.3,16.9-16.9c4.4-7,8.5-14.4,11.4-22.1c1.2-3.2,3.9-9.9,0.4-12.6c-4-3.1-8.7,2.7-10.8,5.4
-          c-4.8,6.1-9.1,13.3-12.8,20.1c-3.6,6.9-5.3,16,2,21.2c5.8,4.1,12.1,0.3,14.8-5.5c6.2-13.7-6-29.1-20.7-25.7
-          c-6.8,1.6-12.7,6.7-14.1,13.7c-1.3,6.5,1.3,14.1,7.9,16.6c5.8,2.2,13-0.1,15.3-6.1c2.9-7.7-2.4-17.6-6.2-24.1
-          c-4.7-7.9-11.3-15-19-20C16,14.9,7,12.7,2.1,19.1C-2.7,25.4,1.6,34,6.8,38.5C14,44.8,24.4,47.3,33.6,49c5.1,1,10.2,1.6,15.3,1.9
-          c6.1,0.4,13-0.7,18.8,1.5c7.8,2.9,9.5,10.9,2.9,16.2c-4.3,3.5-10.2,5.7-15.7,6.6c-6.3,1-13.6-0.4-17.4-5.9
-          c-4.2-6.2-2.3-14,1.3-19.9c4.5-7.3,14.7-13.6,14-23.3c-0.6-7.6-8-12-14.1-15.1c-4.5-2.3-9.1-4.4-13.8-6.3C20.1,2.8,14.4,0.2,9.2,0
-          C0.8-0.3-0.5,7.8,1.3,14.4c2.6,9.4,10.1,17,17.3,23.1c7.5,6.3,15.9,11.5,24.9,15.3c9.4,4,21.1,5.1,23.4,16.9
-          c0.7,3.7,0.7,8.7-2.4,11.4c-2.6,2.3-4.6,1-6-1.8c-3-6.3-2-14.7-0.3-21.2c1.1-4.3,2.9-8.4,5.2-12.2c2.1-3.6,5.1-6.4,7.5-9.8
-          c1.4-2.1,3-5,0.8-7.1c-2-1.9-5.9-1.4-8.3-1.2c-4.4,0.4-8.8,1.3-13.3,1.9c-1.5,0.2-8.5,1.7-9.5-0.1c-1-1.7,3.7-7,4.7-8.2
-          c2.1-2.6,4.7-4.8,6.7-7.5C55,10,54.1,6.7,49.9,4.1c-1.7-1-3.2,1.6-1.5,2.6c3.3,2,2.6,3.8,0.3,6.5c-2.1,2.4-4.4,4.6-6.4,7.1
-          c-1.8,2.3-5.6,6.7-4.7,10c1.3,4.8,9.9,2.8,13.2,2.3c3.7-0.5,7.4-1.2,11.2-1.7c1.3-0.1,6.7-1.2,7.6,0.3c1.3,2-5.4,8.2-6.4,9.5
-          c-4,5.5-6.9,11.8-8.4,18.5c-1.5,6.9-3,20.2,3.8,25.1c2.5,1.8,5.4,1.1,7.6-0.8C70,80.4,70.6,75,70,70.5c-0.7-5-3-10.1-7.2-13.1
-          c-2.7-1.9-5.9-2.9-9.1-4c-4.8-1.6-9.5-3.4-14.1-5.6c-8-4-15.4-9.1-22-15.1C11.3,26.8,3.1,18.2,3.5,8.8c0.3-8.3,10.5-4.9,15.5-3.2
-          c5.4,1.9,10.6,4.2,15.7,6.7c7.7,3.7,19,9.6,13.7,19.9c-3.7,7.3-11,11.9-14.3,19.5C31.4,57.9,31,65.3,34.9,71
-          c8.3,12.1,27.8,7.8,37.5,0c4.1-3.3,7-8.4,4.9-13.7c-2.6-6.4-9.6-8.6-15.9-9c-10.1-0.7-19.8-0.5-29.8-2.7
-          c-8.7-1.9-18.9-4.4-25-11.4c-3.9-4.6-5.9-13.4,1.6-15.7c5-1.6,10,1.3,14,4.1c7.1,5.1,13,12,17.2,19.6C43,48.7,50.3,66,37,66.6
-          C24.8,67.2,24.2,51,31.7,44.8c6.5-5.4,17-5.2,22.2,1.8c2.3,3.1,3.5,7,3.3,10.8c-0.2,4.7-3.4,12.3-9.5,11c-7.7-1.8-6.5-11.7-4-16.8
-          c1.6-3.4,3.7-6.5,5.6-9.6c3.1-5.1,6.4-12.5,11.6-15.8c6.3-4.1,0.6,10.3-0.3,12.2c-2.9,6.6-6.5,12.9-10.3,18.9
-          C46,63.9,38.9,74.1,29.6,72.3c-12.1-2.4-11-17.4-8.3-26.3c3.5-11.5,6.9-24.2,14-34c3.1-4.4,7.6-8,13-5.2C50.1,7.6,51.6,5,49.9,4.1
-          z"/>
-        </g>
-      </g>
-    </svg>
+    <div className="stars">
+      <div className="small"></div>
+      <div className="medium"></div>
+      <div className="big"></div>
+
+      <Section1Wrap>
+        <Left>
+          <div>
+            <Section1Text>
+              <h1 style={{ color: "rgb(169, 152, 255)" }}>The community-led design house for web3 public goods.</h1>
+            </Section1Text>
+          </div>
+        </Left>
+        <Right>
+          <Section1Img src={logo_sketch} />
+        </Right>
+      </Section1Wrap>
+    </div>
+  )
+}
+
+function Section2() {
+
+  const Section2Wrap = styled.div`
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 100px;
+    text-align: center;
+    
+  `
+  const FloatingApps = styled.div`
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    height: 30vh;
+    justify-content: center;
+    align-items: center;
+    grid-gap: 20px;
+    justify-self: flex-end;
+
+    @media (min-width: 1000px) and (max-width: 1300px) {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    @media (max-width: 740px) {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+    }
+
+  `
+  const AppContainer = styled.div`
+    background-color: #22272e;
+    padding: 10px;
+    height: 12rem;
+    max-width: 16rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    animation: ${float} 3s ease-in-out infinite;
+    animation-delay: ${props => props.delay}s;
+  `
+
+  const Section2Text = styled.div`
+    color: #d3d3d3;
+    width: 90%;
+    font-size: 20px;
+    background-color: rgba(169, 152, 255, 0.05);
+    color: rgb(169, 152, 255);
+    padding: 10px;
+    border-radius: 10px;
+    text-align: left;
+    @media (max-width: 1000px) {
+      text-align: left;
+      
+    }
+  `
+
+  return (
+    <Section2Wrap>
+      <Top>
+        <Left>
+          <FloatingApps>
+            <AppContainer delay={0.5}><img style={{ width: '10rem' }} src={snapshot_logo} /></AppContainer>
+            <AppContainer delay={1}><img style={{ width: '10rem' }} src={calendar_logo} /></AppContainer>
+            <AppContainer delay={1.5}><img style={{ width: '10rem' }} src={docs_logo} /></AppContainer>
+            <AppContainer delay={2}><img style={{ width: '15rem' }} src={contest_logo} /></AppContainer>
+          </FloatingApps>
+        </Left>
+        <Right>
+          <h1 style={{ color: "#d3d3d3" }}>Applications</h1>
+          <Section2Text>
+            <p style={{ margin: '0'}}>We build open source applications that live in community dashboards. Create a custom dashboard for your organization and add some apps to help fellow members keep up with the latest calendar events, snapshot votes, community documents, and more.</p>
+          </Section2Text>
+        </Right>
+      </Top>
+
+      <Bottom>
+        <Left>
+          <h1 style={{ color: "#d3d3d3" }}>Gatekeeper</h1>
+          <Section2Text>
+            <p style={{ margin: '0'}}>Give potential contributors the pitch. Give OG's the alpha. Use Discord server role checks or ERC-721 & ERC-20 balance checks to create gatekeeper rules that uniquely affect each application.</p>
+          </Section2Text>
+        </Left>
+
+        <Right>
+          <img style={{ maxWidth: '100%' }} src={gatekeeper_img} />
+        </Right>
+
+      </Bottom>
+
+    </Section2Wrap>
+  )
+}
+
+
+
+function Section3() {
+
+
+  const Section3Wrap = styled.div`
+    min-height: 50vh;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 100px;
+    text-align: center;
+    width: 95%;
+    margin: 0 auto;
+    > * {
+      margin-bottom: 30px;
+    }
+  `
+
+  const Section3Split = styled.div`
+    display: flex;
+  `
+
+  const Section3Heading = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+    > * {
+      margin: 10px;
+    }
+  `
+
+  const Section3Text = styled.div`
+    color: #d3d3d3;
+    width: 90%;
+    font-size: 20px;
+    background-color: rgba(169, 152, 255, 0.05);
+    color: rgb(169, 152, 255);
+    padding: 10px;
+    border-radius: 10px;
+    margin-top: 50px;
+    margin-bottom: 100px;
+    text-align: left;
+    @media (max-width: 1000px) {
+      text-align: left;
+      
+    }
+  `
+
+  return (
+    <Section3Wrap>
+      <Section3Heading>
+        <h2 style={{ color: '#d3d3d3' }}>A peak inside the lab </h2>
+        <FontAwesomeIcon icon={faVial} fontSize="30px" color="lightgreen"></FontAwesomeIcon>
+      </Section3Heading>
+      <Section3Split>
+        <Bottom>
+          <Left>
+            <img src={inTheLab} style={{ maxWidth: '50%' }} />
+          </Left>
+          <Right>
+            <Section3Text>
+              <p style={{ margin: '0' }}>
+                We've teamed up with SharkDAO to develop Creator Contests.
+                Creator contests are an experiment in creating incentive systems for community creatives,
+                builders, and artists via retroactive rewards.
+                <br></br><br></br>
+                Reward pools are reserved for winners of periodic contests.
+                At the close of a contest submission period, DAO members vote on submissions and rewards are
+                distributed according to the voting results. Coming Soon.
+              </p>
+            </Section3Text>
+
+          </Right>
+        </Bottom>
+      </Section3Split>
+    </Section3Wrap>
+  )
+}
+
+
+
+
+
+function Footer() {
+
+  const FooterWrap = styled.div`
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    padding-bottom: 40px;
+    justify-content: center;
+    width: 90%;
+    margin: 0 auto;
+    border-top: 2px solid #1c2128;
+    padding-top: 50px;
+
+    @media (max-width: 800px){
+    grid-template-rows: 1fr 1fr;
+    grid-template-columns: none;
+    margin-bottom: 40px;
+  }
+  `
+
+  const LinksWrap = styled.div`
+    display: flex;
+    grid-gap: 20px;
+    justify-content: center;
+
+    > * {
+      margin: 15px;
+    }
+
+  `
+
+  return (
+    <FooterWrap>
+      <LinksWrap>
+        <a href="https://github.com/calabara-hq" target={"_blank"} style={{ textAlign: 'center' }}><FontAwesomeIcon icon={faGithub}></FontAwesomeIcon></a>
+        <a href="https://twitter.com/calabarahq" target={"_blank"} style={{ textAlign: 'center' }}><FontAwesomeIcon icon={faTwitter}></FontAwesomeIcon></a>
+        <a href="'https://discord.gg/dBBzHe9k3E'" target={"_blank"} style={{ textAlign: 'center' }}><FontAwesomeIcon icon={faDiscord}></FontAwesomeIcon></a>
+        <a href="https://docs.calabara.com/welcome/calabara" target={"_blank"} style={{ textAlign: 'center' }}><FontAwesomeIcon icon={faBook}></FontAwesomeIcon></a>
+
+      </LinksWrap>
+      <img style={{ maxWidth: '100%', marginLeft: 'auto' }} src={blueprint_img}></img>
+    </FooterWrap>
   )
 }
 
