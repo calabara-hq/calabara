@@ -1,8 +1,10 @@
-@keyframes fadein{
-  100% {opacity: 1;}
+@keyframes fadein {
+  100% {
+    opacity: 1;
+  }
 }
 
-.navbar{
+.navbar {
   width: 100%;
   background-color: #141416;
   border-radius: 0;
@@ -12,15 +14,22 @@
 
 
 
-.navbar.homepage > .parent-container{
+.navbar.homepage>.parent-container {
   border-bottom: none;
 }
 
-.navbar-brand{
+@media (max-width: 430px) {
+  .navbar>.parent-container {
+    width: 90%;
+  }
+}
+
+
+.navbar-brand {
   height: auto;
 }
 
-.parent-container{
+.parent-container {
   display: flex;
   flex-direction: row;
   width: 70%;
@@ -33,34 +42,30 @@
 }
 
 
-.walletBox{
+.walletBox {
   display: flex;
-  background-color: #2d2e35;
   margin-left: auto;
-  border: 2px solid #7c3aed;
-  border-radius: 40px;
   cursor: pointer;
   transition: border 0.1s;
-
   border: double 2px transparent;
   border-radius: 40px;
-  background-image: linear-gradient(#24262e, #24262e), 
-                    linear-gradient(to right, #e00f8e, #2d66dc);
+  background-image: linear-gradient(#24262e, #24262e),
+    linear-gradient(to right, #e00f8e, #2d66dc);
   background-origin: border-box;
   background-clip: padding-box, border-box;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
 
 }
 
-.walletBox:hover{
+.walletBox:hover {
   background-color: #2c2d35;
-  background-image: linear-gradient(#141416, #141416), 
-                    linear-gradient(to right, #e00f8e, #2d66dc);
+  background-image: linear-gradient(#141416, #141416),
+    linear-gradient(to right, #e00f8e, #2d66dc);
 }
 
 
 
-.walletBox > div:first-child{
+.walletBox>div:first-child {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -68,7 +73,7 @@
   padding: 10px 15px;
 }
 
-.walletBox > div > .addressText{
+.walletBox>div>.addressText {
   color: #d2d2d2;
   font-size: 16px;
   margin: 0;
@@ -77,7 +82,7 @@
   align-self: center;
 }
 
-.walletAvatar{
+.walletAvatar {
   transform: scale(180%);
   -webkit-transform: scale(180%);
   cursor: pointer;
@@ -87,18 +92,18 @@
   margin-right: 15px;
 }
 
-.walletMore > span{
+.walletMore>span {
   cursor: pointer;
   transition: all 0.2s linear;
 }
 
-.walletMore > span{
+.walletMore>span {
   color: #efefef !important;
-  
+
 }
 
 
-.connectionInfo{
+.connectionInfo {
   position: absolute;
   z-index: 20;
   top: 5em;
@@ -112,12 +117,12 @@
   animation: fadein 0.5s;
   padding: 10px 10px;
   grid-gap: 10px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
 
 }
 
 
-.connectionInfo > span{
+.connectionInfo>span {
   background-color: white;
   color: black;
   border-radius: 6px;
@@ -127,14 +132,14 @@
   cursor: pointer;
 }
 
-.connectionInfo > span::after{
+.connectionInfo>span::after {
   font-family: 'Font Awesome 5 Free';
   margin-left: 10px;
   content: "\f35d";
   font-weight: 900;
 }
 
-.connectionInfo > button{
+.connectionInfo>button {
   display: block;
   padding: 5px 12px;
   border-radius: 6px;
@@ -145,63 +150,75 @@
   color: #e5534b;
 }
 
-.connectionInfo > button:hover{
+.connectionInfo>button:hover {
   background-color: #e5534b;
   color: white;
   transition: color 0.3s ease-in;
   transition: background-color 0.3s ease-in;
 }
 
-
-
-
-
-
-#account-address{
+#account-address {
   border-radius: 20px;
 }
 
 
-.dropdown-menu{
+.dropdown-menu {
   color: black;
   text-align: center;
 }
 
 
-.navbar-logo img{
+.navbar-logo img {
   width: 4rem;
   cursor: pointer;
 }
 
-.discordBtn{
+.discordBtn {
 
-  border-radius: 8px;
-  border: none;
-  background: rgba(56, 74, 255, 0.9);
+  border: double 2px transparent;
+  border-radius: 40px;
+  background-image: linear-gradient(#24262e, #24262e),
+    linear-gradient(to right, #5865f2, #5865f2);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
   font-size: 14px;
   padding: 10px 20px;
-  color: white;
+  color: #d3d3d3;
   cursor: pointer;
 }
 
-.launchAppBtn{
-  border-radius: 8px;
-  border: none;
-  background: rgb(217, 81, 105, 0.9);
+.launchAppBtn {
+  border: double 2px transparent;
+  border-radius: 40px;
+  background-image: linear-gradient(#24262e, #24262e),
+    linear-gradient(to right, #e00f8e, #2d66dc);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
   font-size: 14px;
   padding: 10px 20px;
-  color: white;
+  color: #d3d3d3;
   cursor: pointer;
-  font-weight: 500;
   margin-left: 10px;
+
+
 }
 
 
-.landing-page-btns{
+.launchAppBtn:hover {
+  background-color: #2c2d35;
+  background-image: linear-gradient(#141416, #141416),
+    linear-gradient(to right, #e00f8e, #2d66dc);
+}
+
+
+.landing-page-btns {
   margin-left: auto;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  
+  font-weight: 600;
+  font-family: 'Ubuntu', sans-sans-serif;
 }
