@@ -4,7 +4,7 @@ import { EDITOR_JS_TOOLS } from './editor_tools';
 import { createReactEditorJS } from 'react-editor-js'
 import styled from 'styled-components'
 import { Contest_h2, Contest_h3 } from '../common/common_styles'
-
+import usePromptBuilder from '../../../hooks/usePromptBuilder';
 
 function reducer(state, action) {
     switch (action.type) {
@@ -31,7 +31,7 @@ const PromptBuilderMainHeading = styled.div`
 
 const AddPromptsContainer = styled.div`
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     grid-gap: 20px;
     width: 80%;
 `
@@ -53,9 +53,18 @@ const PromptStyle = styled.div`
 
 `
 
+
+//let editorContent = null;
+
 // allow user to create prompts for a contest
 export default function PromptBuilder({ }) {
-    const [prompts, setPrompts] = useReducer(reducer, ['test', 'test', 'test'])
+    const [prompts, setPrompts] = useState([])
+    const { promptData, setPromptData } = usePromptBuilder();
+
+    useEffect(() => console.log(prompts, prompts.length), [prompts])
+
+    const [editorOpenIndex, setEditorOpenIndex] = useState(-1);
+
 
     return (
         <PromptsWrap>
@@ -63,49 +72,51 @@ export default function PromptBuilder({ }) {
                 <Contest_h2 grid_area={"prompt_builder"}>Prompt Builder</Contest_h2>
             </PromptBuilderMainHeading>
             <AddPromptsContainer>
-                {prompts.map((el, index) => { return <Prompt el={el} /> })}
+                {promptData.prompt_blocks.map((el, index) => { return <Prompt el={el} index={index} setPromptData={setPromptData} /> })}
+                <button onClick={() => { setEditorOpenIndex(prompts.length) }}>new prompt</button>
             </AddPromptsContainer>
-            <PromptEditor />
+            <PromptEditor promptData={promptData} setPromptData={setPromptData} />
         </PromptsWrap>
     )
 
 }
 
-function Prompt({ el }) {
-
+function Prompt({ el, index, setPromptData }) {
+    console.log(index)
     return (
-        <PromptStyle>
-            <p>{el}</p>
+        <PromptStyle onClick={() => { console.log(index); setPromptData({type: "SET_SELECTED_PROMPT", payload: index}) }}>
+            <p>{index}</p>
         </PromptStyle>
     )
 }
 
 
 
-function PromptEditor({ }) {
-    // const [filedata, setFileData] = useState([]);
-    const contentRef = useRef(null);
+function PromptEditor({ promptData, setPromptData }) {
+    const ReactEditorJS = createReactEditorJS()
+    const editorCore = useRef(null);
 
-    let content = ""
+    const handleInitialize = useCallback(async (instance) => {
+        editorCore.current = instance;
+    }, [])
 
-    function updateContent(newContent) {
-        content = newContent;
-    }
 
-    function handleKeyDown(e) {
-        if (e.key === "Tab") {
-            e.preventDefault();
+    const handleSubmit = async () => {
+        const editorData = await editorCore.current.save();
+        if (!promptData.selected_prompt) {
+            setPromptData({ type: "PUSH_BLOCK", payload: editorData })
+            
+        }
+        else {
+            //prompts_copy[index] = editorData
         }
     }
+    /*
 
-    const handleInitialize = useCallback((instance) => {
-
-
-    })
-
-    const handleSubmit = () => {
-        console.log(contentRef)
+    const handleCancel = async () => {
+        setEditorOpenIndex(-1);
     }
+    */
 
     const EditorWrap = styled.div`
         background-color: white;
@@ -116,12 +127,10 @@ function PromptEditor({ }) {
         font-size: 20px;
     `
 
-    const ReactEdtorJS = createReactEditorJS();
     return (
         <EditorWrap>
-            <button style={{ marginLeft: 'auto' }}>cancel</button>
-            <button onClick={handleSubmit}>submit</button>
-            <ReactEdtorJS ref={contentRef} tools={EDITOR_JS_TOOLS} />
+            <button onClick={handleSubmit}>save</button>
+            <ReactEditorJS defaultValue={promptData.prompt_blocks[promptData.selected_prompt] || null} ref={editorCore} onInitialize={handleInitialize} tools={EDITOR_JS_TOOLS} />
         </EditorWrap>
 
 
