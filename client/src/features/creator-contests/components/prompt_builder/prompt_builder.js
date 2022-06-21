@@ -52,6 +52,15 @@ const PromptStyle = styled.div`
     box-shadow: 0 10px 30px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
 
 `
+const EditorWrap = styled.div`
+    background-color: white;
+    width: 70%;
+    margin: 0 auto;
+    border-radius: 4px;
+    min-height: 200px;
+    font-size: 20px;
+    display: ${props => !props.visibile ? 'none' : ''};
+`
 
 
 //let editorContent = null;
@@ -60,10 +69,33 @@ const PromptStyle = styled.div`
 export default function PromptBuilder({ }) {
     const [prompts, setPrompts] = useState([])
     const { promptData, setPromptData } = usePromptBuilder();
-
-    useEffect(() => console.log(prompts, prompts.length), [prompts])
-
+    const ReactEditorJS = createReactEditorJS()
+    const editorCore = useRef(null);
     const [editorOpenIndex, setEditorOpenIndex] = useState(-1);
+
+    useEffect(() => {
+        console.log(promptData)
+    },[promptData])
+
+
+    const handleInitialize = useCallback(async (instance) => {
+        console.log('re initializing')
+        editorCore.current = instance;
+    }, [])
+
+
+    const handleSubmit = async () => {
+        const editorData = await editorCore.current.save();
+        if (promptData.selected_prompt === -1) {
+            setPromptData({ type: "PUSH_BLOCK", payload: editorData })
+        }
+        else {
+            setPromptData({ type: "UPDATE_BLOCK", payload: editorData })
+        }
+        setPromptData({ type: "SET_SELECTED_PROMPT", payload: -2 })
+
+    }
+
 
 
     return (
@@ -73,9 +105,12 @@ export default function PromptBuilder({ }) {
             </PromptBuilderMainHeading>
             <AddPromptsContainer>
                 {promptData.prompt_blocks.map((el, index) => { return <Prompt el={el} index={index} setPromptData={setPromptData} /> })}
-                <button onClick={() => { setEditorOpenIndex(prompts.length) }}>new prompt</button>
+                <button onClick={() => { setPromptData({ type: "SET_SELECTED_PROMPT", payload: -1 }) }}>new prompt</button>
             </AddPromptsContainer>
-            <PromptEditor promptData={promptData} setPromptData={setPromptData} />
+            <EditorWrap visibile={promptData.selected_prompt > -2}>
+                <button onClick={handleSubmit}>save</button>
+                <ReactEditorJS value={promptData.prompt_blocks[promptData.selected_prompt] || null} ref={editorCore} onInitialize={handleInitialize} tools={EDITOR_JS_TOOLS} />
+            </EditorWrap>
         </PromptsWrap>
     )
 
@@ -84,7 +119,7 @@ export default function PromptBuilder({ }) {
 function Prompt({ el, index, setPromptData }) {
     console.log(index)
     return (
-        <PromptStyle onClick={() => { console.log(index); setPromptData({type: "SET_SELECTED_PROMPT", payload: index}) }}>
+        <PromptStyle onClick={() => { console.log(index); setPromptData({ type: "SET_SELECTED_PROMPT", payload: index }) }}>
             <p>{index}</p>
         </PromptStyle>
     )
@@ -92,7 +127,8 @@ function Prompt({ el, index, setPromptData }) {
 
 
 
-function PromptEditor({ promptData, setPromptData }) {
+function PromptEditor({ }) {
+    const { promptData, setPromptData } = usePromptBuilder();
     const ReactEditorJS = createReactEditorJS()
     const editorCore = useRef(null);
 
@@ -105,7 +141,7 @@ function PromptEditor({ promptData, setPromptData }) {
         const editorData = await editorCore.current.save();
         if (!promptData.selected_prompt) {
             setPromptData({ type: "PUSH_BLOCK", payload: editorData })
-            
+
         }
         else {
             //prompts_copy[index] = editorData
