@@ -7,8 +7,9 @@ export default function usePromptBuilder() {
 
     const initialPromptData = {
         selected_prompt: -2,
-        prompt_heading: "",
-        prompt_label: "",
+        prompt_heading: null,
+        prompt_heading_error: false,
+        prompt_label: null,
         prompt_label_color: 0,
         prompt_blocks: []
     }
@@ -27,6 +28,19 @@ export default function usePromptBuilder() {
                     ...state,
                     prompt_blocks: arr_copy
                 }
+            case "DELETE_BLOCK":
+                let blx_copy = [...state.prompt_blocks]
+                blx_copy[state.selected_prompt] = action.payload
+                blx_copy.splice(state.selected_prompt, 1)
+                return {
+                    ...state,
+                    prompt_blocks: blx_copy,
+                    selected_prompt: -2,
+                    prompt_heading: null,
+                    prompt_heading_error: false,
+                    prompt_label: null,
+                    prompt_label_color: 0
+                }
             case "SET_SELECTED_PROMPT":
                 return {
                     ...state,
@@ -35,7 +49,13 @@ export default function usePromptBuilder() {
             case "SET_PROMPT_HEADING":
                 return {
                     ...state,
-                    prompt_heading: action.payload
+                    prompt_heading: action.payload,
+                    prompt_heading_error: false,
+                }
+            case "SET_PROMPT_HEADING_ERROR":
+                return {
+                    ...state,
+                    prompt_heading_error: true,
                 }
             case "SET_PROMPT_LABEL":
                 return {
@@ -91,8 +111,14 @@ export default function usePromptBuilder() {
         setPromptData({ type: "SWITCH_PROMPTS", payload: index })
     }
 
-    const handleNewPrompt = () => {
-        setPromptData({ type: "NEW_PROMPT" })
+    const handleDeletePrompt = () => {
+        setPromptData({type: "DELETE_BLOCK"})
+    }
+
+    // error handling
+
+    const handleHeadingError = () => {
+        setPromptData({ type: "SET_PROMPT_HEADING_ERROR" })
     }
 
 
@@ -101,13 +127,10 @@ export default function usePromptBuilder() {
         setPromptData,
         handleHeadingChange: (e) => handleHeadingChange(e),
         handleSwitchPrompts: (index) => handleSwitchPrompts(index),
-        handleNewPrompt: () => handleNewPrompt(),
         handleLabelChange: (e) => handleLabelChange(e),
         handleLabelColorChange: (color) => handleLabelColorChange(color),
-
-
-
-
+        handleHeadingError: () => handleHeadingError(),
+        handleDeletePrompt: () => handleDeletePrompt(),
     }
 
 }
