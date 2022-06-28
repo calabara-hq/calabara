@@ -12,7 +12,6 @@ function RuleSelect({ appliedRules, setAppliedRules, ruleError, setRuleError, to
   // fetch available rules
   const availableRules = useSelector(selectDashboardRules);
 
-
   return (
     <div className="apply-gatekeeper-rules">
       {Object.entries(availableRules).map(([rule_id, value]) => {

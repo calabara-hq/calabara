@@ -112,6 +112,12 @@ export default function ContestSettings() {
     const printContestData = () => {
         let contest_obj = {
             contest_data: {
+                date_times: {
+                    start_date: date_0,
+                    submission_begin: date_1,
+                    voting_begin: date_2,
+                    end_date: date_3
+                },
                 reward_options: rewardOptions,
                 submitter_rewards: rewards,
                 voter_rewards: voterRewards,

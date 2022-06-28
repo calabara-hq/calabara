@@ -7,7 +7,7 @@ import { Contest_h2, Contest_h3 } from '../common/common_styles'
 import usePromptBuilder from '../../../hooks/usePromptBuilder';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleDown, faAngleUp, faCheck, faCog, faPalette, faQuestion, faQuestionCircle, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { fade_in } from '../common/common_styles';
+import { fade_in, Label } from '../common/common_styles';
 
 
 
@@ -263,13 +263,7 @@ const labelColorOptions = [
     { text: 'rgb(111, 208, 140)', background: 'rgba(111, 208, 140, 0.3)' },
 ]
 
-const Label = styled.span`
-    background-color: ${props => props.color.background};
-    color: ${props => props.color.text};
-    border: none;
-    border-radius: 4px;
-    padding: 2px 10px;
-`
+
 
 // allow user to create prompts for a contest
 export default function PromptBuilder({ }) {
@@ -285,6 +279,8 @@ export default function PromptBuilder({ }) {
     } = usePromptBuilder();
 
     let { selected_prompt, prompt_heading, prompt_heading_error, prompt_label, prompt_label_color, prompt_blocks } = promptData
+
+    console.log(prompt_blocks)
 
     const ReactEditorJS = createReactEditorJS()
     const editorCore = useRef(null);

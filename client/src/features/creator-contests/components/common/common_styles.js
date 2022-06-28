@@ -29,5 +29,15 @@ const Contest_h4 = styled.h4`
     animation: ${props => props.animated ? css`${fade_in} 0.6s ease-in-out` : ''};
 `
 
+// labels for status and prompt labels
 
-export {Contest_h2, Contest_h3, Contest_h4, fade_in}
+const Label = styled.span`
+    background-color: ${props => props.color.background};
+    color: ${props => props.color.text};
+    border: none;
+    border-radius: 4px;
+    padding: 2px 10px;
+`
+
+
+export {fade_in, Contest_h2, Contest_h3, Contest_h4, Label}
