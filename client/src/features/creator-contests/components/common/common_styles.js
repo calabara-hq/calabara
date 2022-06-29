@@ -37,6 +37,8 @@ const Label = styled.span`
     border: none;
     border-radius: 4px;
     padding: 2px 10px;
+    width: fit-content;
+    
 `
 
 
