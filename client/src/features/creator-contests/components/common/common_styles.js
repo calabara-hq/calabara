@@ -40,6 +40,19 @@ const Label = styled.span`
     width: fit-content;
     
 `
+const submission_fade = keyframes`
+    0% {
+        max-height: 30ch;
+        overflow: hidden;
+        opacity: 0;
+    }
+
+    100% {
+        max-height: 100%;
+        overflow: none;
+        opacity: 1;
+        }
+`
 
 
-export {fade_in, Contest_h2, Contest_h3, Contest_h4, Label}
+export {fade_in, Contest_h2, Contest_h3, Contest_h4, Label, submission_fade}

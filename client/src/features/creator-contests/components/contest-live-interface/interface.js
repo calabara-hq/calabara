@@ -9,13 +9,15 @@ import { useParams } from "react-router-dom";
 import * as WebWorker from '../../../../app/worker-client.js'
 import moment from "moment";
 import { Label } from "../common/common_styles";
-import CheckpointBar from "../../../checkpoint-bar/checkpoint-bar";
+import {ContestDurationCheckpointBar} from "../../../checkpoint-bar/checkpoint-bar";
 import { Countdown } from "../common/common_components";
 import useContestTimekeeper from "../../../hooks/useContestTimekeeper";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheckCircle, faTimesCircle } from "@fortawesome/free-solid-svg-icons";
+import { faCheckCircle, faTimesCircle, faTimes } from "@fortawesome/free-solid-svg-icons";
 import SubmissionBuilder from "./submission-builder";
-
+import SubmissionDisplay from "./test-submission-display";
+import { ParseBlocks } from "./block-parser";
+import SubmissionModal from "./edit-submission-modal";
 
 const ContestInterfaceWrap = styled.div`
     width: 70vw;
@@ -75,6 +77,39 @@ const CheckpointWrap = styled.div`
     width: 80%;
     color: #d3d3d3;
     margin-bottom: 1em;
+
+    .RSPBprogressBar > .RSPBstep:nth-child(1)::after {
+      text-align: center;
+      content: "submit";
+      color: rgb(138, 128, 234);
+      background-color: rgba(138, 128, 234, 0.3);
+      border-radius: 4px;
+      padding: 5px 10px;
+      position: absolute;
+      bottom: 2em;
+    }
+
+    .RSPBprogressBar > .RSPBstep:nth-child(2)::after {
+      text-align: center;
+      content: "vote";
+      color: rgb(211, 151, 39);
+      background-color: rgba(211, 151, 39, 0.3);
+      border-radius: 4px;
+      padding: 5px 10px;
+      position: absolute;
+      bottom: 2em;
+    }
+
+    .RSPBprogressBar > .RSPBstep:nth-child(3)::after {
+      text-align: center;
+      content: "end";
+      color: rgb(178, 31, 71);
+      background-color: rgba(178, 31, 71, 0.3);
+      border-radius: 4px;
+      padding: 5px 10px;
+      position: absolute;
+      bottom: 2em;
+    }
 `
 
 const CheckpointBottomTag = styled.p`
@@ -87,7 +122,10 @@ const CheckpointBottom = styled.div`
     width: 85%;
     color: #d3d3d3;
     margin: 0 auto;
+    margin-bottom: 50px;
     font-weight: bold;
+    
+
     ${CheckpointBottomTag}:nth-child(1){
         text-align: left;
     }
@@ -106,7 +144,6 @@ const label_status = [
     { status: 'end', text: 'rgb(178, 31, 71)', background: 'rgba(178, 31, 71, 0.3)' }
 
 ]
-
 
 
 export default function ContestInterface({ }) {
@@ -168,6 +205,9 @@ export default function ContestInterface({ }) {
     let end_date = moment.utc(contest_data.date_times.end_date).local().format('ddd. M/D hh:mm A').toString()
     let rewards_sum = calculateRewardsSum();
 
+    const [mode, setMode] = useState(true);
+    const [isSubmissionBuilder, setIsSubmissionBuilder] = useState(false);
+
     return (
         <ContestInterfaceWrap>
             <InterfaceHeading>
@@ -192,14 +232,14 @@ export default function ContestInterface({ }) {
                         })}
                         <DetailRow>
                             <p>Voter Rewards:</p>
-                            <FontAwesomeIcon style={{fontSize: '1.5em', color: Object.keys(contest_data.voter_rewards).length > 0 ? '#00a368' : 'red'}} icon={Object.keys(contest_data.voter_rewards).length > 0 ? faCheckCircle : faTimesCircle}/>
+                            <FontAwesomeIcon style={{ fontSize: '1.5em', color: Object.keys(contest_data.voter_rewards).length > 0 ? '#00a368' : 'red' }} icon={Object.keys(contest_data.voter_rewards).length > 0 ? faCheckCircle : faTimesCircle} />
                         </DetailRow>
 
                     </ContestDetails>
                 </HeadingSection1>
             </InterfaceHeading>
             <CheckpointWrap>
-                <CheckpointBar percent={barProgress} />
+                <ContestDurationCheckpointBar percent={barProgress} />
             </CheckpointWrap>
             <CheckpointBottom>
                 {durations.map((duration, index) => {
@@ -208,9 +248,98 @@ export default function ContestInterface({ }) {
                     )
                 })}
             </CheckpointBottom>
-            <div><h4>more</h4></div>
-            <SubmissionBuilder/>
+            <PromptDisplay setIsSubmissionBuilder={setIsSubmissionBuilder} />
+            {isSubmissionBuilder && <SubmissionBuilder setIsSubmissionBuilder={setIsSubmissionBuilder} />}
+            <SubmissionDisplay />
         </ContestInterfaceWrap>
     )
 }
 
+const PromptContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+`
+
+const Prompt = styled.div`
+    display: flex;
+    flex-direction: column;
+    width: ${props => props.isOpen ? '100%' : '30%'};
+    justify-content: space-evenly;
+    align-items: center;
+    grid-gap: 20px;
+    justify-content: flex-start;
+    align-items: flex-start;
+    border: 2px solid rgba(0,0,0,0.22);
+    border-radius: 4px;
+    background-color: #1c2128;
+    color: #d3d3d3;
+    padding: 5px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+    cursor: pointer;
+    margin-bottom: 10px;
+`
+
+const labelColorOptions = [
+    { text: 'transparent', background: 'transparent' },
+    { text: 'rgb(234, 203, 195)', background: 'rgba(234, 203, 195,0.3)' },
+    { text: 'rgb(162, 114, 141)', background: 'rgba(162, 114, 141, 0.3)' },
+    { text: 'rgb(104, 160, 170)', background: 'rgba(104, 160, 170, 0.3)' },
+    { text: 'rgb(111, 208, 140)', background: 'rgba(111, 208, 140, 0.3)' },
+]
+
+const NewSubmissionButton = styled.button`
+    width: 10em;
+    align-self: flex-end;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    margin-right: 3em;
+    margin-top: 2em;
+    color: black;
+`
+
+
+function PromptDisplay({ setIsSubmissionBuilder }) {
+    const [openPromptIndex, setOpenPromptIndex] = useState(-1);
+    const [modalOpen, setModalOpen] = useState(false);
+
+    const handleOpenPrompt = (index) => {
+        if (openPromptIndex === index) return setOpenPromptIndex(-1)
+        return setOpenPromptIndex(index)
+    }
+
+
+    const handleSubmissionClose = async (cleanup) => {
+        if (cleanup.type === 'standard') {
+            setModalOpen(false);
+        }
+    }
+
+    const handleSubmissionOpen = async () => {
+        setModalOpen(true)
+    }
+
+
+    return (
+        <>
+            <h2 style={{ textAlign: 'center', color: '#d3d3d3', marginBottom: '30px' }}>Prompts</h2>
+            <PromptContainer>
+                {contest_data.prompts.map((prompt, index) => {
+                    if (openPromptIndex === -1 || index === openPromptIndex)
+                        return (
+                            <Prompt onClick={() => setOpenPromptIndex(index)} isOpen={openPromptIndex === index}>
+                                {openPromptIndex === index && <button onClick={(e) => { setOpenPromptIndex(-1); setIsSubmissionBuilder(false); e.stopPropagation(); }} style={{ marginLeft: 'auto', color: 'black' }}><FontAwesomeIcon icon={faTimes}></FontAwesomeIcon></button>}
+                                <h4>{prompt.title.length > 30 ? prompt.title.substring(0, 30) + ' ...' : prompt.title}</h4>
+                                <Label color={labelColorOptions[prompt.label.color]}>{prompt.label.name}</Label>
+                                {openPromptIndex === index && <ParseBlocks data={prompt} />}
+                                {openPromptIndex === index && <NewSubmissionButton onClick={handleSubmissionOpen}>Create Submission</NewSubmissionButton>}
+                                {modalOpen && <SubmissionModal modalOpen={modalOpen} handleClose={handleSubmissionClose} selectedPrompt={prompt}/>}
+                            </Prompt>
+                        )
+                })}
+            </PromptContainer>
+        </>
+    )
+}

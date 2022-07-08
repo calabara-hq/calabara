@@ -56,35 +56,4 @@
       background-color: white;
     }
 
-    .RSPBprogressBar > .RSPBstep:nth-child(1)::after {
-      text-align: center;
-      content: "submit";
-      color: rgb(138, 128, 234);
-      background-color: rgba(138, 128, 234, 0.3);
-      border-radius: 4px;
-      padding: 5px 10px;
-      position: absolute;
-      bottom: 2em;
-    }
 
-    .RSPBprogressBar > .RSPBstep:nth-child(2)::after {
-      text-align: center;
-      content: "vote";
-      color: rgb(211, 151, 39);
-      background-color: rgba(211, 151, 39, 0.3);
-      border-radius: 4px;
-      padding: 5px 10px;
-      position: absolute;
-      bottom: 2em;
-    }
-
-    .RSPBprogressBar > .RSPBstep:nth-child(3)::after {
-      text-align: center;
-      content: "end";
-      color: rgb(178, 31, 71);
-      background-color: rgba(178, 31, 71, 0.3);
-      border-radius: 4px;
-      padding: 5px 10px;
-      position: absolute;
-      bottom: 2em;
-    }

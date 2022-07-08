@@ -8,16 +8,18 @@ const htmlToReactParser = new HtmlToReactParser();
 
 
 
-export const ParseBlocks = ({ blocks }) => {
-    /*
-    if (blocks) {
-        let html = edjsParser.parse(blocks)
-        console.log(html)
+export const ParseBlocks = ({ data }) => {
+
+    if (data.blocks.length > 0) {
+        let html = edjsParser.parse(data)
         let reactElement = htmlToReactParser.parse(html)
+        if (Array.isArray(reactElement)) {
+            reactElement = reactElement.filter(el => el != ',')
+        }
         console.log(reactElement)
         return reactElement
     }
-    */
-    return <p>hi</p>
-    
+
+    return null
+
 }

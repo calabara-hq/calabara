@@ -1,5 +1,6 @@
 import Embed from '@editorjs/embed'
 import Table from '@editorjs/table'
+import Paragraph from '@editorjs/paragraph'
 import List from '@editorjs/list'
 import Warning from '@editorjs/warning'
 import Code from '@editorjs/code'
@@ -12,28 +13,25 @@ import Marker from '@editorjs/marker'
 import CheckList from '@editorjs/checklist'
 import Delimiter from '@editorjs/delimiter'
 import InlineCode from '@editorjs/inline-code'
+import SimpleImage from '@editorjs/simple-image'
 
 
 export const EDITOR_JS_TOOLS = {
-    embed: Embed,
-    table: Table,
+    // NOTE: Paragraph is default tool. Declare only when you want to change paragraph option.
+    // paragraph: Paragraph,
+
     list: List,
-    warning: Warning,
     code: Code,
-    linkTool: LinkTool,
     image: {
-        class: Image,
+        class: SimpleImage,
         config: {
             endpoints: {
                 byFile: 'https://localhost:3000/image/upload_img',
             }
         }
     },
-    raw: Raw,
     header: Header,
     quote: Quote,
     marker: Marker,
-    checklist: CheckList,
-    delimiter: Delimiter,
     inlineCode: InlineCode,
 }
