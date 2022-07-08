@@ -12,6 +12,8 @@ const SubmissionContainer = styled.div`
     height: fit-content;
     border-radius: 10px;
     min-height: 200px;
+    max-height: 45vh;
+    //width: 80%;
     font-size: 20px;
     text-align: left;
     padding: 10px;
@@ -25,7 +27,7 @@ const SubmissionContainer = styled.div`
 const SubmissionContent = styled.div`
     border-radius: 10px;
     height: ${props => props.expanded ? '500px' : '25ch'};
-    overflow-y: scroll;
+    overflow-y: ${props => props.expanded ? 'scroll' : 'hidden'};
     overflow-x: hidden;
     font-size: 20px;
     text-align: left;
@@ -37,7 +39,7 @@ const SubmissionContent = styled.div`
 
     img{
         display: block;
-        max-width: ${props => props.expanded ? '90%' : '10em'};
+        max-width: ${props => props.expanded ? '15em' : '10em'};
         margin: 20px auto;
         border-radius: 10px;
     }
