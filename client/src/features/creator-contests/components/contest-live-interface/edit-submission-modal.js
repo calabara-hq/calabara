@@ -5,6 +5,7 @@ import '../../../../css/status-messages.css';
 import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { contest_data } from './temp-data';
 import SubmissionEdit from './submission-builder-2';
 import TLDR from './TLDR-editor';
 import { createReactEditorJS } from 'react-editor-js'
@@ -264,14 +265,23 @@ function EditLongForm({ setProgress, longFormValue, setLongFormValue }) {
 }
 
 function Preview({ setProgress, TLDRImage, TLDRText, longFormValue }) {
-    return (
-        <>
-            <div className='tab-message neutral'>
-                <p>This is how your submission will appear to viewers. Click the expand button to see the rest of your content. You can navigate back if you need to change anything.</p>
-            </div>
-            <PreviewSubmission setProgress={setProgress} TLDRImage={TLDRImage} TLDRText={TLDRText} longFormValue={longFormValue} />
-            <PreviousButton onClick={() => { setProgress(2) }}><FontAwesomeIcon icon={faArrowLeft}></FontAwesomeIcon></PreviousButton>
-            <NextButton onClick={() => { setProgress(3) }}><FontAwesomeIcon icon={faArrowRight}></FontAwesomeIcon></NextButton>
-        </>
-    )
-}
+
+        const handleSubmit = () => {
+            console.log(TLDRImage, TLDRText, longFormValue)
+            longFormValue.tldr_text = TLDRText;
+            longFormValue.tldr_image = TLDRImage;
+            console.log(longFormValue)
+
+        }
+
+        return (
+            <>
+                <div className='tab-message neutral'>
+                    <p>This is how your submission will appear to viewers. Click the expand button to see the rest of your content. You can navigate back if you need to change anything.</p>
+                </div>
+                <PreviewSubmission setProgress={setProgress} TLDRImage={TLDRImage} TLDRText={TLDRText} longFormValue={longFormValue} />
+                <PreviousButton onClick={() => { setProgress(2) }}><FontAwesomeIcon icon={faArrowLeft}></FontAwesomeIcon></PreviousButton>
+                <NextButton onClick={handleSubmit}><FontAwesomeIcon icon={faArrowRight}></FontAwesomeIcon></NextButton>
+            </>
+        )
+    }

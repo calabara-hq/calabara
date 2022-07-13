@@ -59,12 +59,13 @@ function reducer(state, action) {
 
 
 
+
+
 export default function ContestSettings() {
 
     const [date_0, setDate_0] = useState(new Date())
     const [date_1, setDate_1] = useState(false)
     const [date_2, setDate_2] = useState(false)
-    const [date_3, setDate_3] = useState(false)
 
     const [rewardOptions, setRewardOptions] = useReducer(reducer, {});
     const [rewards, setRewards] = useReducer(reducer, {});
@@ -114,9 +115,8 @@ export default function ContestSettings() {
             contest_data: {
                 date_times: {
                     start_date: date_0,
-                    submission_begin: date_1,
-                    voting_begin: date_2,
-                    end_date: date_3
+                    voting_begin: date_1,
+                    end_date: date_2
                 },
                 reward_options: rewardOptions,
                 submitter_rewards: rewards,
@@ -140,11 +140,9 @@ export default function ContestSettings() {
                     date_0={date_0}
                     date_1={date_1}
                     date_2={date_2}
-                    date_3={date_3}
                     setDate_0={setDate_0}
                     setDate_1={setDate_1}
                     setDate_2={setDate_2}
-                    setDate_3={setDate_3}
                 />
 
                 <ContestRewardsBlock

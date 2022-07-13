@@ -9,7 +9,7 @@ import { useParams } from "react-router-dom";
 import * as WebWorker from '../../../../app/worker-client.js'
 import moment from "moment";
 import { Label } from "../common/common_styles";
-import {ContestDurationCheckpointBar} from "../../../checkpoint-bar/checkpoint-bar";
+import { ContestDurationCheckpointBar } from "../../../checkpoint-bar/checkpoint-bar";
 import { Countdown } from "../common/common_components";
 import useContestTimekeeper from "../../../hooks/useContestTimekeeper";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -257,29 +257,51 @@ export default function ContestInterface({ }) {
 
 const PromptContainer = styled.div`
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     flex-wrap: wrap;
     justify-content: space-between;
+    background-color: #1d1d1d;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
 `
 
-const Prompt = styled.div`
+const CollapsiblePrompt = styled.div`
     display: flex;
     flex-direction: column;
-    width: ${props => props.isOpen ? '100%' : '30%'};
-    justify-content: space-evenly;
-    align-items: center;
-    grid-gap: 20px;
-    justify-content: flex-start;
+    width: '100%';
+    justify-content: center;
     align-items: flex-start;
-    border: 2px solid rgba(0,0,0,0.22);
+    grid-gap: 20px;
+    border: 2px solid black;
     border-radius: 4px;
     background-color: #1c2128;
     color: #d3d3d3;
     padding: 5px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
     cursor: pointer;
     margin-bottom: 10px;
 `
+
+const PromptTop = styled.div`
+    display: flex;
+    align-items: center;
+    width: 100%;
+
+    & ${Label}{
+        margin-left: auto;
+        margin-right: 5px;
+    }
+`
+
+const PromptContent = styled.div`
+    display: flex;
+    flex-direction: column;
+    max-height: ${props => props.isOpen ? '150px' : '0px'};
+    overflow: hidden;
+    transition: max-height 0.3s ease-in-out;
+    width: 100%;
+`
+
 
 const labelColorOptions = [
     { text: 'transparent', background: 'transparent' },
@@ -291,13 +313,15 @@ const labelColorOptions = [
 
 const NewSubmissionButton = styled.button`
     width: 10em;
-    align-self: flex-end;
     padding: 5px 10px;
     border: none;
     border-radius: 4px;
-    margin-right: 3em;
+    margin-left: auto;
+    margin-right: 5px;
     margin-top: 2em;
+    margin-bottom: 2em;
     color: black;
+    background-color: #00a368;
 `
 
 
@@ -321,23 +345,35 @@ function PromptDisplay({ setIsSubmissionBuilder }) {
         setModalOpen(true)
     }
 
+    const handlePromptClick = (e, index) => {
+        if (openPromptIndex === index) {
+            setOpenPromptIndex(-1);
+            setIsSubmissionBuilder(false);
+            e.stopPropagation();
+        }
+        else {
+            setOpenPromptIndex(index)
+        }
+    }
 
     return (
         <>
             <h2 style={{ textAlign: 'center', color: '#d3d3d3', marginBottom: '30px' }}>Prompts</h2>
             <PromptContainer>
                 {contest_data.prompts.map((prompt, index) => {
-                    if (openPromptIndex === -1 || index === openPromptIndex)
-                        return (
-                            <Prompt onClick={() => setOpenPromptIndex(index)} isOpen={openPromptIndex === index}>
-                                {openPromptIndex === index && <button onClick={(e) => { setOpenPromptIndex(-1); setIsSubmissionBuilder(false); e.stopPropagation(); }} style={{ marginLeft: 'auto', color: 'black' }}><FontAwesomeIcon icon={faTimes}></FontAwesomeIcon></button>}
-                                <h4>{prompt.title.length > 30 ? prompt.title.substring(0, 30) + ' ...' : prompt.title}</h4>
+                    return (
+                        <CollapsiblePrompt onClick={(e) => handlePromptClick(e, index)} isOpen={openPromptIndex === index}>
+                            <PromptTop>
+                                <h4>{prompt.title}</h4>
                                 <Label color={labelColorOptions[prompt.label.color]}>{prompt.label.name}</Label>
-                                {openPromptIndex === index && <ParseBlocks data={prompt} />}
-                                {openPromptIndex === index && <NewSubmissionButton onClick={handleSubmissionOpen}>Create Submission</NewSubmissionButton>}
-                                {modalOpen && <SubmissionModal modalOpen={modalOpen} handleClose={handleSubmissionClose} selectedPrompt={prompt}/>}
-                            </Prompt>
-                        )
+                            </PromptTop>
+                            <PromptContent isOpen={openPromptIndex === index}>
+                                <ParseBlocks data={prompt} />
+                                <NewSubmissionButton onClick={handleSubmissionOpen}>Create Submission</NewSubmissionButton>
+                                {modalOpen && <SubmissionModal modalOpen={modalOpen} handleClose={handleSubmissionClose} selectedPrompt={prompt} />}
+                            </PromptContent>
+                        </CollapsiblePrompt>
+                    )
                 })}
             </PromptContainer>
         </>

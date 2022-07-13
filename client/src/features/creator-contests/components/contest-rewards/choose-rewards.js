@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import autoMergeLevel1 from 'redux-persist/es/stateReconciler/autoMergeLevel1'
 import styled from 'styled-components'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPencil } from '@fortawesome/free-solid-svg-icons';
 import ethLogo from '../../../../img/eth.png'
 
 const Wrap = styled.div`
@@ -20,6 +22,41 @@ const AvailableRewards = styled.div`
     padding-top: 20px;
 `
 
+const RewardOptionEditBtn = styled.button`
+    position: absolute;
+    right: 0;
+    border: none;
+    border-radius: 4px;
+    color: black;
+`
+
+const ContractAdressInputContainer = styled.div`
+
+    display: flex;
+    flex-direction: column;
+    margin-top: 2em;
+
+    &::before{
+        content: "Contract Address";
+        position: absolute;
+        transform: translate(0%, -100%);
+        
+    }
+`
+
+
+const ContractAddressInput = styled.input`
+    margin-top: 1em;
+`
+
+const RewardOptionEditCancelDelete = styled.div`
+    position: absolute;
+    top: 0;
+    right: 0;
+    border: none;
+    border-radius: 4px;
+    color: black;
+`
 
 
 export default function RewardSelector({ rewardOptions, setRewardOptions }) {
@@ -44,6 +81,11 @@ export default function RewardSelector({ rewardOptions, setRewardOptions }) {
         }
     });
 
+    const [editIndex, setEditIndex] = useState(-1)
+
+    const handleEditRewardOption = (index) => {
+        setEditIndex(index)
+    }
 
     return (
         <Wrap>
@@ -52,14 +94,29 @@ export default function RewardSelector({ rewardOptions, setRewardOptions }) {
                 {existingRules.map((el, idx) => {
                     return (
                         <>
-                            <div className="gatekeeper-option" key={idx}>
-                                <>
-                                    <p><b>Type:</b> <span className={el.gatekeeperType}>{el.gatekeeperType}</span></p>
-                                    {el.gatekeeperSymbol != 'ETH' && <p><b>Symbol:</b> {el.gatekeeperSymbol}</p>}
-                                    {el.gatekeeperAddress && <button onClick={() => { window.open('https://etherscan.io/address/' + el.gatekeeperAddress) }} className="gatekeeper-config">{el.gatekeeperAddress.substring(0, 6)}...{el.gatekeeperAddress.substring(38, 42)} <i className="fas fa-external-link-alt"></i></button>}
-                                    {el.gatekeeperImg && <img style={{margin: '0 auto'}}src={ethLogo}></img>}
-                                    <ToggleSwitch id={idx} value={el} rewardOptions={rewardOptions} setRewardOptions={setRewardOptions} existingRules={existingRules} />
-                                </>
+                            <div className="gatekeeper-option" style={{ position: 'relative' }} key={idx}>
+                                {editIndex != idx &&
+                                    <>
+                                        {el.gatekeeperSymbol != 'ETH' && <RewardOptionEditBtn onClick={() => handleEditRewardOption(idx)}><FontAwesomeIcon icon={faPencil}></FontAwesomeIcon></RewardOptionEditBtn>}
+                                        <p><b>Type:</b> <span className={el.gatekeeperType}>{el.gatekeeperType}</span></p>
+                                        {el.gatekeeperSymbol != 'ETH' && <p><b>Symbol:</b> {el.gatekeeperSymbol}</p>}
+                                        {el.gatekeeperAddress && <button onClick={() => { window.open('https://etherscan.io/address/' + el.gatekeeperAddress) }} className="gatekeeper-config">{el.gatekeeperAddress.substring(0, 6)}...{el.gatekeeperAddress.substring(38, 42)} <i className="fas fa-external-link-alt"></i></button>}
+                                        {el.gatekeeperImg && <img style={{ margin: '0 auto' }} src={ethLogo}></img>}
+                                        <ToggleSwitch id={idx} value={el} rewardOptions={rewardOptions} setRewardOptions={setRewardOptions} existingRules={existingRules} />
+                                    </>
+                                }
+                                {editIndex === idx &&
+                                    <ContractAdressInputContainer>
+                                        <RewardOptionEditCancelDelete>
+                                        <button>cancel</button>
+                                        <button>delete</button>
+                                        </RewardOptionEditCancelDelete>
+                                        <ContractAddressInput placeholder="0x1234..."></ContractAddressInput>
+                                        <p><b>Symbol:</b> {el.gatekeeperSymbol}</p>
+                                        {el.gatekeeperType !== 'erc721' && <p><b>decimal:</b> {el.gatekeeperDecimal}</p>}
+                                    </ContractAdressInputContainer>
+                                }
+
                             </div>
                         </>
                     )

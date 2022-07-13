@@ -16,6 +16,13 @@ import InlineCode from '@editorjs/inline-code'
 import SimpleImage from '@editorjs/simple-image'
 
 
+const toBase64 = file => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+});
+
 export const EDITOR_JS_TOOLS = {
     // NOTE: Paragraph is default tool. Declare only when you want to change paragraph option.
     // paragraph: Paragraph,
@@ -23,11 +30,24 @@ export const EDITOR_JS_TOOLS = {
     list: List,
     code: Code,
     image: {
-        class: SimpleImage,
+        class: Image,
         config: {
+            uploader: {
+                async uploadByFile (file) {
+                    let b64 = await toBase64(file)
+                    return {
+                        success: 1,
+                        file: {
+                            url: b64,
+                        }
+                    }
+                }
+            }
+            /*
             endpoints: {
                 byFile: 'https://localhost:3000/image/upload_img',
             }
+            */
         }
     },
     header: Header,

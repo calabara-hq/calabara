@@ -183,17 +183,17 @@ function RewardGridRow({ theme, idx, rewards, setRewards, rewardOptions, errorMa
                 setErrorMatrix(err_matrix_copy)
                 break;
             case '1':
-                setRewards({ type: 'update_single', payload: { [idx]: Object.assign(rewards[idx] || {}, { eth: Number(value) || 0 }) } })
+                setRewards({ type: 'update_single', payload: { [idx]: Object.assign(rewards[idx] || {}, { eth: {amount: Number(value) || 0, contract: null, sybmol: 'ETH'} }) } })
                 err_matrix_copy[idx][1] = null
                 setErrorMatrix(err_matrix_copy)
                 break;
             case '2':
-                setRewards({ type: 'update_single', payload: { [idx]: Object.assign(rewards[idx] || {}, { erc20: Number(value) || 0 }) } })
+                setRewards({ type: 'update_single', payload: { [idx]: Object.assign(rewards[idx] || {}, { erc20: {amount: Number(value) || 0, contract: 'blahblahblah', sybmol: 'SHARK'} }) } })
                 err_matrix_copy[idx][2] = null
                 setErrorMatrix(err_matrix_copy)
                 break;
             case '3':
-                setRewards({ type: 'update_single', payload: { [idx]: Object.assign(rewards[idx] || {}, { erc721: Number(value) || 0 }) } })
+                setRewards({ type: 'update_single', payload: { [idx]: Object.assign(rewards[idx] || {}, { erc721: {amount: Number(value) || 0, contract: 'nounshshshsh', sybmol: 'NOUN'} }) } })
                 err_matrix_copy[idx][3] = null
                 setErrorMatrix(err_matrix_copy)
                 break;
