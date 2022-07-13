@@ -57,7 +57,26 @@ function reducer(state, action) {
     }
 }
 
-
+const defaultPossibleRewards = {
+    'ETH': {
+        type: 'ETH',
+        symbol: 'ETH',
+        img: 'eth'
+    },
+    /*
+    'erc721': {
+        type: 'erc721',
+        symbol: 'NOUN',
+        address: '0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03'
+    },
+    'erc20': {
+        type: 'erc20',
+        symbol: 'SHARK',
+        address: '0x232AFcE9f1b3AAE7cb408e482E847250843DB931',
+        decimal: '18'
+    }
+    */
+}
 
 
 
@@ -67,8 +86,9 @@ export default function ContestSettings() {
     const [date_1, setDate_1] = useState(false)
     const [date_2, setDate_2] = useState(false)
 
-    const [rewardOptions, setRewardOptions] = useReducer(reducer, {});
-    const [rewards, setRewards] = useReducer(reducer, {});
+    const [rewardOptions, setRewardOptions] = useReducer(reducer, defaultPossibleRewards);
+    const [selectedRewards, setSelectedRewards] = useReducer(reducer, {});
+    const [submitterRewards, setSubmitterRewards] = useReducer(reducer, {});
     const [errorMatrix, setErrorMatrix] = useState([[null, null, null, null]]);
     const [voterRewards, setVoterRewards] = useReducer(reducer, [])
 
@@ -119,7 +139,7 @@ export default function ContestSettings() {
                     end_date: date_2
                 },
                 reward_options: rewardOptions,
-                submitter_rewards: rewards,
+                submitter_rewards: submitterRewards,
                 voter_rewards: voterRewards,
                 submitter_restrictions: submitterAppliedRules,
                 voter_restrictions: voterAppliedRules
@@ -148,8 +168,10 @@ export default function ContestSettings() {
                 <ContestRewardsBlock
                     rewardOptions={rewardOptions}
                     setRewardOptions={setRewardOptions}
-                    rewards={rewards}
-                    setRewards={setRewards}
+                    selectedRewards={selectedRewards}
+                    setSelectedRewards={setSelectedRewards}
+                    submitterRewards={submitterRewards}
+                    setSubmitterRewards={setSubmitterRewards}
                     voterRewards={voterRewards}
                     setVoterRewards={setVoterRewards}
                     errorMatrix={errorMatrix}
@@ -169,7 +191,7 @@ export default function ContestSettings() {
                 />
 
                 <SimpleInputs />
-                <PromptBuilder/>
+                <PromptBuilder />
                 <button onClick={printContestData}> print contest data</button>
             </ContestSettingsWrap >
         </RainbowThemeContainer>

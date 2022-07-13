@@ -80,16 +80,16 @@ const RewardsGridInput = styled.input`
     }
 `
 
-export default function ContestRewardsBlock({ theme, rewardOptions, setRewardOptions, rewards, setRewards, voterRewards, setVoterRewards, errorMatrix, setErrorMatrix }) {
+export default function ContestRewardsBlock({ theme, rewardOptions, setRewardOptions, selectedRewards, setSelectedRewards, submitterRewards, setSubmitterRewards, voterRewards, setVoterRewards, errorMatrix, setErrorMatrix }) {
     const [numWinners, setNumWinners] = useState(1)
 
     const handleErrors = () => {
         let err_matrix_copy = JSON.parse(JSON.stringify(errorMatrix))
-        let rewards_arr = Object.values(rewards)
+        let submitter_rewards_arr = Object.values(submitterRewards)
         let voter_rewards_arr = Object.entries(voterRewards)
 
         // check for non whole number nft allocations
-        rewards_arr.map((row, index) => {
+        submitter_rewards_arr.map((row, index) => {
             if (row.erc721 % 1 > 0) {
                 err_matrix_copy[index][3] = 'must be a whole number'
                 setErrorMatrix(err_matrix_copy)
@@ -113,10 +113,10 @@ export default function ContestRewardsBlock({ theme, rewardOptions, setRewardOpt
     }
     const handleWinnersDecrement = (value) => {
         if (numWinners > 1) {
-            let rewards_copy = Object.entries(rewards)
+            let rewards_copy = Object.entries(submitterRewards)
             rewards_copy.pop();
             rewards_copy = Object.fromEntries(rewards_copy)
-            setRewards({ type: 'update_all', payload: rewards_copy })
+            setSubmitterRewards({ type: 'update_all', payload: rewards_copy })
             setNumWinners(numWinners - 1);
             let errorMatrix = Array.from({ length: numWinners - 1 }, () => Array.from({ length: 4 }, () => null))
             setErrorMatrix(errorMatrix)
@@ -129,11 +129,11 @@ export default function ContestRewardsBlock({ theme, rewardOptions, setRewardOpt
             <RewardsMainHeading>
                 <Contest_h2 grid_area={'heading'}>Contest Rewards</Contest_h2>
                 <img style={{ gridArea: 'logo', width: '20em', marginTop: '20px', marginLeft: 'auto' }} src={contestLogo}></img>
-                <RewardSelector rewardOptions={rewardOptions} setRewardOptions={setRewardOptions} />
+                <RewardSelector rewardOptions={rewardOptions} setRewardOptions={setRewardOptions} selectedRewards={selectedRewards} setSelectedRewards={setSelectedRewards}/>
             </RewardsMainHeading>
 
 
-            {Object.keys(rewardOptions).length > 0 &&
+            {Object.keys(selectedRewards).length > 0 &&
                 <>
                     <SubmitterRewardsHeading>
                         <Contest_h2 grid_area={'section_title'}>submitter rewards</Contest_h2>
@@ -141,9 +141,9 @@ export default function ContestRewardsBlock({ theme, rewardOptions, setRewardOpt
                         <CounterButton grid_area={'num_winners'} counter={numWinners} handleIncrement={handleWinnersIncrement} handleDecrement={handleWinnersDecrement} />
                     </SubmitterRewardsHeading>
                     <SubmitterRewardsGridLayout>
-                        <SubmitterRewardsGrid numWinners={numWinners} rewards={rewards} setRewards={setRewards} rewardOptions={rewardOptions} errorMatrix={errorMatrix} setErrorMatrix={setErrorMatrix} theme={theme} />
+                        <SubmitterRewardsGrid numWinners={numWinners} submitterRewards={submitterRewards} setSubmitterRewards={setSubmitterRewards} selectedRewards={selectedRewards} errorMatrix={errorMatrix} setErrorMatrix={setErrorMatrix} theme={theme} />
                     </SubmitterRewardsGridLayout>
-                    <VoterRewardsBlock num_voting_rewards={Object.values(rewards)} submitter_rewards={Object.values(rewards)} rewardOptions={rewardOptions} voterRewards={voterRewards} setVoterRewards={setVoterRewards} />
+                    <VoterRewardsBlock num_voting_rewards={Object.values(submitterRewards)} submitter_rewards={Object.values(submitterRewards)} selectedRewards={selectedRewards} voterRewards={voterRewards} setVoterRewards={setVoterRewards} />
                 </>
             }
             {/*<button onClick={handleErrors}>submit</button>*/}
@@ -152,18 +152,18 @@ export default function ContestRewardsBlock({ theme, rewardOptions, setRewardOpt
     )
 }
 
-function SubmitterRewardsGrid({ numWinners, rewardOptions, rewards, setRewards, errorMatrix, setErrorMatrix, theme }) {
+function SubmitterRewardsGrid({ numWinners, selectedRewards, submitterRewards, setSubmitterRewards, errorMatrix, setErrorMatrix, theme }) {
 
     return (
         <>
             <p>Rank</p>
-            {rewardOptions.ETH ? <p>{rewardOptions.ETH}</p> : <b></b>}
-            {rewardOptions.erc20 ? <p>{rewardOptions.erc20}</p> : <b></b>}
-            {rewardOptions.erc721 ? <p>{rewardOptions.erc721}</p> : <b></b>}
+            {selectedRewards.ETH ? <p>{selectedRewards.ETH}</p> : <b></b>}
+            {selectedRewards.erc20 ? <p>{selectedRewards.erc20}</p> : <b></b>}
+            {selectedRewards.erc721 ? <p>{selectedRewards.erc721}</p> : <b></b>}
             {
                 Array.from(Array(numWinners)).map((val, idx) => {
                     return (
-                        <RewardGridRow idx={idx} theme={theme} val={val} rewards={rewards} setRewards={setRewards} rewardOptions={rewardOptions} errorMatrix={errorMatrix} setErrorMatrix={setErrorMatrix} />
+                        <RewardGridRow idx={idx} theme={theme} val={val} submitterRewards={submitterRewards} setSubmitterRewards={setSubmitterRewards} selectedRewards={selectedRewards} errorMatrix={errorMatrix} setErrorMatrix={setErrorMatrix} />
                     )
                 })
             }
@@ -171,29 +171,29 @@ function SubmitterRewardsGrid({ numWinners, rewardOptions, rewards, setRewards, 
     )
 }
 
-function RewardGridRow({ theme, idx, rewards, setRewards, rewardOptions, errorMatrix, setErrorMatrix }) {
+function RewardGridRow({ theme, idx, submitterRewards, setSubmitterRewards, selectedRewards, errorMatrix, setErrorMatrix }) {
 
     const updateRewards = (e) => {
         const { name, value } = e.target;
         let err_matrix_copy = JSON.parse(JSON.stringify(errorMatrix))
         switch (name) {
             case '0':
-                setRewards({ type: 'update_single', payload: { [idx]: Object.assign(rewards[idx] || {}, { rank: Number(value) }) } })
+                setSubmitterRewards({ type: 'update_single', payload: { [idx]: Object.assign(submitterRewards[idx] || {}, { rank: Number(value) }) } })
                 err_matrix_copy[idx][0] = null
                 setErrorMatrix(err_matrix_copy)
                 break;
             case '1':
-                setRewards({ type: 'update_single', payload: { [idx]: Object.assign(rewards[idx] || {}, { eth: {amount: Number(value) || 0, contract: null, sybmol: 'ETH'} }) } })
+                setSubmitterRewards({ type: 'update_single', payload: { [idx]: Object.assign(submitterRewards[idx] || {}, { eth: {amount: Number(value) || 0, contract: null, sybmol: 'ETH'} }) } })
                 err_matrix_copy[idx][1] = null
                 setErrorMatrix(err_matrix_copy)
                 break;
             case '2':
-                setRewards({ type: 'update_single', payload: { [idx]: Object.assign(rewards[idx] || {}, { erc20: {amount: Number(value) || 0, contract: 'blahblahblah', sybmol: 'SHARK'} }) } })
+                setSubmitterRewards({ type: 'update_single', payload: { [idx]: Object.assign(submitterRewards[idx] || {}, { erc20: {amount: Number(value) || 0, contract: 'blahblahblah', sybmol: 'SHARK'} }) } })
                 err_matrix_copy[idx][2] = null
                 setErrorMatrix(err_matrix_copy)
                 break;
             case '3':
-                setRewards({ type: 'update_single', payload: { [idx]: Object.assign(rewards[idx] || {}, { erc721: {amount: Number(value) || 0, contract: 'nounshshshsh', sybmol: 'NOUN'} }) } })
+                setSubmitterRewards({ type: 'update_single', payload: { [idx]: Object.assign(submitterRewards[idx] || {}, { erc721: {amount: Number(value) || 0, contract: 'nounshshshsh', sybmol: 'NOUN'} }) } })
                 err_matrix_copy[idx][3] = null
                 setErrorMatrix(err_matrix_copy)
                 break;
@@ -212,7 +212,7 @@ function RewardGridRow({ theme, idx, rewards, setRewards, rewardOptions, errorMa
             </GridInputContainer>
 
             <GridInputContainer>
-                {rewardOptions.ETH ?
+                {selectedRewards.ETH ?
                     <RewardsGridInput name='1' theme={theme} type="number" onChange={updateRewards} onWheel={(e) => e.target.blur()}></RewardsGridInput>
                     : <b></b>
                 }
@@ -221,7 +221,7 @@ function RewardGridRow({ theme, idx, rewards, setRewards, rewardOptions, errorMa
             </GridInputContainer>
 
             <GridInputContainer>
-                {rewardOptions.erc20 ?
+                {selectedRewards.erc20 ?
                     <RewardsGridInput name='2' theme={theme} type="number" onChange={updateRewards} onWheel={(e) => e.target.blur()}></RewardsGridInput>
                     : <b></b>
                 }
@@ -230,7 +230,7 @@ function RewardGridRow({ theme, idx, rewards, setRewards, rewardOptions, errorMa
             </GridInputContainer>
 
             <GridInputContainer>
-                {rewardOptions.erc721 ?
+                {selectedRewards.erc721 ?
                     <RewardsGridInput name='3' theme={theme} type="number" onChange={updateRewards} error={errorMatrix[idx][3]} onWheel={(e) => e.target.blur()} ></RewardsGridInput>
                     : <b></b>
                 }

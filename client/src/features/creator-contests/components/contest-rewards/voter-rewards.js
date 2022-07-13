@@ -119,14 +119,14 @@ const RewardsGridInput = styled.input`
     align-self: center;
 `
 
-export default function VoterRewardsBlock({ num_voting_rewards, rewardOptions, voterRewards, setVoterRewards }) {
+export default function VoterRewardsBlock({ num_voting_rewards, selectedRewards, voterRewards, setVoterRewards }) {
     const [isToggleOn, setIsToggleOn] = useState(false)
 
     // allow voting rewards for ranks 1 -> 10
     let possible_ranks = Array.from({ length: 10 }, (_, i) => { return { value: i + 1, label: i + 1 } })
 
     // don't allow nft rewards (can't be fractionalized)
-    let { erc721, ...valid_rewards } = rewardOptions
+    let { erc721, ...valid_rewards } = selectedRewards
     let possible_rewards = Object.values(valid_rewards).map((el) => { return { value: el, label: el } })
 
     const [numVoterRewards, setNumVoterRewards] = useState(1)
