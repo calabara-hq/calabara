@@ -11,9 +11,16 @@ const Rewards = styled.div`
     display: flex;
     flex-direction: column;
     color: #d3d3d3;
-    grid-gap: 50px;
-    width: 100%;
+    background-color: #22272e;
+    border: 2px solid #444c56;
+    border-radius: 4px;
+    padding: 10px;
+    width: 70%;
     margin: 0 auto;
+
+    > * {
+        margin-bottom: 50px;
+    }
 
 `
 
@@ -132,7 +139,6 @@ export default function ContestRewardsBlock({ theme, rewardOptions, setRewardOpt
         <Rewards theme={theme}>
             <RewardsMainHeading>
                 <Contest_h2 grid_area={'heading'}>Contest Rewards</Contest_h2>
-                <img style={{ gridArea: 'logo', width: '20em', marginTop: '20px', marginLeft: 'auto' }} src={contestLogo}></img>
                 <RewardSelector rewardOptions={rewardOptions} setRewardOptions={setRewardOptions} selectedRewards={selectedRewards} setSelectedRewards={setSelectedRewards}/>
             </RewardsMainHeading>
 

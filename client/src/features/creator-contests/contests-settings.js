@@ -34,11 +34,13 @@ const theme = {
 const ContestSettingsWrap = styled.div`
     width: 95vw;
     margin: 0 auto;
-    background-color: #22272e;
     padding: 10px;
     display: flex;
     flex-direction: column;
-    grid-gap: 500px;
+    
+    > *  {
+        margin-bottom: 100px;
+    }
 `
 
 const containerStyles = {

@@ -183,7 +183,7 @@ function VotingRewardsRow({ possible_ranks, possible_rewards, index, voterReward
 
 
     useEffect(() => {
-        setVoterRewards({ type: 'update_single', payload: { [index]: Object.assign(voterRewards[index] || {}, { 'rank': rank, 'reward_type': reward_type, 'reward': Number(reward) }) } })
+        setVoterRewards({ type: 'update_single', payload: { [index]: Object.assign(voterRewards[index] || {}, { rank: rank, [reward_type]: {amount: Number(reward), contract: 'xyz', symbol: 'xyz' } }) } })
     }, [rank, reward_type, reward])
 
     return (

@@ -6,7 +6,16 @@ import { RuleSelect } from '../../../manage-widgets/gatekeeper-toggle';
 const RestrictionsWrap = styled.div`
     display: flex;
     flex-direction: column;
-    grid-gap: 30px;
+    background-color: #22272e;
+    border: 2px solid #444c56;
+    border-radius: 4px;
+    padding: 10px;
+    width: 70%;
+    margin: 0 auto;
+
+    > * {
+        margin-bottom: 30px;
+    }
 `
 
 const RestrictionsMainHeading = styled.div`

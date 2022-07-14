@@ -30,18 +30,10 @@ const PromptsWrap = styled.div`
 `
 
 const PromptBuilderMainHeading = styled.div`
-    display: grid;
-    grid-template-columns: repeat(3, 33%);
-    grid-template-areas: "prompt_builder . .";
+    display: flex;
+    gap: 50px;
 `
 
-const AddPromptsContainer = styled.div`
-    margin-left: 20px;
-    width: 20%;
-    display: flex;
-    justify-content: flex-end;
-    align-items: flex-start;
-`
 const ExistingPromptContainer = styled.div`
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -328,6 +320,10 @@ export default function PromptBuilder({ }) {
         handleDeletePrompt();
     }
 
+    const handleCancel = () => {
+        setPromptData({ type: "SET_SELECTED_PROMPT", payload: -2 })
+    }
+
     const handleNewPrompt = async () => {
         setPromptData({ type: "NEW_PROMPT" })
         await editorCore.current.clear();
@@ -337,19 +333,17 @@ export default function PromptBuilder({ }) {
         <PromptsWrap>
             <PromptBuilderMainHeading>
                 <Contest_h2 grid_area={"prompt_builder"}>Prompt Builder</Contest_h2>
+                <NewPromptButton onClick={handleNewPrompt}>new prompt</NewPromptButton>
             </PromptBuilderMainHeading>
             <TopLevelContainer>
                 <ExistingPromptContainer>
                     {prompt_blocks.map((el, index) => { return <Prompt el={el} index={index} handleSwitchPrompts={handleSwitchPrompts} /> })}
                 </ExistingPromptContainer>
-                <AddPromptsContainer>
-                    <NewPromptButton onClick={handleNewPrompt}>new prompt</NewPromptButton>
-                </AddPromptsContainer>
             </TopLevelContainer>
             <PromptBuilderWrap visibile={selected_prompt > -2}>
                 <PromptButtons>
                     <SaveButton onClick={handleSubmit}><FontAwesomeIcon icon={faCheck} /></SaveButton>
-                    <CancelButton onClick={handleSubmit}><FontAwesomeIcon icon={faTimes} /></CancelButton>
+                    <CancelButton onClick={handleCancel}><FontAwesomeIcon icon={faTimes} /></CancelButton>
                     <DeleteButton disabled onClick={handleDelete}><FontAwesomeIcon icon={faTrash} /></DeleteButton>
                 </PromptButtons>
                 <PromptHeadingInput>

@@ -1,11 +1,3 @@
-.start-end-time-container {
-    display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    grid-gap: 20px;
-}
-
-
 .date-time-picker {
     max-width: 400px;
 }
