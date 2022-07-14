@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { ContestSubmissionCheckpointBar } from '../../../checkpoint-bar/checkpoint-bar';
 import useContract from '../../../hooks/useContract';
+import { TagType } from '../common/common_styles';
 
 
 
@@ -119,6 +120,18 @@ const RewardOptionSaveBtn = styled.button`
     color: black;
 `
 
+const RewardType = styled.p`
+    color: lightgrey;
+    margin: 0;
+
+    & > span{
+        padding: 3px 3px;
+        border-radius: 4px;
+        font-size: 15px;
+        font-weight: 550;
+    }
+`
+
 export default function EditRewardsModal({ modalOpen, handleClose, existingRewardData, type }) {
 
     const handleSave = async () => {
@@ -153,32 +166,34 @@ function EditRewards({ existingRewardData, handleClose, type }) {
     const [addressError, setAddressError] = useState(false);
     const { erc20GetSymbolAndDecimal, erc721GetSymbol } = useContract();
 
-    console.log(type)
+
+
+    const fetchContractData = async (e) => {
+        if (type === 'erc20') {
+            try {
+                let [symbol, decimal] = await erc20GetSymbolAndDecimal(e.target.value);
+                setNewSymbol(symbol)
+                setNewDecimal(decimal)
+            } catch (e) {
+                setAddressError(true)
+            }
+
+        }
+        else if (type === 'erc721') {
+            try {
+                let symbol = await erc721GetSymbol(e.target.value);
+                setNewSymbol(symbol)
+            } catch (e) {
+                setAddressError(true)
+            }
+
+        }
+    }
 
     const handleRewardAdressChange = async (e) => {
         if (addressError) setAddressError(false)
         setNewContractAddress(e.target.value)
-        if (e.target.value.length === 42) {
-            if (type === 'erc20') {
-                try {
-                    let [symbol, decimal] = await erc20GetSymbolAndDecimal(e.target.value);
-                    setNewSymbol(symbol)
-                    setNewDecimal(decimal)
-                } catch (e) {
-                    setAddressError(true)
-                }
-
-            }
-            else if (type === 'erc721') {
-                try {
-                    let symbol = await erc721GetSymbol(e.target.value);
-                    setNewSymbol(symbol)
-                } catch (e) {
-                    setAddressError(true)
-                }
-
-            }
-        }
+        if (e.target.value.length === 42) await fetchContractData(e)
         else {
             setNewSymbol(null)
             setNewDecimal(null)
@@ -186,26 +201,25 @@ function EditRewards({ existingRewardData, handleClose, type }) {
     }
 
 
-
     const handleSave = () => {
         handleClose(handleClose('save', { type: type, address: newContractAddress, symbol: newSymbol, decimal: newDecimal }))
     }
 
 
+
     return (
         <CreateRewardWrap>
             <RewardOptionEditCancelDelete>
-                <button onClick={() => handleClose('delete')}>delete</button>
+                <button onClick={() => handleClose('delete', {type: type})}>delete</button>
             </RewardOptionEditCancelDelete>
-            <p><b>Type:</b> {type}</p>
+            <RewardType><b>Type:</b> <TagType type={type}>{type}</TagType></RewardType>
             <ContractAdressInputContainer>
                 <ContractAddressInput placeholder="0x1234..." value={newContractAddress} onChange={handleRewardAdressChange}></ContractAddressInput>
             </ContractAdressInputContainer>
             {newSymbol && <p><b>Symbol:</b> {newSymbol}</p>}
             {type !== 'erc721' && newDecimal && <p><b>decimal:</b> {newDecimal}</p>}
             {addressError && <p>could not find address</p>}
-            <RewardOptionSaveBtn onClick={handleSave}>save</RewardOptionSaveBtn>
+            <RewardOptionSaveBtn disabled={!newSymbol} onClick={handleSave}>save</RewardOptionSaveBtn>
         </CreateRewardWrap>
     )
 }
- // check is erc20 & is erc721

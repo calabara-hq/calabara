@@ -119,8 +119,9 @@ const RewardsGridInput = styled.input`
     align-self: center;
 `
 
-export default function VoterRewardsBlock({ num_voting_rewards, selectedRewards, voterRewards, setVoterRewards }) {
+export default function VoterRewardsBlock({ selectedRewards, voterRewards, setVoterRewards }) {
     const [isToggleOn, setIsToggleOn] = useState(false)
+
 
     // allow voting rewards for ranks 1 -> 10
     let possible_ranks = Array.from({ length: 10 }, (_, i) => { return { value: i + 1, label: i + 1 } })
@@ -177,7 +178,7 @@ export default function VoterRewardsBlock({ num_voting_rewards, selectedRewards,
 
 function VotingRewardsRow({ possible_ranks, possible_rewards, index, voterRewards, setVoterRewards }) {
     const [rank, setRank] = useState(1);
-    const [reward_type, setRewardType] = useState(possible_rewards[0].value)
+    const [reward_type, setRewardType] = useState(null)
     const [reward, setReward] = useState(0)
 
 

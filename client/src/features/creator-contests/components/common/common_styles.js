@@ -53,6 +53,10 @@ const submission_fade = keyframes`
         opacity: 1;
         }
 `
+const TagType = styled.span`
+    background-color: ${props => props.type === 'erc721' ? 'rgba(155, 89, 182, 0.3)' : props.type === 'erc20' ? 'rgba(26, 188, 156, 0.3)' : 'rgba(173, 156, 220, 0.3)' };
+    color: ${props => props.type === 'erc721' ? 'rgb(155, 89, 182)' : props.type === 'erc20' ? 'rgb(26, 188, 156)' : 'rgb(173, 156, 220)' };
 
+`
 
-export {fade_in, Contest_h2, Contest_h3, Contest_h4, Label, submission_fade}
+export {fade_in, Contest_h2, Contest_h3, Contest_h4, Label, submission_fade, TagType}

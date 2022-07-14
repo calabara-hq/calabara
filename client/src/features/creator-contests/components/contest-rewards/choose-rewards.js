@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPencil, faPlus } from '@fortawesome/free-solid-svg-icons';
 import ethLogo from '../../../../img/eth.png'
 import EditRewardsModal from './contest-reward-input-modal';
+import { TagType } from '../common/common_styles';
 
 const Wrap = styled.div`
     display: grid;
@@ -42,6 +43,37 @@ const NewERC721Reward = styled.button`
     color: black;
 `
 
+const RewardOption = styled.div`
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: space-evenly;
+    align-items: center;
+    grid-gap: 20px;
+    justify-content: flex-start;
+    align-items: flex-start;
+    border: none;
+    border-radius: 4px;
+    background-color: #1c2128;
+    padding: 5px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+
+    & > p{
+        color: lightgrey;
+        margin: 0;
+    }
+
+    & > p > span{
+        padding: 3px 3px;
+        border-radius: 4px;
+        font-size: 15px;
+        font-weight: 550;
+    }
+
+`
+
+
 
 export default function RewardSelector({ rewardOptions, setRewardOptions, selectedRewards, setSelectedRewards }) {
     // need to raise this higher in the tree later on. just for testing now
@@ -63,11 +95,18 @@ export default function RewardSelector({ rewardOptions, setRewardOptions, select
 
     const handleRewardsModalClose = (mode, payload) => {
         if (mode === 'delete') {
-            alert('delete')
+            let options_copy = JSON.parse(JSON.stringify(rewardOptions))
+            let selected_copy = JSON.parse(JSON.stringify(selectedRewards))
+            
+            delete options_copy[payload.type];
+            delete selected_copy[payload.type];
+            setRewardOptions({type: 'update_all', payload: options_copy})
+            setSelectedRewards({type: 'update_all', payload: selected_copy})
+
         }
         else if (mode === 'save') {
-            alert('save')
             setRewardOptions({ type: 'update_single', payload: { [payload.type]: { type: payload.type, symbol: payload.symbol, address: payload.address } } })
+            if(selectedRewards[payload.type]) setSelectedRewards({ type: 'update_single', payload: { [payload.type]: payload.symbol } })
         }
         setEditRewardsModalOpen(false)
 
@@ -83,16 +122,16 @@ export default function RewardSelector({ rewardOptions, setRewardOptions, select
                     return (
                         <>
 
-                            <div className="gatekeeper-option" style={{ position: 'relative' }} key={idx}>
+                            <RewardOption key={idx}>
                                 <>
                                     {el.type != 'ETH' && <RewardOptionEditBtn onClick={() => handleEditRewardOption(el.type)}><FontAwesomeIcon icon={faPencil}></FontAwesomeIcon></RewardOptionEditBtn>}
-                                    <p><b>Type:</b> <span className={el.type}>{el.type}</span></p>
+                                    <p><b>Type:</b> <TagType type={el.type}>{el.type}</TagType></p>
                                     {el.symbol != 'ETH' && <p><b>Symbol:</b> {el.symbol}</p>}
                                     {el.address && <button onClick={() => { window.open('https://etherscan.io/address/' + el.address) }} className="gatekeeper-config">{el.address.substring(0, 6)}...{el.address.substring(38, 42)} <i className="fas fa-external-link-alt"></i></button>}
                                     {el.img && <img style={{ margin: '0 auto' }} src={ethLogo}></img>}
                                     <ToggleSwitch id={idx} value={el} selectedRewards={selectedRewards} setSelectedRewards={setSelectedRewards} />
                                 </>
-                            </div>
+                            </RewardOption>
 
                         </>
                     )

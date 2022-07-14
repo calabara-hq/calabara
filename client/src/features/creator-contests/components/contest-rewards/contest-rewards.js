@@ -123,6 +123,10 @@ export default function ContestRewardsBlock({ theme, rewardOptions, setRewardOpt
         }
     }
 
+    const isVoterBlockVisible = () => {
+        if(selectedRewards['erc721'] &&  Object.keys(selectedRewards).length === 1) return false
+        return true
+    }
 
     return (
         <Rewards theme={theme}>
@@ -143,7 +147,7 @@ export default function ContestRewardsBlock({ theme, rewardOptions, setRewardOpt
                     <SubmitterRewardsGridLayout>
                         <SubmitterRewardsGrid numWinners={numWinners} submitterRewards={submitterRewards} setSubmitterRewards={setSubmitterRewards} selectedRewards={selectedRewards} errorMatrix={errorMatrix} setErrorMatrix={setErrorMatrix} theme={theme} />
                     </SubmitterRewardsGridLayout>
-                    <VoterRewardsBlock num_voting_rewards={Object.values(submitterRewards)} submitter_rewards={Object.values(submitterRewards)} selectedRewards={selectedRewards} voterRewards={voterRewards} setVoterRewards={setVoterRewards} />
+                    {isVoterBlockVisible() && <VoterRewardsBlock num_voting_rewards={Object.values(submitterRewards)} submitter_rewards={Object.values(submitterRewards)} selectedRewards={selectedRewards} voterRewards={voterRewards} setVoterRewards={setVoterRewards} />}
                 </>
             }
             {/*<button onClick={handleErrors}>submit</button>*/}

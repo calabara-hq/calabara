@@ -23,6 +23,12 @@ export default function useContract() {
         return symbol
     }
 
+    async function isErc721(contractAddress){
+        const tokenContract = new web3Infura.eth.Contract(erc721abi, contractAddress);
+        const res = await tokenContract.methods.supportsInterface('0x80ac58cd').call();
+        return res
+    }
+
     // check balance of token given a wallet address and a contract address
     async function checkERC20Balance(walletAddress, contractAddress, decimal) {
         const tokenContract = new web3Infura.eth.Contract(erc20abi, contractAddress);
@@ -46,7 +52,10 @@ export default function useContract() {
         checkERC20Balance: async (walletAddress, contractAddress, decimal) => {
             return await checkERC20Balance(walletAddress, contractAddress, decimal)
         },
-        checkERC721Balance
+        checkERC721Balance,
+        isErc721: async (contractAddress) => {
+            return await isErc721(contractAddress)
+        }
     }
 
 }

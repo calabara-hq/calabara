@@ -73,6 +73,7 @@ const defaultPossibleRewards = {
         type: 'erc20',
         symbol: 'SHARK',
         address: '0x232AFcE9f1b3AAE7cb408e482E847250843DB931',
+        0xdac17f958d2ee523a2206206994597c13d831ec7
         decimal: '18'
     }
     */
