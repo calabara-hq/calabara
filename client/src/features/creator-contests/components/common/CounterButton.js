@@ -2,7 +2,27 @@ import React, { useState } from 'react';
 import styled, {keyframes} from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
-import { fade_in } from '../common/common_styles';
+import { fade_in } from './common_styles';
+
+const MainContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-left: 5em;
+    grid-gap: 20px;
+    animation: ${fade_in} 0.6s ease-in-out;
+    /*
+    &::before{
+        content: '${props => props.before_text ? props.before_text : null}';
+        position: absolute;
+        transform: translate(-120%, 0%);
+        font-size: 16px;
+        font-weight: bold;
+    }
+    */
+    
+`
 
 
 const ButtonContainer = styled.div`
@@ -10,21 +30,12 @@ const ButtonContainer = styled.div`
     flex-direction: row;
     color: #d3d3d3;
     border: 2px solid black;
-    width: 35%;
+    width: 100px;
     height: 100%;
     border-radius: 100px;
     justify-content: center;
     align-items: center;
     box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
-`
-const MainContainer = styled.div`
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-    grid-gap: 20px;
-    animation: ${fade_in} 0.6s ease-in-out;
-    grid-area: ${props => props.grid_area ? props.grid_area : ''};
 `
 
 const MinusButton = styled.button`
@@ -65,10 +76,10 @@ const PlusButton = styled.button`
     }
 `
 
-export default function CounterButton({ counter, handleIncrement, handleDecrement, grid_area }) {
+export default function CounterButton({ counter, handleIncrement, handleDecrement }) {
 
     return (
-        <MainContainer grid_area={grid_area}>
+        <MainContainer>
             <h4>{counter}</h4>
             <ButtonContainer>
                 <MinusButton onClick={handleDecrement}><FontAwesomeIcon icon={faMinus} /></MinusButton>

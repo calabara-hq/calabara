@@ -8,13 +8,12 @@ import EditRewardsModal from './contest-reward-input-modal';
 import { TagType } from '../common/common_styles';
 
 const Wrap = styled.div`
-    display: grid;
-    grid-template-rows: 2;
+    display: flex;
+    flex-direction: column;
     grid-area: rewards;
     width: 90%;
     margin: 0 auto;
     padding-bottom: 30px;
-    border-bottom: 1px solid grey;
 `
 const AvailableRewards = styled.div`
     display: grid;

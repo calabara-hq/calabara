@@ -59,4 +59,10 @@ const TagType = styled.span`
 
 `
 
-export {fade_in, Contest_h2, Contest_h3, Contest_h4, Label, submission_fade, TagType}
+const SettingsSectionSubHeading = styled.div`
+    width: 90%;
+    margin: 0 auto;
+    animation: ${fade_in} 0.6s ease-in-out;
+`
+
+export {fade_in, Contest_h2, Contest_h3, Contest_h4, Label, submission_fade, TagType, SettingsSectionSubHeading}

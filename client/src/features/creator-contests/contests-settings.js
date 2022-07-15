@@ -40,6 +40,7 @@ const ContestSettingsWrap = styled.div`
     
     > *  {
         margin-bottom: 100px;
+        border-radius: 20px;
     }
 `
 
