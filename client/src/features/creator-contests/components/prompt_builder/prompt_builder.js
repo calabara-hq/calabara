@@ -8,6 +8,7 @@ import usePromptBuilder from '../../../hooks/usePromptBuilder';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleDown, faAngleUp, faCheck, faCog, faPalette, faQuestion, faQuestionCircle, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { fade_in, Label } from '../common/common_styles';
+import { withTheme } from '@emotion/react';
 
 
 
@@ -26,7 +27,16 @@ function reducer(state, action) {
 const PromptsWrap = styled.div`
     display: flex;
     flex-direction: column;
-    grid-gap: 30px;
+    background-color: #22272e;
+    border: 2px solid #444c56;
+    border-radius: 4px;
+    padding: 10px;
+    width: 70%;
+    margin: 0 auto;
+
+    > * {
+        margin-bottom: 30px;
+    }
 `
 
 const PromptBuilderMainHeading = styled.div`
@@ -35,10 +45,11 @@ const PromptBuilderMainHeading = styled.div`
 `
 
 const ExistingPromptContainer = styled.div`
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-gap: 20px;
-    width: 80%;
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: flex-start;
+    margin: 20px auto;
 `
 const NewPromptButton = styled.button`
     background-color: lightgreen;
@@ -46,6 +57,7 @@ const NewPromptButton = styled.button`
     border-radius: 4px;
     padding: 5px 10px;
     font-size: 16px;
+    margin-left: auto;
 
     &:hover{
         color: black;
@@ -53,16 +65,11 @@ const NewPromptButton = styled.button`
     }
 `
 
-const TopLevelContainer = styled.div`
-    display: flex;
-    width: 80%;
-    margin: 0 auto;
-`
-
 const PromptStyle = styled.div`
+    margin: 5px;
     display: flex;
     flex-direction: column;
-    width: 100%;
+    width: 30%;
     justify-content: space-evenly;
     align-items: center;
     grid-gap: 20px;
@@ -79,7 +86,7 @@ const PromptStyle = styled.div`
 const PromptBuilderWrap = styled.div`
     display: flex;
     flex-direction: column;
-    width: 80%;
+    width: 100%;
     margin: 0 auto;
     animation: ${fade_in} 0.7s forwards;
     display: ${props => !props.visibile ? 'none' : ''};
@@ -89,25 +96,55 @@ const PromptBuilderWrap = styled.div`
 const PromptDataWrap = styled.div`
     display: flex;
     width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
 `
 
 
 const EditorWrap = styled.div`
+    flex: 1 1 72%;
     background-color: white;
-    width: 80%;
     border-radius: 4px;
-    min-height: 200px;
+    height: 500px;
+    max-height: 600px;
+    overflow-y: scroll;
     font-size: 20px;
+    width: 100%;
+    text-align: left;
+    padding: 10px;
+    color: #d3d3d3;
+    background-color: #1c2128;
+
+
+    * > .ce-popover--opened{
+        color: black;
+    }
+    * > .ce-inline-toolbar{
+        color: black;
+    }
+    * > .ce-toolbar__settings-btn, .ce-toolbar__plus{
+        background-color: #d3d3d3;
+    }
+
+    * > .ce-toolbar__settings-btn:hover, .ce-toolbar__plus:hover{
+        background-color: white;
+    }
 `
 
 
 const PromptSidebarWrap = styled.div`
-    width: 20%;
+    flex: 1 1 25%;
     display: flex;
     border: 1px solid #444c56;
     border-radius: 4px;
-    margin-left: 20px;
     padding: 5px;
+    align-self: flex-start;
+`
+
+const PromptTop = styled.div`
+    display: flex;
+    align-items: center;
 `
 
 const PromptHeadingInput = styled.div`
@@ -272,8 +309,6 @@ export default function PromptBuilder({ }) {
 
     let { selected_prompt, prompt_heading, prompt_heading_error, prompt_label, prompt_label_color, prompt_blocks } = promptData
 
-    console.log(prompt_blocks)
-
     const ReactEditorJS = createReactEditorJS()
     const editorCore = useRef(null);
 
@@ -281,10 +316,6 @@ export default function PromptBuilder({ }) {
         editorCore.current = instance;
     }, [])
 
-    useEffect(() => {
-        console.log(selected_prompt)
-        console.log(prompt_blocks[selected_prompt])
-    }, [selected_prompt])
 
     const handleSubmit = async () => {
 
@@ -335,30 +366,32 @@ export default function PromptBuilder({ }) {
                 <Contest_h2 grid_area={"prompt_builder"}>Prompt Builder</Contest_h2>
                 <NewPromptButton onClick={handleNewPrompt}>new prompt</NewPromptButton>
             </PromptBuilderMainHeading>
-            <TopLevelContainer>
-                <ExistingPromptContainer>
-                    {prompt_blocks.map((el, index) => { return <Prompt el={el} index={index} handleSwitchPrompts={handleSwitchPrompts} /> })}
-                </ExistingPromptContainer>
-            </TopLevelContainer>
+            <ExistingPromptContainer>
+                {prompt_blocks.map((el, index) => { return <Prompt el={el} index={index} handleSwitchPrompts={handleSwitchPrompts} /> })}
+            </ExistingPromptContainer>
             <PromptBuilderWrap visibile={selected_prompt > -2}>
-                <PromptButtons>
-                    <SaveButton onClick={handleSubmit}><FontAwesomeIcon icon={faCheck} /></SaveButton>
-                    <CancelButton onClick={handleCancel}><FontAwesomeIcon icon={faTimes} /></CancelButton>
-                    <DeleteButton disabled onClick={handleDelete}><FontAwesomeIcon icon={faTrash} /></DeleteButton>
-                </PromptButtons>
-                <PromptHeadingInput>
-                    <PromptInput error={prompt_heading_error} value={prompt_heading} onChange={handleHeadingChange} placeholder='Prompt Heading'></PromptInput>
-                    {prompt_heading_error && <PromptHeadingInputError>Please provide a prompt heading</PromptHeadingInputError>}
-                </PromptHeadingInput>
+                <PromptTop>
+                    <PromptHeadingInput>
+                        <PromptInput error={prompt_heading_error} value={prompt_heading} onChange={handleHeadingChange} placeholder='Prompt Heading'></PromptInput>
+                        {prompt_heading_error && <PromptHeadingInputError>Please provide a prompt heading</PromptHeadingInputError>}
+                    </PromptHeadingInput>
+                    <PromptButtons>
+                        <SaveButton onClick={handleSubmit}><FontAwesomeIcon icon={faCheck} /></SaveButton>
+                        <CancelButton onClick={handleCancel}><FontAwesomeIcon icon={faTimes} /></CancelButton>
+                        <DeleteButton disabled onClick={handleDelete}><FontAwesomeIcon icon={faTrash} /></DeleteButton>
+                    </PromptButtons>
+                </PromptTop>
                 <PromptDataWrap>
                     <EditorWrap>
                         <ReactEditorJS value={prompt_blocks[selected_prompt] || null} ref={editorCore} onInitialize={handleInitialize} tools={EDITOR_JS_TOOLS} />
                     </EditorWrap>
-                    <PromptSidebarWrap>
+                    <PromptSidebarWrap >
                         <PromptSidebar promptLabel={prompt_label} handleLabelChange={handleLabelChange} promptLabelColor={prompt_label_color} handleLabelColorChange={handleLabelColorChange} />
                     </PromptSidebarWrap>
                 </PromptDataWrap>
             </PromptBuilderWrap>
+
+
         </PromptsWrap>
     )
 
@@ -390,7 +423,7 @@ function PromptSidebar({ promptLabel, handleLabelChange, promptLabelColor, handl
             </ListRow>
 
             <LabelConfig>
-                <PromptInput placeholder="label name e.g. 'art'" value={promptLabel} onChange={handleLabelChange} />
+                <PromptInput style={{ width: '95%' }} placeholder="label name e.g. 'art'" value={promptLabel} onChange={handleLabelChange} />
                 <ColorSelector promptLabelColor={promptLabelColor} handleLabelColorChange={handleLabelColorChange} />
             </LabelConfig>
 

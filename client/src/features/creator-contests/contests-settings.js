@@ -194,9 +194,9 @@ export default function ContestSettings() {
                     setVoterRuleError={setVoterRuleError}
                 />
 
-                <SimpleInputs />
                 <PromptBuilder />
-                <button onClick={printContestData}> print contest data</button>
+                <SimpleInputs />
+                {/*<button onClick={printContestData}> print contest data</button>*/}
             </ContestSettingsWrap >
         </RainbowThemeContainer>
     )
