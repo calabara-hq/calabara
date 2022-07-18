@@ -65,4 +65,11 @@ const SettingsSectionSubHeading = styled.div`
     animation: ${fade_in} 0.6s ease-in-out;
 `
 
-export {fade_in, Contest_h2, Contest_h3, Contest_h4, Label, submission_fade, TagType, SettingsSectionSubHeading}
+const labelColorOptions = [
+    { text: 'rgb(234, 203, 195)', background: 'rgba(234, 203, 195,0.3)' },
+    { text: 'rgb(162, 114, 141)', background: 'rgba(162, 114, 141, 0.3)' },
+    { text: 'rgb(104, 160, 170)', background: 'rgba(104, 160, 170, 0.3)' },
+    { text: 'rgb(111, 208, 140)', background: 'rgba(111, 208, 140, 0.3)' },
+]
+
+export {fade_in, Contest_h2, Contest_h3, Contest_h4, Label, submission_fade, TagType, SettingsSectionSubHeading, labelColorOptions}

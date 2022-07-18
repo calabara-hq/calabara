@@ -6,9 +6,8 @@ import styled from 'styled-components'
 import { Contest_h2, Contest_h3 } from '../common/common_styles'
 import usePromptBuilder from '../../../hooks/usePromptBuilder';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAngleDown, faAngleUp, faCheck, faCog, faPalette, faQuestion, faQuestionCircle, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { fade_in, Label } from '../common/common_styles';
-import { withTheme } from '@emotion/react';
+import { faCheck, faPalette, faQuestionCircle, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { fade_in, Label, labelColorOptions } from '../common/common_styles';
 
 
 
@@ -32,7 +31,6 @@ const PromptsWrap = styled.div`
     border-radius: 4px;
     padding: 10px;
     width: 70%;
-    margin: 0 auto;
 
     > * {
         margin-bottom: 30px;
@@ -41,7 +39,6 @@ const PromptsWrap = styled.div`
 
 const PromptBuilderMainHeading = styled.div`
     display: flex;
-    gap: 50px;
 `
 
 const ExistingPromptContainer = styled.div`
@@ -58,9 +55,8 @@ const NewPromptButton = styled.button`
     padding: 5px 10px;
     font-size: 16px;
     margin-left: auto;
-
+    color: black;
     &:hover{
-        color: black;
         background-color: rgba(144, 238, 144, 0.8);
     }
 `
@@ -75,12 +71,11 @@ const PromptStyle = styled.div`
     grid-gap: 20px;
     justify-content: flex-start;
     align-items: flex-start;
-    border: 2px solid rgba(0,0,0,0.22);
+    border: 2px solid black;
     border-radius: 4px;
     background-color: #1c2128;
     color: #d3d3d3;
     padding: 5px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
     cursor: pointer;
 `
 const PromptBuilderWrap = styled.div`
@@ -159,10 +154,11 @@ const PromptInput = styled.input`
     padding: 5px 10px;
     color: #d3d3d3;
 `
-const PromptHeadingInputError = styled.div`
+const PromptInputError = styled.div`
     margin-top: 5px;
     color: red;
 `
+
 
 const PromptButtons = styled.div`
     width: fit-content;
@@ -172,6 +168,7 @@ const PromptButtons = styled.div`
     align-items: center;
     justify-content: center;
     width: 100%;
+    position: relative;
 `
 
 const SaveButton = styled.button`
@@ -182,11 +179,27 @@ const SaveButton = styled.button`
     border-radius: 100px;
     padding: 10px 15px 10px 15px;
     background-color: lightgreen;
+    color: black;
 
     &:hover{
         color: black;
         background-color: rgba(144, 238, 144, 0.8);
+        &::before{
+            content: "save";
+            position: absolute;
+            border: none;
+            background-color: #444c56;
+            padding: 3px;
+            border-radius: 4px;
+            top: 0;
+            color: lightgrey;
+            transform: translate(-50%, -150%);
+            animation: ${fade_in} 0.5s ease-in-out;
+
+        }
     }
+
+
 `
 const CancelButton = styled.button`
     border: 2px solid #444c56;
@@ -200,6 +213,19 @@ const CancelButton = styled.button`
         color: #d3d3d3;
         background-color: rgba(34, 34, 46, 0.8);
         border: 2px solid #d3d3d3;
+        &::before{
+            content: "cancel";
+            position: absolute;
+            border: none;
+            background-color: #444c56;
+            padding: 3px;
+            border-radius: 4px;
+            top: 0;
+            color: lightgrey;
+            transform: translate(-50%, -150%);
+            animation: ${fade_in} 0.5s ease-in-out;
+
+        }
     }
 `
 
@@ -212,6 +238,19 @@ const DeleteButton = styled.button`
     &:hover{
         color: black;
         background-color: rgba(255, 127, 80, 0.8);
+        &::before{
+            content: "delete";
+            position: absolute;
+            border: none;
+            background-color: #444c56;
+            padding: 3px;
+            border-radius: 4px;
+            top: 0;
+            color: lightgrey;
+            transform: translate(-50%, -150%);
+            animation: ${fade_in} 0.5s ease-in-out;
+
+        }
     }
 
     &:disabled{
@@ -224,12 +263,14 @@ const SidebarList = styled.div`
     display: flex;
     flex-direction: column;
     width: 100%;
+    position: relative;
     `
 
 const ListRowTitle = styled.p`
     font-size: 18px;
     color: #d3d3d3;
     margin: 0;
+
     `
 const ListRowButton = styled.button`
     border: none;
@@ -253,6 +294,21 @@ const ListRow = styled.div`
     }
     &:hover ${ListRowButton}{
         color: #539bf5;
+    }
+    &:hover{
+        &::after{
+                content: "Labels help users identify and filter submission types";
+                position: absolute;
+                border: none;
+                background-color: #444c56;
+                padding: 3px;
+                border-radius: 4px;
+                top: 0;
+                color: lightgrey;
+                transform: translate(0%, -120%);
+                animation: ${fade_in} 0.5s ease-in-out;
+
+            }
     }
     `
 
@@ -284,13 +340,7 @@ const Color = styled.button`
     `
 
 
-const labelColorOptions = [
-    { text: 'transparent', background: 'transparent' },
-    { text: 'rgb(234, 203, 195)', background: 'rgba(234, 203, 195,0.3)' },
-    { text: 'rgb(162, 114, 141)', background: 'rgba(162, 114, 141, 0.3)' },
-    { text: 'rgb(104, 160, 170)', background: 'rgba(104, 160, 170, 0.3)' },
-    { text: 'rgb(111, 208, 140)', background: 'rgba(111, 208, 140, 0.3)' },
-]
+
 
 
 
@@ -304,13 +354,17 @@ export default function PromptBuilder({ }) {
         handleLabelChange,
         handleLabelColorChange,
         handleHeadingError,
+        handleLabelError,
         handleDeletePrompt,
     } = usePromptBuilder();
 
-    let { selected_prompt, prompt_heading, prompt_heading_error, prompt_label, prompt_label_color, prompt_blocks } = promptData
+    let { selected_prompt, prompt_heading, prompt_heading_error, prompt_label, prompt_label_error, prompt_label_color, prompt_blocks } = promptData
 
     const ReactEditorJS = createReactEditorJS()
     const editorCore = useRef(null);
+
+    const labelInputRef = useRef(null);
+
 
     const handleInitialize = useCallback(async (instance) => {
         editorCore.current = instance;
@@ -324,6 +378,13 @@ export default function PromptBuilder({ }) {
         // empty prompt heading
         if (!prompt_heading) return handleHeadingError();
 
+        // empty prompt label
+        if (!prompt_label) {
+            
+            handleLabelError();
+            labelInputRef.current.scrollIntoView({behavior: 'smooth'});
+            return;
+        }
 
         let editorData = await editorCore.current.save();
 
@@ -373,7 +434,7 @@ export default function PromptBuilder({ }) {
                 <PromptTop>
                     <PromptHeadingInput>
                         <PromptInput error={prompt_heading_error} value={prompt_heading} onChange={handleHeadingChange} placeholder='Prompt Heading'></PromptInput>
-                        {prompt_heading_error && <PromptHeadingInputError>Please provide a prompt heading</PromptHeadingInputError>}
+                        {prompt_heading_error && <PromptInputError>Please provide a prompt heading</PromptInputError>}
                     </PromptHeadingInput>
                     <PromptButtons>
                         <SaveButton onClick={handleSubmit}><FontAwesomeIcon icon={faCheck} /></SaveButton>
@@ -386,7 +447,7 @@ export default function PromptBuilder({ }) {
                         <ReactEditorJS value={prompt_blocks[selected_prompt] || null} ref={editorCore} onInitialize={handleInitialize} tools={EDITOR_JS_TOOLS} />
                     </EditorWrap>
                     <PromptSidebarWrap >
-                        <PromptSidebar promptLabel={prompt_label} handleLabelChange={handleLabelChange} promptLabelColor={prompt_label_color} handleLabelColorChange={handleLabelColorChange} />
+                        <PromptSidebar labelInputRef={labelInputRef} error={prompt_label_error} promptLabel={prompt_label} handleLabelChange={handleLabelChange} promptLabelColor={prompt_label_color} handleLabelColorChange={handleLabelColorChange} />
                     </PromptSidebarWrap>
                 </PromptDataWrap>
             </PromptBuilderWrap>
@@ -412,7 +473,7 @@ function Prompt({ el, index, handleSwitchPrompts }) {
 }
 
 
-function PromptSidebar({ promptLabel, handleLabelChange, promptLabelColor, handleLabelColorChange }) {
+function PromptSidebar({ labelInputRef, error, promptLabel, handleLabelChange, promptLabelColor, handleLabelColorChange }) {
 
 
     return (
@@ -422,8 +483,9 @@ function PromptSidebar({ promptLabel, handleLabelChange, promptLabelColor, handl
                 <ListRowButton><FontAwesomeIcon style={{ fontSize: '20px' }} icon={faQuestionCircle} /></ListRowButton>
             </ListRow>
 
-            <LabelConfig>
-                <PromptInput style={{ width: '95%' }} placeholder="label name e.g. 'art'" value={promptLabel} onChange={handleLabelChange} />
+            <LabelConfig ref={labelInputRef} error={error}>
+                <PromptInput error = {error} style={{ width: '95%' }} placeholder="e.g. art" value={promptLabel} onChange={handleLabelChange} />
+                {error && <PromptInputError>Please provide a prompt label</PromptInputError>}
                 <ColorSelector promptLabelColor={promptLabelColor} handleLabelColorChange={handleLabelColorChange} />
             </LabelConfig>
 

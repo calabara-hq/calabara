@@ -11,7 +11,7 @@ import TLDR from './TLDR-editor';
 import { createReactEditorJS } from 'react-editor-js'
 import PreviewSubmission from './preview-submission';
 import { ParseBlocks } from './block-parser';
-import { Label } from '../common/common_styles';
+import { Label, labelColorOptions } from '../common/common_styles';
 import { ContestSubmissionCheckpointBar } from '../../../checkpoint-bar/checkpoint-bar';
 
 
@@ -62,13 +62,6 @@ const PreviousButton = styled.button`
     font-size: 16px;
 `
 
-const labelColorOptions = [
-    { text: 'transparent', background: 'transparent' },
-    { text: 'rgb(234, 203, 195)', background: 'rgba(234, 203, 195,0.3)' },
-    { text: 'rgb(162, 114, 141)', background: 'rgba(162, 114, 141, 0.3)' },
-    { text: 'rgb(104, 160, 170)', background: 'rgba(104, 160, 170, 0.3)' },
-    { text: 'rgb(111, 208, 140)', background: 'rgba(111, 208, 140, 0.3)' },
-]
 
 const ExitButton = styled.button`
     position: absolute;

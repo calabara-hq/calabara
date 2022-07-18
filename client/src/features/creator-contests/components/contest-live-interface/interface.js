@@ -18,6 +18,7 @@ import SubmissionBuilder from "./submission-builder";
 import SubmissionDisplay from "./test-submission-display";
 import { ParseBlocks } from "./block-parser";
 import SubmissionModal from "./edit-submission-modal";
+import { labelColorOptions } from "../common/common_styles";
 
 const ContestInterfaceWrap = styled.div`
     width: 70vw;
@@ -303,13 +304,6 @@ const PromptContent = styled.div`
 `
 
 
-const labelColorOptions = [
-    { text: 'transparent', background: 'transparent' },
-    { text: 'rgb(234, 203, 195)', background: 'rgba(234, 203, 195,0.3)' },
-    { text: 'rgb(162, 114, 141)', background: 'rgba(162, 114, 141, 0.3)' },
-    { text: 'rgb(104, 160, 170)', background: 'rgba(104, 160, 170, 0.3)' },
-    { text: 'rgb(111, 208, 140)', background: 'rgba(111, 208, 140, 0.3)' },
-]
 
 const NewSubmissionButton = styled.button`
     width: 10em;

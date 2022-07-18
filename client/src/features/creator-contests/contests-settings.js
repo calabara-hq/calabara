@@ -6,6 +6,7 @@ import PromptBuilder from "./components/prompt_builder/prompt_builder";
 import { RainbowThemeContainer } from 'react-rainbow-components';
 import SimpleInputs from "./components/contest_simple_inputs/contest_simple_inputs";
 import styled from 'styled-components'
+import VotingPolicy from "./components/voting_policy/voting-policy";
 
 const theme = {
     rainbow: {
@@ -39,8 +40,13 @@ const ContestSettingsWrap = styled.div`
     flex-direction: column;
     
     > *  {
-        margin-bottom: 100px;
+        margin: 50px auto;
         border-radius: 20px;
+        width: 70%;
+        padding: 10px;
+        background-color: #22272e;
+        border: 2px solid #444c56;
+        color: #d3d3d3;
     }
 `
 
@@ -194,6 +200,7 @@ export default function ContestSettings() {
                     setVoterRuleError={setVoterRuleError}
                 />
 
+                <VotingPolicy/>
                 <PromptBuilder />
                 <SimpleInputs />
                 {/*<button onClick={printContestData}> print contest data</button>*/}

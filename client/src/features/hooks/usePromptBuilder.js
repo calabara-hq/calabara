@@ -10,6 +10,7 @@ export default function usePromptBuilder() {
         prompt_heading: null,
         prompt_heading_error: false,
         prompt_label: null,
+        prompt_label_error: false,
         prompt_label_color: 0,
         prompt_blocks: []
     }
@@ -60,7 +61,13 @@ export default function usePromptBuilder() {
             case "SET_PROMPT_LABEL":
                 return {
                     ...state,
-                    prompt_label: action.payload
+                    prompt_label: action.payload,
+                    prompt_label_error: false,
+                }
+            case "SET_PROMPT_LABEL_ERROR":
+                return {
+                    ...state,
+                    prompt_label_error: true,
                 }
             case "SET_PROMPT_LABEL_COLOR":
                 return {
@@ -112,13 +119,17 @@ export default function usePromptBuilder() {
     }
 
     const handleDeletePrompt = () => {
-        setPromptData({type: "DELETE_BLOCK"})
+        setPromptData({ type: "DELETE_BLOCK" })
     }
 
     // error handling
 
     const handleHeadingError = () => {
         setPromptData({ type: "SET_PROMPT_HEADING_ERROR" })
+    }
+
+    const handleLabelError = () => {
+        setPromptData({ type: "SET_PROMPT_LABEL_ERROR" })
     }
 
 
@@ -130,6 +141,7 @@ export default function usePromptBuilder() {
         handleLabelChange: (e) => handleLabelChange(e),
         handleLabelColorChange: (color) => handleLabelColorChange(color),
         handleHeadingError: () => handleHeadingError(),
+        handleLabelError: () => handleLabelError(),
         handleDeletePrompt: () => handleDeletePrompt(),
     }
 
