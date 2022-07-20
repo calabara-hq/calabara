@@ -6,9 +6,11 @@ import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import useContract from '../../../hooks/useContract';
-import { TagType, fade_in } from '../common/common_styles';
+import { TagType, fade_in, Contest_h3 } from '../common/common_styles';
 import { textAlign } from '@mui/system';
-
+import AddNewToken from '../common/add_token';
+import ToggleOption from '../toggle_option/toggle-option';
+import { ToggleButton } from '../common/common_components';
 
 
 const style = {
@@ -35,14 +37,7 @@ const ModalWrapper = styled.div`
     flex-direction: column;
     gap: 60px;
 `
-const CreateRewardWrap = styled.div`
-    display: flex;
-    flex-direction: column;
 
-    > * {
-        margin-bottom: 20px;
-    }
-`
 
 
 const ExitButton = styled.button`
@@ -153,8 +148,10 @@ const AddTokenButton = styled.button`
 
 function TokenStrategy({ rewardOptions, availableRules }) {
     const [quickAddOptions, setQuickAddOptions] = useState(null);
-    const [isAddNewTokenSelected, setIsAddNewTokenSelected] = useState(false);
     const [quickAddSelection, setQuickAddSelection] = useState(-1);
+    const [triggerNewTokenInput, setTriggerNewTokenInput] = useState(null);
+    const [newTokenData, setNewTokenData] = useState(null);
+    const [progress, setProgress] = useState(0);
 
     let options = {};
     // squirrel; add reward options to the mix & remove duplicates
@@ -166,26 +163,112 @@ function TokenStrategy({ rewardOptions, availableRules }) {
         }
     })
 
-    const handleNewTokenSelect = () => {
-        setQuickAddSelection(-1);
-        setIsAddNewTokenSelected(true);
+    const handleSaveNewToken = (data) => {
+        setNewTokenData(data);
+        setProgress(1);
     }
 
 
     return (
         <StrategyContainer>
-            {!isAddNewTokenSelected && <TokenVotingChoice options={options} handleNewTokenSelect={handleNewTokenSelect} quickAddSelection={quickAddSelection} setQuickAddSelection={setQuickAddSelection}/>}
-            {isAddNewTokenSelected && <AddNewToken/>}
+            {(progress === 0 && !triggerNewTokenInput) && <TokenVotingChoice options={options} quickAddSelection={quickAddSelection} setQuickAddSelection={setQuickAddSelection} setTriggerNewTokenInput={setTriggerNewTokenInput} />}
+            {(progress === 0 && triggerNewTokenInput) && <AddNewToken existingRewardData={null} type={triggerNewTokenInput} showBackButton={true} handleBackButton={() => setTriggerNewTokenInput(null)} handleNextButton={handleSaveNewToken} />}
+            {progress === 1 && <AdditionalConfig tokenData={newTokenData} />}
         </StrategyContainer>
     )
 }
 
+///////////////////////////////////////////////////////////
 
-function AddNewToken({}){
-    return(
-        <p>hehehe</p>
+const AdditionalConfigWrap = styled.div`
+    display: flex;
+    flex-direction: column;
+
+    > * {
+        margin-bottom: 20px;
+    }
+`
+const BackButton = styled.button`
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    color: black;
+`
+const NextButton = styled.button`
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    color: black;
+`
+
+const TokenCreditMap = styled.div`
+    
+`
+
+const ArcadeCreditAllowance = styled.div`
+
+`
+const MaxPerSub = styled.div`
+    display: flex;
+    gap: 50px;
+`
+const Hardcap = styled.div`
+    display: flex;
+    gap: 50px;
+`
+
+const SettingDescription = styled.div`
+    display: flex;
+    flex-direction: column;
+`
+
+function AdditionalConfig({ tokenData }) {
+    const [isMaxPerSubOn, setIsMaxPerSubOn] = useState(false);
+    const [isHardcapOn, setIsHardcapOn] = useState(false);
+
+    const tokenDisplay = () => {
+        return (
+            <TokenCreditMap>
+                <h4><b>1</b> {tokenData.symbol} equals <b>1</b> voting credit</h4>
+            </TokenCreditMap>
+        )
+    }
+
+    const arcadeDisplay = () => {
+        return (
+            <div>arcade</div>
+        )
+    }
+
+
+
+    return (
+        <AdditionalConfigWrap>
+            {tokenData && tokenDisplay()}
+            {!tokenData && arcadeDisplay()}
+            <BackButton>back</BackButton>
+            <NextButton>confirm</NextButton>
+            <MaxPerSub>
+                <SettingDescription>
+                    <Contest_h3 >Max per Sub</Contest_h3>
+                    <p style={{ color: '#a3a3a3' }}>Should contest results be visible during voting?</p>
+                </SettingDescription>
+                <ToggleButton identifier={'max-per-sub-toggle'} isToggleOn={isMaxPerSubOn} setIsToggleOn={setIsMaxPerSubOn} handleToggle={() => { setIsMaxPerSubOn(!isMaxPerSubOn) }} />
+            </MaxPerSub>
+            <Hardcap>
+                <SettingDescription>
+                    <Contest_h3 >Hard cap</Contest_h3>
+                    <p style={{ color: '#a3a3a3' }}>Should contest results be visible during voting?</p>
+                </SettingDescription>
+                <ToggleButton identifier={'hardcap-toggle'} isToggleOn={isHardcapOn} setIsToggleOn={setIsHardcapOn} handleToggle={() => { setIsHardcapOn(!isHardcapOn) }} />
+            </Hardcap>
+        </AdditionalConfigWrap>
     )
+
 }
+
+///////////////////////////////////////////////////////////
+
 
 
 const QuickAddContainerStyle = styled.div`
@@ -222,7 +305,16 @@ const OptionType = styled.p`
     }
 `
 
-function TokenVotingChoice({options, handleNewTokenSelect, quickAddSelection, setQuickAddSelection}) {
+
+
+
+function TokenVotingChoice({ options, quickAddSelection, setQuickAddSelection, setTriggerNewTokenInput }) {
+    const [isAddNewTokenSelected, setIsAddNewTokenSelected] = useState(false);
+
+    const handleNewTokenSelect = () => {
+        setIsAddNewTokenSelected(true);
+        setQuickAddSelection(-1);
+    }
     return (
         <>
             <div style={{ width: '100%', marginTop: '20px' }} className='tab-message neutral'>
@@ -238,13 +330,36 @@ function TokenVotingChoice({options, handleNewTokenSelect, quickAddSelection, se
                     <h3>OR</h3>
                 </SplitDecision>
                 <div>
-                    <AddTokenButton onClick={handleNewTokenSelect}>Add New Token</AddTokenButton>
+                    {!isAddNewTokenSelected && <AddTokenButton onClick={handleNewTokenSelect}>Add New Token</AddTokenButton>}
+                    {isAddNewTokenSelected && <NewTokenSelectType setTriggerNewTokenInput={setTriggerNewTokenInput} />}
                 </div>
 
             </TokenDecisionWrap>
         </>
     )
 }
+
+const NewTokenChoice = styled.div`
+    display: flex;
+    background-color: orange;
+    align-items: center;
+    justify-content: center;
+    > * {
+        margin: 10px;
+        padding: 5px 10px;
+        color: black;
+    }
+    
+`
+function NewTokenSelectType({ setTriggerNewTokenInput }) {
+    return (
+        <NewTokenChoice>
+            <button onClick={() => setTriggerNewTokenInput('erc20')}>erc-20</button>
+            <button onClick={() => setTriggerNewTokenInput('erc721')}>erc-721</button>
+        </NewTokenChoice>
+    )
+}
+
 
 function QuickAddElements({ elements, quickAddSelection, setQuickAddSelection }) {
     return (
