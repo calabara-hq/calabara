@@ -1,8 +1,7 @@
 import React, { useState, useReducer } from 'react'
 import styled from 'styled-components'
 import { Contest_h2, Contest_h3 } from '../common/common_styles'
-import { RuleSelect } from '../../../manage-widgets/gatekeeper-toggle';
-
+import ToggleOption from '../toggle_option/toggle-option'
 const RestrictionsWrap = styled.div`
     display: flex;
     flex-direction: column;
@@ -52,7 +51,7 @@ export default function ContestParticipantRestrictions(props) {
 
 function Restriction({ ruleError, setRuleError, appliedRules, setAppliedRules, toggle_identifier }) {
     return (
-        <RuleSelect ruleError={ruleError} setRuleError={setRuleError} appliedRules={appliedRules} setAppliedRules={setAppliedRules} toggle_identifier={toggle_identifier} />
+        <ToggleOption ruleError={ruleError} setRuleError={setRuleError} appliedRules={appliedRules} setAppliedRules={setAppliedRules} toggle_identifier={toggle_identifier} />
     )
 }
 

@@ -102,6 +102,10 @@ export default function ContestSettings() {
     const [errorMatrix, setErrorMatrix] = useState([[null, null, null, null]]);
     const [voterRewards, setVoterRewards] = useReducer(reducer, [])
 
+    const [submitterRuleOptions, setSubmitterRuleOptions] = useReducer(reducer, {});
+    const [voterRuleOptions, setVoterRuleOptions] = useReducer(reducer, {});
+
+    
     const [submitterAppliedRules, setSubmitterAppliedRules] = useReducer(reducer, {});
     const [voterAppliedRules, setVoterAppliedRules] = useReducer(reducer, {});
     const [submitterRuleError, setSubmitterRuleError] = useState(false);
@@ -200,10 +204,10 @@ export default function ContestSettings() {
                     setVoterRuleError={setVoterRuleError}
                 />
 
-                <VotingPolicy/>
+                <VotingPolicy rewardOptions={rewardOptions}/>
                 <PromptBuilder />
                 <SimpleInputs />
-                {/*<button onClick={printContestData}> print contest data</button>*/}
+                <button onClick={printContestData}> print contest data</button>
             </ContestSettingsWrap >
         </RainbowThemeContainer>
     )
