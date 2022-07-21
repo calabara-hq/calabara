@@ -100,11 +100,12 @@ export default function ContestSettings() {
     const [selectedRewards, setSelectedRewards] = useReducer(reducer, {});
     const [submitterRewards, setSubmitterRewards] = useReducer(reducer, {});
     const [errorMatrix, setErrorMatrix] = useState([[null, null, null, null]]);
-    const [voterRewards, setVoterRewards] = useReducer(reducer, [])
+    const [voterRewards, setVoterRewards] = useReducer(reducer, []);
 
     const [submitterRuleOptions, setSubmitterRuleOptions] = useReducer(reducer, {});
     const [voterRuleOptions, setVoterRuleOptions] = useReducer(reducer, {});
 
+    const [votingStrategy, setVotingStrategy] = useReducer(reducer, {strategy_id: 0x0});
     
     const [submitterAppliedRules, setSubmitterAppliedRules] = useReducer(reducer, {});
     const [voterAppliedRules, setVoterAppliedRules] = useReducer(reducer, {});
@@ -204,7 +205,7 @@ export default function ContestSettings() {
                     setVoterRuleError={setVoterRuleError}
                 />
 
-                <VotingPolicy rewardOptions={rewardOptions}/>
+                <VotingPolicy rewardOptions={rewardOptions} votingStrategy={votingStrategy} setVotingStrategy={setVotingStrategy}/>
                 <PromptBuilder />
                 <SimpleInputs />
                 <button onClick={printContestData}> print contest data</button>

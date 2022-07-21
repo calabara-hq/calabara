@@ -24,7 +24,7 @@ const CreditStrategyWrap = styled.div`
     margin: 0 auto;
 `
 
-export default function VotingPolicy({rewardOptions}) {
+export default function VotingPolicy({ rewardOptions, votingStrategy, setVotingStrategy }) {
     const [addPolicyModalOpen, setAddPolicyModalOpen] = useState(false);
     const [selectedStrategy, setSelectedStratgey] = useState(null);
     const handlePolicyModalOpen = (strategy_name) => {
@@ -34,7 +34,7 @@ export default function VotingPolicy({rewardOptions}) {
 
     const handlePolicyModalClose = () => {
         setAddPolicyModalOpen(false);
-        
+
     }
 
     let availableRules = {
@@ -129,11 +129,13 @@ export default function VotingPolicy({rewardOptions}) {
     const creditStrategies = [
         {
             strategy_name: 'Token',
+            strategy_id: 0x1,
             strategy_description: 'Voting credits are based on erc-20 or erc-721 holdings. ',
             icon: faWallet
         },
         {
             strategy_name: 'Arcade',
+            strategy_id: 0x2,
             strategy_description: 'Define a uniform number of credits alloted to each participant. ',
             icon: faTicket
         }
@@ -148,10 +150,19 @@ export default function VotingPolicy({rewardOptions}) {
             <Contest_h3 style={{ textAlign: 'center' }}>Credit Strategy</Contest_h3>
             <CreditStrategyWrap>
                 {creditStrategies.map(el => {
-                    return <CreditStrategy strategy={el} handlePolicyModalOpen={handlePolicyModalOpen} handlePolicyModalClose={handlePolicyModalClose} />
+                    return <CreditStrategy strategy={el} handlePolicyModalOpen={handlePolicyModalOpen} handlePolicyModalClose={handlePolicyModalClose} votingStrategy={votingStrategy}/>
                 })}
             </CreditStrategyWrap>
-            {addPolicyModalOpen && <AddPolicyModal modalOpen={addPolicyModalOpen} handleClose={handlePolicyModalClose} selectedStrategy={selectedStrategy} rewardOptions={rewardOptions} availableRules={availableRules}/>}
+            {addPolicyModalOpen &&
+                <AddPolicyModal
+                    modalOpen={addPolicyModalOpen}
+                    handleClose={handlePolicyModalClose}
+                    selectedStrategy={selectedStrategy}
+                    rewardOptions={rewardOptions}
+                    availableRules={availableRules}
+                    votingStrategy={votingStrategy}
+                    setVotingStrategy={setVotingStrategy}
+                />}
         </VotingPolicyWrap>
     )
 }
@@ -162,16 +173,28 @@ const StrategyStyle = styled.div`
     margin: 10px;
     padding: 5px 30px;
     background-color: #15191e;
-    border: 2px solid black;
+    border: 2px solid ${props => props.selected ? 'rgb(26, 188, 156)' : 'black'};
     border-radius: 10px;
     flex: 1;
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    position: relative;
 
     &:hover{
         background-color: #0a0c0f;
         
+    }
+    &::after{
+        font-family: 'Font Awesome 5 Free';
+        margin-right: 10px;
+        content: "\f00c";
+        font-weight: 900;
+        position: absolute;
+        right: 0;
+        top: 10px;
+        color: rgb(26, 188, 156);
+        display: ${props => props.selected ? 'null' : 'none'}
     }
 `
 
@@ -188,7 +211,7 @@ const StrategyIcon = styled.span`
     color: ${props => props.name === 'Arcade' ? 'crimson' : '#fffdd0'};
 `
 
-function CreditStrategy({ strategy, handlePolicyModalOpen, handlePolicyModalClose }) {
+function CreditStrategy({ strategy, handlePolicyModalOpen, votingStrategy }) {
     const handleLinkClick = (event, strategy_name) => {
         let link;
         if (strategy_name === 'Arcade') {
@@ -199,8 +222,9 @@ function CreditStrategy({ strategy, handlePolicyModalOpen, handlePolicyModalClos
         event.stopPropagation();
 
     }
+    console.log(votingStrategy)
     return (
-        <StrategyStyle onClick={() => handlePolicyModalOpen(strategy.strategy_name)}>
+        <StrategyStyle onClick={() => handlePolicyModalOpen(strategy.strategy_id)} selected={votingStrategy.strategy_id === strategy.strategy_id}>
             <StrategyName>{strategy.strategy_name}</StrategyName>
             <StrategyDescription>{strategy.strategy_description}<u onClick={(event) => handleLinkClick(event, strategy.strategy_name)}> Learn More</u></StrategyDescription>
             <StrategyIcon name={strategy.strategy_name}><FontAwesomeIcon icon={strategy.icon} /></StrategyIcon>
