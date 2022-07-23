@@ -104,6 +104,7 @@ export default function RewardSelector({ rewardOptions, setRewardOptions, select
 
         }
         else if (mode === 'save') {
+            console.log(payload)
             setRewardOptions({ type: 'update_single', payload: { [payload.type]: { type: payload.type, symbol: payload.symbol, address: payload.address } } })
             if(selectedRewards[payload.type]) setSelectedRewards({ type: 'update_single', payload: { [payload.type]: payload.symbol } })
         }

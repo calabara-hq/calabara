@@ -8,6 +8,7 @@ import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { ContestSubmissionCheckpointBar } from '../../../checkpoint-bar/checkpoint-bar';
 import useContract from '../../../hooks/useContract';
 import { TagType } from '../common/common_styles';
+import AddNewToken from '../common/add_token';
 
 
 
@@ -134,9 +135,10 @@ const RewardType = styled.p`
 
 export default function EditRewardsModal({ modalOpen, handleClose, existingRewardData, type }) {
 
-    const handleSave = async () => {
+    const handleSave = (data) => {
+        console.log(data)
+        handleClose('save', data)
     }
-
     return (
         <div>
             <Modal
@@ -149,7 +151,7 @@ export default function EditRewardsModal({ modalOpen, handleClose, existingRewar
                             <ModalHeading>Create Reward Option</ModalHeading>
                             <ExitButton onClick={() => { handleClose({ type: 'standard' }) }}>exit</ExitButton>
                         </div>
-                        <EditRewards existingRewardData={existingRewardData} handleClose={handleClose} type={type} />
+                        <AddNewToken existingRewardData={existingRewardData} type={type} showBackButton={false} handleNextButton={handleSave} />
                     </ModalWrapper>
 
                 </Box>
@@ -158,6 +160,7 @@ export default function EditRewardsModal({ modalOpen, handleClose, existingRewar
     );
 }
 
+/*
 function EditRewards({ existingRewardData, handleClose, type }) {
 
     const [newContractAddress, setNewContractAddress] = useState(existingRewardData ? existingRewardData.address : null);
@@ -201,9 +204,7 @@ function EditRewards({ existingRewardData, handleClose, type }) {
     }
 
 
-    const handleSave = () => {
-        handleClose(handleClose('save', { type: type, address: newContractAddress, symbol: newSymbol, decimal: newDecimal }))
-    }
+    
 
 
 
@@ -223,3 +224,4 @@ function EditRewards({ existingRewardData, handleClose, type }) {
         </CreateRewardWrap>
     )
 }
+*/
