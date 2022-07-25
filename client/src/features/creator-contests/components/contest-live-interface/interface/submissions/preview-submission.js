@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { ParseBlocks } from './block-parser';
+import { ParseBlocks } from '../../block-parser';
 import styled, { css } from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';

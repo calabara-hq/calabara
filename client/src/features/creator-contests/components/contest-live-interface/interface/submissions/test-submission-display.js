@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { contest_data } from './temp-data';
+import { contest_data } from '../../temp-data';
 import styled, { keyframes, css } from 'styled-components'
-import { ParseBlocks } from './block-parser';
+import { ParseBlocks } from '../../block-parser';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
-import { fade_in } from '../common/common_styles';
+import { fade_in } from '../../../common/common_styles';
 import ViewSubmissionModal from './expand-submission-modal';
 
 const SubmissionWrap = styled.div`

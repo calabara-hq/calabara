@@ -4,7 +4,7 @@ import Modal from '@mui/material/Modal';
 import styled from 'styled-components'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import { ParseBlocks } from "./block-parser";
+import { ParseBlocks } from "../../block-parser";
 
 
 
@@ -93,7 +93,6 @@ const SubmissionWrap = styled.div`
 
 
 function ViewSubmission({ TLDRImage, TLDRText, expandData }) {
-    console.log(TLDRText)
     return (
         <SubmissionWrap>
             <p>{TLDRText}</p>

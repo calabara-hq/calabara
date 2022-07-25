@@ -1,18 +1,18 @@
 import React, { useState, useEffect, useReducer, useRef } from 'react';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
-import '../../../../css/status-messages.css';
+import '../../../../../../css/status-messages.css';
 import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
-import { contest_data } from './temp-data';
+import { contest_data } from '../../temp-data';
 import SubmissionEdit from './submission-builder-2';
 import TLDR from './TLDR-editor';
 import { createReactEditorJS } from 'react-editor-js'
 import PreviewSubmission from './preview-submission';
-import { ParseBlocks } from './block-parser';
-import { Label, labelColorOptions } from '../common/common_styles';
-import { ContestSubmissionCheckpointBar } from '../../../checkpoint-bar/checkpoint-bar';
+import { ParseBlocks } from '../../block-parser';
+import { Label, labelColorOptions } from '../../../common/common_styles';
+import { ContestSubmissionCheckpointBar } from '../../../../../checkpoint-bar/checkpoint-bar';
 
 
 
