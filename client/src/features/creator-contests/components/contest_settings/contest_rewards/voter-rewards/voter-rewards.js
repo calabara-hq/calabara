@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import CounterButton from '../../common/CounterButton';
+import CounterButton from '../../../common/CounterButton';
 import Select from 'react-select'
-import { Contest_h2, Contest_h3, Contest_h4, SettingsSectionSubHeading } from '../../common/common_styles';
-import { ToggleButton } from '../../common/common_components';
+import { Contest_h2, Contest_h3, Contest_h4, SettingsSectionSubHeading } from '../../../common/common_styles';
+import { ToggleButton } from '../../../common/common_components';
 import {
     customSelectorStyles,
     VotingRewardSelectorWrap,

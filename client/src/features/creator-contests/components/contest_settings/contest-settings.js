@@ -1,12 +1,12 @@
 import React, { useEffect, useReducer, useRef, useState } from "react"
-import ContestDateTimeBlock from "./components/datepicker/start-end-date"
-import ContestRewardsBlock from "./components/contest-rewards/contest-rewards"
-import ContestParticipantRestrictions from "./components/contest_gatekeeper/particpant_restrictions";
-import PromptBuilder from "./components/prompt_builder/prompt_builder";
+import ContestDateTimeBlock from "./datepicker/start-end-date"
+import ContestRewardsBlock from "./contest_rewards/contest-rewards"
+import ContestParticipantRestrictions from "./contest_gatekeeper/particpant_restrictions";
+import PromptBuilder from "./prompt_builder/prompt_builder";
 import { RainbowThemeContainer } from 'react-rainbow-components';
-import SimpleInputs from "./components/contest_simple_inputs/contest_simple_inputs";
+import SimpleInputs from "./contest_simple_inputs/contest_simple_inputs";
 import styled from 'styled-components'
-import VotingPolicy from "./components/voting_policy/voting-policy";
+import VotingPolicy from "./voting_policy/voting-policy";
 
 const theme = {
     rainbow: {

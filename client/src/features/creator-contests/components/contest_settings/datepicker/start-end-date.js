@@ -1,8 +1,7 @@
-import React from 'react'
-import DateTimeSelector from "./datepicker"
-import '../../../../css/datepicker.css'
-import { Contest_h2 } from '../common/common_styles'
-import styled from 'styled-components'
+import DateTimeSelector from "./datepicker";
+import '../../../../../css/datepicker.css';
+import { Contest_h2 } from '../../common/common_styles';
+import styled from 'styled-components';
 
 const TimeBlockWrapper = styled.div`
     display: flex;

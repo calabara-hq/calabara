@@ -1,4 +1,4 @@
-import styled, {keyframes, css} from 'styled-components'
+import styled, { keyframes, css } from 'styled-components'
 
 const fade_in = keyframes`
     0% {opacity: 0}
@@ -54,8 +54,8 @@ const submission_fade = keyframes`
         }
 `
 const TagType = styled.span`
-    background-color: ${props => props.type === 'erc721' ? 'rgba(155, 89, 182, 0.3)' : props.type === 'erc20' ? 'rgba(26, 188, 156, 0.3)' : 'rgba(173, 156, 220, 0.3)' };
-    color: ${props => props.type === 'erc721' ? 'rgb(155, 89, 182)' : props.type === 'erc20' ? 'rgb(26, 188, 156)' : 'rgb(173, 156, 220)' };
+    background-color: ${props => props.type === 'erc721' ? 'rgba(155, 89, 182, 0.3)' : props.type === 'erc20' ? 'rgba(26, 188, 156, 0.3)' : 'rgba(173, 156, 220, 0.3)'};
+    color: ${props => props.type === 'erc721' ? 'rgb(155, 89, 182)' : props.type === 'erc20' ? 'rgb(26, 188, 156)' : 'rgb(173, 156, 220)'};
 
 `
 
@@ -72,4 +72,65 @@ const labelColorOptions = [
     { text: 'rgb(111, 208, 140)', background: 'rgba(111, 208, 140, 0.3)' },
 ]
 
-export {fade_in, Contest_h2, Contest_h3, Contest_h4, Label, submission_fade, TagType, SettingsSectionSubHeading, labelColorOptions}
+
+const ERC20Button = styled.button`
+    background-color: rgba(26,188,156,0.3);
+    color: rgb(26,188,156);
+    border: none;
+    border-radius: 4px;
+    font-weight: 550;
+    padding: 5px 10px;
+    box-shadow: 0 6px 20px rgb(0 0 0 / 30%), 0 15px 12px rgb(0 0 0 / 22%);
+    &:hover{
+        background-color: rgba(26,188,156,0.2);
+    }
+
+`
+
+const ERC721Button = styled.button`
+    background-color: rgba(155, 89, 182, 0.3);
+    color: rgb(155, 89, 182);
+    border: none;
+    border-radius: 4px;
+    font-weight: 550;
+    padding: 5px 10px;
+    box-shadow: 0 6px 20px rgb(0 0 0 / 30%), 0 15px 12px rgb(0 0 0 / 22%);
+    margin-left: 10px;
+    &:hover{
+        background-color: rgba(155, 89, 182, 0.2);
+    }
+`
+const ConfirmButton = styled.button`
+    cursor: pointer;
+    position: absolute;
+    bottom: 2em;
+    right: 2em;
+    color: black;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: rgb(6, 214, 160);
+    
+    &:disabled{
+        cursor: not-allowed;
+        color: darkgrey;
+        background-color: #efefef4d;
+    }
+`
+const ErrorMessage = styled.div`
+    background-color: rgba(235, 87, 87, 0.3);
+    color: rgb(235, 87, 87);
+    border-radius: 8px;
+    padding: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin-top: 10px;
+
+    & > p {
+        margin: 0;
+    }
+`
+
+export { fade_in, Contest_h2, Contest_h3, Contest_h4, Label, submission_fade, TagType, SettingsSectionSubHeading, labelColorOptions, ERC20Button, ERC721Button, ConfirmButton, ErrorMessage }

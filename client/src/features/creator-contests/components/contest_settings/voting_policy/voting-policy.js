@@ -1,8 +1,8 @@
 import styled from 'styled-components'
-import { Contest_h2, Contest_h3 } from '../common/common_styles'
+import { Contest_h2, Contest_h3 } from '../../common/common_styles'
 import { useState } from 'react';
 import AddPolicyModal from './add-policy-modal';
-import '../../../../css/status-messages.css';
+import '../../../../../css/status-messages.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTicket, faWallet } from '@fortawesome/free-solid-svg-icons';
 
@@ -20,7 +20,7 @@ const CreditStrategyWrap = styled.div`
     flex-direction: row;
     justify-content: center;
     align-items: center;
-    width: 60%;
+    max-width: 60%;
     margin: 0 auto;
 `
 
@@ -136,18 +136,17 @@ export default function VotingPolicy({ rewardOptions, votingStrategy, setVotingS
         {
             strategy_name: 'Arcade',
             strategy_id: 0x2,
-            strategy_description: 'Define a uniform number of credits alloted to each participant. ',
+            strategy_description: 'Define a uniform number of credits allotted to each participant. ',
             icon: faTicket
         }
     ]
 
     return (
         <VotingPolicyWrap>
-            <Contest_h2>Voting Credits</Contest_h2>
+            <Contest_h2>Voting Credit Strategy</Contest_h2>
             <div style={{ width: 'fit-content' }} className='tab-message neutral'>
                 <p>Voting credits determine how voting power is calculated, as well as any restrictions on voting power.</p>
             </div>
-            <Contest_h3 style={{ textAlign: 'center' }}>Credit Strategy</Contest_h3>
             <CreditStrategyWrap>
                 {creditStrategies.map(el => {
                     return <CreditStrategy strategy={el} handlePolicyModalOpen={handlePolicyModalOpen} handlePolicyModalClose={handlePolicyModalClose} votingStrategy={votingStrategy}/>
@@ -222,7 +221,6 @@ function CreditStrategy({ strategy, handlePolicyModalOpen, votingStrategy }) {
         event.stopPropagation();
 
     }
-    console.log(votingStrategy)
     return (
         <StrategyStyle onClick={() => handlePolicyModalOpen(strategy.strategy_id)} selected={votingStrategy.strategy_id === strategy.strategy_id}>
             <StrategyName>{strategy.strategy_name}</StrategyName>

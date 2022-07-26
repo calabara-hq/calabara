@@ -3,11 +3,11 @@ import Editor from 'react-medium-editor';
 import { EDITOR_JS_TOOLS } from './editor_tools';
 import { createReactEditorJS } from 'react-editor-js'
 import styled from 'styled-components'
-import { Contest_h2, Contest_h3 } from '../common/common_styles'
-import usePromptBuilder from '../../../hooks/usePromptBuilder';
+import { Contest_h2, Contest_h3 } from '../../common/common_styles'
+import usePromptBuilder from '../../../../hooks/usePromptBuilder';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faPalette, faQuestionCircle, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { fade_in, Label, labelColorOptions } from '../common/common_styles';
+import { fade_in, Label, labelColorOptions } from '../../common/common_styles';
 
 
 
@@ -31,9 +31,8 @@ const PromptsWrap = styled.div`
     border-radius: 4px;
     padding: 10px;
     width: 70%;
-
     > * {
-        margin-bottom: 30px;
+       // margin-bottom: 30px;
     }
 `
 
@@ -49,7 +48,7 @@ const ExistingPromptContainer = styled.div`
     margin: 20px auto;
 `
 const NewPromptButton = styled.button`
-    background-color: lightgreen;
+    background-color: rgb(6, 214, 160);
     border: none;
     border-radius: 4px;
     padding: 5px 10px;
@@ -57,7 +56,7 @@ const NewPromptButton = styled.button`
     margin-left: auto;
     color: black;
     &:hover{
-        background-color: rgba(144, 238, 144, 0.8);
+        background-color: rgba(6, 214, 160, 0.8);
     }
 `
 
@@ -125,6 +124,7 @@ const EditorWrap = styled.div`
     * > .ce-toolbar__settings-btn:hover, .ce-toolbar__plus:hover{
         background-color: white;
     }
+    
 `
 
 
@@ -178,12 +178,12 @@ const SaveButton = styled.button`
     border: 2px solid #22272e;
     border-radius: 100px;
     padding: 10px 15px 10px 15px;
-    background-color: lightgreen;
+    background-color: rgb(6, 214, 160);
     color: black;
 
     &:hover{
         color: black;
-        background-color: rgba(144, 238, 144, 0.8);
+        background-color: rgba(6, 214, 160, 0.8);
         &::before{
             content: "save";
             position: absolute;
@@ -356,9 +356,10 @@ export default function PromptBuilder({ }) {
         handleHeadingError,
         handleLabelError,
         handleDeletePrompt,
+        handleEmptyContentError,
     } = usePromptBuilder();
 
-    let { selected_prompt, prompt_heading, prompt_heading_error, prompt_label, prompt_label_error, prompt_label_color, prompt_blocks } = promptData
+    let { selected_prompt, prompt_heading, prompt_heading_error, prompt_label, prompt_label_error, prompt_label_color, prompt_blocks, prompt_content_error} = promptData
 
     const ReactEditorJS = createReactEditorJS()
     const editorCore = useRef(null);
@@ -370,6 +371,9 @@ export default function PromptBuilder({ }) {
         editorCore.current = instance;
     }, [])
 
+    useEffect(() => {
+        console.log(prompt_content_error)
+    },[prompt_content_error])
 
     const handleSubmit = async () => {
 
@@ -382,11 +386,11 @@ export default function PromptBuilder({ }) {
         if (!prompt_label) {
             
             handleLabelError();
-            labelInputRef.current.scrollIntoView({behavior: 'smooth'});
+            labelInputRef.current.scrollIntoView({behavior: 'smooth', scrollMode: 'if-needed', block: 'center'});
             return;
         }
-
         let editorData = await editorCore.current.save();
+        if(editorData.blocks.length === 0) return handleEmptyContentError();
 
 
         // stuff editorData with additional prompt config data
@@ -421,6 +425,11 @@ export default function PromptBuilder({ }) {
         await editorCore.current.clear();
     }
 
+    const clearEmptyContentError = () => {
+        console.log(prompt_content_error)
+        if(prompt_content_error) return setPromptData({type: "CLEAR_PROMPT_CONTENT_ERROR"})
+    }
+
     return (
         <PromptsWrap>
             <PromptBuilderMainHeading>
@@ -442,8 +451,9 @@ export default function PromptBuilder({ }) {
                         <DeleteButton disabled onClick={handleDelete}><FontAwesomeIcon icon={faTrash} /></DeleteButton>
                     </PromptButtons>
                 </PromptTop>
+                {prompt_content_error && <PromptInputError>Prompt body cannot be empty</PromptInputError>}
                 <PromptDataWrap>
-                    <EditorWrap>
+                    <EditorWrap onKeyDown={clearEmptyContentError}>
                         <ReactEditorJS value={prompt_blocks[selected_prompt] || null} ref={editorCore} onInitialize={handleInitialize} tools={EDITOR_JS_TOOLS} />
                     </EditorWrap>
                     <PromptSidebarWrap >

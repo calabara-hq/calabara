@@ -36,12 +36,14 @@ const ContestInterfaceWrap = styled.div`
 export default function ContestInterface({ }) {
     const [isSubmissionBuilder, setIsSubmissionBuilder] = useState(false);
     const [contest_settings, setContestSettings] = useState(null);
+    const { ens } = useParams();
 
 
     useEffect(() => {
         (async () => {
-            let res = await axios.get('/creator_contests/active/sharkdao.eth');
+            let res = await axios.get(`/creator_contests/fetch_contest/${ens}`);
             setContestSettings(res.data)
+            console.log('fetching data')
 
         })();
     }, [])

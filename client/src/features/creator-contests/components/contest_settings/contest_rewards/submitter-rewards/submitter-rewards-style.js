@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { fade_in } from '../../common/common_styles'
+import { fade_in } from '../../../common/common_styles'
 
 const SubmitterRewardsGridLayout = styled.div`
     display: grid;

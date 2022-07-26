@@ -28,28 +28,27 @@ const MainContainer = styled.div`
 const ButtonContainer = styled.div`
     display: flex;
     flex-direction: row;
-    color: #d3d3d3;
     border: 2px solid black;
     width: 100px;
     height: 100%;
     border-radius: 100px;
     justify-content: center;
     align-items: center;
+    background-color: transparent;
     box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
 `
 
 const MinusButton = styled.button`
-    height: 100%;
     width: 50%;
     border-radius: 100px 0px 0px 100px;
     border: none;
     border-right: 3.5px solid #303030;
     outline: none;
     color: black;
-    background-color: rgb(234, 140, 128);
+    background-color: rgba(235, 87, 87, 0.8);
     
     &:hover{
-        background-color: rgba(234, 140, 128, 0.8);
+        background-color: rgba(235, 87, 87, 0.7);
     }
     &:active{
         transform: scale(0.98);
@@ -58,17 +57,16 @@ const MinusButton = styled.button`
 `
 
 const PlusButton = styled.button`
-    height: 100%;
     width: 50%;
     border-radius: 0px 100px 100px 0px;
     border: none;
     border-left: 3.5px solid #303030;
     outline: none;
     color: black;
-    background-color: rgb(169, 234, 128);
+    background-color: rgba(6, 214, 160, 0.8);
 
     &:hover{
-        background-color: rgba(169, 234, 128, 0.8);
+        background-color: rgba(6, 214, 160, 0.7);
     }
     &:active{
         transform: scale(0.98);

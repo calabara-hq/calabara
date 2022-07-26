@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
-import { ToggleButton } from '../common/common_components';
-import { Contest_h2, Contest_h3, Contest_h4 } from '../common/common_styles';
+import { ToggleButton } from '../../common/common_components';
+import { Contest_h2, Contest_h3, Contest_h4 } from '../../common/common_styles';
 
 const AdditionalParamsWrap = styled.div`
     display: flex;

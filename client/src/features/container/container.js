@@ -10,7 +10,7 @@ import Events from '../calendar/calendar'
 import ReactEditor from '../wiki/wiki-edit'
 import SettingsManager from '../settings/settings'
 import ManageWidgets from '../manage-widgets/manage-widgets'
-import ContestSettings from '../creator-contests/contests-settings'
+import ContestSettings from '../creator-contests/components/contest_settings/contest-settings'
 import Homepage from '../homepage/homepage'
 import ContestInterface from '../creator-contests/components/contest-live-interface/interface'
 

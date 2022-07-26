@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../../../../css/datepicker.css'
+import '../../../../../css/datepicker.css'
 import { DateTimePicker } from 'react-rainbow-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendar } from '@fortawesome/free-solid-svg-icons';
@@ -16,7 +16,6 @@ export default function DateTimeSelector(props) {
 
 
     return (
-
         <DateTimePicker
             id='datepicker'
             label={props.label}

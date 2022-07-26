@@ -12,7 +12,8 @@ export default function usePromptBuilder() {
         prompt_label: null,
         prompt_label_error: false,
         prompt_label_color: 0,
-        prompt_blocks: []
+        prompt_blocks: [],
+        prompt_content_error: false
     }
 
     const reducer = (state, action) => {
@@ -27,7 +28,7 @@ export default function usePromptBuilder() {
                 arr_copy[state.selected_prompt] = action.payload
                 return {
                     ...state,
-                    prompt_blocks: arr_copy
+                    prompt_blocks: arr_copy,
                 }
             case "DELETE_BLOCK":
                 let blx_copy = [...state.prompt_blocks]
@@ -73,6 +74,16 @@ export default function usePromptBuilder() {
                 return {
                     ...state,
                     prompt_label_color: action.payload
+                }
+            case "SET_PROMPT_CONTENT_ERROR":
+                return {
+                    ...state,
+                    prompt_content_error: true
+                }
+            case "CLEAR_PROMPT_CONTENT_ERROR":
+                return {
+                    ...state,
+                    prompt_content_error: false
                 }
             case "SWITCH_PROMPTS":
                 let index = action.payload;
@@ -132,6 +143,9 @@ export default function usePromptBuilder() {
         setPromptData({ type: "SET_PROMPT_LABEL_ERROR" })
     }
 
+    const handleEmptyContentError = () => {
+        setPromptData({ type: "SET_PROMPT_CONTENT_ERROR" })
+    }
 
     return {
         promptData,
@@ -142,6 +156,7 @@ export default function usePromptBuilder() {
         handleLabelColorChange: (color) => handleLabelColorChange(color),
         handleHeadingError: () => handleHeadingError(),
         handleLabelError: () => handleLabelError(),
+        handleEmptyContentError: () => handleEmptyContentError(),
         handleDeletePrompt: () => handleDeletePrompt(),
     }
 

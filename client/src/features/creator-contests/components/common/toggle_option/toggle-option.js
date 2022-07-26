@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import '../../../../css/gatekeeper-toggle.css'
+import '../../../../../css/gatekeeper-toggle.css'
 import { useSelector } from 'react-redux';
-import RoleSelectModal from '../../../manage-widgets/role-select-modal'
+import RoleSelectModal from '../../../../manage-widgets/role-select-modal'
 
 import {
     selectDashboardRules,
-} from '../../../../features/gatekeeper/gatekeeper-rules-reducer';
+} from '../../../../../features/gatekeeper/gatekeeper-rules-reducer';
 
 export default function ToggleOption({ appliedRules, setAppliedRules, ruleError, setRuleError, toggle_identifier }) {
     // fetch available rules

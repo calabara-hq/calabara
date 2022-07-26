@@ -1,16 +1,11 @@
 import React, { useState, useEffect, useReducer, useRef } from 'react';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
-import '../../../../css/status-messages.css';
+import '../../../../../css/status-messages.css';
 import styled from 'styled-components'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
-import useContract from '../../../hooks/useContract';
-import { TagType, fade_in, Contest_h3 } from '../common/common_styles';
-import { textAlign } from '@mui/system';
-import AddNewToken from '../common/add_token';
-import ToggleOption from '../toggle_option/toggle-option';
-import { ToggleButton } from '../common/common_components';
+import { TagType, fade_in, Contest_h3, ERC20Button, ERC721Button, ConfirmButton } from '../../common/common_styles';
+import AddNewToken from '../../common/add_token';
+import { ToggleButton } from '../../common/common_components';
 
 
 const style = {
@@ -40,18 +35,7 @@ const ModalWrapper = styled.div`
 
 
 
-const ExitButton = styled.button`
-    position: absolute;
-    right: 30px;
-    top: 10px;
-    border: none;
-    border-radius: 4px;
-    padding: 10px 20px;
-    font-weight: bold;
-    background-color: #2d2e35;
-    color: lightcoral;
-    
-`
+
 
 const ModalHeading = styled.p`
     font-size: 26px;
@@ -75,7 +59,6 @@ export default function AddPolicyModal({ modalOpen, handleClose, selectedStrateg
                     <ModalWrapper>
                         <div>
                             <ModalHeading>{selectedStrategy === 0x1 ? 'Token' : 'Arcade'} Voting Strategy</ModalHeading>
-                            <ExitButton onClick={() => { handleClose({ type: 'standard' }) }}>exit</ExitButton>
                             {selectedStrategy === 0x1 && <TokenStrategy rewardOptions={rewardOptions} availableRules={availableRules} votingStrategy={votingStrategy} setVotingStrategy={setVotingStrategy} handleClose={handleClose} />}
                             {selectedStrategy === 0x2 && <ArcadeStrategy votingStrategy={votingStrategy} setVotingStrategy={setVotingStrategy} handleClose={handleClose} />}
                         </div>
@@ -122,10 +105,10 @@ const SplitDecision = styled.div`
     flex: 0 1 20%;
 `
 
-const ConfirmButton = styled.button`
+const ConfirmSelectionButton = styled.button`
     border: none;
     border-radius: 4px;
-    background-color: rgb(26, 188, 156);
+    background-color: rgb(6, 214, 160);
     color: black;
     justify-self: flex-end;
     padding: 5px 10px;
@@ -281,10 +264,20 @@ const AdditionalConfigWrap = styled.div`
 `
 const BackButton = styled.button`
     position: absolute;
-    bottom: 0;
-    left: 0;
-    color: black;
+    bottom: 2em;
+    left: 2em;
+    color: darkgrey;
+    background-color: transparent;
+    border: 2px solid darkgrey;
+    border-radius: 4px;
+    padding: 5px 20px;
+
+    &:hover{
+        background-color: darkgrey;
+        color: black;
+    }
 `
+
 const NextButton = styled.button`
     position: absolute;
     bottom: 0;
@@ -399,7 +392,7 @@ function AdditionalConfig({ tokenData, setProgress, handleSave, handlePrevious }
                         {isHardcapOn && <CaptureInput><input type={'number'} onChange={(e) => setHardcapLimit(Number(e.target.value))}></input></CaptureInput>}
                     </Hardcap>
                     <BackButton onClick={handlePrevious}>back</BackButton>
-                    <NextButton onClick={() => handleSave({ hardcap_bool: isHardcapOn, hardcap_limit: hardcapLimit, max_per_sub_bool: isMaxPerSubOn, max_per_sub_limit: maxPerSubLimit })}>save</NextButton>
+                    <ConfirmButton onClick={() => handleSave({ hardcap_bool: isHardcapOn, hardcap_limit: hardcapLimit, max_per_sub_bool: isMaxPerSubOn, max_per_sub_limit: maxPerSubLimit })}>save</ConfirmButton>
                 </>
             }
 
@@ -419,7 +412,7 @@ function AdditionalConfig({ tokenData, setProgress, handleSave, handlePrevious }
                         {isMaxPerSubOn && <CaptureInput><input type={'number'} onChange={(e) => setMaxPerSubLimit(Number(e.target.value))}></input></CaptureInput>}
                     </MaxPerSub>
                     {handlePrevious && <BackButton onClick={handlePrevious}>back</BackButton>}
-                    <NextButton onClick={() => handleSave({ credit_allowance: arcadeCredits, max_per_sub_bool: isMaxPerSubOn, max_per_sub_limit: maxPerSubLimit })}>save</NextButton>
+                    <ConfirmButton onClick={() => handleSave({ credit_allowance: arcadeCredits, max_per_sub_bool: isMaxPerSubOn, max_per_sub_limit: maxPerSubLimit })}>save</ConfirmButton>
                 </>
             }
 
@@ -485,7 +478,7 @@ function TokenVotingChoice({ options, quickAddSelection, setQuickAddSelection, s
                 <div>
                     <h3 style={{ textAlign: 'center' }}>Quick Add</h3>
                     <QuickAddElements elements={options} quickAddSelection={quickAddSelection} setQuickAddSelection={setQuickAddSelection} setTokenData={setTokenData} setProgress={setProgress} />
-                    {quickAddSelection > -1 && <ConfirmButton onClick={() => setProgress(2)}>confirm</ConfirmButton>}
+                    {quickAddSelection > -1 && <ConfirmSelectionButton onClick={() => setProgress(2)}>confirm</ConfirmSelectionButton>}
                 </div>
                 <SplitDecision>
                     <h3>OR</h3>
@@ -502,13 +495,11 @@ function TokenVotingChoice({ options, quickAddSelection, setQuickAddSelection, s
 
 const NewTokenChoice = styled.div`
     display: flex;
-    background-color: orange;
     align-items: center;
     justify-content: center;
     > * {
         margin: 10px;
-        padding: 5px 10px;
-        color: black;
+        padding: 10px 15px;
     }
     
 `
@@ -520,8 +511,8 @@ function NewTokenSelectType({ setTriggerNewTokenInputType, setTokenData }) {
     }
     return (
         <NewTokenChoice>
-            <button onClick={() => handleSelect('erc20')}>erc-20</button>
-            <button onClick={() => handleSelect('erc721')}>erc-721</button>
+            <ERC20Button onClick={() => handleSelect('erc20')}>erc-20</ERC20Button>
+            <ERC721Button onClick={() => handleSelect('erc721')}>erc-721</ERC721Button>
         </NewTokenChoice>
     )
 }

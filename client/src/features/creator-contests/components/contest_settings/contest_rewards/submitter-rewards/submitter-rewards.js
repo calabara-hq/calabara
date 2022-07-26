@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Contest_h2, Contest_h3, SettingsSectionSubHeading } from '../../common/common_styles';
+import { Contest_h2, Contest_h3, SettingsSectionSubHeading } from '../../../common/common_styles';
 import { SubmitterRewardsGridLayout, GridInputContainer, RewardsGridInput, CounterContainer } from './submitter-rewards-style';
-import CounterButton from '../../common/CounterButton';
+import CounterButton from '../../../common/CounterButton';
 import { HelpText } from 'react-rainbow-components';
 import { RewardTypeWrap, NumberWinnersContainer, RewardsMainContent } from '../reward-styles';
 

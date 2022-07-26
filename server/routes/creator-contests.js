@@ -16,10 +16,12 @@ const { getGuildRoles } = require('./discord-routes')
 const serverRoot = path.normalize(path.join(__dirname, '../'));
 
 
+// fetch the indexes of all contests, in order
 
+// fetch the submissions for a contest
 
-// send the settings for a contest
-contests.get('/active/*', async function (req, res, next) {
+// fetch the settings for a contest
+contests.get('/fetch_contest/*', async function (req, res, next) {
     let ens = req.url.split('/')[2];
 
     let filestream = fs.createReadStream(path.join(serverRoot, 'creator-contests/sharkdao.eth/123/settings.json'))

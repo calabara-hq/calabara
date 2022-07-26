@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useReducer } from "react";
 import styled, { keyframes } from 'styled-components'
-import CounterButton from "../common/CounterButton";
 import RewardSelector from "./choose-rewards";
-import { Contest_h2, Contest_h3, fade_in } from '../common/common_styles'
-import SubmitterRewards from "./submitter-rewards/submitter-rewards";
+import { Contest_h2, Contest_h3, fade_in } from '../../common/common_styles'
 import SubmitterRewardsBlock from "./submitter-rewards/submitter-rewards";
 import VoterRewardsBlock from "./voter-rewards/voter-rewards";
 
