@@ -16,10 +16,9 @@ const Wrap = styled.div`
     padding-bottom: 30px;
 `
 const AvailableRewards = styled.div`
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-gap: 20px;
-    width: 80%;
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
     padding-top: 20px;
 `
 
@@ -38,12 +37,20 @@ const RewardOptionEditBtn = styled.button`
 
 const NewRewardContainer = styled.div`
     margin-top: 2em;
+    margin-left: 10px;
+    display: flex;
+    > * {
+        flex: 0 1 15%;
+    }
 `
 
 
 const RewardOption = styled.div`
     position: relative;
+    flex: 1 1 0;
+    max-width: 33%;
     display: flex;
+    margin: 10px;
     flex-direction: column;
     width: 100%;
     justify-content: space-evenly;
@@ -88,6 +95,7 @@ const EtherScanLinkButton = styled.button`
    background-color: transparent;
    border: none;
    color: grey;
+   text-align: left;
   &:hover{
     background-color: #768390;
     color: #d3d3d3;

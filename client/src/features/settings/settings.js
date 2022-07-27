@@ -19,6 +19,7 @@ import useOrganization from '../hooks/useOrganization'
 import useCommon from '../hooks/useCommon'
 import useWallet from '../hooks/useWallet'
 import useContract from '../hooks/useContract'
+import AddNewToken from '../creator-contests/components/common/add_token'
 
 export default function SettingsManager() {
     const [fieldsReady, setFieldsReady] = useState(false)
@@ -484,7 +485,6 @@ function OrganizationGatekeeperComponent({ standardProps }) {
         // we only want to push values to rulesToDelete if the rule in question is an existing gk rule (from prior settings state). Otherwise we'll just pretend like we never added it.
         // use existing rules to get a rule_id. If rule_id == undefined, then we'll just splice it from the rules field.
         // if rule_id is defined, we'll add it to our ruleToDelete array
-        console.log(fields.gatekeeper)
         var gatekeeperCopy = JSON.parse(JSON.stringify(fields.gatekeeper.rules));
 
         if (gatekeeperCopy[array_index].gatekeeperType === 'discord') setDoesDiscordExist(false)
@@ -548,7 +548,7 @@ function OrganizationGatekeeperComponent({ standardProps }) {
                                                 <button className="remove-gatekeeper-rule exit-btn" onClick={() => { setModalOpen(true); setDeleteModalIndex(idx) }}><Glyphicon glyph="trash" /></button>
                                                 <p><b>Type:</b> <span className={el.gatekeeperType}>{el.gatekeeperType}</span></p>
                                                 <p><b>Server:</b> {el.serverName}</p>
-                                                <button className="gatekeeper-config" onClick={() => handleAddGatekeeperClick('discord-roles')}>view config</button>
+                                                <button className="gatekeeper-config" onClick={() => handleAddGatekeeperClick('discord-roles')}>edit</button>
                                             </>
                                         }
                                     </div>
@@ -581,7 +581,9 @@ function GatekeeperOptions({ setGatekeeperInnerProgress, standardProps, addGatek
     return (
         <div className="org-gatekeeper-options">
             {addGatekeeperOptionClick == 'erc20' &&
-                <ERC20gatekeeper setGatekeeperInnerProgress={setGatekeeperInnerProgress} fields={fields} setFields={setFields} />
+                <TokenGatekeeper type={addGatekeeperOptionClick} existingRewardData={null} fields={fields} setFields={setFields} setGatekeeperInnerProgress={setGatekeeperInnerProgress} />
+
+                /* <ERC20gatekeeper setGatekeeperInnerProgress={setGatekeeperInnerProgress} fields={fields} setFields={setFields} />*/
             }
 
             {addGatekeeperOptionClick == 'discord-roles' &&
@@ -595,6 +597,32 @@ function GatekeeperOptions({ setGatekeeperInnerProgress, standardProps, addGatek
     )
 }
 
+function TokenGatekeeper({ type, existingRewardData, fields, setFields, setGatekeeperInnerProgress }) {
+    const [gatekeeperAddress, setGatekeeperAddress] = useState("")
+    const [gatekeeperDecimal, setGatekeeperDecimal] = useState("")
+    const [gatekeeperSymbol, setGatekeeperSymbol] = useState("")
+
+
+    async function handleSave(result) {
+        let { type, address, symbol, decimal } = result
+        const gatekeeperObj = {
+            gatekeeperType: type,
+            gatekeeperAddress: address,
+            gatekeeperSymbol: symbol,
+            gatekeeperDecimal: decimal,
+        }
+
+        // add the rule
+        var gatekeeperCopy = JSON.parse(JSON.stringify(fields.gatekeeper.rules));
+        gatekeeperCopy.push(gatekeeperObj)
+        setFields({ gatekeeper: { rules: gatekeeperCopy, rulesToDelete: fields.gatekeeper.rulesToDelete } })
+        setGatekeeperInnerProgress(0);
+    }
+
+    return (
+        <AddNewToken type={type} existingRewardData={null} handleBackButton={() => setGatekeeperInnerProgress(0)} showBackButton={true} handleNextButton={handleSave} checkDuplicates={true} existingRules={fields.gatekeeper.rules} />
+    )
+}
 
 function ERC20gatekeeper({ setGatekeeperInnerProgress, fields, setFields }) {
     const [gatekeeperAddress, setGatekeeperAddress] = useState("")

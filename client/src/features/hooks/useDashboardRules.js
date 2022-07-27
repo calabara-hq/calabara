@@ -32,6 +32,7 @@ export default function useDashboardRules() {
 
             })
             const result = await queryGatekeeper(walletAddress, dashboardRules, ruleTestResults, discordId)
+            console.log(result)
             dispatch(setDashboardResults(result))
         }
     }

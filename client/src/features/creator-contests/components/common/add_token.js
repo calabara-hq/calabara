@@ -74,19 +74,44 @@ const BackButton = styled.button`
 `
 
 
-export default function AddNewToken({ existingRewardData, type, showBackButton, handleBackButton, handleNextButton }) {
+export default function AddNewToken({ existingRewardData, type, showBackButton, handleBackButton, handleNextButton, checkDuplicates, existingRules }) {
     const [newContractAddress, setNewContractAddress] = useState(existingRewardData ? existingRewardData.address : null);
     const [newSymbol, setNewSymbol] = useState(null);
     const [newDecimal, setNewDecimal] = useState(null);
     const [addressError, setAddressError] = useState(false);
-    const { tokenGetSymbolAndDecimal } = useContract();
+    const [typeError, setTypeError] = useState(false);
+    const [duplicateAddressError, setDuplicateAddressError] = useState(false);
+    const { tokenGetSymbolAndDecimal, isERC721 } = useContract();
 
     useEffect(() => {
         if (newContractAddress) return fetchContractData(newContractAddress)
     }, [])
 
 
+    const clearErrors = () => {
+        setAddressError(false);
+        setTypeError(false);
+        setDuplicateAddressError(false);
+    }
+
+    const checkForDuplicates = () => {
+        for (var i in existingRules) {
+            if (existingRules[i].gatekeeperAddress == newContractAddress && existingRules[i].gatekeeperType != 'discord') {
+                console.log(existingRules[i])
+                return setDuplicateAddressError(true)
+            }
+        }
+    }
+
     const fetchContractData = async (address) => {
+        // throw error if:
+        // user entered an erc721 but tried to add an erc20
+        // user entered an erc20 but tried to add an erc721
+        if (checkDuplicates) checkForDuplicates();
+        let isTokenERC721 = await isERC721(address);
+        console.log(type)
+        console.log(type === 'erc721')
+        if ((isTokenERC721 && type === 'erc20') || (!isTokenERC721 && type === 'erc721')) return setTypeError(true)
         try {
             let [symbol, decimal] = await tokenGetSymbolAndDecimal(address);
             setNewSymbol(symbol)
@@ -97,7 +122,7 @@ export default function AddNewToken({ existingRewardData, type, showBackButton, 
     }
 
     const handleRewardAdressChange = (address) => {
-        if (addressError) setAddressError(false)
+        if (addressError || typeError || duplicateAddressError) clearErrors();
         setNewContractAddress(address)
         if (address.length === 42) fetchContractData(address)
         else {
@@ -119,7 +144,9 @@ export default function AddNewToken({ existingRewardData, type, showBackButton, 
             <Row>
                 <p><b>Contract Address</b></p>
                 <ContractAddressInput placeholder="0x1234..." value={newContractAddress} onChange={(e) => handleRewardAdressChange(e.target.value)}></ContractAddressInput>
-                {addressError && <ErrorMessage style={{maxWidth: '80%'}}><p>could not find address</p></ErrorMessage>}
+                {addressError && <ErrorMessage style={{ maxWidth: '80%' }}><p>could not find address</p></ErrorMessage>}
+                {typeError && <ErrorMessage style={{ maxWidth: '80%' }}><p>this doesn't look like an {type} token</p></ErrorMessage>}
+                {duplicateAddressError && <ErrorMessage style={{ maxWidth: '80%' }}><p>it looks like you already added this token</p></ErrorMessage>}
 
             </Row>
             <Row>
@@ -134,7 +161,7 @@ export default function AddNewToken({ existingRewardData, type, showBackButton, 
                     <p>{newDecimal}</p>
                 </SymbolDecimalInput>
             </Row>
-            
+
             {showBackButton && <BackButton onClick={handleBackButton}><FontAwesomeIcon icon={faArrowLeft} /></BackButton>}
             <ConfirmButton disabled={!newSymbol} onClick={handleConfirm}>confirm</ConfirmButton>
         </CreateRewardWrap>
