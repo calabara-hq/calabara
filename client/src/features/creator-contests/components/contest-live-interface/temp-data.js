@@ -2,10 +2,10 @@
 export const contest_data = {
 
     "date_times": {
-        "start_date": "2022-07-06T12:30:17Z",
+        "start_date": "2022-07-29T14:51:06Z",
         "submission_begin": false,
-        "voting_begin": "2022-07-06T18:30:17Z",
-        "end_date": "2022-07-07T12:30:17Z"
+        "voting_begin": "2022-07-29T15:51:06Z",
+        "end_date": "2022-07-29T17:51:06Z"
     },
 
     "reward_options": {
@@ -51,7 +51,7 @@ export const contest_data = {
             }
         ],
         "version": "2.24.3",
-        "title": "swim shady derivative art",
+        "title": "Swim shady derivative art",
         "label": {
             "name": "art",
             "color": 1
@@ -69,30 +69,12 @@ export const contest_data = {
             }
         ],
         "version": "2.24.3",
-        "title": "swim shady derivative art 2 and some more unneccessary text",
+        "title": "Miscellaneous",
         "label": {
-            "name": "art",
-            "color": 1
+            "name": "misc",
+            "color": 2
         }
     },
-    {
-        "time": 1656343381847,
-        "blocks": [
-            {
-                "id": "EBiFiTtBfI",
-                "type": "paragraph",
-                "data": {
-                    "text": "Swim shady derivative artwork contest 3"
-                }
-            }
-        ],
-        "version": "2.24.3",
-        "title": "swim shady derivative art 3",
-        "label": {
-            "name": "art",
-            "color": 1
-        }
-    }
 ],
 
     submissions: [

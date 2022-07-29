@@ -362,13 +362,11 @@ input.error{
   
   .org-gatekeeper-options{
     display: flex;
-    position: relative;
-    background-color: red;
     flex-direction: column;
     justify-content: flex-start;
     color: lightgrey;
-    margin-top: 0em;
     width: 90%;
+    min-height: 30em;
   }
 
 

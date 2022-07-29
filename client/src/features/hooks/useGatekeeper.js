@@ -7,67 +7,26 @@ export default function useGatekeeper() {
 
     // const {walletAddress, rules, ruleResults, discordId, enforced_roles, user_roles} = props
 
-    const { checkERC20Balance, checkERC721Balance } = useContract()
+    const { checkWalletTokenBalance } = useContract()
 
     // rules stores the rule definitions
     // ruleResults stores the rule_id's which we need to execute tests against
     // we will store the result of balanceOf function in ruleResults and return it
 
+
+
     async function queryGatekeeper(walletAddress, rules, ruleResults, discordId) {
         for (const [key, value] of Object.entries(ruleResults)) {
 
-            if (rules[key].gatekeeperType === 'erc20') {
-                const balance = await checkERC20Balance(walletAddress, rules[key].gatekeeperAddress, rules[key].gatekeeperDecimal)
-                
+            if (rules[key].type === 'erc20' || rules[key].type === 'erc721') {
+                const balance = await checkWalletTokenBalance(walletAddress, rules[key].address, rules[key].decimal)
+
                 ruleResults[key] = parseFloat(balance)
 
 
             }
-            else if (rules[key].gatekeeperType === 'erc721') {
-                const balance = await checkERC721Balance(walletAddress, rules[key].gatekeeperAddress)
-                ruleResults[key] = parseFloat(balance)
-            }
-            else if (rules[key].gatekeeperType === 'discord') {
 
-                if (discordId) {
-                    // fetch the roles that this user has for the server and assign them to the results key
-                    const resp = await axios.post('/discord/getUserRoles', { user_id: discordId, guild_id: rules[key].guildId })
-                    if (resp.data === 'error') {
-                        ruleResults[key] = 'fail'
-                    }
-
-                    else {
-                        // set the response and push @eveyone role (guildId) to the array
-                        resp.data.push(rules[key].guildId)
-                        ruleResults[key] = resp.data
-                    }
-                }
-                else {
-                    ruleResults[key] = 'fail';
-                }
-
-            }
-        }
-
-        return ruleResults
-    }
-
-
-    async function queryGatekeeper2(walletAddress, rules, ruleResults, discordId) {
-        for (const [key, value] of Object.entries(ruleResults)) {
-
-            if (rules[key].gatekeeperType === 'erc20') {
-                const balance = await checkERC20Balance(walletAddress, rules[key].gatekeeperAddress, rules[key].gatekeeperDecimal)
-                
-                ruleResults[key] = parseFloat(balance)
-
-
-            }
-            else if (rules[key].gatekeeperType === 'erc721') {
-                const balance = await checkERC721Balance(walletAddress, rules[key].gatekeeperAddress)
-                ruleResults[key] = parseFloat(balance)
-            }
-            else if (rules[key].gatekeeperType === 'discord') {
+            else if (rules[key].type === 'discord') {
 
                 if (discordId) {
                     // fetch the roles that this user has for the server and assign them to the results key
@@ -114,10 +73,6 @@ export default function useGatekeeper() {
 
     return {
         queryGatekeeper: async (walletAddress, rules, ruleResults, discordId) => {
-            return await queryGatekeeper(walletAddress, rules, ruleResults, discordId)
-        },
-
-        queryGatekeeper2: async (walletAddress, rules, ruleResults, discordId) => {
             return await queryGatekeeper(walletAddress, rules, ruleResults, discordId)
         },
 

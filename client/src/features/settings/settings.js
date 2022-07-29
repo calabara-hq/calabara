@@ -472,7 +472,7 @@ function OrganizationGatekeeperComponent({ standardProps }) {
 
     useEffect(() => {
         fields.gatekeeper.rules.map((el) => {
-            if (el.gatekeeperType === 'discord')
+            if (el.type === 'discord')
                 setDoesDiscordExist(true)
             return;
         })
@@ -487,7 +487,7 @@ function OrganizationGatekeeperComponent({ standardProps }) {
         // if rule_id is defined, we'll add it to our ruleToDelete array
         var gatekeeperCopy = JSON.parse(JSON.stringify(fields.gatekeeper.rules));
 
-        if (gatekeeperCopy[array_index].gatekeeperType === 'discord') setDoesDiscordExist(false)
+        if (gatekeeperCopy[array_index].type === 'discord') setDoesDiscordExist(false)
 
 
         // if array_index for existing rules is undefined, we know it's a new rule
@@ -534,19 +534,19 @@ function OrganizationGatekeeperComponent({ standardProps }) {
                             return (
                                 <>
                                     <div className="gatekeeper-option" key={idx}>
-                                        {(el.gatekeeperType === 'erc721' || el.gatekeeperType === 'erc20') &&
+                                        {(el.type === 'erc721' || el.type === 'erc20') &&
                                             <>
                                                 <button className="remove-gatekeeper-rule exit-btn" onClick={() => { setModalOpen(true); setDeleteModalIndex(idx) }}><Glyphicon glyph="trash" /></button>
-                                                <p><b>Type:</b> <span className={el.gatekeeperType}>{el.gatekeeperType}</span></p>
-                                                <p><b>Symbol:</b> {el.gatekeeperSymbol}</p>
-                                                <button onClick={() => { window.open('https://etherscan.io/address/' + el.gatekeeperAddress) }} className="gatekeeper-config">{el.gatekeeperAddress.substring(0, 6)}...{el.gatekeeperAddress.substring(38, 42)} <i className="fas fa-external-link-alt"></i></button>
+                                                <p><b>Type:</b> <span className={el.type}>{el.type}</span></p>
+                                                <p><b>Symbol:</b> {el.symbol}</p>
+                                                <button onClick={() => { window.open('https://etherscan.io/address/' + el.address) }} className="gatekeeper-config">{el.address.substring(0, 6)}...{el.address.substring(38, 42)} <i className="fas fa-external-link-alt"></i></button>
                                             </>
                                         }
 
-                                        {el.gatekeeperType === 'discord' &&
+                                        {el.type === 'discord' &&
                                             <>
                                                 <button className="remove-gatekeeper-rule exit-btn" onClick={() => { setModalOpen(true); setDeleteModalIndex(idx) }}><Glyphicon glyph="trash" /></button>
-                                                <p><b>Type:</b> <span className={el.gatekeeperType}>{el.gatekeeperType}</span></p>
+                                                <p><b>Type:</b> <span className={el.type}>{el.type}</span></p>
                                                 <p><b>Server:</b> {el.serverName}</p>
                                                 <button className="gatekeeper-config" onClick={() => handleAddGatekeeperClick('discord-roles')}>edit</button>
                                             </>
@@ -580,41 +580,28 @@ function GatekeeperOptions({ setGatekeeperInnerProgress, standardProps, addGatek
 
     return (
         <div className="org-gatekeeper-options">
-            {addGatekeeperOptionClick == 'erc20' &&
-                <TokenGatekeeper type={addGatekeeperOptionClick} existingRewardData={null} fields={fields} setFields={setFields} setGatekeeperInnerProgress={setGatekeeperInnerProgress} />
+            {addGatekeeperOptionClick !== 'discord-roles' &&
+                <TokenGatekeeper type={addGatekeeperOptionClick} fields={fields} setFields={setFields} setGatekeeperInnerProgress={setGatekeeperInnerProgress} />
 
                 /* <ERC20gatekeeper setGatekeeperInnerProgress={setGatekeeperInnerProgress} fields={fields} setFields={setFields} />*/
             }
 
-            {addGatekeeperOptionClick == 'discord-roles' &&
+            {addGatekeeperOptionClick === 'discord-roles' &&
                 <DiscordRoleGatekeeper setGatekeeperInnerProgress={setGatekeeperInnerProgress} fields={fields} setFields={setFields} discordIntegrationProps={discordIntegrationProps} />
-            }
-
-            {addGatekeeperOptionClick == 'erc721' &&
-                <ERC721gatekeeper setGatekeeperInnerProgress={setGatekeeperInnerProgress} fields={fields} setFields={setFields} />
             }
         </div>
     )
 }
 
-function TokenGatekeeper({ type, existingRewardData, fields, setFields, setGatekeeperInnerProgress }) {
-    const [gatekeeperAddress, setGatekeeperAddress] = useState("")
-    const [gatekeeperDecimal, setGatekeeperDecimal] = useState("")
-    const [gatekeeperSymbol, setGatekeeperSymbol] = useState("")
+function TokenGatekeeper({ type, fields, setFields, setGatekeeperInnerProgress }) {
 
 
-    async function handleSave(result) {
-        let { type, address, symbol, decimal } = result
-        const gatekeeperObj = {
-            gatekeeperType: type,
-            gatekeeperAddress: address,
-            gatekeeperSymbol: symbol,
-            gatekeeperDecimal: decimal,
-        }
+
+    async function handleSave(result) {        
 
         // add the rule
         var gatekeeperCopy = JSON.parse(JSON.stringify(fields.gatekeeper.rules));
-        gatekeeperCopy.push(gatekeeperObj)
+        gatekeeperCopy.push(result)
         setFields({ gatekeeper: { rules: gatekeeperCopy, rulesToDelete: fields.gatekeeper.rulesToDelete } })
         setGatekeeperInnerProgress(0);
     }
@@ -624,320 +611,7 @@ function TokenGatekeeper({ type, existingRewardData, fields, setFields, setGatek
     )
 }
 
-function ERC20gatekeeper({ setGatekeeperInnerProgress, fields, setFields }) {
-    const [gatekeeperAddress, setGatekeeperAddress] = useState("")
-    const [gatekeeperDecimal, setGatekeeperDecimal] = useState("")
-    const [gatekeeperSymbol, setGatekeeperSymbol] = useState("")
-    const [addressError, setAddressError] = useState(false);
-    const [duplicateAddressError, setDuplicateAddressError] = useState(false);
-    const [decimalError, setDecimalError] = useState(false);
-    const [symbolError, setSymbolError] = useState(false);
-    const { validAddress } = useWallet();
-    const { erc20GetSymbolAndDecimal } = useContract();
 
-
-    const [enableSave, setEnableSave] = useState(false)
-
-
-
-    const handleGatekeeperAddressChange = (e) => {
-        setAddressError(false)
-        setEnableSave(false)
-        setGatekeeperAddress(e.target.value)
-        setGatekeeperDecimal("")
-        setGatekeeperSymbol("")
-    }
-
-    const handleGatekeeperDecimalChange = (e) => {
-        setDecimalError(false)
-        setGatekeeperDecimal(e.target.value)
-    }
-
-    const handleGatekeeperSymbolChange = (e) => {
-        setSymbolError(false)
-        setGatekeeperSymbol(e.target.value)
-    }
-
-
-
-    async function handleSave() {
-        // do some more error checking. 
-        // check if the contract address is valid
-        var valid = await validAddress(gatekeeperAddress)
-        if (!valid) {
-            //set an error
-            setAddressError(true)
-            return
-        }
-        else {
-            if (gatekeeperSymbol == "") {
-                // set an error
-                setSymbolError(true)
-                return
-            }
-            if (gatekeeperDecimal == "") {
-                // set an error 
-                setDecimalError(true)
-                return
-            }
-
-            const gatekeeperObj = {
-                gatekeeperType: 'erc20',
-                gatekeeperAddress: gatekeeperAddress,
-                gatekeeperSymbol: gatekeeperSymbol,
-                gatekeeperDecimal: gatekeeperDecimal,
-            }
-
-
-
-            // add it if there are no rules
-            if (fields.gatekeeper.rules.length == 0) {
-                var gatekeeperCopy = JSON.parse(JSON.stringify(fields.gatekeeper.rules));
-                gatekeeperCopy.push(gatekeeperObj)
-                setFields({ gatekeeper: { rules: gatekeeperCopy, rulesToDelete: fields.gatekeeper.rulesToDelete } })
-                setGatekeeperInnerProgress(0);
-            }
-            // check if the contract address is already being used by another rule
-            else {
-                for (var i in fields.gatekeeper.rules) {
-
-                    if (fields.gatekeeper.rules[i].gatekeeperAddress == gatekeeperObj.gatekeeperAddress) {
-                        setDuplicateAddressError(true)
-                        break;
-                    }
-
-                    // reached the end of our loop
-                    if (i == fields.gatekeeper.rules.length - 1 && fields.gatekeeper.rules[i].gatekeeperAddress != gatekeeperObj.gatekeeperAddress) {
-                        var gatekeeperCopy = JSON.parse(JSON.stringify(fields.gatekeeper.rules));
-                        gatekeeperCopy.push(gatekeeperObj)
-                        setFields({ gatekeeper: { rules: gatekeeperCopy, rulesToDelete: fields.gatekeeper.rulesToDelete } })
-                        setGatekeeperInnerProgress(0);
-                    }
-                }
-            }
-
-        }
-    }
-
-    // auto fill the decimals and symbol fields
-    useEffect(async () => {
-        // wait until full address is input
-        if (gatekeeperAddress.length == 42) {
-            setEnableSave(true)
-            // check if it's valid
-            var valid = await validAddress(gatekeeperAddress)
-            // if it's valid, fill the decimals and symbol
-            if (valid != false) {
-                try {
-                    var [symbol, decimal] = await erc20GetSymbolAndDecimal(gatekeeperAddress)
-                    setGatekeeperDecimal(decimal)
-                    setGatekeeperSymbol(symbol)
-                } catch (e) {
-
-                }
-
-            }
-        }
-
-    }, [gatekeeperAddress])
-
-    return (
-        <>
-            <div>
-                <h3> erc-20 balanceOf</h3>
-                <div className="gatekeeper-address-input">
-                    <p>Contract Address </p>
-                    <input className={`${addressError || duplicateAddressError ? "error" : null}`} value={gatekeeperAddress} onChange={handleGatekeeperAddressChange} type="text" />
-                    {addressError &&
-                        <div className="tab-message error">
-                            <p>This doesn't look like a valid contract address</p>
-                        </div>
-                    }
-                    {duplicateAddressError &&
-                        <div className="tab-message error">
-                            <p>Rule for this contract already exists</p>
-                        </div>
-                    }
-                </div>
-
-                <div className="gatekeeper-symbol-decimal-input">
-                    <div>
-                        <p>Symbol</p>
-                        <input value={gatekeeperSymbol} onChange={handleGatekeeperSymbolChange} type="text" />
-                        {symbolError &&
-                            <div className="tab-message error">
-                                <p>Please enter a symbol</p>
-                            </div>
-                        }
-                    </div>
-
-                    <div>
-                        <p>Decimal </p>
-                        <input value={gatekeeperDecimal} onChange={handleGatekeeperDecimalChange} type="text" />
-                        {decimalError &&
-                            <div className="tab-message error">
-                                <p>Please enter a decimal</p>
-                            </div>
-                        }
-                    </div>
-                </div>
-
-            </div>
-
-            <div className="gk-detail-buttons">
-                <button className="gk-rule-cancel" onClick={() => { setGatekeeperInnerProgress(0) }}>cancel</button>
-                <button className="gk-rule-save" disabled={!enableSave} onClick={handleSave}>save</button>
-            </div>
-        </>
-    )
-}
-
-function ERC721gatekeeper({ setGatekeeperInnerProgress, fields, setFields }) {
-
-    const [gatekeeperAddress, setGatekeeperAddress] = useState("")
-    const [gatekeeperSymbol, setGatekeeperSymbol] = useState("")
-    const [addressError, setAddressError] = useState(false);
-    const [symbolError, setSymbolError] = useState(false);
-    const [duplicateAddressError, setDuplicateAddressError] = useState(false);
-    const { validAddress } = useWallet();
-    const { erc721GetSymbol } = useContract();
-
-
-
-    const [enableSave, setEnableSave] = useState(false)
-
-
-
-    const handleGatekeeperAddressChange = (e) => {
-        setAddressError(false)
-        setEnableSave(false)
-        setGatekeeperAddress(e.target.value)
-        setGatekeeperSymbol("")
-    }
-
-
-    const handleGatekeeperSymbolChange = (e) => {
-        setSymbolError(false)
-        setGatekeeperSymbol(e.target.value)
-    }
-
-
-    async function handleSave() {
-        // do some more error checking. 
-        // check if the contract address is valid
-        var valid = await validAddress(gatekeeperAddress)
-        if (!valid) {
-            //set an error
-            setAddressError(true)
-            return
-        }
-        else {
-            if (gatekeeperSymbol == "") {
-                // set an error
-                setSymbolError(true)
-                return
-            }
-            const gatekeeperObj = {
-                gatekeeperType: 'erc721',
-                gatekeeperAddress: gatekeeperAddress,
-                gatekeeperSymbol: gatekeeperSymbol,
-            }
-
-            // add it if there are no rules
-            if (fields.gatekeeper.rules.length == 0) {
-                var gatekeeperCopy = JSON.parse(JSON.stringify(fields.gatekeeper.rules));
-                gatekeeperCopy.push(gatekeeperObj)
-                setFields({ gatekeeper: { rules: gatekeeperCopy, rulesToDelete: fields.gatekeeper.rulesToDelete } })
-                setGatekeeperInnerProgress(0);
-            }
-            // check if the contract address is already being used by another rule
-            else {
-                for (var i in fields.gatekeeper.rules) {
-
-                    if (fields.gatekeeper.rules[i].gatekeeperAddress == gatekeeperObj.gatekeeperAddress) {
-                        setDuplicateAddressError(true)
-                        break;
-                    }
-
-                    // reached the end of our loop
-                    if (i == fields.gatekeeper.rules.length - 1 && fields.gatekeeper.rules[i].gatekeeperAddress != gatekeeperObj.gatekeeperAddress) {
-                        var gatekeeperCopy = JSON.parse(JSON.stringify(fields.gatekeeper.rules));
-                        gatekeeperCopy.push(gatekeeperObj)
-                        setFields({ gatekeeper: { rules: gatekeeperCopy, rulesToDelete: fields.gatekeeper.rulesToDelete } })
-                        setGatekeeperInnerProgress(0);
-                    }
-                }
-            }
-
-        }
-    }
-
-    // auto fill the decimals and symbol fields
-    useEffect(async () => {
-        // wait until full address is input
-        if (gatekeeperAddress.length == 42) {
-            setEnableSave(true)
-            // check if it's valid
-            var valid = await validAddress(gatekeeperAddress)
-            // if it's valid, fill the decimals and symbol
-            if (valid != false) {
-                try {
-                    var symbol = await erc721GetSymbol(gatekeeperAddress)
-                    console.log(symbol)
-                } catch (e) {
-
-                }
-
-            }
-        }
-
-    }, [gatekeeperAddress])
-
-    return (
-
-        <>
-            <div>
-                <h3> erc-721 balanceOf</h3>
-                <div className="gatekeeper-address-input">
-                    <p>Contract Address </p>
-                    <input value={gatekeeperAddress} onChange={handleGatekeeperAddressChange} type="text" />
-                    {addressError &&
-                        <div className="tab-message error">
-                            <p>This doesn't look like a valid contract address</p>
-                        </div>
-                    }
-                    {duplicateAddressError &&
-                        <div className="tab-message error">
-                            <p>Rule for this contract already exists</p>
-                        </div>
-                    }
-                </div>
-
-                <div className="gatekeeper-symbol-decimal-input">
-                    <div>
-                        <p>Symbol</p>
-                        <input value={gatekeeperSymbol} onChange={handleGatekeeperSymbolChange} type="text" />
-                        {symbolError &&
-                            <div className="tab-message error">
-                                <p>Please enter a symbol</p>
-                            </div>
-                        }
-                    </div>
-
-                    <div></div>
-
-                </div>
-            </div>
-
-            <div className="gk-detail-buttons">
-                <button className="gk-rule-cancel" onClick={() => { setGatekeeperInnerProgress(0) }}>cancel</button>
-                <button className="gk-rule-save" disabled={!enableSave} onClick={handleSave}>save</button>
-            </div>
-
-        </>
-    )
-
-}
 
 function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields, discordIntegrationProps }) {
     const [guildId, setGuildId] = useState(null);
@@ -1017,7 +691,7 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields, 
     // parse gk rules and see if we have a guild_id already
     const getGuildId = async () => {
         let guild_id = fields.gatekeeper.rules.map((rule) => {
-            if (rule.gatekeeperType === 'discord') return rule.guildId
+            if (rule.type === 'discord') return rule.guildId
         })
 
 
@@ -1089,7 +763,7 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields, 
 
     const addDiscordRule = (guild_info) => {
         const gatekeeperObj = {
-            gatekeeperType: 'discord',
+            type: 'discord',
             serverName: guild_info.guildName,
             guildId: guild_info.guildId,
             userId: userDiscordId
@@ -1108,14 +782,14 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields, 
         else {
             for (var i in fields.gatekeeper.rules) {
 
-                if (fields.gatekeeper.rules[i].gatekeeperType === 'discord') {
+                if (fields.gatekeeper.rules[i].type === 'discord') {
                     //gatekeeperCopy.splice(i, 1);
                     gatekeeperCopy[i] = gatekeeperObj
                     break;
                 }
 
                 // reached the end of our loop
-                if (i == fields.gatekeeper.rules.length - 1 && fields.gatekeeper.rules[i].gatekeeperType !== 'discord') {
+                if (i == fields.gatekeeper.rules.length - 1 && fields.gatekeeper.rules[i].type !== 'discord') {
                     gatekeeperCopy.push(gatekeeperObj)
                 }
 
@@ -1338,7 +1012,7 @@ function SaveComponent({ standardProps, infoErrorController, adminErrorControlle
 
         // we only want to send the new rules to the db
 
-        let ruleDuplicates = fields.gatekeeper.rules.filter(({ gatekeeperAddress: gk_addy1, guildId: gid1 }) => !Object.values(existingGatekeeperRules).some(({ gatekeeperAddress: gk_addy2, guildId: gid2 }) => (gk_addy2 === gk_addy1 && gid1 === gid2)))
+        let ruleDuplicates = fields.gatekeeper.rules.filter(({ address: gk_addy1, guildId: gid1 }) => !Object.values(existingGatekeeperRules).some(({ address: gk_addy2, guildId: gid2 }) => (gk_addy2 === gk_addy1 && gid1 === gid2)))
 
         finalSubmission.gatekeeper.rules = ruleDuplicates
 

@@ -7,7 +7,6 @@ import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
 
 const Row = styled.div`
-    
 `
 const ContractAddressInput = styled.input`
     color: #d3d3d3;
@@ -51,16 +50,19 @@ const CreateRewardWrap = styled.div`
     display: flex;
     flex-direction: column;
     padding: 20px 0px;
+    position: relative;
 
     > ${Row} {
         margin-bottom: 20px;
     }
+
+
 `
 
 const BackButton = styled.button`
     position: absolute;
-    bottom: 2em;
-    left: 2em;
+    bottom: 0;
+    left: 0;
     color: darkgrey;
     background-color: transparent;
     border: 2px solid darkgrey;
@@ -94,23 +96,26 @@ export default function AddNewToken({ existingRewardData, type, showBackButton, 
         setDuplicateAddressError(false);
     }
 
-    const checkForDuplicates = () => {
+    const checkForDuplicates = (address) => {
         for (var i in existingRules) {
-            if (existingRules[i].gatekeeperAddress == newContractAddress && existingRules[i].gatekeeperType != 'discord') {
-                console.log(existingRules[i])
-                return setDuplicateAddressError(true)
+            console.log(existingRules[i].gatekeeperAddress === address)
+            if ((existingRules[i].gatekeeperAddress == address) && (existingRules[i].gatekeeperType != 'discord')) {
+                return true
             }
         }
+        return false
     }
 
     const fetchContractData = async (address) => {
         // throw error if:
         // user entered an erc721 but tried to add an erc20
         // user entered an erc20 but tried to add an erc721
-        if (checkDuplicates) checkForDuplicates();
+        if (checkDuplicates) {
+            let isDuplicate = checkForDuplicates(address);
+            if(isDuplicate) return setDuplicateAddressError(true)
+        }
+        
         let isTokenERC721 = await isERC721(address);
-        console.log(type)
-        console.log(type === 'erc721')
         if ((isTokenERC721 && type === 'erc20') || (!isTokenERC721 && type === 'erc721')) return setTypeError(true)
         try {
             let [symbol, decimal] = await tokenGetSymbolAndDecimal(address);
@@ -124,7 +129,7 @@ export default function AddNewToken({ existingRewardData, type, showBackButton, 
     const handleRewardAdressChange = (address) => {
         if (addressError || typeError || duplicateAddressError) clearErrors();
         setNewContractAddress(address)
-        if (address.length === 42) fetchContractData(address)
+        if (address.length === 42) return fetchContractData(address)
         else {
             setNewSymbol(null)
             setNewDecimal(null)
@@ -155,7 +160,7 @@ export default function AddNewToken({ existingRewardData, type, showBackButton, 
                     <p>{newSymbol}</p>
                 </SymbolDecimalInput>
             </Row>
-            <Row>
+            <Row style={{marginBottom: '40px'}}>
                 <p><b>Decimal</b></p>
                 <SymbolDecimalInput>
                     <p>{newDecimal}</p>

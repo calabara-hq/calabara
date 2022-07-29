@@ -20,7 +20,7 @@ export default function ContestInfo({ contest_settings }) {
     const [isInfoLoaded, setIsInfoLoaded] = useState(false);
     const dispatch = useDispatch();
     const { durations, calculateActive } = useContestTimekeeper(setBarProgress, contest_settings.date_times.start_date, contest_settings.date_times.voting_begin, contest_settings.date_times.end_date);
-
+    console.log(contest_settings)
     // initialize dashboard info
     const info = useSelector(selectDashboardInfo)
     const { batchFetchDashboardData } = useCommon();

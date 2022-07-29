@@ -15,6 +15,7 @@ export default function useDashboardRules() {
 
     const populateDashboardRules = async (ens) => {
         const res = await axios.get('/dashboard/dashboardRules/' + ens);
+        console.log(res)
         dispatch(setDashboardRules(res.data))
     }
 
@@ -32,7 +33,6 @@ export default function useDashboardRules() {
 
             })
             const result = await queryGatekeeper(walletAddress, dashboardRules, ruleTestResults, discordId)
-            console.log(result)
             dispatch(setDashboardResults(result))
         }
     }

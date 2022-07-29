@@ -69,11 +69,11 @@ function GatekeeperRule({ element, rule_id, appliedRules, setAppliedRules, ruleE
   return (
     <>
       <div className={'gk-rule ' + (ruleError.id == rule_id ? 'error' : 'undefined')}>
-        {(element.gatekeeperType === 'erc721' || element.gatekeeperType === 'erc20') &&
+        {(element.type === 'erc721' || element.type === 'erc20') &&
           <>
-            <p><b>Type:</b> <span className={element.gatekeeperType}>{element.gatekeeperType}</span></p>
+            <p><b>Type:</b> <span className={element.type}>{element.type}</span></p>
             <p><b>Symbol: </b>
-              <span onClick={() => { window.open('https://etherscan.io/address/' + element.gatekeeperAddress) }} className='gatekeeper-symbol'>{element.gatekeeperSymbol}  <i className="fas fa-external-link-alt"></i></span>
+              <span onClick={() => { window.open('https://etherscan.io/address/' + element.type) }} className='gatekeeper-symbol'>{element.symbol}  <i className="fas fa-external-link-alt"></i></span>
             </p>
             <div className="toggle-flex">
               <ToggleSwitch setRuleError={setRuleError} ruleError={ruleError} addRule={addRule} deleteRule={deleteRule} rule_id={rule_id} isGatekeeperOn={isGatekeeperOn} setIsGatekeeperOn={setIsGatekeeperOn} appliedRules={appliedRules} setAppliedRules={setAppliedRules} toggle_identifier={toggle_identifier}/>
@@ -86,9 +86,9 @@ function GatekeeperRule({ element, rule_id, appliedRules, setAppliedRules, ruleE
             </div>
           </>
         }
-        {(element.gatekeeperType === 'discord') &&
+        {(element.type === 'discord') &&
           <>
-            <p><b>Type:</b> <span className={element.gatekeeperType}>{element.gatekeeperType}</span></p>
+            <p><b>Type:</b> <span className={element.type}>{element.type}</span></p>
             <p><b>Server:</b> {element.serverName}</p>
             <div className="toggle-flex">
               <ToggleSwitch setRuleError={setRuleError} ruleError={ruleError} addRule={addRule} deleteRule={deleteRule} rule_id={rule_id} isGatekeeperOn={isGatekeeperOn} setIsGatekeeperOn={setIsGatekeeperOn} toggle_identifier={toggle_identifier} />
@@ -105,8 +105,8 @@ function GatekeeperRule({ element, rule_id, appliedRules, setAppliedRules, ruleE
 
       {ruleError.id == rule_id &&
         <div className="tab-message error" style={{ width: '100%' }}>
-          {element.gatekeeperType !== 'discord' && <p>Please enter a threshold</p>}
-          {element.gatekeeperType === 'discord' && <p>Selected roles cannot be left blank</p>}
+          {element.type !== 'discord' && <p>Please enter a threshold</p>}
+          {element.type === 'discord' && <p>Selected roles cannot be left blank</p>}
 
         </div>
       }

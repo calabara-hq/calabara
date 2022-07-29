@@ -103,8 +103,8 @@ const ERC721Button = styled.button`
 const ConfirmButton = styled.button`
     cursor: pointer;
     position: absolute;
-    bottom: 2em;
-    right: 2em;
+    bottom: 0;
+    right: 0;
     color: black;
     padding: 5px 10px;
     border: none;
