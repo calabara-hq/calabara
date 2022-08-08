@@ -28,7 +28,7 @@ function setup(...args) {
     "55": {
         "guildId": "892877917762244680",
         "serverName": "Calabara",
-        "gatekeeperType": "discord",
+        "type": "discord",
         "available_roles": [
             {
                 "role_id": "892877917762244680",
@@ -93,20 +93,23 @@ function setup(...args) {
         ]
     },
     "64": {
-        "gatekeeperType": "erc20",
-        "gatekeeperSymbol": "SHARK",
-        "gatekeeperAddress": "0x232AFcE9f1b3AAE7cb408e482E847250843DB931",
-        "gatekeeperDecimal": "18"
+        "type": "erc20",
+        "symbol": "SHARK",
+        "address": "0x232AFcE9f1b3AAE7cb408e482E847250843DB931",
+        "decimal": "18"
     },
     "72": {
-        "gatekeeperType": "erc721",
-        "gatekeeperSymbol": "NOUN",
-        "gatekeeperAddress": "0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03"
+        "type": "erc721",
+        "symbol": "NOUN",
+        "address": "0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03",
+        "decimal": "0"
+
     },
     "73": {
-        "gatekeeperType": "erc721",
-        "gatekeeperSymbol": "MFER",
-        "gatekeeperAddress": "0x79FCDEF22feeD20eDDacbB2587640e45491b757f"
+        "type": "erc721",
+        "symbol": "MFER",
+        "address": "0x79FCDEF22feeD20eDDacbB2587640e45491b757f",
+        "decimal": "0"
     }
 }
 
@@ -118,18 +121,6 @@ let ruleTestResults = {
 let discordId = '804073245946806303'
 let walletAddress = '0xedcC867bc8B5FEBd0459af17a6f134F41f422f0C'
 
-describe('old gatekeeper queries', () => {
-    const myComp = setup();
-    it('check nicks wallet for a non-zero $SHARK balance', async () => {
-        let res = await myComp.queryGatekeeper(walletAddress, dashboardRules, {"64": ""})
-        expect(res).eqls({"64": 10})
-    })
-    it('check sharkdao wallet for a non-zero NOUNS balance', async () => {
-        let res = await myComp.queryGatekeeper('0xAe7f458667f1B30746354aBC3157907d9F6FD15E', dashboardRules, {"64": "", "72": ""})
-        expect(res).eqls({"64": 0, "72": 6})
-    })
-})
-
 describe('new gatekeeper queries', () => {
     const myComp = setup();
     it('check nicks wallet for a non-zero $SHARK balance', async () => {
@@ -137,7 +128,7 @@ describe('new gatekeeper queries', () => {
         expect(res).eqls({"64": 10})
     })
     it('check sharkdao wallet for a non-zero NOUNS balance', async () => {
-        let res = await myComp.queryGatekeeper('0xAe7f458667f1B30746354aBC3157907d9F6FD15E', dashboardRules, {"64": "", "72": ""})
-        expect(res).eqls({"64": 0, "72": 6})
+        let res = await myComp.queryGatekeeper('0xAe7f458667f1B30746354aBC3157907d9F6FD15E', dashboardRules, {"72": ""})
+        expect(res).eqls({"72": 6})
     })
 })

@@ -98,8 +98,7 @@ export default function AddNewToken({ existingRewardData, type, showBackButton, 
 
     const checkForDuplicates = (address) => {
         for (var i in existingRules) {
-            console.log(existingRules[i].gatekeeperAddress === address)
-            if ((existingRules[i].gatekeeperAddress == address) && (existingRules[i].gatekeeperType != 'discord')) {
+            if ((existingRules[i].address == address) && (existingRules[i].type != 'discord')) {
                 return true
             }
         }

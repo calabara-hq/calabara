@@ -41,7 +41,7 @@ export default function VotingPolicy({ rewardOptions, votingStrategy, setVotingS
         "55": {
             "guildId": "892877917762244680",
             "serverName": "Calabara",
-            "gatekeeperType": "discord",
+            "type": "discord",
             "available_roles": [
                 {
                     "role_id": "892877917762244680",
@@ -106,20 +106,22 @@ export default function VotingPolicy({ rewardOptions, votingStrategy, setVotingS
             ]
         },
         "64": {
-            "gatekeeperType": "erc20",
-            "gatekeeperSymbol": "SHARK",
-            "gatekeeperAddress": "0x232AFcE9f1b3AAE7cb408e482E847250843DB931",
-            "gatekeeperDecimal": "18"
+            "type": "erc20",
+            "symbol": "SHARK",
+            "address": "0x232AFcE9f1b3AAE7cb408e482E847250843DB931",
+            "decimal": "18"
         },
         "72": {
-            "gatekeeperType": "erc721",
-            "gatekeeperSymbol": "NOUN",
-            "gatekeeperAddress": "0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03"
+            "type": "erc721",
+            "symbol": "NOUN",
+            "address": "0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03",
+            "decimal": "0"
         },
         "73": {
-            "gatekeeperType": "erc721",
-            "gatekeeperSymbol": "MFER",
-            "gatekeeperAddress": "0x79FCDEF22feeD20eDDacbB2587640e45491b757f"
+            "type": "erc721",
+            "symbol": "MFER",
+            "address": "0x79FCDEF22feeD20eDDacbB2587640e45491b757f",
+            "decimal": "0"
         }
     }
 

@@ -16,6 +16,42 @@ const { default: axios } = require('axios');
 const serverRoot = path.normalize(path.join(__dirname, '../'));
 
 
+// we need to change all occurances of gatekeeperType to type, and so on for other gatekeeper data.
+// additionally, we need to add a decimal of 0 for erc721 rules
+const apply_GK_DB_patch = async() => {
+    await db.query('update gatekeeper_rules set rule = rule - \'gatekeeperType\' || jsonb_build_object(\'type\', rule-> \'gatekeeperType\') where rule ? \'gatekeeperType\'');
+    await db.query('update gatekeeper_rules set rule = rule - \'gatekeeperSymbol\' || jsonb_build_object(\'symbol\', rule-> \'gatekeeperSymbol\') where rule ? \'gatekeeperSymbol\'');
+    await db.query('update gatekeeper_rules set rule = rule - \'gatekeeperAddress\' || jsonb_build_object(\'address\', rule-> \'gatekeeperAddress\') where rule ? \'gatekeeperAddress\'');
+    await db.query('update gatekeeper_rules set rule = rule - \'gatekeeperDecimal\' || jsonb_build_object(\'decimal\', rule-> \'gatekeeperDecimal\') where rule ? \'gatekeeperDecimal\'');
+    await db.query('update gatekeeper_rules set rule = rule || \'{"decimal":"0"}\' where rule->>\'type\' = \'erc721\';');
+
+
+}
+
+// remove key
+// update gatekeeper_rules set rule = rule #- '{hehe}' where rule_id = 74;
+
+let orgs = ['calabara.eth', 'sharkdao.eth', 'yungweez.eth'];
+let rules = [
+    {"type": "erc20", "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"},
+    {"type": "discord", "guildId": "892877917762244680", "serverName": "Calabara"},
+    {"type": "erc20", "gatekeeperSymbol": "SHARK", "gatekeeperAddress": "0x232AFcE9f1b3AAE7cb408e482E847250843DB931", "gatekeeperDecimal": "18"},
+    {"type": "discord", "guildId": "892877917762244680", "serverName": "Calabara"},
+    {"type": "erc20", "gatekeeperSymbol": "KRAUSE", "gatekeeperAddress": "0x9F6F91078A5072A8B54695DAfA2374Ab3cCd603b", "gatekeeperDecimal": "18"},
+    {"type": "erc721", "symbol": "0", "gatekeeperSymbol": "MFER", "gatekeeperAddress": "0x79FCDEF22feeD20eDDacbB2587640e45491b757f"},
+    {"type": "erc721", "symbol": "0", "gatekeeperSymbol": "NOUN", "gatekeeperAddress": "0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03"},
+]
+
+const refill_GK_DB = async() => {
+    for (i in rules){
+        await db.query('insert into gatekeeper_rules (ens, rule) values ($1, $2)', [orgs[0], rules[i]])
+    }
+}
+
+
+//refill_GK_DB();
+//apply_GK_DB_patch();
+
 
 const getDashboardInfo = async (ens) => {
     var orgInfo = await db.query('select name, ens, logo, members, website, discord, verified, addresses from organizations where ens = $1', [ens.toLowerCase()]).then(clean);
@@ -25,15 +61,12 @@ const getDashboardInfo = async (ens) => {
 const getDashboardRules = async (ens) => {
     var result = await db.query('select json_build_object (rule_id, rule) AS data from gatekeeper_rules where ens = $1', [ens]).then(clean).then(asArray)
 
-    let obj = {}
-    let obj2 = {}
-
     const buildObj = async () => {
         let obj = {}
         await Promise.all(result.map(async (el) => {
             const key = Object.keys(el.data);
             obj[key] = el.data[key];
-            if (obj[key].gatekeeperType === 'discord') {
+            if (obj[key].type === 'discord') {
                 let roles = await (getGuildRoles(obj[key].guildId))
                 obj[key].available_roles = roles.map((el) => {
                     return { 'role_id': el.id, 'role_name': el.name, 'role_color': el.color }

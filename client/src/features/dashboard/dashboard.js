@@ -205,7 +205,7 @@ function InfoCard({ info, ens, discordIntegrationProps }) {
     let promptDiscord = false
     if (isConnected) {
       Object.keys(dashboardRules).map((key) => {
-        if (dashboardRules[key].gatekeeperType === 'discord') {
+        if (dashboardRules[key].type === 'discord') {
           if (!discord_id) {
             promptDiscord = true;
           }

@@ -68,7 +68,7 @@ export default function SelectRoles({ existingRoles, setAppliedRoles }) {
 
   const parseRoles = () => {
     Object.entries(dashboardRules).map(([key, val]) => {
-      if (val.gatekeeperType === 'discord') {
+      if (val.type === 'discord') {
         
         const formattedRoles = val.available_roles.map((available) => {
           return { 'value': available.role_name, 'label': available.role_name, 'color': available.role_color, 'id': available.role_id }

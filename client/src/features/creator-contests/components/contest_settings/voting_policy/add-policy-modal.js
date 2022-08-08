@@ -144,12 +144,12 @@ function TokenStrategy({ rewardOptions, availableRules, votingStrategy, setVotin
     useEffect(() => { })
     Object.values(availableRules).map((el, index) => {
         // first, strip discord rules
-        if (el.gatekeeperType !== 'discord') {
+        if (el.type !== 'discord') {
             let data = {
-                type: el.gatekeeperType,
-                symbol: el.gatekeeperSymbol,
-                decimal: el.gatekeeperDecimal,
-                address: el.gatekeeperAddress
+                type: el.type,
+                symbol: el.symbol,
+                decimal: el.decimal,
+                address: el.address
             }
             options[index] = data
 
