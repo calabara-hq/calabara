@@ -1,10 +1,8 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
-import ContestInfo from "./interface/contest_info/contest-info";
-import useContestState from "../../../hooks/useContestState";
-import { selectProgressRatio, selectContestState, selectDurations } from './contest-interface-reducer';
-import { useSelector } from 'react-redux';
+import ContestInfo from "../contest_info/contest-info";
+import useContestState from "../../../../hooks/useContestState";
 
 
 const ContestInterfaceWrap = styled.div`
@@ -24,13 +22,27 @@ export default function ContestInterface({ contest_settings }) {
     const { ens } = useParams();
     const [isSubmissionBuilder, setIsSubmissionBuilder] = useState(false);
 
+    /*
     const stateManager = useContestState(
         contest_settings.date_times.start_date,
         contest_settings.date_times.voting_begin,
         contest_settings.date_times.end_date
     );
+    */
+    let t0 = new Date();
+    let t1 = new Date();
+    let t2 = new Date();
 
-    console.log('re render parent')
+    t1.setSeconds(t1.getSeconds() + 120)
+    t2.setSeconds(t2.getSeconds() + 299)
+    
+
+    const stateManager = useContestState(
+        t0.toISOString(),
+        t1.toISOString(),
+        t2.toISOString(),
+
+    )
 
 
     return (

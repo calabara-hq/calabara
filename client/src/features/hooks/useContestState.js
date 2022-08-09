@@ -1,6 +1,6 @@
 import React, { useReducer, useState, useRef, useCallback, useEffect, useContext } from 'react';
 import moment from 'moment';
-import { selectProgressRatio, setContestState, setDurations, setProgressRatio } from '../creator-contests/components/contest-live-interface/contest-interface-reducer';
+import { selectProgressRatio, setContestState, setDurations, setProgressRatio } from '../creator-contests/components/contest-live-interface/interface/contest-interface-reducer';
 import { useDispatch, useSelector } from 'react-redux';
 
 
@@ -19,16 +19,15 @@ const calculateDuration = (t0, t1, t2) => {
     ]
 }
 
-const calculateProgressRatio = (cc_state, t0, t1, t2, barProgress) => {
+const calculateProgressRatio = (cc_state, t0, t1, t2) => {
     if (cc_state === 0) {
 
         //return (((moment().format('x') - moment(t0).format('x')) / ((moment(t1).format('x') - moment(t0).format('x'))) / 2) * 100)
-        return (((moment().format('x')- moment(t0).format('x')) / (moment(t1).format('x') - moment(t0).format('x'))) / 2 * 100)
+        return (((moment().format('x') - moment(t0).format('x')) / (moment(t1).format('x') - moment(t0).format('x'))) / 2 * 100)
     }
     else if (cc_state === 1) {
         //return barProgress + ((moment().format('x') - moment(t1).format('x')) / ((moment(t2).format('x') - moment(t1).format('x')))* 100)
-        return (((moment().format('x')- moment(t0).format('x')) / (moment(t2).format('x') - moment(t0).format('x'))) * 100)
-
+        return (((moment().format('x') - moment(t1).format('x')) / (moment(t2).format('x') - moment(t1).format('x'))) / 2 * 100 + 50)
     }
     else return 100
 }
@@ -37,7 +36,6 @@ const calculateProgressRatio = (cc_state, t0, t1, t2, barProgress) => {
 export default function useContestState(t0, t1, t2) {
     const dispatch = useDispatch();
     const timerRef = useRef(0);
-    const barProgress = useSelector(selectProgressRatio)
 
 
     const update_contest_state = (t0, t1, t2) => {

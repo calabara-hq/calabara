@@ -19,3 +19,6 @@ create table discord_guilds (id serial, ens text UNIQUE, guild_id text, primary 
 create table users (id serial, address text UNIQUE, discord text, nonce text, primary key(id));
 
 create table whitelist (id serial, address text, primary key (id));
+
+
+/* contest setup experimentation*/

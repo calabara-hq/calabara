@@ -1,26 +1,25 @@
 import { useState, useEffect, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectDashboardInfo } from "../../../../../dashboard/dashboard-info-reducer";
-import { selectLogoCache } from "../../../../../org-cards/org-cards-reducer";
-import useCommon from "../../../../../hooks/useCommon";
+import { selectDashboardInfo } from "../../../../dashboard/dashboard-info-reducer";
+import { selectLogoCache } from "../../../../org-cards/org-cards-reducer";
+import useCommon from "../../../../hooks/useCommon";
 import { useParams } from "react-router-dom";
-import * as WebWorker from '../../../../../../app/worker-client.js'
+import * as WebWorker from '../../../../../app/worker-client.js'
 import moment from "moment";
-import { Label, labelColorOptions } from "../../../common/common_styles";
-import { ContestDurationCheckpointBar } from "../../../../../checkpoint-bar/checkpoint-bar";
-import useContestTimekeeper from "../../../../../hooks/useContestTimekeeper";
+import { Label, labelColorOptions } from "../../common/common_styles";
+import { ContestDurationCheckpointBar } from "../../../../checkpoint-bar/checkpoint-bar";
+import useContestTimekeeper from "../../../../hooks/useContestTimekeeper";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheckCircle, faTimesCircle, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { InterfaceHeading, HeadingSection1, OrgImg, ContestDetails, DetailRow, CheckpointWrap, CheckpointBottomTag, CheckpointBottom, label_status } from './contest-info-style'
-import { selectProgressRatio, selectContestState, selectDurations } from "../../contest-interface-reducer";
+import { selectProgressRatio, selectContestState, selectDurations } from "../interface/contest-interface-reducer";
 
 export default function ContestInfo({ contest_settings }) {
     const { ens } = useParams();
     const [isInfoLoaded, setIsInfoLoaded] = useState(false);
     const dispatch = useDispatch();
-    const barProgress = useSelector(selectProgressRatio);
+
     const contest_state = useSelector(selectContestState);
-    const durations = useSelector(selectDurations);
     // initialize dashboard info
     const info = useSelector(selectDashboardInfo)
     const { batchFetchDashboardData } = useCommon();
@@ -39,9 +38,7 @@ export default function ContestInfo({ contest_settings }) {
         }
     }, [info])
 
-    useEffect(() => {
-        console.log(barProgress)
-    },[barProgress, contest_state, durations])
+
 
     useEffect(() => {
         WebWorker.processImages(dispatch, logoCache);
@@ -71,7 +68,6 @@ export default function ContestInfo({ contest_settings }) {
         ]
     }
 
-
     let end_date = moment.utc(contest_settings.date_times.end_date).local().format('ddd. M/D hh:mm A').toString()
     let rewards_sum = calculateRewardsSum();
     return (
@@ -100,10 +96,20 @@ export default function ContestInfo({ contest_settings }) {
                             <p>Voter Rewards:</p>
                             <FontAwesomeIcon style={{ fontSize: '1.5em', color: Object.keys(contest_settings.voter_rewards).length > 0 ? '#00a368' : 'red' }} icon={Object.keys(contest_settings.voter_rewards).length > 0 ? faCheckCircle : faTimesCircle} />
                         </DetailRow>
-
                     </ContestDetails>
                 </HeadingSection1>
             </InterfaceHeading>
+            <RenderCheckpoint />
+        </>
+    )
+}
+
+function RenderCheckpoint() {
+    const barProgress = useSelector(selectProgressRatio);
+    const durations = useSelector(selectDurations);
+
+    return (
+        <>
             <CheckpointWrap>
                 <ContestDurationCheckpointBar percent={barProgress} />
             </CheckpointWrap>
