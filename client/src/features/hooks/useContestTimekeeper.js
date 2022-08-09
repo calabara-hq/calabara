@@ -1,6 +1,5 @@
 import React, { useReducer, useState, useRef, useCallback, useEffect } from 'react';
 import moment from 'moment';
-import { indexOf } from '@metamask/jazzicon/colors';
 
 const calculateDuration = (time_0, time_1, time_2) => {
 

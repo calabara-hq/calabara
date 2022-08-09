@@ -53,7 +53,6 @@ const ExitButton = styled.button`
 
 export default function ViewSubmissionModal({ modalOpen, handleClose, TLDRImage, TLDRText, expandData }) {
 
-    console.log(handleClose)
     return (
         <div>
             <Modal

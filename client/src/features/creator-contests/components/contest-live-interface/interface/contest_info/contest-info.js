@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectDashboardInfo } from "../../../../../dashboard/dashboard-info-reducer";
 import { selectLogoCache } from "../../../../../org-cards/org-cards-reducer";
@@ -12,20 +12,19 @@ import useContestTimekeeper from "../../../../../hooks/useContestTimekeeper";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheckCircle, faTimesCircle, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { InterfaceHeading, HeadingSection1, OrgImg, ContestDetails, DetailRow, CheckpointWrap, CheckpointBottomTag, CheckpointBottom, label_status } from './contest-info-style'
+import { selectProgressRatio, selectContestState, selectDurations } from "../../contest-interface-reducer";
 
 export default function ContestInfo({ contest_settings }) {
-    const [barProgress, setBarProgress] = useState(0);
-
     const { ens } = useParams();
     const [isInfoLoaded, setIsInfoLoaded] = useState(false);
     const dispatch = useDispatch();
-    const { durations, calculateActive } = useContestTimekeeper(setBarProgress, contest_settings.date_times.start_date, contest_settings.date_times.voting_begin, contest_settings.date_times.end_date);
-    console.log(contest_settings)
+    const barProgress = useSelector(selectProgressRatio);
+    const contest_state = useSelector(selectContestState);
+    const durations = useSelector(selectDurations);
     // initialize dashboard info
     const info = useSelector(selectDashboardInfo)
     const { batchFetchDashboardData } = useCommon();
     const logoCache = useSelector(selectLogoCache);
-
 
 
     useEffect(() => {
@@ -40,7 +39,9 @@ export default function ContestInfo({ contest_settings }) {
         }
     }, [info])
 
-
+    useEffect(() => {
+        console.log(barProgress)
+    },[barProgress, contest_state, durations])
 
     useEffect(() => {
         WebWorker.processImages(dispatch, logoCache);
@@ -85,11 +86,11 @@ export default function ContestInfo({ contest_settings }) {
                         </DetailRow>
                         <DetailRow>
                             <p>Status:</p>
-                            <Label color={label_status[calculateActive()]}>{label_status[calculateActive()].status}</Label>
+                            {contest_state !== null && <Label color={label_status[contest_state]}>{label_status[contest_state].status}</Label>}
                         </DetailRow>
                         {rewards_sum.map((reward, index) => {
                             if (reward.sum > 0) return (
-                                <DetailRow>
+                                <DetailRow key={index}>
                                     {index === 0 ? <p>Rewards:</p> : <b></b>}
                                     <p>{reward.sum} {reward.symbol}</p>
                                 </DetailRow>
@@ -109,7 +110,7 @@ export default function ContestInfo({ contest_settings }) {
             <CheckpointBottom>
                 {durations.map((duration, index) => {
                     return (
-                        <CheckpointBottomTag status={duration}>{duration}</CheckpointBottomTag>
+                        <CheckpointBottomTag key={index} status={duration}>{duration}</CheckpointBottomTag>
                     )
                 })}
             </CheckpointBottom>

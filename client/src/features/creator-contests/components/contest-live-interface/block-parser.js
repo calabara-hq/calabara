@@ -16,7 +16,6 @@ export const ParseBlocks = ({ data }) => {
         if (Array.isArray(reactElement)) {
             reactElement = reactElement.filter(el => el != ',')
         }
-        console.log(reactElement)
         return reactElement
     }
 

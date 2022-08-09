@@ -13,7 +13,7 @@ import ManageWidgets from '../manage-widgets/manage-widgets'
 import ContestSettings from '../creator-contests/components/contest_settings/contest-settings'
 import Homepage from '../homepage/homepage'
 import ContestInterface from '../creator-contests/components/contest-live-interface/interface'
-
+import ContestInterfaceController from '../creator-contests/components/contest-live-interface/interface/contest-interface-ctr'
 
 export default function Container() {
 
@@ -68,7 +68,7 @@ export default function Container() {
       </Route>
 
       <Route path="/:ens/creator_contests">
-        <ContestInterface />
+        <ContestInterfaceController />
       </Route>
     </div>
   )

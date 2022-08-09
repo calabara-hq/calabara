@@ -1,24 +1,11 @@
-import { contest_data } from "./temp-data";
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import styled from "styled-components";
-import { useDispatch, useSelector } from "react-redux";
-import { selectDashboardInfo } from "../../../dashboard/dashboard-info-reducer";
-import { selectLogoCache } from "../../../org-cards/org-cards-reducer";
-import useCommon from "../../../hooks/useCommon";
 import { useParams } from "react-router-dom";
-import * as WebWorker from '../../../../app/worker-client.js'
-import moment from "moment";
-import { Label, labelColorOptions } from "../common/common_styles";
-import { ContestDurationCheckpointBar } from "../../../checkpoint-bar/checkpoint-bar";
-import useContestTimekeeper from "../../../hooks/useContestTimekeeper";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheckCircle, faTimesCircle, faTimes } from "@fortawesome/free-solid-svg-icons";
-import SubmissionBuilder from "./interface/submissions/submission-builder-2";
-import SubmissionDisplay from "./interface/submissions/test-submission-display";
-import SubmissionModal from "./interface/submissions/edit-submission-modal";
-import PromptDisplay from "./interface/prompts/prompt-display";
-import axios from 'axios';
 import ContestInfo from "./interface/contest_info/contest-info";
+import useContestState from "../../../hooks/useContestState";
+import { selectProgressRatio, selectContestState, selectDurations } from './contest-interface-reducer';
+import { useSelector } from 'react-redux';
+
 
 const ContestInterfaceWrap = styled.div`
     width: 70vw;
@@ -33,29 +20,28 @@ const ContestInterfaceWrap = styled.div`
 
 
 
-export default function ContestInterface({ }) {
-    const [isSubmissionBuilder, setIsSubmissionBuilder] = useState(false);
-    const [contest_settings, setContestSettings] = useState(null);
+export default function ContestInterface({ contest_settings }) {
     const { ens } = useParams();
+    const [isSubmissionBuilder, setIsSubmissionBuilder] = useState(false);
 
+    const stateManager = useContestState(
+        contest_settings.date_times.start_date,
+        contest_settings.date_times.voting_begin,
+        contest_settings.date_times.end_date
+    );
 
-    useEffect(() => {
-        (async () => {
-            let res = await axios.get(`/creator_contests/fetch_contest/${ens}`);
-            setContestSettings(res.data)
-            console.log('fetching data')
-
-        })();
-    }, [])
+    console.log('re render parent')
 
 
     return (
         <ContestInterfaceWrap>
-            {contest_settings && <ContestInfo contest_settings={contest_settings} />}
-            <PromptDisplay setIsSubmissionBuilder={setIsSubmissionBuilder} />
-            {isSubmissionBuilder && <SubmissionBuilder setIsSubmissionBuilder={setIsSubmissionBuilder} />}
-            <SubmissionDisplay />
+            
+            {contest_settings && <ContestInfo contest_settings={contest_settings}/>}
+            {/*<PromptDisplay setIsSubmissionBuilder={setIsSubmissionBuilder} />*/}
+            {/*{isSubmissionBuilder && <SubmissionBuilder setIsSubmissionBuilder={setIsSubmissionBuilder} />}*/}
+            {/*<SubmissionDisplay />*/}
         </ContestInterfaceWrap>
     )
 }
+
 

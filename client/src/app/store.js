@@ -15,7 +15,7 @@ import dashboardInfoReducer from '../features/dashboard/dashboard-info-reducer';
 import wikiReducer from '../features/wiki/wiki-reducer';
 import rulesReducer from '../features/gatekeeper/gatekeeper-rules-reducer';
 import userReducer from '../features/user/user-reducer';
-
+import contestStateReducer from '../features/creator-contests/components/contest-live-interface/contest-interface-reducer';
 
 const reducer = combineReducers({
   notifications: notificationReducer,
@@ -26,6 +26,7 @@ const reducer = combineReducers({
   wiki_data: wikiReducer,
   gatekeeperRules: rulesReducer,
   user: userReducer,
+  contestState: contestStateReducer
 });
 
 const persistConfig = {
