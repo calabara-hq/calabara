@@ -3,8 +3,7 @@ import { ParseBlocks } from "../block-parser";
 import styled from 'styled-components';
 import { Label, labelColorOptions } from "../../common/common_styles";
 import { contest_data } from "../temp-data";
-import SubmissionModal from "../interface/submissions/edit-submission-modal";
-
+import SubmissionModal from "../submissions/edit-submission-modal";
 
 const PromptContainer = styled.div`
     display: flex;

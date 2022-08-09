@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
     contest_state: null,
+    contest_hash: null,
     durations: [null, null, null],
     progress_ratio: 0,
 }
@@ -24,6 +25,10 @@ export const contestState = createSlice({
             state.progress_ratio = data.payload;
         },
 
+        setContestHash: (state, data) => {
+            state.contest_hash = data.payload
+        },
+
         stateReset: () => initialState
 
     },
@@ -32,9 +37,10 @@ export const contestState = createSlice({
 
 
 
-export const { setContestState, setDurations, setProgressRatio } = contestState.actions;
+export const { setContestState, setDurations, setProgressRatio, setContestHash } = contestState.actions;
 export const selectContestState = state => state.contestState.contest_state;
 export const selectDurations = state => state.contestState.durations;
 export const selectProgressRatio = state => state.contestState.progress_ratio;
+export const selectContestHash = state => state.contestState.contest_hash;
 
 export default contestState.reducer;

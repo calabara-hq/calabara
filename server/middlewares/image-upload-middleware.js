@@ -30,7 +30,7 @@ const imageUpload = multer({
        }
      cb(undefined, true)
   }
-}) 
+})
 
 
 module.exports.imageUpload = imageUpload;

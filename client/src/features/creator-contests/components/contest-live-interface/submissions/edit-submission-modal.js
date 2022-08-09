@@ -1,19 +1,22 @@
 import React, { useState, useEffect, useReducer, useRef } from 'react';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
-import '../../../../../../css/status-messages.css';
+import '../../../../../css/status-messages.css';
 import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
-import { contest_data } from '../../temp-data';
+import { contest_data } from '../temp-data';
 import SubmissionEdit from './submission-builder-2';
 import TLDR from './TLDR-editor';
 import { createReactEditorJS } from 'react-editor-js'
 import PreviewSubmission from './preview-submission';
-import { ParseBlocks } from '../../block-parser';
-import { Label, labelColorOptions } from '../../../common/common_styles';
-import { ContestSubmissionCheckpointBar } from '../../../../../checkpoint-bar/checkpoint-bar';
-
+import { ParseBlocks } from '../block-parser';
+import { Label, labelColorOptions } from '../../common/common_styles';
+import { ContestSubmissionCheckpointBar } from '../../../../checkpoint-bar/checkpoint-bar';
+import axios from 'axios'
+import { useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { selectContestHash } from '../interface/contest-interface-reducer';
 
 
 const style = {
@@ -258,23 +261,23 @@ function EditLongForm({ setProgress, longFormValue, setLongFormValue }) {
 }
 
 function Preview({ setProgress, TLDRImage, TLDRText, longFormValue }) {
-
-        const handleSubmit = () => {
-            console.log(TLDRImage, TLDRText, longFormValue)
-            longFormValue.tldr_text = TLDRText;
-            longFormValue.tldr_image = TLDRImage;
-            console.log(longFormValue)
-
-        }
-
-        return (
-            <>
-                <div className='tab-message neutral'>
-                    <p>This is how your submission will appear to viewers. Click the expand button to see the rest of your content. You can navigate back if you need to change anything.</p>
-                </div>
-                <PreviewSubmission setProgress={setProgress} TLDRImage={TLDRImage} TLDRText={TLDRText} longFormValue={longFormValue} />
-                <PreviousButton onClick={() => { setProgress(2) }}><FontAwesomeIcon icon={faArrowLeft}></FontAwesomeIcon></PreviousButton>
-                <NextButton onClick={handleSubmit}><FontAwesomeIcon icon={faArrowRight}></FontAwesomeIcon></NextButton>
-            </>
-        )
+    const { ens } = useParams();
+    const contest_hash = useSelector(selectContestHash);
+    console.log(contest_hash)
+    const handleSubmit = async () => {
+        longFormValue.tldr_text = TLDRText;
+        longFormValue.tldr_image = TLDRImage;
+        await axios.post('/creator_contests/create_submission', { ens: ens, contest_hash: contest_hash, submission: longFormValue })
     }
+
+    return (
+        <>
+            <div className='tab-message neutral'>
+                <p>This is how your submission will appear to viewers. Click the expand button to see the rest of your content. You can navigate back if you need to change anything.</p>
+            </div>
+            <PreviewSubmission setProgress={setProgress} TLDRImage={TLDRImage} TLDRText={TLDRText} longFormValue={longFormValue} />
+            <PreviousButton onClick={() => { setProgress(2) }}><FontAwesomeIcon icon={faArrowLeft}></FontAwesomeIcon></PreviousButton>
+            <NextButton onClick={handleSubmit}><FontAwesomeIcon icon={faArrowRight}></FontAwesomeIcon></NextButton>
+        </>
+    )
+}

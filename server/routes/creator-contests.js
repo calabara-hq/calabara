@@ -10,7 +10,8 @@ const FormData = require('form-data');
 const { authenticateToken } = require('../middlewares/jwt-middleware.js');
 const { isAdmin } = require('../middlewares/admin-middleware')
 const { clean, asArray } = require('../helpers/common')
-const { getGuildRoles } = require('./discord-routes')
+const { getGuildRoles } = require('./discord-routes');
+const { createContest, createSubmission } = require('../middlewares/create-contest-middleware.js');
 
 
 const serverRoot = path.normalize(path.join(__dirname, '../'));
@@ -21,10 +22,23 @@ const serverRoot = path.normalize(path.join(__dirname, '../'));
 // fetch the submissions for a contest
 
 // fetch the settings for a contest
-contests.get('/fetch_contest/*', async function (req, res, next) {
+contests.get('/fetch_org_contests/*', async function (req, res, next) {
     let ens = req.url.split('/')[2];
 
-    let filestream = fs.createReadStream(path.join(serverRoot, 'creator-contests/sharkdao.eth/123/settings.json'))
+    let contests = await db.query('select * from contests where ens = $1 order by created asc', [ens]).then(clean).then(asArray)
+
+    res.send(contests).status(200)
+})
+
+// fetch the latest contest for an organization
+contests.get('/fetch_latest_contest/*', async function (req, res, next) {
+    let ens = req.url.split('/')[2];
+
+    // will there be conditions where latest is not the current active contest? need to handle that if so.
+
+    let latest = await db.query('select _url from contests where ens = $1 order by created asc limit 1', [ens]).then(clean)
+
+    let filestream = fs.createReadStream(path.join(serverRoot, latest._url, 'settings.json'))
         .on('end', function () {
             console.log('stream done')
         })
@@ -34,6 +48,25 @@ contests.get('/fetch_contest/*', async function (req, res, next) {
         .pipe(res)
 })
 
+// create a contest
+
+contests.post('/create_contest', createContest, async function (req, res, next) {
+
+    const { ens, contest_settings } = req.body
+    const { start_date, end_date } = contest_settings.date_times
+    let _url = `creator-contests/${ens}/${req.hash}/`
+    await db.query('insert into contests (ens, created, _start, _end, _url) values ($1, $2, $3, $4, $5)', [ens, req.created, start_date, end_date, _url])
+    // gen a hash, save file to location, write to db
+    res.sendStatus(200)
+})
+
+
+contests.post('/create_submission', createSubmission, async function (req, res, next) {
+    console.log('submission rx!')
+    const { submission } = req.body;
+    console.log(submission)
+    res.sendStatus(200)
+})
 
 
 module.exports.contests = contests;

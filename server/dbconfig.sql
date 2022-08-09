@@ -22,3 +22,5 @@ create table whitelist (id serial, address text, primary key (id));
 
 
 /* contest setup experimentation*/
+
+create table contests (id serial, ens text, created text, _start text, _end text, _url text, primary key (id));

@@ -3,7 +3,8 @@ import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import ContestInfo from "../contest_info/contest-info";
 import useContestState from "../../../../hooks/useContestState";
-
+import PromptDisplay from '../prompts/prompt-display';
+import SubmissionBuilder from '../submissions/submission-builder-2'
 
 const ContestInterfaceWrap = styled.div`
     width: 70vw;
@@ -47,10 +48,9 @@ export default function ContestInterface({ contest_settings }) {
 
     return (
         <ContestInterfaceWrap>
-            
             {contest_settings && <ContestInfo contest_settings={contest_settings}/>}
-            {/*<PromptDisplay setIsSubmissionBuilder={setIsSubmissionBuilder} />*/}
-            {/*{isSubmissionBuilder && <SubmissionBuilder setIsSubmissionBuilder={setIsSubmissionBuilder} />}*/}
+            <PromptDisplay setIsSubmissionBuilder={setIsSubmissionBuilder} />
+            {isSubmissionBuilder && <SubmissionBuilder setIsSubmissionBuilder={setIsSubmissionBuilder} />}
             {/*<SubmissionDisplay />*/}
         </ContestInterfaceWrap>
     )

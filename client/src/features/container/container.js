@@ -66,7 +66,7 @@ export default function Container() {
         <ContestSettings />
       </Route>
 
-      <Route path="/:ens/creator_contests">
+      <Route path="/:ens/creator_contests/:contest_hash?">
         <ContestInterfaceController />
       </Route>
     </div>

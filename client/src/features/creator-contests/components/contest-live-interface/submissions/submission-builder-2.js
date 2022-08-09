@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
-import { EDITOR_JS_TOOLS } from '../../../contest_settings/prompt_builder/editor_tools'
-import { ParseBlocks } from '../../block-parser'
+import { EDITOR_JS_TOOLS } from '../../contest_settings/prompt_builder/editor_tools'
+import { ParseBlocks } from '../block-parser'
 import styled, { css } from 'styled-components'
-import { fade_in, submission_fade } from '../../../common/common_styles'
+import { fade_in, submission_fade } from '../../common/common_styles'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronDown, faChevronUp, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons'
 import ReactTooltip from 'react-tooltip';
