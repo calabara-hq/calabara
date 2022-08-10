@@ -5,6 +5,7 @@ import ContestInfo from "../contest_info/contest-info";
 import useContestState from "../../../../hooks/useContestState";
 import PromptDisplay from '../prompts/prompt-display';
 import SubmissionBuilder from '../submissions/submission-builder-2'
+import SubmissionDisplay from '../submissions/test-submission-display';
 
 const ContestInterfaceWrap = styled.div`
     width: 70vw;
@@ -51,7 +52,7 @@ export default function ContestInterface({ contest_settings }) {
             {contest_settings && <ContestInfo contest_settings={contest_settings}/>}
             <PromptDisplay setIsSubmissionBuilder={setIsSubmissionBuilder} />
             {isSubmissionBuilder && <SubmissionBuilder setIsSubmissionBuilder={setIsSubmissionBuilder} />}
-            {/*<SubmissionDisplay />*/}
+            <SubmissionDisplay />
         </ContestInterfaceWrap>
     )
 }

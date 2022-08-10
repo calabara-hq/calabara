@@ -37,30 +37,28 @@ async function createSubmission(req, res, next) {
     const { ens, submission, contest_hash } = req.body;
 
     // use 'created' rather than 'time' for some uniformity
-
-    submission.created = JSON.parse(JSON.stringify(submission.time));
     delete submission.time;
+    submission.created = new Date().toISOString();
 
-    let hash = crypto.createHash('md5').update(JSON.stringify(submission)).digest('hex').slice(-8);
-    submission.hash = hash;
+    let submission_hash = crypto.createHash('md5').update(JSON.stringify(submission)).digest('hex').slice(-8);
+    submission.hash = submission_hash;
 
-    let destination = `creator-contests/${ens}/${contest_hash}/submissions/${hash}`
+    let destination = `creator-contests/${ens}/${contest_hash}/submissions/${submission_hash}`
 
     await asyncfs.mkdir(destination, { recursive: true }, (err) => {
         if (err) return res.sendStatus(401)
 
     })
 
-    let writestream = fs.createWriteStream(path.join(serverRoot, `${destination}/settings.json`));
+    let writestream = fs.createWriteStream(path.join(serverRoot, `${destination}/${submission_hash}.json`));
     writestream.write(JSON.stringify(submission), (err) => {
         if (err) return res.sendStatus(401)
         req.contest_hash = contest_hash;
-        req.hash = hash;
+        req.submission_hash = submission_hash;
         req.created = submission.created;
         next();
     })
 
-   next();
 }
 
 

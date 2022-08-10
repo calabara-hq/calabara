@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { contest_data } from '../../temp-data';
+import { contest_data } from '../temp-data';
 import styled, { keyframes, css } from 'styled-components'
-import { ParseBlocks } from '../../block-parser';
+import { ParseBlocks } from '../block-parser';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
-import { fade_in } from '../../../common/common_styles';
+import { fade_in } from '../../common/common_styles';
 import ViewSubmissionModal from './expand-submission-modal';
 
 const SubmissionWrap = styled.div`
@@ -76,7 +76,7 @@ export default function SubmissionDisplay({ }) {
     const [TLDRImage, setTLDRImage] = useState(null);
     const [TLDRText, setTLDRText] = useState(null);
     const [expandData, setExpandData] = useState(null)
-
+    const [submissions, setSubmissions] = useState([])
     const handleClose = () => {
         setTLDRImage(null);
         setTLDRText(null);
@@ -92,7 +92,9 @@ export default function SubmissionDisplay({ }) {
         setModalOpen(true);
     }
 
-    let submissions = contest_data.submissions;
+    useEffect(() => {
+
+    },[])
 
     return (
         <>
@@ -101,7 +103,7 @@ export default function SubmissionDisplay({ }) {
                 {submissions.map((submission, index) => {
                     return <Submission data={submission} index={index} handleExpand={handleExpand} />
                 })}
-                <ViewSubmissionModal modalOpen={modalOpen} handleClose={handleClose} TLDRImage={TLDRImage} TLDRText={TLDRText} expandData={expandData}/>
+                <ViewSubmissionModal modalOpen={modalOpen} handleClose={handleClose} TLDRImage={TLDRImage} TLDRText={TLDRText} expandData={expandData} />
             </SubmissionWrap>
         </>
     )

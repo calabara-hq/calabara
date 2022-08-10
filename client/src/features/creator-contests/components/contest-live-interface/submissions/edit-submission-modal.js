@@ -261,13 +261,11 @@ function EditLongForm({ setProgress, longFormValue, setLongFormValue }) {
 }
 
 function Preview({ setProgress, TLDRImage, TLDRText, longFormValue }) {
-    const { ens } = useParams();
-    const contest_hash = useSelector(selectContestHash);
-    console.log(contest_hash)
+    const { ens, contest_hash } = useParams();
     const handleSubmit = async () => {
         longFormValue.tldr_text = TLDRText;
         longFormValue.tldr_image = TLDRImage;
-        await axios.post('/creator_contests/create_submission', { ens: ens, contest_hash: contest_hash, submission: longFormValue })
+        let res = await axios.post('/creator_contests/create_submission', { ens: ens, contest_hash: contest_hash, submission: longFormValue })
     }
 
     return (
