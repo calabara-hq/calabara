@@ -8,7 +8,7 @@ dotenv.config();
 
 const imageStorage = multer.diskStorage({
     // Destination to store image     
-    destination: 'img/editor',
+    destination: 'contest-assets/staging',
       filename: (req, file, cb) => {
           cb(null, file.fieldname + '_' + Date.now() 
              + path.extname(file.originalname))
@@ -21,7 +21,7 @@ const imageStorage = multer.diskStorage({
 const imageUpload = multer({
     storage: imageStorage,
     limits: {
-      fileSize: 1000000 // 1000000 Bytes = 1 MB
+      fileSize: 10000000 // 1000000 Bytes = 1 MB
     },
     fileFilter(req, file, cb) {
       if (!file.originalname.match(/\.(png|jpg)$/)) { 

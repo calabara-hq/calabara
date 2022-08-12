@@ -1,6 +1,15 @@
 import { useEffect, useState } from "react";
 import axios from 'axios'
 import { useParams, useHistory } from "react-router-dom";
+import styled from 'styled-components'
+
+
+const MyStyledParagraphTag = styled.p`
+    color: lightblue;
+    font-size: 20px;
+    cursor: pointer;
+`
+
 
 
 export default function ContestHomepage({ }) {
@@ -27,7 +36,7 @@ export default function ContestHomepage({ }) {
             {all_contests && <div>
                 {all_contests.map((el, index) => {
                     return (
-                        <p style={{ color: 'lightblue', fontSize: '20px', cursor: 'pointer' }} onClick={() => handleClick(el._hash)}>Round {index + 1}</p>
+                        <MyStyledParagraphTag onClick={() => handleClick(el._hash)}>Round {index + 1}</MyStyledParagraphTag>
                     )
                 })}
             </div>}

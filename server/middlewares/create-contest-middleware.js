@@ -3,6 +3,7 @@ const crypto = require('crypto')
 const serverRoot = path.normalize(path.join(__dirname, '../'));
 const asyncfs = require('fs').promises;
 const fs = require('fs');
+const { pinFromFs, pinJSON } = require('../helpers/ipfs-api');
 // generate a contest identifier hash
 
 // create folder with hash and writestream and write file to disk
@@ -18,7 +19,8 @@ async function createContest(req, res, next) {
     contest_settings.hash = hash;
     let destination = `creator-contests/${ens}/${hash}/`
 
-    await asyncfs.mkdir(destination, { recursive: true }, (err) => {
+    // add the img folder while we're at it
+    await asyncfs.mkdir(`${destination}/img`, { recursive: true }, (err) => {
         if (err) return res.sendStatus(401)
 
     })
@@ -33,9 +35,12 @@ async function createContest(req, res, next) {
 }
 
 async function createSubmission(req, res, next) {
-    
-    const { ens, submission, contest_hash } = req.body;
 
+
+    const { ens, submission_tldr, submission_body, contest_hash } = req.body;
+
+
+    /*
     // use 'created' rather than 'time' for some uniformity
     delete submission.time;
     submission.created = new Date().toISOString();
@@ -58,8 +63,64 @@ async function createSubmission(req, res, next) {
         req.created = submission.created;
         next();
     })
+    */
 
+
+    /****
+     *  loop through image blocks
+     *  for each image:
+     *      pin to ipfs
+     *      set the url in submission
+     *      delete from filesystem
+     ****/
+
+    let ipfs_gateway = 'https://gateway.pinata.cloud/ipfs/'
+
+    console.log(submission_body)
+    console.log(submission_tldr)
+    
+    for (block of submission_body.blocks) {
+        if (block.type === 'image') {
+            // pin to ipfs and set the new url hash
+
+            let og_url = block.data.file.url
+
+            let pin_res = await pinFromFs(og_url);
+            console.log(pin_res)
+            block.data.file.url = ipfs_gateway + pin_res.IpfsHash;
+
+
+            // delete the files from staging dir
+
+            fs.unlink(path.normalize(path.join(__dirname, '../', og_url)), (err) => {
+                if (err) console.log(err)
+            })
+        }
+    }
+
+    // pin body
+    // put body hash in tldr data
+    // hash tldr section
+    // pass tldr hash to route
+
+    
+    let body_hash = await pinJSON(submission_body);
+    console.log(body_hash)
+
+    submission_tldr.submission_body = ipfs_gateway + body_hash.IpfsHash;
+
+    let submission_hash = await pinJSON(submission_tldr);
+    console.log(submission_hash)
+
+    req.submission_url = ipfs_gateway + submission_hash.IpfsHash;
+    req.contest_hash = contest_hash;
+    req.created = new Date().toISOString();
+
+
+    next();
 }
+
+
 
 
 

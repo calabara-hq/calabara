@@ -14,6 +14,7 @@ export default function ToggleOption({ appliedRules, setAppliedRules, ruleError,
 
     /******************/
 
+
     let availableRules = {
         "55": {
             "guildId": "892877917762244680",

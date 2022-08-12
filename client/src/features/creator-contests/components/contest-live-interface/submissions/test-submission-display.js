@@ -6,6 +6,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { fade_in } from '../../common/common_styles';
 import ViewSubmissionModal from './expand-submission-modal';
+import { useParams } from 'react-router-dom';
+import axios from 'axios'
 
 const SubmissionWrap = styled.div`
     display: flex;
@@ -76,7 +78,8 @@ export default function SubmissionDisplay({ }) {
     const [TLDRImage, setTLDRImage] = useState(null);
     const [TLDRText, setTLDRText] = useState(null);
     const [expandData, setExpandData] = useState(null)
-    const [submissions, setSubmissions] = useState([])
+    const [urls, set_urls] = useState([]);
+    const { ens, contest_hash } = useParams();
     const handleClose = () => {
         setTLDRImage(null);
         setTLDRText(null);
@@ -85,23 +88,27 @@ export default function SubmissionDisplay({ }) {
     }
 
 
-    const handleExpand = (data) => {
-        setTLDRImage(data.tldr_image);
-        setTLDRText(data.tldr_text);
-        setExpandData(data);
+    const handleExpand = async (tldr_img, tldr_text, submission_url) => {
+        setTLDRImage(tldr_img);
+        setTLDRText(tldr_text);
+        let res = await axios.get(submission_url)
+        setExpandData(res.data);
         setModalOpen(true);
     }
 
     useEffect(() => {
-
-    },[])
+        (async () => {
+            let res = await axios.get(`/creator_contests/fetch_submissions/${ens}/${contest_hash}`);
+            set_urls(res.data)
+        })();
+    }, [])
 
     return (
         <>
             <h2 style={{ textAlign: 'center', color: '#d3d3d3', marginBottom: '30px' }}>Submissions</h2>
             <SubmissionWrap>
-                {submissions.map((submission, index) => {
-                    return <Submission data={submission} index={index} handleExpand={handleExpand} />
+                {urls.map((url, index) => {
+                    return <Submission url={url._url} index={index} handleExpand={handleExpand} />
                 })}
                 <ViewSubmissionModal modalOpen={modalOpen} handleClose={handleClose} TLDRImage={TLDRImage} TLDRText={TLDRText} expandData={expandData} />
             </SubmissionWrap>
@@ -109,12 +116,26 @@ export default function SubmissionDisplay({ }) {
     )
 }
 
-function Submission({ data, index, handleExpand }) {
+function Submission({ url, index, handleExpand }) {
+    const { ens, contest_hash } = useParams();
+    const [tldr_img, set_tldr_img] = useState();
+    const [tldr_text, set_tldr_text] = useState();
+    const [submission_body, set_submission_body] = useState();
+
+    console.log(url)
+    useEffect(() => {
+        (async () => {
+            let res = await axios.get(url)
+            set_tldr_img(res.data.tldr_image)
+            set_tldr_text(res.data.tldr_text)
+            set_submission_body(res.data.submission_body)
+        })();
+    }, [])
 
     return (
-        <SubmissionPreviewContainer index={index} onClick={() => handleExpand(data)}>
-            <p>{data.tldr_text}</p>
-            <PreviewImage src={data.tldr_image}></PreviewImage>
+        <SubmissionPreviewContainer index={index} onClick={() => handleExpand(tldr_img, tldr_text, submission_body)}>
+            <p>{tldr_text}</p>
+            <PreviewImage src={tldr_img}></PreviewImage>
             {/*
                 <SubmissionContent >
                     <ParseBlocks data={data} />

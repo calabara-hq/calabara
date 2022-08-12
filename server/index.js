@@ -14,7 +14,7 @@ const { dashboard } = require('./routes/dashboard-routes')
 const { organizations } = require('./routes/organization-routes')
 const { wiki } = require('./routes/wiki-routes')
 const { user } = require('./routes/user-routes')
-const { image } = require('./routes/image-routes');
+const { ipfs } = require('./routes/ipfs-api-routes');
 const { contests } = require('./routes/creator-contests');
 
 dotenv.config();
@@ -36,6 +36,8 @@ app.use(express.static(buildPath));
 const imgPath = path.normalize(path.join(__dirname, 'img'));
 app.use(express.static(imgPath));
 
+const creatorContestDataPath = path.normalize(path.join(__dirname, 'contest-assets'));
+
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.json())
@@ -47,12 +49,17 @@ app.use('/dashboard', dashboard)
 app.use('/organizations', organizations)
 app.use('/wiki', wiki)
 app.use('/user', user)
-app.use('/image', image)
+app.use('/ipfs', ipfs)
 app.use('/creator_contests', contests)
 
 app.get('/img/*', function (req, res, next) {
     res.sendFile(path.join(imgPath, req.url.split('/').slice(2).join('/')))
 
+})
+
+app.get('/contest-assets/*', function (req, res, next){
+   // res.sendFile(path.join(creatorContestDataPath, req.url.split('/').slice(2).join('/')))
+   res.sendFile(path.join(creatorContestDataPath, req.url.split('/').slice(2).join('/')))
 })
 
 app.get('/*', function (req, res, next) {

@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React, { useState, useEffect, useRef } from 'react'
 import styled from 'styled-components'
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
-
+import axios from 'axios'
 const ImageWrapper = styled.div`
   
 img{
@@ -93,19 +93,58 @@ export default function TLDR({ TLDRimage, setTLDRImage, TLDRText, setTLDRText })
             reader.readAsDataURL(file);
         }
     }
+
+    const handleFileChange = (e) => {
+        const img = {
+            preview: URL.createObjectURL(e.target.files[0]),
+            data: e.target.files[0]
+        }
+        setTLDRImage(img)
+    }
+
+
+
+
+    const handleImageUpload2 = async () => {
+        const formData = new FormData();
+        formData.append(
+            "image",
+            TLDRimage.data
+        )
+        /*
+        await axios.post(
+            '/creator_contests/upload_img', {body: formData}, {
+            fieldName: 'text.png',
+            headers: {
+                "Content-Type": "multipart/form-data"
+            }
+        })
+*/
+        axios({
+            method: 'post',
+            url: '/creator_contests/upload_img',
+            data: formData
+        })
+        .then((response) => {
+            console.log(response)
+        })
+    }
+
+
     return (
         <TLDRWrap>
             <TextAreaWrap textLength={TLDRText.length}>
                 <TextArea placeholder='TLDR text' value={TLDRText} onChange={(e) => setTLDRText(e.target.value)}></TextArea>
             </TextAreaWrap>
             <ImageWrapper>
-                <input placeholder="Logo" type="file" accept="image/*" style={{ display: 'none' }} onChange={handleImageUpload} ref={imageUploader} />
+                <input placeholder="Logo" type="file" accept="image/*" style={{ display: 'none' }} onChange={handleFileChange} ref={imageUploader} />
                 <ImageUploadBtn type="button" onClick={() => imageUploader.current.click()}>
                     <div>
                         {TLDRimage && <img src={TLDRimage} />}
                         {!TLDRimage && <p style={{ color: 'black' }}>TLDR Image</p>}
                     </div>
                 </ImageUploadBtn>
+                <button onClick={handleImageUpload2}>upload</button>
                 {TLDRimage && <RemoveImageButton onClick={() => setTLDRImage(null)}><FontAwesomeIcon icon={faTimes}></FontAwesomeIcon></RemoveImageButton>}
             </ImageWrapper>
         </TLDRWrap>

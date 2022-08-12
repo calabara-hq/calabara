@@ -2,18 +2,27 @@ const express = require('express');
 const db = require('../helpers/db-init.js')
 const dotenv = require('dotenv')
 const path = require('path')
-const image = express();
-image.use(express.json())
+const ipfs = express();
+ipfs.use(express.json())
 const asyncfs = require('fs').promises;
 const { authenticateToken } = require('../middlewares/jwt-middleware.js');
 const { isAdmin } = require('../middlewares/admin-middleware');
-const { imageUpload } = require('../middlewares/image-upload-middleware')
+const { imageUpload } = require('../middlewares/image-upload-middleware');
+const { testAuthentication, pinFile } = require('../helpers/ipfs-api.js');
 
 
+ipfs.post('/upload_img', async (req, res) => {
 
+    let isAuth = await testAuthentication();
+    console.log(isAuth)
 
-image.post('/upload_img', imageUpload.single('image'), async (req, res) => {
-    console.log(req.body)
+    console.log(file)
+
+    /*
+    let pin = await pinFile(req, {pinataOptions: {cidVersion: 0}})
+    console.log(pin)
+*/
+    /*
     let img_data = {
         success: 1,
         file: {
@@ -24,6 +33,9 @@ image.post('/upload_img', imageUpload.single('image'), async (req, res) => {
     console.log(req.file)
 }, (error, req, res, next) => {
     res.status(400).send({ error: error.message })
+
+    */
+   res.sendStatus(200)
 })
 
-module.exports.image = image;
+module.exports.ipfs = ipfs;

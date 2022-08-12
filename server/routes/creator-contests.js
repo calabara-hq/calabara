@@ -12,6 +12,7 @@ const { isAdmin } = require('../middlewares/admin-middleware')
 const { clean, asArray } = require('../helpers/common')
 const { getGuildRoles } = require('./discord-routes');
 const { createContest, createSubmission } = require('../middlewares/create-contest-middleware.js');
+const { imageUpload } = require('../middlewares/image-upload-middleware.js');
 
 
 const serverRoot = path.normalize(path.join(__dirname, '../'));
@@ -35,7 +36,7 @@ contests.get('/fetch_contest/*', async function (req, res, next) {
     let ens = req.url.split('/')[2];
     let contest_hash = req.url.split('/')[3];
 
-
+    
     // will there be conditions where latest is not the current active contest? need to handle that if so.
 
     let latest = await db.query('select _url from contests where ens = $1 and _hash = $2', [ens, contest_hash]).then(clean)
@@ -54,8 +55,10 @@ contests.get('/fetch_contest/*', async function (req, res, next) {
 // fetch submissions
 
 contests.get('/fetch_submissions/*', async function (req, res, next) {
-
-
+    let ens = req.url.split('/')[2];
+    let contest_hash = req.url.split('/')[3];
+    let sub_urls = await db.query('select _url from contest_submissions where ens = $1 and contest_hash = $2', [ens, contest_hash]).then(clean).then(asArray)
+    res.send(sub_urls).status(200)
 })
 
 // create a contest
@@ -73,15 +76,34 @@ contests.post('/create_contest', createContest, async function (req, res, next) 
 
 contests.post('/create_submission', createSubmission, async function (req, res, next) {
     console.log('submission rx!')
-    const { ens, submission } = req.body;
-    const _url = `creator-contests/${ens}/${req.contest_hash}/submissions/${req.submission_hash}/`
+    const { ens } = req.body;
+    await db.query('insert into contest_submissions (ens, contest_hash, created, _url) values ($1, $2, $3, $4)', [ens, req.contest_hash, req.created, req.submission_url])
 
-    console.log(submission)
-    await db.query('insert into contest_submissions (ens, contest_hash, created, _hash, _url) values ($1, $2, $3, $4, $5)', [ens, req.contest_hash, req.created, req.submission_hash, _url])
     res.sendStatus(200)
 })
 
 
+// used for lazy uploading assets in contest submissions
 
+contests.post('/upload_img', imageUpload.single('image'), async (req, res) => {
+
+
+    /*
+    let pin = await pinFile(req, {pinataOptions: {cidVersion: 0}})
+    console.log(pin)
+    */
+
+    console.log(req.file)
+
+    let img_data = {
+        success: 1,
+        file: {
+            url: '/' + req.file.path
+        }
+    }
+    res.status(200).send(img_data)
+}, (error, req, res, next) => {
+    res.status(400).send({ error: error.message })
+})
 
 module.exports.contests = contests;

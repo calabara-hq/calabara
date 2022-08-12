@@ -16,6 +16,7 @@ import InlineCode from '@editorjs/inline-code'
 import SimpleImage from '@editorjs/simple-image'
 
 
+
 const toBase64 = file => new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
@@ -32,8 +33,12 @@ export const EDITOR_JS_TOOLS = {
     image: {
         class: Image,
         config: {
+
+            /*
             uploader: {
-                async uploadByFile (file) {
+                async uploadByFile(file) {
+                    console.log(typeof file)
+                    console.log(file)
                     let b64 = await toBase64(file)
                     return {
                         success: 1,
@@ -43,11 +48,13 @@ export const EDITOR_JS_TOOLS = {
                     }
                 }
             }
-            /*
-            endpoints: {
-                byFile: 'https://localhost:3000/image/upload_img',
-            }
             */
+
+            endpoints: {
+                byFile: 'https://localhost:3000/creator_contests/upload_img',
+            }
+
+
         }
     },
     header: Header,
