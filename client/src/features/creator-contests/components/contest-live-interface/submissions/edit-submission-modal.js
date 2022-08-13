@@ -266,9 +266,16 @@ function Preview({ setProgress, TLDRImage, TLDRText, longFormValue }) {
 
         let tldr = {
             tldr_text: TLDRText,
-            tldr_image: TLDRImage
+            tldr_image: TLDRImage.url
         }
-        let res = await axios.post('/creator_contests/create_submission', { ens: ens, contest_hash: contest_hash, submission_tldr: tldr, submission_body: longFormValue })
+
+        let submission = {
+            tldr_text: TLDRText,
+            tldr_image: TLDRImage.url,
+            submission_body: longFormValue
+        }
+        let res = await axios.post('/creator_contests/create_submission', { ens: ens, contest_hash: contest_hash, submission: submission})
+        console.log(tldr)
     }
 
     return (

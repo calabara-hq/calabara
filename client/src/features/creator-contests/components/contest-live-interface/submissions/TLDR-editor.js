@@ -94,59 +94,44 @@ export default function TLDR({ TLDRimage, setTLDRImage, TLDRText, setTLDRText })
         }
     }
 
-    const handleFileChange = (e) => {
+    const handleUpload = (e) => {
         const img = {
             preview: URL.createObjectURL(e.target.files[0]),
-            data: e.target.files[0]
+            data: e.target.files[0],
+            url: null
         }
-        setTLDRImage(img)
-    }
-
-
-
-
-    const handleImageUpload2 = async () => {
         const formData = new FormData();
         formData.append(
             "image",
-            TLDRimage.data
+            img.data
         )
-        /*
-        await axios.post(
-            '/creator_contests/upload_img', {body: formData}, {
-            fieldName: 'text.png',
-            headers: {
-                "Content-Type": "multipart/form-data"
-            }
-        })
-*/
         axios({
             method: 'post',
             url: '/creator_contests/upload_img',
             data: formData
-        })
-        .then((response) => {
-            console.log(response)
+        }).then((response) => {
+            img.url = response.data.file.url;
+            setTLDRImage(img)
         })
     }
 
 
-    return (
-        <TLDRWrap>
-            <TextAreaWrap textLength={TLDRText.length}>
-                <TextArea placeholder='TLDR text' value={TLDRText} onChange={(e) => setTLDRText(e.target.value)}></TextArea>
-            </TextAreaWrap>
-            <ImageWrapper>
-                <input placeholder="Logo" type="file" accept="image/*" style={{ display: 'none' }} onChange={handleFileChange} ref={imageUploader} />
-                <ImageUploadBtn type="button" onClick={() => imageUploader.current.click()}>
-                    <div>
-                        {TLDRimage && <img src={TLDRimage} />}
-                        {!TLDRimage && <p style={{ color: 'black' }}>TLDR Image</p>}
-                    </div>
-                </ImageUploadBtn>
-                <button onClick={handleImageUpload2}>upload</button>
-                {TLDRimage && <RemoveImageButton onClick={() => setTLDRImage(null)}><FontAwesomeIcon icon={faTimes}></FontAwesomeIcon></RemoveImageButton>}
-            </ImageWrapper>
-        </TLDRWrap>
-    )
+
+return (
+    <TLDRWrap>
+        <TextAreaWrap textLength={TLDRText.length}>
+            <TextArea placeholder='TLDR text' value={TLDRText} onChange={(e) => setTLDRText(e.target.value)}></TextArea>
+        </TextAreaWrap>
+        <ImageWrapper>
+            <input placeholder="Logo" type="file" accept="image/*" style={{ display: 'none' }} onChange={handleUpload} ref={imageUploader} />
+            <ImageUploadBtn type="button" onClick={() => imageUploader.current.click()}>
+                <div>
+                    {TLDRimage && <img src={TLDRimage.preview} />}
+                    {!TLDRimage && <p style={{ color: 'black' }}>TLDR Image</p>}
+                </div>
+            </ImageUploadBtn>
+            {TLDRimage && <RemoveImageButton onClick={() => setTLDRImage(null)}><FontAwesomeIcon icon={faTimes}></FontAwesomeIcon></RemoveImageButton>}
+        </ImageWrapper>
+    </TLDRWrap>
+)
 }

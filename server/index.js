@@ -6,6 +6,7 @@ const https = require('https');
 const fs = require('fs');
 const bodyParser = require('body-parser')
 const dotenv = require('dotenv');
+const initialize_cron = require('./sys/cron/main')
 
 const { discordApp } = require('./routes/discord-routes')
 const { authentication } = require('./routes/authentication-routes')
@@ -57,9 +58,9 @@ app.get('/img/*', function (req, res, next) {
 
 })
 
-app.get('/contest-assets/*', function (req, res, next){
-   // res.sendFile(path.join(creatorContestDataPath, req.url.split('/').slice(2).join('/')))
-   res.sendFile(path.join(creatorContestDataPath, req.url.split('/').slice(2).join('/')))
+app.get('/contest-assets/*', function (req, res, next) {
+    // res.sendFile(path.join(creatorContestDataPath, req.url.split('/').slice(2).join('/')))
+    res.sendFile(path.join(creatorContestDataPath, req.url.split('/').slice(2).join('/')))
 })
 
 app.get('/*', function (req, res, next) {
@@ -82,3 +83,4 @@ else if (process.env.NODE_ENV === 'production') {
 
 }
 
+initialize_cron();

@@ -10,10 +10,8 @@ const imageStorage = multer.diskStorage({
     // Destination to store image     
     destination: 'contest-assets/staging',
       filename: (req, file, cb) => {
-          cb(null, file.fieldname + '_' + Date.now() 
+          cb(null, file.fieldname + '_' + new Date().toISOString()
              + path.extname(file.originalname))
-            // file.fieldname is name of the field (image)
-            // path.extname get the uploaded file extension
     }
 });
 
@@ -21,11 +19,10 @@ const imageStorage = multer.diskStorage({
 const imageUpload = multer({
     storage: imageStorage,
     limits: {
-      fileSize: 10000000 // 1000000 Bytes = 1 MB
+      fileSize: 1000000 // 1000000 Bytes = 1 MB
     },
     fileFilter(req, file, cb) {
-      if (!file.originalname.match(/\.(png|jpg)$/)) { 
-         // upload only png and jpg format
+      if (!file.originalname.match(/\.(png|jpg|jpeg)$/)) { 
          return cb(new Error('Please upload a Image'))
        }
      cb(undefined, true)

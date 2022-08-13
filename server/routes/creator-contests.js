@@ -11,7 +11,7 @@ const { authenticateToken } = require('../middlewares/jwt-middleware.js');
 const { isAdmin } = require('../middlewares/admin-middleware')
 const { clean, asArray } = require('../helpers/common')
 const { getGuildRoles } = require('./discord-routes');
-const { createContest, createSubmission } = require('../middlewares/create-contest-middleware.js');
+const { createContest, createSubmission, createSubmission2 } = require('../middlewares/create-contest-middleware.js');
 const { imageUpload } = require('../middlewares/image-upload-middleware.js');
 
 
@@ -74,10 +74,13 @@ contests.post('/create_contest', createContest, async function (req, res, next) 
 })
 
 
-contests.post('/create_submission', createSubmission, async function (req, res, next) {
+contests.post('/create_submission', createSubmission2, async function (req, res, next) {
     console.log('submission rx!')
+    console.log(req.contest_hash);
+    console.log(req.url);
+    console.log(req.created);
     const { ens } = req.body;
-    await db.query('insert into contest_submissions (ens, contest_hash, created, _url) values ($1, $2, $3, $4)', [ens, req.contest_hash, req.created, req.submission_url])
+    await db.query('insert into contest_submissions (ens, contest_hash, created, locked, pinned, _url) values ($1, $2, $3, $4, $5, $6)', [ens, req.contest_hash, req.created, false, false, req.url])
 
     res.sendStatus(200)
 })

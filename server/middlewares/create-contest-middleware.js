@@ -13,6 +13,7 @@ const { pinFromFs, pinJSON } = require('../helpers/ipfs-api');
 
 
 async function createContest(req, res, next) {
+
     const { ens, contest_settings } = req.body;
     contest_settings.created = new Date().toISOString();
     let hash = crypto.createHash('md5').update(JSON.stringify(contest_settings)).digest('hex').slice(-8);
@@ -36,8 +37,8 @@ async function createContest(req, res, next) {
 
 async function createSubmission(req, res, next) {
 
-
     const { ens, submission_tldr, submission_body, contest_hash } = req.body;
+    console.time('main')
 
 
     /*
@@ -78,32 +79,50 @@ async function createSubmission(req, res, next) {
 
     console.log(submission_body)
     console.log(submission_tldr)
-    
+
+    let index = 0
+    console.time('primary pin loop')
     for (block of submission_body.blocks) {
         if (block.type === 'image') {
             // pin to ipfs and set the new url hash
-
+            let job_id = index
             let og_url = block.data.file.url
-
+            console.log('job number', job_id)
+            /*
+            console.log('beginning pin')
             let pin_res = await pinFromFs(og_url);
-            console.log(pin_res)
+            console.log('finish pin')
             block.data.file.url = ipfs_gateway + pin_res.IpfsHash;
 
-
+            */
             // delete the files from staging dir
-
+            console.log('unlink file with job id', job_id)
             fs.unlink(path.normalize(path.join(__dirname, '../', og_url)), (err) => {
                 if (err) console.log(err)
+                console.log('finish unlink with job id', job_id)
             })
+            console.log('outside unlink job id', job_id)
         }
+        index++;
     }
+    console.timeEnd('primary pin loop')
 
+    // hash tldr image
     // pin body
     // put body hash in tldr data
     // hash tldr section
     // pass tldr hash to route
 
-    
+    console.time('secondary pinning')
+    if (submission_tldr.tldr_image) {
+        let tldr_img_hash = await pinFromFs(submission_tldr.tldr_image);
+        fs.unlink(path.normalize(path.join(__dirname, '../', submission_tldr.tldr_image)), (err) => {
+            if (err) console.log(err)
+            submission_tldr.tldr_image = ipfs_gateway + tldr_img_hash.IpfsHash;
+
+        })
+    }
+
     let body_hash = await pinJSON(submission_body);
     console.log(body_hash)
 
@@ -115,13 +134,52 @@ async function createSubmission(req, res, next) {
     req.submission_url = ipfs_gateway + submission_hash.IpfsHash;
     req.contest_hash = contest_hash;
     req.created = new Date().toISOString();
+    console.timeEnd('secondary pinning')
 
-
+    console.timeEnd('main')
     next();
 }
 
 
+async function createSubmission2(req, res, next) {
+    const { ens, submission, contest_hash } = req.body;
+
+    submission.created = new Date().toISOString();
+
+    let submission_hash = crypto.createHash('md5').update(JSON.stringify(submission)).digest('hex').slice(-8);
+
+    console.time('start')
+
+    let destination_folder = `contest-assets/staging/submissions/${submission_hash}`
+    let submission_body_url = `${destination_folder}.body.json`
+    let submission_meta_url = `${destination_folder}.meta.json`
+    /* first, write submission body to fs, and replace submission_body with submission_body url
+    * then, write submission to fs and pass along the url of the submission
+    * we want something that looks like this
+    * {
+    *   tldr_text: xyz,
+    *   tldr_image: fs url of image,
+    *   submission_body: fs url of submission body
+    * }
+    */
+
+    let body_writestream = fs.createWriteStream(path.join(serverRoot, submission_body_url));
+    let meta_writestream = fs.createWriteStream(path.join(serverRoot, submission_meta_url));
+
+    body_writestream.write(JSON.stringify(submission.submission_body), (err) => {
+        if (err) console.log(err, 'submission_body write failure') //return res.sendStatus(401)
+        submission.submission_body = '/' + submission_body_url;
+        meta_writestream.write(JSON.stringify(submission), (err) => {
+            if (err) console.log(err, 'submission_body write failure') //return res.sendStatus(401)
+            req.contest_hash = contest_hash;
+            req.url = '/' + submission_meta_url;
+            req.created = submission.created;
+            console.timeEnd('start')
+            next();
+        })
+    })
+}
 
 
 
-module.exports = { createContest, createSubmission };
+module.exports = { createContest, createSubmission2 };
