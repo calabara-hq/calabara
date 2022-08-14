@@ -4,13 +4,11 @@ const db = require('../../helpers/db-init.js');
 const { EVERY_10_SECONDS } = require('./schedule');
 const fs = require('fs');
 const fs_path = require('path');
-const { pick } = require('stream-json/filters/Pick');
 const { parser } = require('stream-json/Parser');
 const { streamValues } = require('stream-json/streamers/StreamValues');
-const { streamArray } = require('stream-json/streamers/StreamArray');
-const { filter } = require('stream-json/filters/Filter');
-const { comp } = require('stream-chain/utils/comp');
 const { chain } = require('stream-chain');
+const Stringer = require('stream-json/jsonl/Stringer');
+const { pinFromFs, pinFileStream } = require('../../helpers/ipfs-api.js');
 
 
 // grab file list from cron table and lock rows
@@ -50,11 +48,10 @@ const getFileUrls = async () => {
  * */
 
 
-// pin the submission body assets
+// parse the submission body assets
 
 let stream_url_flag = false;
-const pinAssets = async (chunk) => {
-
+const parseAssets = async (chunk) => {
     if (!stream_url_flag) {
         if (chunk.name === 'keyValue') {
             if (chunk.value === 'url') {
@@ -64,15 +61,16 @@ const pinAssets = async (chunk) => {
     }
 
     if (stream_url_flag && chunk.name === 'stringValue') {
-        chunk.value = 'IT WORKS'
+        console.log('pinning submission asset');
+        let hash = await pinFromFs(chunk.value)
+        chunk.value = hash
         stream_url_flag = false;
     }
 
-
     return chunk
-
 }
 
+// parse the submission body
 
 let tldr_image_flag = false;
 let submission_body_flag = false;
@@ -87,7 +85,9 @@ const parseSubmission = async (chunk) => {
     }
 
     if (tldr_image_flag && chunk.name === 'stringValue') {
-        chunk.value = 'IT WORKS'
+        console.log('pinning TLDR image')
+        let hash = await pinFromFs(chunk.value)
+        chunk.value = hash
         tldr_image_flag = false;
     }
 
@@ -100,42 +100,93 @@ const parseSubmission = async (chunk) => {
     }
 
     if (submission_body_flag && chunk.name === 'stringValue') {
-        chunk.value = 'IT WORKS'
         submission_body_flag = false;
+
+        const test_out = fs.createWriteStream(fs_path.normalize(fs_path.join(serverBasePath, 'inner_out.json')))
+        const asset_datasource = fs.createReadStream(fs_path.normalize(fs_path.join(serverBasePath, chunk.value)))
+
+        const inner_pipeline = chain([
+            parser(),
+            async inner_chunk => await parseAssets(inner_chunk),
+            streamValues(),
+            //chunk => chunk.value,
+            new Stringer(),
+            async chunk => await pinFileStream(chunk)
+
+
+        ])
+
+        asset_datasource.pipe(inner_pipeline).pipe(test_out)
+
+        let data = new Promise((resolve, reject) => {
+            inner_pipeline.on('data', data => {
+                resolve(data)
+            })
+        })
+
+
+        let end = new Promise((resolve, reject) => {
+            inner_pipeline.on('end', () => {
+                resolve('finish pinning submission body')
+            })
+        })
+
+
+        const asset_url = await data;
+        const stream_end = await end;
+        console.log(stream_end)
+        chunk.value = asset_url
+        return chunk
+
+
+    }
+    else {
+        return chunk
     }
 
-
-    return chunk
 }
+
+
 
 const mainLoop = async (unpinned_files) => {
     for (unpinned_body of unpinned_files) {
-        console.time('start')
         try {
-
+            let outsource = fs.createWriteStream(fs_path.normalize(fs_path.join(serverBasePath, 'final.json')))
+            let datasource = fs.createReadStream(fs_path.normalize(fs_path.join(serverBasePath, unpinned_body._url)));
             const unpinned_body_pipeline = chain([
-                fs.createReadStream(fs_path.normalize(fs_path.join(serverBasePath, unpinned_body._url))),
                 parser(),
                 async chunk => await parseSubmission(chunk),
                 streamValues(),
+                chunk => chunk.value,
+                new Stringer(),
             ]);
 
-            unpinned_body_pipeline.on('data', chunk => {
-                console.log(chunk)
+            datasource.pipe(unpinned_body_pipeline).pipe(outsource)
+
+
+            unpinned_body_pipeline.on('data', (chunk) => {
+                // console.log(chunk)
+                // console.log(chunk)
+                // unpinned_body_pipeline.pipe(writestream)
+                //console.log('piping final submission to ipfs pinner')
+                //console.log(chunk)
+                /*
+                //console.log(chunk)
                 
                 const inner_pipeline = chain([
-                    fs.createReadStream(fs_path.normalize(fs_path.join(serverBasePath, chunk.value))),
+                    fs.createReadStream(fs_path.normalize(fs_path.join(serverBasePath, chunk.value.submission_body))),
                     parser(),
                     async chunk => await pinAssets(chunk),
                     streamValues(),
                 ])
                 inner_pipeline.on('data', (data) => {
-                    console.log(data)
+                    //console.log(data)
                 })
                 inner_pipeline.on('end', () => { console.timeEnd('start') })
-                
+                */
+
             })
-            unpinned_body_pipeline.on('end', () => { console.log(' OUTER END !!!') })
+            unpinned_body_pipeline.on('end', () => { /*console.log('pinning top level submission')*/ })
         } catch (err) { console.log(err) }
     }
     return
