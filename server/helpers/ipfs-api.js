@@ -22,12 +22,12 @@ const testAuthentication = async () => {
 
 
 
-const pinFileStream = async (stream, options) => {
+const pinFileStream = async (stream, filename, options) => {
 
 
     var data = new FormData();
     data.append('file', stream, {
-        filepath: 'subimssion.json',
+        filepath: filename,
     });
 
     var config = {

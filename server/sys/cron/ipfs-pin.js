@@ -109,14 +109,14 @@ const parseSubmission = async (chunk) => {
             parser(),
             async inner_chunk => await parseAssets(inner_chunk),
             streamValues(),
-            //chunk => chunk.value,
+            chunk => chunk.value,
             new Stringer(),
-            async chunk => await pinFileStream(chunk)
+            async chunk => await pinFileStream(chunk, 'submission_body')
 
 
         ])
 
-        asset_datasource.pipe(inner_pipeline).pipe(test_out)
+        asset_datasource.pipe(inner_pipeline)
 
         let data = new Promise((resolve, reject) => {
             inner_pipeline.on('data', data => {
@@ -159,34 +159,31 @@ const mainLoop = async (unpinned_files) => {
                 streamValues(),
                 chunk => chunk.value,
                 new Stringer(),
+                async chunk => await pinFileStream(chunk, 'submission_meta')
+
             ]);
 
-            datasource.pipe(unpinned_body_pipeline).pipe(outsource)
+            datasource.pipe(unpinned_body_pipeline)//.pipe(outsource)
 
 
-            unpinned_body_pipeline.on('data', (chunk) => {
-                // console.log(chunk)
-                // console.log(chunk)
-                // unpinned_body_pipeline.pipe(writestream)
-                //console.log('piping final submission to ipfs pinner')
-                //console.log(chunk)
-                /*
-                //console.log(chunk)
-                
-                const inner_pipeline = chain([
-                    fs.createReadStream(fs_path.normalize(fs_path.join(serverBasePath, chunk.value.submission_body))),
-                    parser(),
-                    async chunk => await pinAssets(chunk),
-                    streamValues(),
-                ])
-                inner_pipeline.on('data', (data) => {
-                    //console.log(data)
+            let data = new Promise((resolve, reject) => {
+                unpinned_body_pipeline.on('data', data => {
+                    resolve(data)
                 })
-                inner_pipeline.on('end', () => { console.timeEnd('start') })
-                */
-
             })
-            unpinned_body_pipeline.on('end', () => { /*console.log('pinning top level submission')*/ })
+
+
+            let end = new Promise((resolve, reject) => {
+                unpinned_body_pipeline.on('end', () => {
+                    resolve('finish pinning submission body')
+                })
+            })
+
+
+            const asset_url = await data;
+            const stream_end = await end;
+            console.log('FINAL ASSET URL --> ', asset_url)
+
         } catch (err) { console.log(err) }
     }
     return
