@@ -8,7 +8,7 @@ import { setContestHash } from "./contest-interface-reducer";
 export default function ContestInterfaceController({ }) {
     const [contest_settings, set_contest_settings] = useState(null);
     const { ens, contest_hash } = useParams();
-
+    
     // on page load, fetch all the contests for this org and display.
     // if one is clicked, set the contest_hash in the url and fetch the settings
 

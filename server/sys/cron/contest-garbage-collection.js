@@ -9,6 +9,11 @@ const { EVERY_10_SECONDS } = require('./schedule')
 
 // delete job from db
 
+const image_garbage_collection = () => {
+    
+}
+
+
 const garbage_collection = () => {
     cron.schedule(EVERY_10_SECONDS, () => {
         console.log('running every 10 seconds')

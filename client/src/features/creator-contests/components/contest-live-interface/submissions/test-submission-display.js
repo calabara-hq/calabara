@@ -99,6 +99,7 @@ export default function SubmissionDisplay({ }) {
     useEffect(() => {
         (async () => {
             let res = await axios.get(`/creator_contests/fetch_submissions/${ens}/${contest_hash}`);
+            console.log(res.data)
             set_urls(res.data)
         })();
     }, [])

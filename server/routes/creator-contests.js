@@ -38,7 +38,7 @@ contests.get('/fetch_contest/*', async function (req, res, next) {
 
     
     // will there be conditions where latest is not the current active contest? need to handle that if so.
-
+    console.log(ens, contest_hash)
     let latest = await db.query('select _url from contests where ens = $1 and _hash = $2', [ens, contest_hash]).then(clean)
 
     let filestream = fs.createReadStream(path.join(serverRoot, latest._url, 'settings.json'))
@@ -90,11 +90,6 @@ contests.post('/create_submission', createSubmission2, async function (req, res,
 
 contests.post('/upload_img', imageUpload.single('image'), async (req, res) => {
 
-
-    /*
-    let pin = await pinFile(req, {pinataOptions: {cidVersion: 0}})
-    console.log(pin)
-    */
 
     console.log(req.file)
 
