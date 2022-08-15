@@ -13,9 +13,12 @@ const { clean, asArray } = require('../helpers/common')
 const { getGuildRoles } = require('./discord-routes');
 const { createContest, createSubmission, createSubmission2 } = require('../middlewares/create-contest-middleware.js');
 const { imageUpload } = require('../middlewares/image-upload-middleware.js');
-
+const logger = require('../logger').child({component: 'creator-contests'})
 
 const serverRoot = path.normalize(path.join(__dirname, '../'));
+
+
+//const contestLogger = logger.child({ service: 'creator-contests' })
 
 
 // fetch the indexes of all contests, in order
@@ -36,14 +39,13 @@ contests.get('/fetch_contest/*', async function (req, res, next) {
     let ens = req.url.split('/')[2];
     let contest_hash = req.url.split('/')[3];
 
-    
+
     // will there be conditions where latest is not the current active contest? need to handle that if so.
-    console.log(ens, contest_hash)
     let latest = await db.query('select _url from contests where ens = $1 and _hash = $2', [ens, contest_hash]).then(clean)
 
-    let filestream = fs.createReadStream(path.join(serverRoot, latest._url, 'settings.json'))
+    fs.createReadStream(path.join(serverRoot, latest._url, 'settings.json'))
         .on('end', function () {
-            console.log('stream done')
+            logger.log({level: 'info', message: 'fetch contest stream success'})
         })
         .on('error', function (err) {
             res.send(err)

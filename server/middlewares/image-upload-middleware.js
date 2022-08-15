@@ -10,7 +10,7 @@ const imageStorage = multer.diskStorage({
     // Destination to store image     
     destination: 'contest-assets/staging/media',
       filename: (req, file, cb) => {
-          cb(null, file.fieldname + '_' + new Date().toISOString()
+          cb(null, '_' + new Date().toISOString() + '_'
              + path.extname(file.originalname))
     }
 });

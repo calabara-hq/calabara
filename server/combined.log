@@ -1,0 +1,20 @@
+{"level":"info","message":"fetch contest","service":"user-service"}
+{"level":"info","message":"fetch contest","service":"user-service","timestamp":"2022-08-15T13:55:47.441Z"}
+{"level":"info","message":"fetch contest success","service":"meta-service","timestamp":"2022-08-15T14:29:30.755Z"}
+{"level":"info","message":"fetch contest success","service":"meta-service","timestamp":"2022-08-15T14:30:52.183Z"}
+{"component":"creator-contests","level":"info","message":"fetch contest success","service":"meta-service","timestamp":"2022-08-15T14:33:13.201Z"}
+{"level":"info","message":"fetch contest success","service":"meta-service","timestamp":"2022-08-15T14:33:34.826Z"}
+{"component":"creator-contests","level":"info","message":"fetch contest stream success","service":"backend","timestamp":"2022-08-15T14:38:54.996Z"}
+{"component":"creator-contests","level":"info","message":"fetch contest stream success","service":"backend","timestamp":"2022-08-15T15:15:37.347Z"}
+{"component":"creator-contests","level":"info","message":"fetch contest stream success","service":"backend","timestamp":"2022-08-15T15:15:46.176Z"}
+{"component":"creator-contests","level":"info","message":"fetch contest stream success","service":"backend","timestamp":"2022-08-15T15:16:06.026Z"}
+{"component":"creator-contests","level":"info","message":"fetch contest stream success","service":"backend","timestamp":"2022-08-15T15:16:16.750Z"}
+{"component":"creator-contests","level":"info","message":"fetch contest stream success","service":"backend","timestamp":"2022-08-15T15:17:04.729Z"}
+{"component":"creator-contests","level":"info","message":"fetch contest stream success","service":"backend","timestamp":"2022-08-15T15:17:07.929Z"}
+{"component":"creator-contests","level":"info","message":"fetch contest stream success","service":"backend","timestamp":"2022-08-15T15:17:28.497Z"}
+{"component":"creator-contests","level":"info","message":"fetch contest stream success","service":"backend","timestamp":"2022-08-15T15:18:37.148Z"}
+{"component":"creator-contests","level":"info","message":"fetch contest stream success","service":"backend","timestamp":"2022-08-15T15:19:03.059Z"}
+{"component":"creator-contests","level":"info","message":"fetch contest stream success","service":"backend","timestamp":"2022-08-15T15:31:07.138Z"}
+{"component":"creator-contests","level":"info","message":"fetch contest stream success","service":"backend","timestamp":"2022-08-15T15:31:31.422Z"}
+{"component":"creator-contests","level":"info","message":"fetch contest stream success","service":"backend","timestamp":"2022-08-15T15:33:38.756Z"}
+{"component":"creator-contests","level":"info","message":"fetch contest stream success","service":"backend","timestamp":"2022-08-15T16:34:30.360Z"}
