@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import CounterButton from '../../../common/CounterButton';
 import Select from 'react-select'
-import { Contest_h2, Contest_h3, Contest_h4, SettingsSectionSubHeading } from '../../../common/common_styles';
+import { Contest_h2, Contest_h2_alt, Contest_h3, Contest_h3_alt, Contest_h3_alt_small, Contest_h4, SettingsSectionSubHeading } from '../../../common/common_styles';
 import { ToggleButton } from '../../../common/common_components';
 import {
     customSelectorStyles,
@@ -51,13 +51,13 @@ export default function VoterRewardsBlock({ selectedRewards, voterRewards, setVo
         <RewardTypeWrap>
             <SettingsSectionSubHeading>
                 <HeadingWithToggle>
-                    <Contest_h2 style={{ marginRight: '4em' }} animated={true}>voter rewards</Contest_h2>
+                    <Contest_h3_alt style={{ marginRight: '4em'}} animated={true}>Voter Rewards</Contest_h3_alt>
                     <ToggleButton identifier={'voter-rewards-toggle'} isToggleOn={isToggleOn} setIsToggleOn={setIsToggleOn} handleToggle={handleToggle} />
                 </HeadingWithToggle>
             </SettingsSectionSubHeading>
             {isToggleOn && <RewardsMainContent>
                 <NumberWinnersContainer>
-                    <Contest_h3 animated={true}>Number of Winners</Contest_h3>
+                    <Contest_h3_alt_small animated={true}>Number of Winners</Contest_h3_alt_small>
                     <CounterButton counter={numVoterRewards} handleIncrement={handleVoterRewardsIncrement} handleDecrement={handleVoterRewardsDecrement} />
                 </NumberWinnersContainer>
                 <VotingRewardSelectorWrap>

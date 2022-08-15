@@ -4,20 +4,33 @@
 
 .date-time-picker label {
     font-size: 1.8rem;
-    color: #d3d3d3;
+    color: #b3b3b3;
     align-self: flex-start;
     margin-left: 10px;
 }
 
 
 
+.date-time-picker input_alt {
+    font-size: 2rem;
+    color: #d3d3d3;
+    padding: 20px 10px;
+    cursor: pointer;
+    border: 2px solid #d95169;
+    border-radius: 10px;
+    background-color: #121212;    
+}
+
 .date-time-picker input {
     font-size: 2rem;
     color: #d3d3d3;
     padding: 20px 10px;
     cursor: pointer;
-    border: 2px solid #444c56;
-    background-color: #444c56;
+    border: 2px double transparent;
+    border-radius: 10px;
+    background-image: linear-gradient(#121212,#121212),linear-gradient(90deg,#e00f8e,#2d66dc);
+    background-origin: border-box;
+    background-clip: padding-box,border-box;
 }
 
 .date-time-picker input:focus {

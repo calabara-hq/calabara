@@ -1,17 +1,24 @@
 import React, { useState, useEffect, useReducer } from "react";
 import styled, { keyframes } from 'styled-components'
 import RewardSelector from "./choose-rewards";
-import { Contest_h2, Contest_h3, fade_in } from '../../common/common_styles'
+import { Contest_h2, Contest_h2_alt, Contest_h3, fade_in } from '../../common/common_styles'
 import SubmitterRewardsBlock from "./submitter-rewards/submitter-rewards";
 import VoterRewardsBlock from "./voter-rewards/voter-rewards";
 
 const Rewards = styled.div`
     display: flex;
     flex-direction: column;
-
+    &::before{
+        content: '${props => props.title}';
+        position: absolute;
+        transform: translate(0%, -150%);
+        color: #f2f2f2;
+        font-size: 30px;
+    }
 
     > * {
-        margin-bottom: 50px;
+        //margin: 10px 0;
+        //margin-bottom: 30px;
     }
 
 `
@@ -20,9 +27,10 @@ const RewardsMainHeading = styled.div`
     display: grid;
     width: 100%;
     grid-template-columns: repeat(3, 33%);
-    grid-row-gap: 30px;    
+    //grid-row-gap: 20px;    
     grid-template-areas: "heading . logo"
                          "rewards rewards rewards";
+
 
 `
 
@@ -32,7 +40,7 @@ const ParticipantRewardsWrap = styled.div`
     flex-direction: column;
 
     > * {
-        margin-bottom: 50px;
+        margin-bottom: 20px;
     }
 `
 
@@ -69,9 +77,9 @@ export default function ContestRewardsBlock({ theme, rewardOptions, setRewardOpt
     }
 
     return (
-        <Rewards theme={theme}>
+        <Rewards theme={theme} title='Contest Rewards'>
+
             <RewardsMainHeading>
-                <Contest_h2 grid_area={'heading'}>Contest Rewards</Contest_h2>
                 <RewardSelector rewardOptions={rewardOptions} setRewardOptions={setRewardOptions} selectedRewards={selectedRewards} setSelectedRewards={setSelectedRewards} />
             </RewardsMainHeading>
 

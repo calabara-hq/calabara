@@ -12,6 +12,7 @@ const theme = {
     rainbow: {
         palette: {
             brand: '#80deea',
+            brand_alt: '#f2f2f2',
             mainBackground: '#303030',
             rewards_text: [
                 '#80deea',
@@ -24,6 +25,12 @@ const theme = {
                 'rgba(173, 156, 220, 0.3)',
                 'rgba(26, 188, 156, 0.3)',
                 'rgba(155, 89, 182, 0.3)',
+            ],
+            rewards_text_alt: [
+                '#d95169',
+                '#3c3c3d',
+                '#03b09f',
+                '#ab6afb',
             ],
 
         },
@@ -41,12 +48,12 @@ const ContestSettingsWrap = styled.div`
     
     > *  {
         margin: 50px auto;
-        border-radius: 20px;
-        width: 70%;
+        border-radius: 10px;
+        width: 60%;
         padding: 10px;
-        background-color: #22272e;
-        border: 2px solid #444c56;
-        color: #d3d3d3;
+        background-color: #1e1e1e;
+        //border: 2px solid #444c56;
+        color: #d9d9d9;
     }
 `
 

@@ -14,6 +14,14 @@ const Contest_h2 = styled.h2`
     animation: ${props => props.animated ? css`${fade_in} 0.6s ease-in-out` : ''};
 `
 
+const Contest_h2_alt = styled.h2`
+    grid-area: ${props => props.grid_area ? props.grid_area : ''};
+    color: ${props => props.color ? props.color : '#d9d9d9'};
+    font-size: 30px;
+    margin: 0px;
+    animation: ${props => props.animated ? css`${fade_in} 0.6s ease-in-out` : ''};
+`
+
 const Contest_h3 = styled.h3`
     grid-area: ${props => props.grid_area ? props.grid_area : ''};
     color: ${props => props.color ? props.color : '#d3d3d3'};
@@ -21,10 +29,25 @@ const Contest_h3 = styled.h3`
     margin: 0px;
     animation: ${props => props.animated ? css`${fade_in} 0.6s ease-in-out` : ''};
 `
+const Contest_h3_alt = styled.h3`
+    grid-area: ${props => props.grid_area ? props.grid_area : ''};
+    color: ${props => props.color ? props.color : '#d9d9d9'};
+    font-size: 24px;
+    //margin: 0px;
+    animation: ${props => props.animated ? css`${fade_in} 0.6s ease-in-out` : ''};
+`
+const Contest_h3_alt_small = styled.h3`
+    grid-area: ${props => props.grid_area ? props.grid_area : ''};
+    color: ${props => props.color ? props.color : '#b3b3b3'};
+    font-size: 20px;
+    margin: 0px;
+    animation: ${props => props.animated ? css`${fade_in} 0.6s ease-in-out` : ''};
+`
+
 const Contest_h4 = styled.h4`
     grid-area: ${props => props.grid_area ? props.grid_area : ''};
-    color: ${props => props.color ? props.color : '#d3d3d3'};
-    font-size: 18px;
+    color: ${props => props.color ? props.color : '#b3b3b3'};
+    font-size: 15px;
     margin: 0px;
     animation: ${props => props.animated ? css`${fade_in} 0.6s ease-in-out` : ''};
 `
@@ -54,8 +77,8 @@ const submission_fade = keyframes`
         }
 `
 const TagType = styled.span`
-    background-color: ${props => props.type === 'erc721' ? 'rgba(155, 89, 182, 0.3)' : props.type === 'erc20' ? 'rgba(26, 188, 156, 0.3)' : 'rgba(173, 156, 220, 0.3)'};
-    color: ${props => props.type === 'erc721' ? 'rgb(155, 89, 182)' : props.type === 'erc20' ? 'rgb(26, 188, 156)' : 'rgb(173, 156, 220)'};
+    background-color: ${props => props.type === 'erc721' ? '$ab6afb' : props.type === 'erc20' ? '#03b09f' : '#ecf0f1'};
+    color: ${props => props.type === 'erc721' ? '#f2f2f2' : props.type === 'erc20' ? '#f2f2f2' : '#3c3c3d'};
 
 `
 
@@ -100,6 +123,36 @@ const ERC721Button = styled.button`
         background-color: rgba(155, 89, 182, 0.2);
     }
 `
+const ERC20Button_alt = styled.button`
+    background-color: rgb(3 176 159 / 40%);
+    color: #03b09f;
+    border: none;
+    border-radius: 4px;
+    font-weight: 550;
+    padding: 5px 10px;
+    box-shadow: 0 6px 20px rgb(0 0 0 / 30%), 0 15px 12px rgb(0 0 0 / 22%);
+    &:hover{
+        background-color: rgb(3 176 159 / 40%);
+        color: #d9d9d9;
+    }
+
+`
+
+const ERC721Button_alt = styled.button`
+    background-color: rgb(171 106 251 / 40%);
+    color: #ab6afb;
+    border: none;
+    border-radius: 4px;
+    font-weight: 550;
+    padding: 5px 10px;
+    box-shadow: 0 6px 20px rgb(0 0 0 / 30%), 0 15px 12px rgb(0 0 0 / 22%);
+    margin-left: 10px;
+    &:hover{
+        background-color: #ab6afb;
+        color: #d9d9d9;
+    }
+`
+
 const ConfirmButton = styled.button`
     cursor: pointer;
     position: absolute;
@@ -133,4 +186,4 @@ const ErrorMessage = styled.div`
     }
 `
 
-export { fade_in, Contest_h2, Contest_h3, Contest_h4, Label, submission_fade, TagType, SettingsSectionSubHeading, labelColorOptions, ERC20Button, ERC721Button, ConfirmButton, ErrorMessage }
+export { fade_in, Contest_h2, Contest_h2_alt, Contest_h3, Contest_h3_alt, Contest_h3_alt_small, Contest_h4, Label, submission_fade, TagType, SettingsSectionSubHeading, labelColorOptions, ERC20Button, ERC20Button_alt, ERC721Button, ERC721Button_alt, ConfirmButton, ErrorMessage }

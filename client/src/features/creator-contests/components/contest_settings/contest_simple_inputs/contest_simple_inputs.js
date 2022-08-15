@@ -6,13 +6,7 @@ import { Contest_h2, Contest_h3, Contest_h4 } from '../../common/common_styles';
 const AdditionalParamsWrap = styled.div`
     display: flex;
     flex-direction: column;
-    background-color: #22272e;
-    border: 2px solid #444c56;
-    border-radius: 4px;
-    padding: 10px;
-    width: 70%;
-    margin: 0 auto;
-
+    
     > * {
         margin-bottom: 30px;
     }

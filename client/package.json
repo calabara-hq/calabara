@@ -127,7 +127,7 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "https://localhost:3001/",
+  "proxy": "https://192.168.1.219:3001/",
   "devDependencies": {
     "@babel/core": "^7.17.8",
     "@babel/plugin-transform-modules-commonjs": "^7.17.7",

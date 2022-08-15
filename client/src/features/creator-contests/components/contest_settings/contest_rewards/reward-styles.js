@@ -12,10 +12,10 @@ const NumberWinnersContainer = styled.div`
     margin: 0 auto;
 `
 const RewardsMainContent = styled.div`
-    background-color: #1c2128;
-    margin-top: 20px;
+    background-color: #262626;
+    margin: 20px 0;
     border-radius: 10px;
-   // border: 2px solid #444c56;
+    border: 2px solid #4d4d4d;
     padding: 20px 0px;
     height: 100%;
     > * {
