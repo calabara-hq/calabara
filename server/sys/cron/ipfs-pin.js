@@ -27,8 +27,14 @@ const serverBasePath = fs_path.normalize(fs_path.join(__dirname, '../../'))
 const getFileUrls = async () => {
     try {
         // CHANGE THIS BACK TO TRUE
-        let result = await db.query('update contest_submissions set locked = false where pinned = false and locked = false returning _url').then(clean).then(asArray);
+        let result = await db.query('update contest_submissions set locked = true where pinned = false and locked = false returning id, _url').then(clean).then(asArray);
         return result
+    } catch (e) { console.log(e) }
+}
+
+const updateFileUrl = async (id, new_url) => {
+    try {
+        let result = await db.query('update contest_submissions set locked = false, pinned = true, _url = $1 where id = $2', [new_url, id])
     } catch (e) { console.log(e) }
 }
 /**
@@ -86,6 +92,7 @@ const parseSubmission = async (chunk) => {
 
     if (tldr_image_flag && chunk.name === 'stringValue') {
         console.log('pinning TLDR image')
+        console.log(chunk.value)
         let hash = await pinFromFs(chunk.value)
         chunk.value = hash
         tldr_image_flag = false;
@@ -182,7 +189,8 @@ const mainLoop = async (unpinned_files) => {
 
             const asset_url = await data;
             const stream_end = await end;
-            console.log('FINAL ASSET URL --> ', asset_url)
+            console.log('FINAL ASSET URL --> ', asset_url);
+            await updateFileUrl(unpinned_body.id, asset_url)
 
         } catch (err) { console.log(err) }
     }
@@ -193,6 +201,7 @@ const mainLoop = async (unpinned_files) => {
 const pin_staging_files = () => {
     cron.schedule(EVERY_10_SECONDS, async () => {
         let unpinned_files = await getFileUrls();
+        //console.log(unpinned_files)
         await mainLoop(unpinned_files);
     })
 }

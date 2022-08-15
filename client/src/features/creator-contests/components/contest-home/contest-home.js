@@ -23,7 +23,10 @@ export default function ContestHomepage({ }) {
 
     useEffect(() => {
         (async () => {
+            let startTime = performance.now();
             let res = await axios.get(`/creator_contests/fetch_org_contests/${ens}`);
+            let endTime = performance.now() - startTime;
+            console.log('contest home time', endTime)
             set_all_contests(res.data)
         })();
     }, [])

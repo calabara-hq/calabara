@@ -14,13 +14,17 @@ export default function ContestInterfaceController({ }) {
 
     useEffect(() => {
         (async () => {
+            let startTime = performance.now();
             let res = await axios.get(`/creator_contests/fetch_contest/${ens}/${contest_hash}`);
+            let endTime = performance.now() - startTime;
+            console.log('interface controller time', endTime)
             set_contest_settings(res.data)
         })();
     }, [])
 
     return (
         <>
+        {contest_settings && <p>hi</p>}
             {contest_settings && <ContestInterface contest_settings={contest_settings} />}
         </>
     )

@@ -71,4 +71,26 @@ const settingsProcessLogo = async function (dispatch, logoCache) {
   return blob;
 }
 
-export { processImages, settingsProcessLogo, updateLogo }
+const processImages2 = async function () {
+  console.log('WEBWORKER')
+  const pullLogo = Comlink.wrap(worker);
+  const imgElements = document.querySelectorAll('img[data-src]')
+  var elements = Array.from(imgElements)
+  elements.map(async (element, index) => {
+    const imageURL = element.getAttribute('data-src')
+    let objectURL
+    console.log(imageURL)
+    const blob = await pullLogo(imageURL);
+    console.log(blob)
+    objectURL = URL.createObjectURL(blob);
+
+
+    element.removeAttribute('data-src')
+    element.setAttribute('src', objectURL);
+  })
+
+  return elements
+
+}
+
+export { processImages, settingsProcessLogo, updateLogo, processImages2 }

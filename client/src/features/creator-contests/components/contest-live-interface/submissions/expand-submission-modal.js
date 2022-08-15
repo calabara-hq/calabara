@@ -5,7 +5,7 @@ import styled from 'styled-components'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { ParseBlocks } from "../block-parser";
-
+import { SubmissionVotingBox } from "../vote/voting-components";
 
 
 const style = {
@@ -62,8 +62,7 @@ export default function ViewSubmissionModal({ modalOpen, handleClose, TLDRImage,
                 <Box sx={style}>
                     <ModalWrapper>
                         <ToolbarTop>
-                            <div>tag box</div>
-                            <div>voting box</div>
+                            <SubmissionVotingBox />
                         </ToolbarTop>
                         <ViewSubmission TLDRImage={TLDRImage} TLDRText={TLDRText} expandData={expandData} />
                     </ModalWrapper>
