@@ -81,11 +81,14 @@ const RewardRowWrapper = styled.div`
 `
 
 const VoterRewardInput = styled.div`
-    border: 2px solid #80deea;
-    border-radius: 100px;
-    background-color: black;
+    border: 2px solid #d95169;
+    border-radius: 10px;
+    background-color: #121212;
     outline: none;
     padding: 5px 10px;
+    height: 40px;
+    width: fit-content;
+    justify-self: center;
     display: flex;
     justify-content: flex-end;
     align-items: center;
@@ -93,11 +96,12 @@ const VoterRewardInput = styled.div`
 `
 
 const VoterRankWrapper = styled.div`
-    border: 2px solid #80deea;
-    border-radius: 100px;
-    background-color: black;
+    border: 2px solid #d95169;
+    border-radius: 10px;
+    background-color: #121212;
     outline: none;
     padding: 5px 10px;
+    height: 40px;
     width: fit-content;
     justify-self: center;
     display: flex;
@@ -117,7 +121,8 @@ const RewardsGridInput = styled.input`
 const HeadingWithToggle = styled.div`
     display: flex;
     align-items: center;
-   
+    //margin: 10px 0;
+    //padding-bottom: 20px;
 `
 
 

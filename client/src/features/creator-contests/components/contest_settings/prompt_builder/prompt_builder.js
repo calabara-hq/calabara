@@ -26,14 +26,7 @@ function reducer(state, action) {
 const PromptsWrap = styled.div`
     display: flex;
     flex-direction: column;
-    background-color: #22272e;
-    border: 2px solid #444c56;
-    border-radius: 4px;
-    padding: 10px;
-    width: 70%;
-    > * {
-       // margin-bottom: 30px;
-    }
+
 `
 
 const PromptBuilderMainHeading = styled.div`

@@ -5,8 +5,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPencil, faPlus } from '@fortawesome/free-solid-svg-icons';
 import ethLogo from '../../../../../img/eth.png'
 import EditRewardsModal from './contest-reward-input-modal';
-import { TagType } from '../../common/common_styles';
-import { ERC20Button, ERC721Button } from '../../common/common_styles';
+import { Contest_h3_alt, ERC20Button_alt, TagType } from '../../common/common_styles';
+import { ERC20Button, ERC721Button_alt } from '../../common/common_styles';
 const Wrap = styled.div`
     display: flex;
     flex-direction: column;
@@ -58,9 +58,9 @@ const RewardOption = styled.div`
     grid-gap: 20px;
     justify-content: flex-start;
     align-items: flex-start;
-    border: none;
+    border: 2px solid #4d4d4d;
     border-radius: 4px;
-    background-color: #1c2128;
+    background-color: #262626;
     padding: 5px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
 
@@ -143,7 +143,7 @@ export default function RewardSelector({ rewardOptions, setRewardOptions, select
 
     return (
         <Wrap>
-            <h3>Select Rewards</h3>
+            <Contest_h3_alt>Select Rewards</Contest_h3_alt>
             <AvailableRewards>
                 {Object.values(rewardOptions).map((el, idx) => {
                     console.log(el)
@@ -166,8 +166,8 @@ export default function RewardSelector({ rewardOptions, setRewardOptions, select
                 })}
             </AvailableRewards>
             <NewRewardContainer>
-                {!rewardOptions.erc20 && <ERC20Button onClick={() => handleEditRewardOption('erc20')}><FontAwesomeIcon icon={faPlus} /> ERC-20</ERC20Button>}
-                {!rewardOptions.erc721 && <ERC721Button onClick={() => handleEditRewardOption('erc721')}><FontAwesomeIcon icon={faPlus} /> ERC-721</ERC721Button>}
+                {!rewardOptions.erc20 && <ERC20Button_alt onClick={() => handleEditRewardOption('erc20')}><FontAwesomeIcon icon={faPlus} /> ERC-20</ERC20Button_alt>}
+                {!rewardOptions.erc721 && <ERC721Button_alt onClick={() => handleEditRewardOption('erc721')}><FontAwesomeIcon icon={faPlus} /> ERC-721</ERC721Button_alt>}
             </NewRewardContainer>
             <EditRewardsModal modalOpen={editRewardsModalOpen} handleClose={handleRewardsModalClose} existingRewardData={rewardOptions[editType]} type={editType} />
         </Wrap>

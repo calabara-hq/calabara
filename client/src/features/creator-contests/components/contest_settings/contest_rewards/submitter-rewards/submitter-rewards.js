@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Contest_h2, Contest_h3, SettingsSectionSubHeading } from '../../../common/common_styles';
+import { Contest_h2, Contest_h2_alt, Contest_h3, Contest_h3_alt, Contest_h3_alt_small, SettingsSectionSubHeading } from '../../../common/common_styles';
 import { SubmitterRewardsGridLayout, GridInputContainer, RewardsGridInput, CounterContainer } from './submitter-rewards-style';
 import CounterButton from '../../../common/CounterButton';
 import { HelpText } from 'react-rainbow-components';
@@ -31,11 +31,11 @@ export default function SubmitterRewardsBlock({ errorMatrix, setErrorMatrix, sub
     return (
         <RewardTypeWrap>
             <SettingsSectionSubHeading>
-                <Contest_h2 grid_area={'section_title'}>submitter rewards</Contest_h2>
+                <Contest_h3_alt grid_area={'section_title'}>Submitter Rewards</Contest_h3_alt>
             </SettingsSectionSubHeading>
             <RewardsMainContent>
                 <NumberWinnersContainer>
-                    <Contest_h3>Number of Winners</Contest_h3>
+                    <Contest_h3_alt_small>Number of Winners</Contest_h3_alt_small>
                     <CounterButton counter={numWinners} handleIncrement={handleWinnersIncrement} handleDecrement={handleWinnersDecrement} />
                 </NumberWinnersContainer>
                 <SubmitterRewardsGrid numWinners={numWinners} submitterRewards={submitterRewards} setSubmitterRewards={setSubmitterRewards} selectedRewards={selectedRewards} errorMatrix={errorMatrix} setErrorMatrix={setErrorMatrix} theme={theme} />

@@ -10,7 +10,16 @@ import { faTicket, faWallet } from '@fortawesome/free-solid-svg-icons';
 const VotingPolicyWrap = styled.div`
     display: flex;
     flex-direction: column;
+    &::before{
+        content: '${props => props.title}';
+        position: absolute;
+        transform: translate(0%, -150%);
+        color: #f2f2f2;
+        font-size: 30px;
+    }
+
     > * {
+        margin-top: 10px;
         margin-bottom: 20px;
     }
 `
@@ -144,8 +153,7 @@ export default function VotingPolicy({ rewardOptions, votingStrategy, setVotingS
     ]
 
     return (
-        <VotingPolicyWrap>
-            <Contest_h2>Voting Credit Strategy</Contest_h2>
+        <VotingPolicyWrap title="Voting Credit Strategy">
             <div style={{ width: 'fit-content' }} className='tab-message neutral'>
                 <p>Voting credits determine how voting power is calculated, as well as any restrictions on voting power.</p>
             </div>
@@ -172,10 +180,11 @@ const StrategyStyle = styled.div`
     display: flex;
     flex-direction: column;
     margin: 10px;
-    padding: 5px 30px;
-    background-color: #15191e;
-    border: 2px solid ${props => props.selected ? 'rgb(26, 188, 156)' : 'black'};
-    border-radius: 10px;
+    padding: 5px 10px;
+    background-color: #262626;
+    border: 2px solid ${props => props.selected ? '#04AA6D' : '#4d4d4d'};
+    border-radius: 4px;
+    box-shadow: 0 10px 30px rgb(0 0 0 / 30%), 0 15px 12px rgb(0 0 0 / 22%);
     flex: 1;
     align-items: center;
     justify-content: center;
@@ -183,7 +192,7 @@ const StrategyStyle = styled.div`
     position: relative;
 
     &:hover{
-        background-color: #0a0c0f;
+        background-color: #1e1e1e;
         
     }
     &::after{
@@ -194,18 +203,21 @@ const StrategyStyle = styled.div`
         position: absolute;
         right: 0;
         top: 10px;
-        color: rgb(26, 188, 156);
+        color: #04AA6D;
         display: ${props => props.selected ? 'null' : 'none'}
     }
 `
 
 const StrategyName = styled.h4`
-    font-size: 26px;
+    font-size: 24px;
+    font-weight: 550;
 `
 const StrategyDescription = styled.p`
     //margin: 0 auto;
+    color: #b3b3b3;
     text-align: center;
-    font-size: 16px;
+    font-size: 14px;
+    padding: 10px 10px;
 `
 const StrategyIcon = styled.span`
     font-size: 100px;

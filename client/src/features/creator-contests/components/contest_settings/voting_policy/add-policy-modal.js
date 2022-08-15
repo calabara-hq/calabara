@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import '../../../../../css/status-messages.css';
 import styled from 'styled-components'
-import { TagType, fade_in, Contest_h3, ERC20Button, ERC721Button, ConfirmButton } from '../../common/common_styles';
+import { TagType, fade_in, Contest_h3, ERC20Button, ERC721Button, ConfirmButton, Contest_h3_alt_small } from '../../common/common_styles';
 import AddNewToken from '../../common/add_token';
 import { ToggleButton } from '../../common/common_components';
 
@@ -13,8 +13,7 @@ const style = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    width: '70vw',
-    bgcolor: '#1d1d1d',
+    bgcolor: '#1e1e1e',
     //border: '2px solid rgba(29, 29, 29, 0.3)',
     boxShadow: 20,
     p: 4,
@@ -38,7 +37,8 @@ const ModalWrapper = styled.div`
 
 
 const ModalHeading = styled.p`
-    font-size: 26px;
+    font-size: 30px;
+    color: #d9d9d9;
     width: 'fit-content';
 `
 
@@ -108,27 +108,50 @@ const SplitDecision = styled.div`
 const ConfirmSelectionButton = styled.button`
     border: none;
     border-radius: 4px;
-    background-color: rgb(6, 214, 160);
-    color: black;
+    background-color: #04AA6D;
+    color: #ffff;
     justify-self: flex-end;
     padding: 5px 10px;
+    font-size: 15px;
+    font-weight: 550;
     animation: ${fade_in} 0.5s ease-in-out;
     
     &:hover{
-        background-color: rgba(26, 188, 156, 0.8);
+        background-color: rgb(4, 170, 109, .6);
+        color: #ffff;
+        
     }
 `
 
 const AddTokenButton = styled.button`
     padding: 10px 20px;
-    border: 2px solid #444c56;
+    border: 2px solid #4d4d4d;
     border-radius: 10px;
-    background-color: transparent;
+    background-color: #262626;
+    box-shadow: 0 10px 30px rgb(0 0 0 / 30%), 0 15px 12px rgb(0 0 0 / 22%);
+
 
     &:hover{
-        background-color: #15191e;
+        background-color: #1e1e1e;
     }
 `
+
+const ReplaceStrategy = styled.button`
+    width: fit-content;
+    padding: 10px 20px;
+    border: 2px solid #d95169;
+    border-radius: 10px;
+    background-color: #262626;
+    box-shadow: 0 10px 30px rgb(0 0 0 / 30%), 0 15px 12px rgb(0 0 0 / 22%);
+
+
+    &:hover{
+        background-color: #1e1e1e;
+    }
+`
+
+
+
 
 function TokenStrategy({ rewardOptions, availableRules, votingStrategy, setVotingStrategy, handleClose }) {
     const [quickAddOptions, setQuickAddOptions] = useState(null);
@@ -207,7 +230,7 @@ function TokenStrategySummary({ votingStrategy, setProgress }) {
             <h4><b>1</b> {symbol} equals <b>1</b> voting credit</h4>
             <p><b>Limit per sub:</b> {max_per_sub_bool ? max_per_sub_limit : 'Off'}</p>
             <p><b>Limit per wallet:</b> {hardcap_bool ? hardcap_limit : 'Off'}</p>
-            <button style={{ color: 'black' }} onClick={() => setProgress(1)}>replace strategy</button>
+            <ReplaceStrategy onClick={() => setProgress(1)}>replace strategy</ReplaceStrategy>
         </>
     )
 }
@@ -257,6 +280,7 @@ function ArcadeStrategySummary({ votingStrategy, setProgress }) {
 const AdditionalConfigWrap = styled.div`
     display: flex;
     flex-direction: column;
+    color: #d3d3d3;
 
     > * {
         margin-bottom: 20px;
@@ -266,23 +290,41 @@ const BackButton = styled.button`
     position: absolute;
     bottom: 2em;
     left: 2em;
-    color: darkgrey;
-    background-color: transparent;
-    border: 2px solid darkgrey;
+    color: #d3d3d3;
+    background-color: #262626;
+    border: 2px solid #4d4d4d;
     border-radius: 4px;
     padding: 5px 20px;
+    font-size: 15px;
+    font-weight: 550;
+    animation: ${fade_in} 0.5s ease-in-out;
 
     &:hover{
-        background-color: darkgrey;
-        color: black;
+        background-color: #1e1e1e;
+        color: #f2f2f2;
     }
+
 `
 
-const NextButton = styled.button`
+const SaveButton = styled.button`
     position: absolute;
-    bottom: 0;
-    right: 0;
-    color: black;
+    bottom: 2em;
+    right: 2em;
+    color: #ffff;
+    background-color: #04AA6D;
+    border: transparent;
+    border-radius: 4px;
+    padding: 5px 20px;
+    font-size: 15px;
+    font-weight: 550;
+    animation: ${fade_in} 0.5s ease-in-out;
+    
+    &:hover{
+        background-color: rgb(4, 170, 109, .6);
+        color: #ffff;
+        
+    }
+
 `
 
 const TopLevelWrap = styled.div`
@@ -296,29 +338,60 @@ const MaxPerSub = styled.div`
     display: flex;
     align-items: center;
     gap: 50px;
-    > div:nth-child(2){
-        flex: 1 0 20%;
+    > input{
+        flex: 0 0 20px;
     }
 `
 const Hardcap = styled.div`
     display: flex;
     align-items: center;
     gap: 50px;
-    > div:nth-child(2){
-        flex: 1 0 20%;
+    > input{
+        flex: 0 0 20px;
     }
 `
+
+const ArcadeVotes = styled.div`
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 50px;
+    > input{
+        flex: 0 0 20px;
+        margin-left: auto;
+    }
+
+`
+
 
 const SettingDescription = styled.div`
     display: flex;
     flex-direction: column;
     flex: 1 0 40%;
+    > * {
+        color: #d3d3d3;
+    }
+
 `
 
-const CaptureInput = styled.div`
+const CaptureInput = styled.input`
     flex: 1 0 10%;
-    color: black;
+    color: #f2f2f2;
+    border: 2px solid #d95169;
+    border-radius: 10px;
+    background-color: #121212;
+    outline: none;
+    padding: 5px 10px;
+    height: 40px;
+    width: 100px;
+    justify-self: center;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    text-align: center;
 `
+
+
 
 
 
@@ -372,47 +445,52 @@ function AdditionalConfig({ tokenData, setProgress, handleSave, handlePrevious }
         <AdditionalConfigWrap>
             {tokenData &&
                 <>
-                    <TopLevelWrap>
-                        <h4><b>1</b> {tokenData.symbol} equals <b>1</b> voting credit</h4>
+                    <TopLevelWrap>            
+                        <div style={{ width: 'fit-content' }} className='tab-message neutral'>
+                            <h4><b>1</b> {tokenData.symbol} equals <b>1</b> voting credit</h4>            
+                        </div>
                     </TopLevelWrap>
                     <MaxPerSub>
                         <SettingDescription>
-                            <Contest_h3 >Max per Submission</Contest_h3>
+                            <Contest_h3_alt_small >Max per Submission</Contest_h3_alt_small>
                             <p style={{ color: '#a3a3a3' }}>Limit # of usable voting credits on a single submission. </p>
                         </SettingDescription>
                         <ToggleButton identifier={'max-per-sub-toggle'} isToggleOn={isMaxPerSubOn} setIsToggleOn={setIsMaxPerSubOn} handleToggle={handleMaxPerSubToggle} />
-                        {isMaxPerSubOn && <CaptureInput><input type={'number'} onChange={(e) => setMaxPerSubLimit(Number(e.target.value))}></input></CaptureInput>}
+                        {isMaxPerSubOn && <CaptureInput type={'number'} onChange={(e) => setMaxPerSubLimit(Number(e.target.value))}></CaptureInput>}
                     </MaxPerSub>
                     <Hardcap>
                         <SettingDescription>
-                            <Contest_h3 >Hard cap</Contest_h3>
+                            <Contest_h3_alt_small >Hard cap</Contest_h3_alt_small>
                             <p style={{ color: '#a3a3a3' }}>Limit # of usable voting credits across the entire contest.</p>
                         </SettingDescription>
                         <ToggleButton identifier={'hardcap-toggle'} isToggleOn={isHardcapOn} setIsToggleOn={setIsHardcapOn} handleToggle={handleHardcapToggle} />
-                        {isHardcapOn && <CaptureInput><input type={'number'} onChange={(e) => setHardcapLimit(Number(e.target.value))}></input></CaptureInput>}
+                        {isHardcapOn && <CaptureInput type={'number'} onChange={(e) => setHardcapLimit(Number(e.target.value))}></CaptureInput>}
+                        <BackButton onClick={handlePrevious}>back</BackButton>
+                        <SaveButton onClick={() => handleSave({ hardcap_bool: isHardcapOn, hardcap_limit: hardcapLimit, max_per_sub_bool: isMaxPerSubOn, max_per_sub_limit: maxPerSubLimit })}>save</SaveButton>
                     </Hardcap>
-                    <BackButton onClick={handlePrevious}>back</BackButton>
-                    <ConfirmButton onClick={() => handleSave({ hardcap_bool: isHardcapOn, hardcap_limit: hardcapLimit, max_per_sub_bool: isMaxPerSubOn, max_per_sub_limit: maxPerSubLimit })}>save</ConfirmButton>
                 </>
             }
 
 
             {!tokenData &&
                 <>
-                    <TopLevelWrap>
-                        <p>Voting credits per qualifying participant</p>
-                        <input type={"number"} style={{ color: 'black' }} onChange={(e) => setArcadeCredits(Number(e.target.value))}></input>
-                    </TopLevelWrap>
+                <TopLevelWrap>            
+
+                    <ArcadeVotes>
+                        <Contest_h3_alt_small>Voting credits per qualifying participant</Contest_h3_alt_small>
+                        <CaptureInput type={"number"} onChange={(e) => setArcadeCredits(Number(e.target.value))}></CaptureInput>
+                    </ArcadeVotes>
+                </TopLevelWrap>
                     <MaxPerSub>
                         <SettingDescription>
-                            <Contest_h3 >Max per Submission</Contest_h3>
+                            <Contest_h3_alt_small >Max per Submission</Contest_h3_alt_small>
                             <p style={{ color: '#a3a3a3' }}>Limit # of usable voting credits on a single submission. </p>
                         </SettingDescription>
                         <ToggleButton identifier={'max-per-sub-toggle'} isToggleOn={isMaxPerSubOn} setIsToggleOn={setIsMaxPerSubOn} handleToggle={handleMaxPerSubToggle} />
-                        {isMaxPerSubOn && <CaptureInput><input type={'number'} onChange={(e) => setMaxPerSubLimit(Number(e.target.value))}></input></CaptureInput>}
+                        {isMaxPerSubOn && <CaptureInput type={'number'} onChange={(e) => setMaxPerSubLimit(Number(e.target.value))}></CaptureInput>}
                     </MaxPerSub>
                     {handlePrevious && <BackButton onClick={handlePrevious}>back</BackButton>}
-                    <ConfirmButton onClick={() => handleSave({ credit_allowance: arcadeCredits, max_per_sub_bool: isMaxPerSubOn, max_per_sub_limit: maxPerSubLimit })}>save</ConfirmButton>
+                    <SaveButton onClick={() => handleSave({ credit_allowance: arcadeCredits, max_per_sub_bool: isMaxPerSubOn, max_per_sub_limit: maxPerSubLimit })}>save</SaveButton>
                 </>
             }
 
@@ -435,7 +513,9 @@ const ElementStyle = styled.div`
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    border: 2px solid ${props => props.selected ? 'rgb(26, 188, 156)' : '#444c56'};
+    background-color: #262626;
+    box-shadow: 0 10px 30px rgb(0 0 0 / 30%), 0 15px 12px rgb(0 0 0 / 22%);
+    border: 2px solid ${props => props.selected ? '#04aa6d' : '#4d4d4d'};
     margin: 15px 0px;
     padding: 5px;
     cursor: ${props => props.selectable ? 'pointer' : 'default'};
@@ -443,7 +523,7 @@ const ElementStyle = styled.div`
 
 
     &:hover{
-        background-color: ${props => props.selectable ? '#15191e' : 'null'};
+        background-color: ${props => props.selectable ? '#1e1e1e' : 'null'};
     }
 `
 const OptionType = styled.p`
@@ -471,7 +551,7 @@ function TokenVotingChoice({ options, quickAddSelection, setQuickAddSelection, s
     }
     return (
         <>
-            <div style={{ width: '100%', marginTop: '20px' }} className='tab-message neutral'>
+            <div style={{ width: 'fit-content', marginTop: '20px' }} className='tab-message neutral'>
                 <p>Choose an erc-20 or erc-721 token used to calculate credits.</p>
             </div>
             <TokenDecisionWrap>

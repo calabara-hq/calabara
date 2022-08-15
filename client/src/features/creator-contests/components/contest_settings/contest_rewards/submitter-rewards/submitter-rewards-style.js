@@ -24,9 +24,9 @@ const GridInputContainer = styled.div`
 `
 
 const RewardsGridInput = styled.input`
-    border: 2px solid ${props => props.error ? 'red' : props.theme.palette.rewards_text[props.name]};
+    border: 2px solid ${props => props.error ? 'red' : props.theme.palette.rewards_text_alt[props.name]};
     border-radius: 10px;
-    background-color: black;
+    background-color: #121212;
     outline: none;
     padding: 5px 10px;
     width: 35%;
@@ -36,7 +36,7 @@ const RewardsGridInput = styled.input`
     animation: ${fade_in} ${props => props.name * 0.7}s ease-in-out;
 
     &:focus, &:hover, &:active{
-        border: 2px solid ${props => props.theme.palette.brand};
+        border: 2px solid ${props => props.theme.palette.brand_alt};
     }
 `
 export { SubmitterRewardsGridLayout, GridInputContainer, RewardsGridInput }

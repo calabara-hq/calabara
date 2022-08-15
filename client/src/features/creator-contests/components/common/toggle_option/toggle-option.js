@@ -1,16 +1,119 @@
 import React, { useEffect, useState } from 'react'
-import '../../../../../css/gatekeeper-toggle.css'
 import { useSelector } from 'react-redux';
 import RoleSelectModal from '../../../../manage-widgets/role-select-modal'
-
+import styled from 'styled-components'
 import {
     selectDashboardRules,
 } from '../../../../../features/gatekeeper/gatekeeper-rules-reducer';
 
+const GkRule = styled.div`
+
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: space-evenly;
+    align-items: center;
+    grid-gap: 20px;
+    justify-content: flex-start;
+    align-items: flex-start;
+    border: 2px solid ${props => props.error ? 'rgb(235, 87, 87)' : '#4d4d4d'};
+    border-radius: 4px;
+    background-color: #262626;
+    padding: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+    min-height: 150px;
+
+    > p  {
+        margin: 0;
+        color: #d3d3d3;
+        align-self: flex-start;
+
+    }
+
+
+
+
+`
+
+const Tag = styled.span `
+
+            color: #f2f2f2;
+            background-color: ${props => props.tagtype === 'erc20' ? '#03b09f' : (props.tagtype == 'erc721' ? '#ab6afb': '#5865f2')};
+            padding: 3px 3px;
+            border-radius: 5px;
+            font-size: 15px;
+            font-weight: 550;
+
+
+
+`
+
+
+
+
+
+
+
+const ToggleFlex = styled.div`
+
+display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    
+    > input  {
+        animation: fadein 1s forwards;
+        width: 120px;
+        height: 50px;
+        margin-left: auto;
+        align-self: center;
+        padding: 1rem 2rem;
+        border: double 2px transparent;
+        border-radius: 10px;
+        background-image: linear-gradient(#141416, #141416), 
+                        linear-gradient(to right, #e00f8e, #2d66dc);
+        background-origin: border-box;
+        background-clip: padding-box, border-box;
+        color: white;
+        font-size: 1.5rem;
+        outline: none;
+    }
+
+    > button  {
+        width: 120px;
+        padding: 10px 15px;
+        margin-left: auto;
+        height: 50px;
+        cursor: pointer;
+        border-radius: 30px;
+        background-color: #0e0e30;
+        color: #008cff;
+        border: 2px solid #008cff;
+
+        &:hover {
+            background-color: #008cff;
+            color: white;
+        }
+    }
+
+`
+
+const TokenLink = styled.span`
+cursor: pointer;
+
+> i {color: grey};
+
+
+`
+
+
+
+
 export default function ToggleOption({ appliedRules, setAppliedRules, ruleError, setRuleError, toggle_identifier }) {
     // fetch available rules
-   // const availableRules = useSelector(selectDashboardRules);
-   // console.log(availableRules)
+    // const availableRules = useSelector(selectDashboardRules);
+    // console.log(availableRules)
 
     /******************/
 
@@ -115,7 +218,7 @@ export default function ToggleOption({ appliedRules, setAppliedRules, ruleError,
         <div className="apply-gatekeeper-rules">
             {Object.entries(availableRules).map(([option_id, value]) => {
                 return (
-                    <Option ruleError={ruleError} key={option_id} setRuleError={setRuleError} element={value} option_id={option_id} appliedRules={appliedRules} setAppliedRules={setAppliedRules} toggle_identifier={toggle_identifier} ruleOption={value}/>
+                    <Option ruleError={ruleError} key={option_id} setRuleError={setRuleError} element={value} option_id={option_id} appliedRules={appliedRules} setAppliedRules={setAppliedRules} toggle_identifier={toggle_identifier} ruleOption={value} />
                 )
             })}
         </div>
@@ -155,7 +258,7 @@ function Option({ element, option_id, appliedRules, setAppliedRules, ruleError, 
     }
 
     const handleThresholdChange = (e) => {
-        let objCopy = {...ruleOption}
+        let objCopy = { ...ruleOption }
         objCopy['threshold'] = e.target.value
         setAppliedRules({ type: 'update_single', payload: { [option_id]: objCopy } })
         setRuleError(false)
@@ -167,14 +270,14 @@ function Option({ element, option_id, appliedRules, setAppliedRules, ruleError, 
 
     return (
         <>
-            <div className={'gk-rule ' + (ruleError.id == option_id ? 'error' : 'undefined')}>
+            <GkRule error={ruleError.id == option_id} >
                 {(element.type === 'erc721' || element.type === 'erc20') &&
                     <>
-                        <p><b>Type:</b> <span className={element.type}>{element.type}</span></p>
+                        <p><b>Type:</b> <Tag tagtype={element.type}>{element.type}</Tag></p>
                         <p><b>Symbol: </b>
-                            <span onClick={() => { window.open('https://etherscan.io/address/' + element.address) }} className='gatekeeper-symbol'>{element.symbol}  <i className="fas fa-external-link-alt"></i></span>
+                            <TokenLink onClick={() => { window.open('https://etherscan.io/address/' + element.address) }}> {element.symbol} <i className="fas fa-external-link-alt"></i></TokenLink>
                         </p>
-                        <div className="toggle-flex">
+                        <ToggleFlex>
                             <ToggleSwitch setRuleError={setRuleError} ruleError={ruleError} addRule={addRule} deleteRule={deleteRule} option_id={option_id} isGatekeeperOn={isGatekeeperOn} setIsGatekeeperOn={setIsGatekeeperOn} appliedRules={appliedRules} setAppliedRules={setAppliedRules} toggle_identifier={toggle_identifier} />
                             {isGatekeeperOn &&
                                 <>
@@ -182,25 +285,25 @@ function Option({ element, option_id, appliedRules, setAppliedRules, ruleError, 
 
                                 </>
                             }
-                        </div>
+                        </ToggleFlex>
                     </>
                 }
                 {(element.type === 'discord') &&
                     <>
-                        <p><b>Type:</b> <span className={element.type}>{element.type}</span></p>
+                        <p><b>Type:</b> <Tag tagtype={element.type}>{element.type}</Tag></p>
                         <p><b>Server:</b> {element.serverName}</p>
-                        <div className="toggle-flex">
+                        <ToggleFlex>
                             <ToggleSwitch setRuleError={setRuleError} ruleError={ruleError} addRule={addRule} deleteRule={deleteRule} option_id={option_id} isGatekeeperOn={isGatekeeperOn} setIsGatekeeperOn={setIsGatekeeperOn} toggle_identifier={toggle_identifier} />
                             {isGatekeeperOn &&
                                 <>
-                                    <button className="select-roles primary-gradient-button" onClick={open}>select roles</button>
+                                    <button onClick={open}>select roles</button>
                                     {roleModalOpen && <RoleSelectModal handleAddDiscordRule={handleAddDiscordRule} handleClose={close} modalOpen={roleModalOpen} existingRoles={appliedRules[option_id] || []} />}
                                 </>
                             }
-                        </div>
+                        </ToggleFlex>
                     </>
                 }
-            </div>
+            </GkRule>
 
             {ruleError.id == option_id &&
                 <div className="tab-message error" style={{ width: '100%' }}>
@@ -237,7 +340,7 @@ function ToggleSwitch({ addRule, setRuleError, deleteRule, ruleError, option_id,
 
 
     return (
-        <div className="gatekeeper-toggle">
+        <div>
             <input checked={isGatekeeperOn} onChange={handleToggle} className="react-switch-checkbox" id={`react-switch-toggle-${toggle_identifier}-${option_id}`} type="checkbox" />
             <label style={{ background: isGatekeeperOn && '#06D6A0' }} className="react-switch-label" htmlFor={`react-switch-toggle-${toggle_identifier}-${option_id}`}>
                 <span className={`react-switch-button`} />
