@@ -13,11 +13,11 @@ const style = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    bgcolor: '#1d1d1d',
+    bgcolor: '#1e1e1e',
     border: '2px solid rgba(29, 29, 29, 0.3)',
     boxShadow: 20,
     p: 4,
-    borderRadius: '20px',
+    borderRadius: '10px',
     height: 'calc(100% - 144px)',
     width: 'calc(100% - 400px)',
     minWidth: '400px',
@@ -29,7 +29,6 @@ const style = {
 };
 
 const ModalWrapper = styled.div`
-    color: #d3d3d3;
     display: flex;
     flex-direction: column;
     gap: 50px;
@@ -79,14 +78,32 @@ const SubmissionWrap = styled.div`
     flex-direction: column;
     max-height: 600px;
     overflow-y: scroll;
-    //justify-content: center;
-    align-items: center;
+    scroll-margin-left: 20px;
+    align-items: flex-start;
+    > h2 {
+        color: #d9d9d9;
+    }
     
+    > p {
+        color: #d3d3d3;
+        font-size: 15px;
+    }
     > img {
+        align-self: center;
+        border-radius: 10px;
         margin-top: 20px;
-        max-width: 50em;
+        //max-height: 20em;
+        max-width: 35em;
         margin-bottom: 20px;
     }
+
+    > * {
+        margin-top: 20px;
+        margin-bottom: 20px;
+        margin-right: 30px;
+
+    }
+    
 `
 
 
