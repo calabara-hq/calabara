@@ -29,7 +29,7 @@ const SubmissionContent = styled.div`
     height: ${props => props.expanded ? '500px' : '25ch'};
     overflow-y: ${props => props.expanded ? 'scroll' : 'hidden'};
     overflow-x: hidden;
-    font-size: 20px;
+    font-size: 16px;
     text-align: left;
     padding: 10px;
     background-color: #1c2128;
