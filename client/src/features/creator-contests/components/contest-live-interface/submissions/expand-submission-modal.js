@@ -33,6 +33,7 @@ const ModalWrapper = styled.div`
     display: flex;
     flex-direction: column;
     gap: 50px;
+
 `
 const ToolbarTop = styled.div`
     display: flex;
@@ -51,7 +52,7 @@ const ExitButton = styled.button`
     
 `
 
-export default function ViewSubmissionModal({ modalOpen, handleClose, TLDRImage, TLDRText, expandData }) {
+export default function ViewSubmissionModal({ modalOpen, handleClose, id, TLDRImage, TLDRText, expandData }) {
 
     return (
         <div>
@@ -62,7 +63,7 @@ export default function ViewSubmissionModal({ modalOpen, handleClose, TLDRImage,
                 <Box sx={style}>
                     <ModalWrapper>
                         <ToolbarTop>
-                            <SubmissionVotingBox />
+                            <SubmissionVotingBox sub_id={id}/>
                         </ToolbarTop>
                         <ViewSubmission TLDRImage={TLDRImage} TLDRText={TLDRText} expandData={expandData} />
                     </ModalWrapper>
@@ -78,9 +79,9 @@ const SubmissionWrap = styled.div`
     flex-direction: column;
     max-height: 600px;
     overflow-y: scroll;
-    justify-content: center;
+    //justify-content: center;
     align-items: center;
-
+    
     > img {
         margin-top: 20px;
         max-width: 50em;

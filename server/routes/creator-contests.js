@@ -13,7 +13,8 @@ const { clean, asArray } = require('../helpers/common')
 const { getGuildRoles } = require('./discord-routes');
 const { createContest, createSubmission, createSubmission2 } = require('../middlewares/create-contest-middleware.js');
 const { imageUpload } = require('../middlewares/image-upload-middleware.js');
-const logger = require('../logger').child({component: 'creator-contests'})
+const { json } = require('body-parser');
+const logger = require('../logger').child({ component: 'creator-contests' })
 
 const serverRoot = path.normalize(path.join(__dirname, '../'));
 
@@ -45,7 +46,7 @@ contests.get('/fetch_contest/*', async function (req, res, next) {
 
     fs.createReadStream(path.join(serverRoot, latest._url, 'settings.json'))
         .on('end', function () {
-            logger.log({level: 'info', message: 'fetch contest stream success'})
+            logger.log({ level: 'info', message: 'fetch contest stream success' })
         })
         .on('error', function (err) {
             res.send(err)
@@ -59,8 +60,8 @@ contests.get('/fetch_contest/*', async function (req, res, next) {
 contests.get('/fetch_submissions/*', async function (req, res, next) {
     let ens = req.url.split('/')[2];
     let contest_hash = req.url.split('/')[3];
-    let sub_urls = await db.query('select _url from contest_submissions where ens = $1 and contest_hash = $2', [ens, contest_hash]).then(clean).then(asArray)
-    res.send(sub_urls).status(200)
+    let subs = await db.query('select id, _url from contest_submissions where ens = $1 and contest_hash = $2', [ens, contest_hash]).then(clean).then(asArray)
+    res.send(subs).status(200)
 })
 
 // create a contest
@@ -86,6 +87,50 @@ contests.post('/create_submission', createSubmission2, async function (req, res,
 
     res.sendStatus(200)
 })
+
+///////////////////////////// begin voting ////////////////////////////////////
+
+contests.post('/fetch_user_spent_votes/', async function (req, res, next) {
+    let { sub_id, walletAddress, contest_hash } = req.body
+
+    let result = await db.query('select votes_spent from contest_votes where contest_hash = $1 and submission_id = $2 and voter = $3', [contest_hash, sub_id, walletAddress])
+        .then(clean)
+        .then(data => {
+            if (data) return data
+            else return { votes_spent: 0 }
+        }).then(num => JSON.stringify(num))
+
+    console.log(result)
+    res.send(result).status(200)
+
+})
+
+contests.post('/cast_vote', async function (req, res, next) {
+    let { contest_hash, sub_id, walletAddress, num_votes } = req.body;
+    let result = await db.query('insert into contest_votes (contest_hash, submission_id, voter, votes_spent)\
+                                values ($1, $2, $3, $4)\
+                                on conflict (voter, submission_id)\
+                                do update set votes_spent = contest_votes.votes_spent + $4\
+                                returning votes_spent',
+        [contest_hash, sub_id, walletAddress, num_votes])
+        .then(clean)
+        .then(data => {
+            return JSON.stringify(data.votes_spent)
+        })
+
+    console.log(result)
+
+    res.send(result).status(200)
+
+})
+
+contests.post('/retract_sub_votes', async function (req, res, next) {
+    let { sub_id, walletAddress } = req.body;
+    let result = await db.query('delete from contest_votes where submission_id = $1 and voter = $2', [sub_id, walletAddress])
+    res.sendStatus(200)
+})
+
+///////////////////////////// end voting ////////////////////////////////////
 
 
 // used for lazy uploading assets in contest submissions
