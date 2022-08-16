@@ -25,3 +25,4 @@ create table whitelist (id serial, address text, primary key (id));
 
 create table contests (id serial, ens text, created text, _start text, _end text, _hash text UNIQUE, _url text, primary key (id));
 create table contest_submissions (id serial, ens text, contest_hash text, created text, author text, locked boolean, pinned boolean, _url text, primary key(id), foreign key(contest_hash) references contests(_hash) on delete cascade);
+create table contest_votes (id serial, voter text, created text, contest_hash text, submission_id int, votes_spent double precision, primary key (id), unique(voter, submission_id), foreign key(contest_hash) references contests(_hash) on delete cascade, foreign key (submission_id) references contest_submissions(id) on delete cascade);

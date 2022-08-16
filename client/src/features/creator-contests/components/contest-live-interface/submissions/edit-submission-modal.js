@@ -263,19 +263,18 @@ function EditLongForm({ setProgress, longFormValue, setLongFormValue }) {
 function Preview({ setProgress, TLDRImage, TLDRText, longFormValue }) {
     const { ens, contest_hash } = useParams();
     const handleSubmit = async () => {
-
+/*
         let tldr = {
             tldr_text: TLDRText,
-            tldr_image: TLDRImage.url
+            tldr_image: ''//TLDRImage.url
         }
-
+*/
         let submission = {
             tldr_text: TLDRText,
             tldr_image: TLDRImage.url,
             submission_body: longFormValue
         }
         let res = await axios.post('/creator_contests/create_submission', { ens: ens, contest_hash: contest_hash, submission: submission})
-        console.log(tldr)
     }
 
     return (

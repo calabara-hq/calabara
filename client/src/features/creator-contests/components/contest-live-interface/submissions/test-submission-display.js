@@ -80,12 +80,14 @@ export default function SubmissionDisplay({ }) {
     const [modalOpen, setModalOpen] = useState(false);
     const [TLDRImage, setTLDRImage] = useState(null);
     const [TLDRText, setTLDRText] = useState(null);
+    const [idToExpand, setIdToExpand] = useState(null);
     const [expandData, setExpandData] = useState(null)
-    const [urls, set_urls] = useState([]);
+    const [subs, set_subs] = useState([]);
     const { ens, contest_hash } = useParams();
 
 
     const handleClose = () => {
+        setIdToExpand(null);
         setTLDRImage(null);
         setTLDRText(null);
         setExpandData(null);
@@ -93,12 +95,14 @@ export default function SubmissionDisplay({ }) {
     }
 
 
-    const handleExpand = async (index, tldr_img, tldr_text, submission_url) => {
+    const handleExpand = async (id, tldr_img, tldr_text, submission_url) => {
+        setIdToExpand(id)
         setTLDRImage(tldr_img);
         setTLDRText(tldr_text);
-
         //let res = await axios.get(submission_url)
+        console.log(submission_url)
         let res = await axios.get(submission_url);
+        console.log(res.data)
         setExpandData(res.data);
 
 
@@ -112,7 +116,7 @@ export default function SubmissionDisplay({ }) {
         (async () => {
             let res = await axios.get(`/creator_contests/fetch_submissions/${ens}/${contest_hash}`);
             console.log(res.data.reverse())
-            set_urls(res.data)
+            set_subs(res.data)
         })();
     }, [])
 
@@ -120,16 +124,16 @@ export default function SubmissionDisplay({ }) {
         <>
             <h2 style={{ textAlign: 'center', color: '#d3d3d3', marginBottom: '30px' }}>Submissions</h2>
             <SubmissionWrap>
-                {urls.map((url, index) => {
-                    return <Submission url={url._url} index={index} handleExpand={handleExpand} />
+                {subs.map((sub) => {
+                    return <Submission url={sub._url} key={sub.id} id={sub.id} handleExpand={handleExpand} />
                 })}
-                <ViewSubmissionModal modalOpen={modalOpen} handleClose={handleClose} TLDRImage={TLDRImage} TLDRText={TLDRText} expandData={expandData} />
+                <ViewSubmissionModal modalOpen={modalOpen} handleClose={handleClose} id={idToExpand} TLDRImage={TLDRImage} TLDRText={TLDRText} expandData={expandData} />
             </SubmissionWrap>
         </>
     )
 }
 
-function Submission({ url, index, handleExpand }) {
+function Submission({ id, url, handleExpand }) {
     const { ens, contest_hash } = useParams();
     const [tldr_img, set_tldr_img] = useState();
     const [tldr_text, set_tldr_text] = useState();
@@ -261,8 +265,9 @@ function Submission({ url, index, handleExpand }) {
         }
     }, [])
 
+
     return (
-        <SubmissionPreviewContainer index={index} onClick={() => handleExpand(index, tldr_img, tldr_text, submission_body)}>
+        <SubmissionPreviewContainer index={id} onClick={() => handleExpand(id, tldr_img, tldr_text, submission_body)}>
             <p>{tldr_text}</p>
             <PreviewImage src={tldr_img}></PreviewImage>
             {/*
