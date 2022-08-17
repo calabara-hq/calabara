@@ -99,7 +99,6 @@ export default function ContestInfo({ contest_settings }) {
                     </ContestDetails>
                 </HeadingSection1>
             </InterfaceHeading>
-            <RenderCheckpoint />
         </>
     )
 }

@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import '../../../../../css/status-messages.css';
 import styled from 'styled-components'
-import { TagType, fade_in, Contest_h3, ERC20Button, ERC721Button, ConfirmButton, Contest_h3_alt_small } from '../../common/common_styles';
+import { TagType, fade_in, Contest_h3, ERC20Button, ERC721Button, ConfirmButton, Contest_h3_alt_small, ERC20Button_alt, ERC721Button_alt } from '../../common/common_styles';
 import AddNewToken from '../../common/add_token';
 import { ToggleButton } from '../../common/common_components';
 
@@ -133,6 +133,9 @@ const AddTokenButton = styled.button`
 
     &:hover{
         background-color: #1e1e1e;
+        transform: scale(1.01);
+        transition-duration: 0.5s;
+
     }
 `
 
@@ -524,6 +527,7 @@ const ElementStyle = styled.div`
 
     &:hover{
         background-color: ${props => props.selectable ? '#1e1e1e' : 'null'};
+        
     }
 `
 const OptionType = styled.p`
@@ -591,8 +595,8 @@ function NewTokenSelectType({ setTriggerNewTokenInputType, setTokenData }) {
     }
     return (
         <NewTokenChoice>
-            <ERC20Button onClick={() => handleSelect('erc20')}>erc-20</ERC20Button>
-            <ERC721Button onClick={() => handleSelect('erc721')}>erc-721</ERC721Button>
+            <ERC20Button_alt onClick={() => handleSelect('erc20')}>erc-20</ERC20Button_alt>
+            <ERC721Button_alt onClick={() => handleSelect('erc721')}>erc-721</ERC721Button_alt>
         </NewTokenChoice>
     )
 }

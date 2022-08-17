@@ -16,6 +16,18 @@ const PromptContainer = styled.div`
     border-radius: 10px;
 `
 
+const PromptContainerWrap = styled.div`
+width: 50%;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+margin: auto;
+
+
+
+`
+
 const CollapsiblePrompt = styled.div`
     flex-direction: column;
     width: 100%;
@@ -113,7 +125,7 @@ export default function PromptDisplay({ setIsSubmissionBuilder, createSubmission
     }
 
     return (
-        <>
+        <PromptContainerWrap>
             <h2 style={{ textAlign: 'center', color: '#d3d3d3', marginBottom: '30px' }}>Prompts</h2>
             <PromptContainer>
                 {contest_data.prompts.map((prompt, index) => {
@@ -132,6 +144,6 @@ export default function PromptDisplay({ setIsSubmissionBuilder, createSubmission
                     )
                 })}
             </PromptContainer>
-        </>
+        </PromptContainerWrap>
     )
 }

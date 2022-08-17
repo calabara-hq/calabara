@@ -13,13 +13,13 @@ const style = {
     top: '50%',
     left: '50%',
     transform: 'translate(-50%, -50%)',
-    bgcolor: '#1e1e1e',
-    border: '2px solid rgba(29, 29, 29, 0.3)',
-    boxShadow: 20,
-    p: 4,
-    borderRadius: '10px',
     height: 'calc(100% - 144px)',
     width: 'calc(100% - 400px)',
+    bgcolor: '#1e1e1e',
+    border: '2px solid rgba(29, 29, 29, 0.3)',
+    borderRadius: '10px',
+    boxShadow: 20,
+    p: 4,
     minWidth: '400px',
     maxWidth: '970px',
     //minHeight: '80vh',
@@ -38,16 +38,19 @@ const ToolbarTop = styled.div`
     display: flex;
     width: 100%;
     align-items: center;
+    justify-content: center;
+    
 `
 
 const ExitButton = styled.button`
-    margin-left: auto;
-    border: none;
-    border-radius: 4px;
-    padding: 10px 20px;
     font-weight: bold;
     background-color: #2d2e35;
     color: lightcoral;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 20px;
+    margin-left: auto;
+
     
 `
 
@@ -76,24 +79,26 @@ export default function ViewSubmissionModal({ modalOpen, handleClose, id, TLDRIm
 const SubmissionWrap = styled.div`
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
     max-height: 600px;
     overflow-y: scroll;
     scroll-margin-left: 20px;
-    align-items: flex-start;
+
     > h2 {
         color: #d9d9d9;
     }
     
     > p {
-        color: #d3d3d3;
         font-size: 15px;
+        color: #d3d3d3;
     }
+
     > img {
+        max-width: 35em;
+        //max-height: 20em;
         align-self: center;
         border-radius: 10px;
         margin-top: 20px;
-        //max-height: 20em;
-        max-width: 35em;
         margin-bottom: 20px;
     }
 
