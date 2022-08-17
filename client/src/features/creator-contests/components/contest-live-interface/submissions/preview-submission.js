@@ -10,6 +10,8 @@ const SubmissionContainer = styled.div`
     flex-grow: 0;
     width: ${props => props.expanded ? '80%' : '30%'};
     height: fit-content;
+    color: #d3d3d3;
+    background-color: #1c2128;
     border-radius: 10px;
     min-height: 200px;
     max-height: 45vh;

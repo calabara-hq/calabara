@@ -18,7 +18,7 @@ const SubmissionWrap = styled.div`
     justify-content: flex-start;
     gap: 30px;
     margin-bottom: 400px;
-    background-color: #1d1d1d;
+    background-color: #1e1e1e;
     padding: 10px;
     border: none;
     border-radius: 10px;
@@ -30,14 +30,21 @@ const SubmissionPreviewContainer = styled.div`
     flex-direction: column;
     flex-wrap: wrap;
     justify-content: space-between;
-    background-color: #1c2128;
-    padding: 10px;
-    font-size: 20px;
-    border: 2px solid black;;
-    border-radius: 10px;
+    font-size: 15px;
     color: #d3d3d3;
+    background-color: #262626;
+    border: 2px solid #4d4d4d;
+    border-radius: 4px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
+    padding: 20px;
     transition: width 0.6s ease-in-out;
     cursor: pointer;
+
+    &:hover {
+        transform: scale(1.01);
+        transition-duration: 0.5s;
+        background-color: #1e1e1e;
+    }
 `
 
 const PreviewImage = styled.img`

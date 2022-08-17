@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import useContract from '../../../hooks/useContract';
 import styled from 'styled-components'
-import { ConfirmButton, ErrorMessage, TagType } from './common_styles';
+import { ConfirmButton, ConfirmButtonAlt, ErrorMessage, TagType } from './common_styles';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
@@ -9,26 +9,26 @@ import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 const Row = styled.div`
 `
 const ContractAddressInput = styled.input`
-    color: #d3d3d3;
-    border: 2px solid rgba(128,222,234,1);
-    border-radius: 10px;
-    padding: 10px 15px;
-    outline: none;
-    background-color: #2d2e35;
     width: 80%;
+    color: #d3d3d3;
+    background-color: #121212;
+    border: 2px solid #d95169;
+    border-radius: 10px;
+    outline: none;
+    padding: 10px 15px;
 
     
 `
 
 const SymbolDecimalInput = styled.div`
     color: darkgrey;
-    border: 2px solid darkgrey;
+    border: 2px solid #4d4d4d;
     width: 20%;
     height: 44px;
     border-radius: 10px;
     padding: 10px 15px;
     outline: none;
-    background-color: #2d2e35;
+    background-color: #262626;
     cursor: not-allowed;
     & > p{
         margin: 0;
@@ -167,7 +167,7 @@ export default function AddNewToken({ existingRewardData, type, showBackButton, 
             </Row>
 
             {showBackButton && <BackButton onClick={handleBackButton}><FontAwesomeIcon icon={faArrowLeft} /></BackButton>}
-            <ConfirmButton disabled={!newSymbol} onClick={handleConfirm}>confirm</ConfirmButton>
+            <ConfirmButtonAlt disabled={!newSymbol} onClick={handleConfirm}>confirm</ConfirmButtonAlt>
         </CreateRewardWrap>
     )
 }

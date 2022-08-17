@@ -77,7 +77,7 @@ const submission_fade = keyframes`
         }
 `
 const TagType = styled.span`
-    background-color: ${props => props.type === 'erc721' ? '$ab6afb' : props.type === 'erc20' ? '#03b09f' : '#ecf0f1'};
+    background-color: ${props => props.type === 'erc721' ? '#ab6afb' : props.type === 'erc20' ? '#03b09f' : '#ecf0f1'};
     color: ${props => props.type === 'erc721' ? '#f2f2f2' : props.type === 'erc20' ? '#f2f2f2' : '#3c3c3d'};
 
 `
@@ -124,32 +124,34 @@ const ERC721Button = styled.button`
     }
 `
 const ERC20Button_alt = styled.button`
-    background-color: rgb(3 176 159 / 40%);
+    font-weight: 550;
     color: #03b09f;
+    background-color: rgb(3 176 159 / 40%);
     border: none;
     border-radius: 4px;
-    font-weight: 550;
-    padding: 5px 10px;
     box-shadow: 0 6px 20px rgb(0 0 0 / 30%), 0 15px 12px rgb(0 0 0 / 22%);
+    padding: 5px 10px;
+
     &:hover{
-        background-color: rgb(3 176 159 / 40%);
-        color: #d9d9d9;
+        background-color: rgb(3 176 159);
+        color: #f2f2f2;
     }
 
 `
 
 const ERC721Button_alt = styled.button`
-    background-color: rgb(171 106 251 / 40%);
+    font-weight: 550;
     color: #ab6afb;
+    background-color: rgb(171 106 251 / 40%);
     border: none;
     border-radius: 4px;
-    font-weight: 550;
-    padding: 5px 10px;
     box-shadow: 0 6px 20px rgb(0 0 0 / 30%), 0 15px 12px rgb(0 0 0 / 22%);
+    padding: 5px 10px;
     margin-left: 10px;
+
     &:hover{
         background-color: #ab6afb;
-        color: #d9d9d9;
+        color: #f2f2f2;
     }
 `
 
@@ -169,7 +171,39 @@ const ConfirmButton = styled.button`
         color: darkgrey;
         background-color: #efefef4d;
     }
+
 `
+
+const ConfirmButtonAlt = styled.button`
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    height: 40px;
+    font-size: 15px;
+    font-weight: 550;
+    color: rgb(6, 214, 160);
+    background-color: rgb(6, 214, 160, .3);
+    border: 2px solid rgb(6, 214, 160, .3);
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
+    padding: 5px 20px;
+    //margin-right: 30px;
+
+    &:hover{
+        background-color: rgb(6, 214, 160);
+        color: #fff;
+    
+    }
+
+    &:disabled{
+    cursor: not-allowed;
+    color: rgb(6,214,160, .3);
+    background-color: #262626;
+
+    }
+
+`
+
 const ErrorMessage = styled.div`
     background-color: rgba(235, 87, 87, 0.3);
     color: rgb(235, 87, 87);
@@ -186,4 +220,4 @@ const ErrorMessage = styled.div`
     }
 `
 
-export { fade_in, Contest_h2, Contest_h2_alt, Contest_h3, Contest_h3_alt, Contest_h3_alt_small, Contest_h4, Label, submission_fade, TagType, SettingsSectionSubHeading, labelColorOptions, ERC20Button, ERC20Button_alt, ERC721Button, ERC721Button_alt, ConfirmButton, ErrorMessage }
+export { fade_in, Contest_h2, Contest_h2_alt, Contest_h3, Contest_h3_alt, Contest_h3_alt_small, Contest_h4, Label, submission_fade, TagType, SettingsSectionSubHeading, labelColorOptions, ERC20Button, ERC20Button_alt, ERC721Button, ERC721Button_alt, ConfirmButton, ConfirmButtonAlt, ErrorMessage }

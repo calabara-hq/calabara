@@ -6,6 +6,10 @@ import useContestState from "../../../../hooks/useContestState";
 import PromptDisplay from '../prompts/prompt-display';
 import SubmissionBuilder from '../submissions/submission-builder-2'
 import SubmissionDisplay from '../submissions/test-submission-display';
+import { useDispatch, useSelector } from "react-redux";
+import { ContestDurationCheckpointBar } from "../../../../checkpoint-bar/checkpoint-bar";
+import { selectProgressRatio, selectDurations } from './contest-interface-reducer';
+import { InterfaceHeading, HeadingSection1, OrgImg, ContestDetails, DetailRow, CheckpointWrap, CheckpointBottomTag, CheckpointBottom, label_status } from '../contest_info/contest-info-style';
 
 const ContestInterfaceWrap = styled.div`
     width: 70vw;
@@ -17,6 +21,22 @@ const ContestInterfaceWrap = styled.div`
     display: flex;
     flex-direction: column;
 `
+const ContestInterSplit = styled.div`
+    display: flex;
+
+
+
+
+`
+
+const InfoRender = styled.div`
+    display: flex;
+    flex-direction: column;
+
+
+
+`
+
 
 
 
@@ -37,7 +57,7 @@ export default function ContestInterface({ contest_settings }) {
 
     t1.setSeconds(t1.getSeconds() + 120)
     t2.setSeconds(t2.getSeconds() + 299)
-    
+
 
     const stateManager = useContestState(
         t0.toISOString(),
@@ -49,8 +69,13 @@ export default function ContestInterface({ contest_settings }) {
 
     return (
         <ContestInterfaceWrap>
-            {contest_settings && <ContestInfo contest_settings={contest_settings}/>}
-            <PromptDisplay setIsSubmissionBuilder={setIsSubmissionBuilder} />
+            <ContestInterSplit>
+                <InfoRender>
+                    {contest_settings && <ContestInfo contest_settings={contest_settings} />}
+                    <RenderCheckpoint />
+                </InfoRender>
+                <PromptDisplay setIsSubmissionBuilder={setIsSubmissionBuilder} />
+            </ContestInterSplit>
             {isSubmissionBuilder && <SubmissionBuilder setIsSubmissionBuilder={setIsSubmissionBuilder} />}
             <SubmissionDisplay />
         </ContestInterfaceWrap>
@@ -58,3 +83,22 @@ export default function ContestInterface({ contest_settings }) {
 }
 
 
+function RenderCheckpoint() {
+    const barProgress = useSelector(selectProgressRatio);
+    const durations = useSelector(selectDurations);
+
+    return (
+        <>
+            <CheckpointWrap>
+                <ContestDurationCheckpointBar percent={barProgress} />
+            </CheckpointWrap>
+            <CheckpointBottom>
+                {durations.map((duration, index) => {
+                    return (
+                        <CheckpointBottomTag key={index} status={duration}>{duration}</CheckpointBottomTag>
+                    )
+                })}
+            </CheckpointBottom>
+        </>
+    )
+}
