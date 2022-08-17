@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import ContestInfo from "../contest_info/contest-info";
 import useContestState from "../../../../hooks/useContestState";
 import PromptDisplay from '../prompts/prompt-display';
-import SubmissionBuilder from '../submissions/submission-builder-2'
+import SubmissionBuilder from '../submissions/submission-builder-3'
 import SubmissionDisplay from '../submissions/test-submission-display';
 
 const ContestInterfaceWrap = styled.div`
@@ -23,6 +23,7 @@ const ContestInterfaceWrap = styled.div`
 export default function ContestInterface({ contest_settings }) {
     const { ens } = useParams();
     const [isSubmissionBuilder, setIsSubmissionBuilder] = useState(false);
+    const [createSubmissionIndex, setCreateSubmissionIndex] = useState(-1);
 
     /*
     const stateManager = useContestState(
@@ -50,9 +51,9 @@ export default function ContestInterface({ contest_settings }) {
     return (
         <ContestInterfaceWrap>
             {contest_settings && <ContestInfo contest_settings={contest_settings}/>}
-            <PromptDisplay setIsSubmissionBuilder={setIsSubmissionBuilder} />
-            {isSubmissionBuilder && <SubmissionBuilder setIsSubmissionBuilder={setIsSubmissionBuilder} />}
-            <SubmissionDisplay />
+            <PromptDisplay setIsSubmissionBuilder={setIsSubmissionBuilder} createSubmissionIndex={createSubmissionIndex} setCreateSubmissionIndex={setCreateSubmissionIndex}/>
+            {isSubmissionBuilder && <SubmissionBuilder setIsSubmissionBuilder={setIsSubmissionBuilder} setCreateSubmissionIndex={setCreateSubmissionIndex}/>}
+            {!isSubmissionBuilder && <SubmissionDisplay />}
         </ContestInterfaceWrap>
     )
 }

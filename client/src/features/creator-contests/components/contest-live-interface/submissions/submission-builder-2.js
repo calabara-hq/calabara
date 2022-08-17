@@ -13,15 +13,16 @@ import { grey } from '@mui/material/colors'
 
 const EditorWrap = styled.div`
     background-color: white;
-    border-radius: 4px;
+    border-radius: 10px;
     font-size: 18px;
     text-align: left;
     padding: 10px;
     background-color: #22272e;
-    max-height: 45vh;
-    width: 80%;
+    max-height: 80vh;
+    width: 100%;
     margin: 0 auto;
     overflow-y: scroll;
+    color: white;
 
     * > .ce-popover--opened{
         color: black;
