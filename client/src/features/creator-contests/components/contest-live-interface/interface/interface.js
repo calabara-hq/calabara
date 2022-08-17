@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import ContestInfo from "../contest_info/contest-info";
 import useContestState from "../../../../hooks/useContestState";
 import PromptDisplay from '../prompts/prompt-display';
-import SubmissionBuilder from '../submissions/submission-builder-2'
+import SubmissionBuilder from '../submissions/submission-builder-3'
 import SubmissionDisplay from '../submissions/test-submission-display';
 import { useDispatch, useSelector } from "react-redux";
 import { ContestDurationCheckpointBar } from "../../../../checkpoint-bar/checkpoint-bar";
@@ -43,6 +43,7 @@ const InfoRender = styled.div`
 export default function ContestInterface({ contest_settings }) {
     const { ens } = useParams();
     const [isSubmissionBuilder, setIsSubmissionBuilder] = useState(false);
+    const [createSubmissionIndex, setCreateSubmissionIndex] = useState(-1);
 
     /*
     const stateManager = useContestState(
@@ -74,10 +75,10 @@ export default function ContestInterface({ contest_settings }) {
                     {contest_settings && <ContestInfo contest_settings={contest_settings} />}
                     <RenderCheckpoint />
                 </InfoRender>
-                <PromptDisplay setIsSubmissionBuilder={setIsSubmissionBuilder} />
+            <PromptDisplay setIsSubmissionBuilder={setIsSubmissionBuilder} createSubmissionIndex={createSubmissionIndex} setCreateSubmissionIndex={setCreateSubmissionIndex}/>
             </ContestInterSplit>
-            {isSubmissionBuilder && <SubmissionBuilder setIsSubmissionBuilder={setIsSubmissionBuilder} />}
-            <SubmissionDisplay />
+            {isSubmissionBuilder && <SubmissionBuilder setIsSubmissionBuilder={setIsSubmissionBuilder} setCreateSubmissionIndex={setCreateSubmissionIndex}/>}
+            {!isSubmissionBuilder && <SubmissionDisplay />}
         </ContestInterfaceWrap>
     )
 }

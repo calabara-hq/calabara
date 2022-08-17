@@ -18,10 +18,16 @@ const ImageUploadBtn = styled.button`
   min-height: 15em;
   height: 17em;
   width: 50%;
-  border: 2px solid transparent;
-  border-radius: 10px;
+  //border: 2px solid transparent;
+  // border-radius: 10px;
   padding: 3px;
-  background-color: #f1f3f4;
+  // background-color: #f1f3f4;
+  border: double 2px transparent;
+        border-radius: 10px;
+        background-image: linear-gradient(#141416, #141416), 
+                        linear-gradient(to right, #e00f8e, #2d66dc);
+        background-origin: border-box;
+        background-clip: padding-box, border-box;
 `
 
 const RemoveImageButton = styled.button`
@@ -56,7 +62,7 @@ const TLDRWrap = styled.div`
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    margin: 0 auto;
+    //margin: 0 auto;
     margin-bottom: 20px;
 
 `
@@ -127,7 +133,7 @@ return (
             <ImageUploadBtn type="button" onClick={() => imageUploader.current.click()}>
                 <div>
                     {TLDRimage && <img src={TLDRimage.preview} />}
-                    {!TLDRimage && <p style={{ color: 'black' }}>TLDR Image</p>}
+                    {!TLDRimage && <p style={{ color: '#d3d3d3' }}>TLDR Image</p>}
                 </div>
             </ImageUploadBtn>
             {TLDRimage && <RemoveImageButton onClick={() => setTLDRImage(null)}><FontAwesomeIcon icon={faTimes}></FontAwesomeIcon></RemoveImageButton>}
