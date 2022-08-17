@@ -64,36 +64,42 @@ display: flex;
     
     > input  {
         animation: fadein 1s forwards;
-        width: 120px;
-        height: 50px;
-        margin-left: auto;
-        align-self: center;
-        padding: 1rem 2rem;
-        border: double 2px transparent;
-        border-radius: 10px;
+        height: 40px;
+        width: 111px;
+        font-size: 15px;
+        font-weight: 550;
+        color: white;
         background-image: linear-gradient(#141416, #141416), 
                         linear-gradient(to right, #e00f8e, #2d66dc);
         background-origin: border-box;
         background-clip: padding-box, border-box;
-        color: white;
-        font-size: 1.5rem;
+        border: double 2px transparent;
+        border-radius: 10px;
         outline: none;
+        padding: 5px 10px;
+        align-self: center;
+        text-align: center;
+        margin-left: auto;
+
     }
 
     > button  {
+        height: 40px;
         width: 120px;
-        padding: 10px 15px;
+        font-size: 15px;
+        font-weight: 550;
+        color: rgb(88, 101, 242);
+        background-color: rgb(88, 101, 242, .3);
+        border: 2px solid rgb(88, 101, 242, .3);
+        border-radius: 10px;
+        padding: 5px 10px;
+        text-align: center;
         margin-left: auto;
-        height: 50px;
         cursor: pointer;
-        border-radius: 30px;
-        background-color: #0e0e30;
-        color: #008cff;
-        border: 2px solid #008cff;
 
         &:hover {
-            background-color: #008cff;
-            color: white;
+            background-color: rgb(88, 101, 242);
+            color: #fff;
         }
     }
 

@@ -193,6 +193,9 @@ const StrategyStyle = styled.div`
 
     &:hover{
         background-color: #1e1e1e;
+        transform: scale(1.01);
+        transition-duration: .5s;
+
         
     }
     &::after{

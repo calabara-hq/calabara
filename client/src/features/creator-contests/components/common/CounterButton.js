@@ -74,6 +74,10 @@ const PlusButton = styled.button`
     }
 `
 
+const PlusButtonO = styled.button`
+
+`
+
 export default function CounterButton({ counter, handleIncrement, handleDecrement }) {
 
     return (
