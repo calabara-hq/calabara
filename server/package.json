@@ -30,6 +30,7 @@
     "jsonwebtoken": "^8.5.1",
     "jwt-decode": "^3.1.2",
     "multer": "^1.4.5-lts.1",
+    "ndjson": "^2.0.0",
     "node-cron": "^3.0.1",
     "node-fetch": "^2.0.0",
     "notion-client": "^4.19.1",

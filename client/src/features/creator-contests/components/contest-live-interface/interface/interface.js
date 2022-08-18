@@ -5,7 +5,7 @@ import ContestInfo from "../contest_info/contest-info";
 import useContestState from "../../../../hooks/useContestState";
 import PromptDisplay from '../prompts/prompt-display';
 import SubmissionBuilder from '../submissions/submission-builder-3'
-import SubmissionDisplay from '../submissions/test-submission-display';
+import SubmissionDisplay from '../submissions/test-submission-display2';
 import { useDispatch, useSelector } from "react-redux";
 import { ContestDurationCheckpointBar } from "../../../../checkpoint-bar/checkpoint-bar";
 import { selectProgressRatio, selectDurations } from './contest-interface-reducer';

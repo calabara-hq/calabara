@@ -145,6 +145,16 @@ export default function SubmissionBuilder({ setIsSubmissionBuilder, setCreateSub
             submission_body: editorData
         }
         let res = await axios.post('/creator_contests/create_submission', { ens: ens, contest_hash: contest_hash, submission: submission })
+        /*
+        await fetch('/creator_contests/create_submission', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: {submission: submission, ens: ens, contest_hash: contest_hash}
+        })
+        */
     }
 
     return (
