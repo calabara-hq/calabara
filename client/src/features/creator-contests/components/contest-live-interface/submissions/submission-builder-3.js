@@ -14,8 +14,10 @@ display: flex;
 position: relative;
 flex-direction: column;
 flex-wrap: wrap;
-justify-content: space-between;
-background-color: #1d1d1d;
+align-content: center;
+align-items: stretch;
+//justify-content: space-between;
+background-color: #1e1e1e;
 padding: 10px;
 border: none;
 border-radius: 10px;
@@ -68,7 +70,7 @@ const SubmitButton = styled.button`
 
 `
 const CancelButton = styled.button`
-    border: 2px solid #444c56;
+    border: 2px solid #4d4d4d;
     color: grey;
     border-radius: 100px;
     padding: 10px 15px 10px 15px;
@@ -83,7 +85,7 @@ const CancelButton = styled.button`
             content: "cancel";
             position: absolute;
             border: none;
-            background-color: #444c56;
+            background-color: #1e1e1e;
             padding: 3px;
             border-radius: 4px;
             top: 0;

@@ -10,40 +10,54 @@ const PromptContainer = styled.div`
     flex-direction: column;
     flex-wrap: wrap;
     justify-content: space-between;
-    background-color: #1d1d1d;
-    padding: 10px;
+    width: 95%;
+    background-color: #1e1e1e;
     border: none;
     border-radius: 10px;
+    padding: 10px;
 `
 
 const PromptContainerWrap = styled.div`
-width: 50%;
-display: flex;
-flex-direction: column;
-justify-content: center;
-align-items: center;
-margin: auto;
+    flex: 0 0 100%;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    justify-content: center;
+    align-content: flex-end;
+    align-items: center;
+    //margin-bottom: auto;
+    & :hover{
 
+        background-color: #1e1e1e;
+
+        }
 
 
 `
 
 const CollapsiblePrompt = styled.div`
     flex-direction: column;
-    width: 100%;
     justify-content: center;
     align-items: flex-start;
-    grid-gap: 20px;
-    border: 2px solid black;
-    border-radius: 4px;
-    background-color: #1c2128;
+    width: 100%;
     color: #d3d3d3;
+    background-color: #262626;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
+    border: 2px solid #4d4d4d;
+    border-radius: 4px;
     padding: 5px;
+    grid-gap: 20px;
     cursor: pointer;
     margin-bottom: 10px;
     visibility: ${props => props.isVisible ? 'visible' : 'hidden'};
     max-height: ${props => props.isVisible ? '300px' : '0px'};
     transition: visibility 0.2s, max-height 0.3s ease-in-out;
+    &:hover{
+        transform: scale(1.01);
+        transition-duration: 0.5s;
+
+    }
+
 
 `
 
@@ -82,6 +96,30 @@ const NewSubmissionButton = styled.button`
     background-color: ${props => props.isCreating ? 'transparent' : '#00a368'};
     transition: background-color 0.2s ease-in-out;
     transition: color 0.3s ease-in-out;
+`
+const AltSubmissionButton = styled.button`
+    width: 12em;
+    //font-weight: 550;
+    padding: 5px 5px;
+    border: 2px solid ${props => props.isCreating ? 'rgb(138,128,234)' : 'transparent'};
+    border-radius: 4px;
+    margin-left: auto;
+    margin-right: 5px;
+    margin-top: 2em;
+    margin-bottom: 2em;
+    color: ${props => props.isCreating ? 'rgb(138,128,234)' : 'rgb(138,128,234)'};
+    background-color: ${props => props.isCreating ? 'transparent' : 'rgb(138,128,234,.3)'};
+    transition: background-color 0.2s ease-in-out;
+    transition: color 0.3s ease-in-out;
+
+    &:hover{
+        //border: 2px solid white;
+        background-color: ${props => props.isCreating ? 'transparent' : 'rgb(138,128,234)'};
+        color: ${props => props.isCreating ? 'rgb(138,128,234)' : '#fff'};
+
+
+    }
+
 `
 
 
@@ -126,8 +164,9 @@ export default function PromptDisplay({ setIsSubmissionBuilder, createSubmission
 
     return (
         <PromptContainerWrap>
-            <h2 style={{ textAlign: 'center', color: '#d3d3d3', marginBottom: '30px' }}>Prompts</h2>
             <PromptContainer>
+            <h2 style={{ textAlign: 'center', color: '#d9d9d9', marginBottom: '30px', marginTop: '0px'}}>Prompts</h2>
+
                 {contest_data.prompts.map((prompt, index) => {
                     return (
                         <CollapsiblePrompt onClick={(e) => handlePromptClick(e, index)} isOpen={openPromptIndex === index} isVisible={createSubmissionIndex === -1 ? true : createSubmissionIndex === index}>
@@ -137,7 +176,7 @@ export default function PromptDisplay({ setIsSubmissionBuilder, createSubmission
                             </PromptTop>
                             <PromptContent isOpen={openPromptIndex === index}>
                                 <ParseBlocks data={prompt} />
-                                <NewSubmissionButton isCreating={createSubmissionIndex === index} onClick={(e) => handleSubmissionOpen(e, index)}>{createSubmissionIndex === index ? 'Creating Submission' : 'Create Submission'}</NewSubmissionButton>
+                                <AltSubmissionButton isCreating={createSubmissionIndex === index} onClick={(e) => handleSubmissionOpen(e, index)}>{createSubmissionIndex === index ? 'Creating Submission' : 'Create Submission'}</AltSubmissionButton>
                                 {/*modalOpen && <SubmissionModal modalOpen={modalOpen} handleClose={handleSubmissionClose} selectedPrompt={prompt} />*/}
                             </PromptContent>
                         </CollapsiblePrompt>

@@ -33,7 +33,7 @@ const Contest_h3_alt = styled.h3`
     grid-area: ${props => props.grid_area ? props.grid_area : ''};
     color: ${props => props.color ? props.color : '#d9d9d9'};
     font-size: 24px;
-    //margin: 0px;
+    margin: 0px;
     animation: ${props => props.animated ? css`${fade_in} 0.6s ease-in-out` : ''};
 `
 const Contest_h3_alt_small = styled.h3`

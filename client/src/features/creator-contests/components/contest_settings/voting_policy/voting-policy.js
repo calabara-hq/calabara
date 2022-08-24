@@ -31,6 +31,7 @@ const CreditStrategyWrap = styled.div`
     align-items: center;
     max-width: 60%;
     margin: 0 auto;
+
 `
 
 export default function VotingPolicy({ rewardOptions, votingStrategy, setVotingStrategy }) {

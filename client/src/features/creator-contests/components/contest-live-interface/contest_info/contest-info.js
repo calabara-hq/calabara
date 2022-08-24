@@ -11,7 +11,7 @@ import { ContestDurationCheckpointBar } from "../../../../checkpoint-bar/checkpo
 import useContestTimekeeper from "../../../../hooks/useContestTimekeeper";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheckCircle, faTimesCircle, faTimes } from "@fortawesome/free-solid-svg-icons";
-import { InterfaceHeading, HeadingSection1, OrgImg, ContestDetails, DetailRow, CheckpointWrap, CheckpointBottomTag, CheckpointBottom, label_status } from './contest-info-style'
+import { InterfaceHeading, HeadingSection1, OrgImg, ContestDetails, DetailColumn, DetailRow, CheckpointWrap, CheckpointBottomTag, CheckpointBottom, label_status } from './contest-info-style'
 import { selectProgressRatio, selectContestState, selectDurations } from "../interface/contest-interface-reducer";
 
 export default function ContestInfo({ contest_settings }) {
@@ -26,23 +26,6 @@ export default function ContestInfo({ contest_settings }) {
     const logoCache = useSelector(selectLogoCache);
 
 
-    useEffect(() => {
-        batchFetchDashboardData(ens, info);
-        console.log(info)
-    }, [info])
-
-
-    useEffect(() => {
-        if (info.ens == ens && !isInfoLoaded) {
-            setIsInfoLoaded(true)
-        }
-    }, [info])
-
-
-
-    useEffect(() => {
-        WebWorker.processImages(dispatch, logoCache);
-    }, [isInfoLoaded])
 
     const calculateRewardsSum = () => {
         let [erc20_sum, erc721_sum, eth_sum] = [0, 0, 0];
@@ -68,26 +51,39 @@ export default function ContestInfo({ contest_settings }) {
         ]
     }
 
+    let start_date = moment.utc(contest_settings.date_times.start_date).local().format('ddd. M/D hh:mm A').toString()
+
     let end_date = moment.utc(contest_settings.date_times.end_date).local().format('ddd. M/D hh:mm A').toString()
     let rewards_sum = calculateRewardsSum();
     return (
         <>
             <InterfaceHeading>
-                <HeadingSection1>
-                    <OrgImg data-src={info.logo}></OrgImg>
-                    <ContestDetails>
+                <ContestDetails>
+                    <DetailColumn>
                         <DetailRow>
-                            <p>Ends:</p>
-                            <p>{end_date}</p>
+                            <p>Organization:</p>
+                            <p>Shark DAO</p>
                         </DetailRow>
                         <DetailRow>
                             <p>Status:</p>
                             {contest_state !== null && <Label color={label_status[contest_state]}>{label_status[contest_state].status}</Label>}
                         </DetailRow>
+                    </DetailColumn>
+                    <DetailColumn>
+                        <DetailRow>
+                            <p>Starts:</p>
+                            <p>{start_date}</p>
+                        </DetailRow>
+                        <DetailRow>
+                            <p>Ends:</p>
+                            <p>{end_date}</p>
+                        </DetailRow>
+                    </DetailColumn>
+                    <DetailColumn>
                         {rewards_sum.map((reward, index) => {
                             if (reward.sum > 0) return (
                                 <DetailRow key={index}>
-                                    {index === 0 ? <p>Rewards:</p> : <b></b>}
+                                    {index === 0 ? <p>Rewards:</p> : <p>Contest Rewards:</p>}
                                     <p>{reward.sum} {reward.symbol}</p>
                                 </DetailRow>
                             )
@@ -96,8 +92,8 @@ export default function ContestInfo({ contest_settings }) {
                             <p>Voter Rewards:</p>
                             <FontAwesomeIcon style={{ fontSize: '1.5em', color: Object.keys(contest_settings.voter_rewards).length > 0 ? '#00a368' : 'red' }} icon={Object.keys(contest_settings.voter_rewards).length > 0 ? faCheckCircle : faTimesCircle} />
                         </DetailRow>
-                    </ContestDetails>
-                </HeadingSection1>
+                    </DetailColumn>
+                </ContestDetails>
             </InterfaceHeading>
         </>
     )
@@ -108,6 +104,7 @@ function RenderCheckpoint() {
     const durations = useSelector(selectDurations);
 
     return (
+
         <>
             <CheckpointWrap>
                 <ContestDurationCheckpointBar percent={barProgress} />
@@ -120,5 +117,6 @@ function RenderCheckpoint() {
                 })}
             </CheckpointBottom>
         </>
+
     )
 }

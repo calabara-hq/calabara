@@ -3,42 +3,77 @@ import styled from 'styled-components'
 const InterfaceHeading = styled.div`
     display: flex;
     flex-direction: column;
+    flex-wrap: wrap;
+    align-content: center;
     color: #d3d3d3;
-    margin-bottom: 100px;
-    margin-top: 20px;
+    margin-bottom: 70px;
+    margin-top: 50px;
 `
 
 const HeadingSection1 = styled.div`
     display: flex;
     color: #d3d3d3;
     width: 85%;
-    margin: 0 auto;
+    //margin-left: 20px;
 `
 
 const OrgImg = styled.img`
+    flex: 0 0 30%;
     max-width: 15em;
     border: none;
     border-radius: 4px;
 `
 const ContestDetails = styled.div`
     display: flex;
-    flex-direction: column;
+    height: 130px;
+    width: 70%;
+    flex-direction: row;
     justify-self: center;
     align-self: center;
     margin: 0 auto;
 `
 
+const DetailColumn = styled.div`
+    //background-color: grey;
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 33%;
+    justify-content: center;
+    border: 2px solid #4d4d4d;
+    border-radius: 10px;
+    margin: 10px;
+    padding: 20px;
+
+
+    p {
+        //margin: auto;
+    }
+
+
+
+`
+
 const DetailRow = styled.div`
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    width: 25em;
-    justify-content: space-between;
-    font-weight: bold;
+    grid-template-columns: 5fr auto;
+    //width: 100%;
+    //justify-items: center;
+    justify-content: center;
+    justify-items: start;
+    //font-weight: bold;
     text-align: left;
     align-items: center;
-    p{
-        margin: 0;
+    //margin-left: 10px;
+
+    &:nth-child(2){
+        //background-color: blue;
+    }
+
+    p {
+        //margin: auto;
         padding: 5px 0;
+        font-weight: bold;
+
     }
 `
 
@@ -83,7 +118,7 @@ const CheckpointWrap = styled.div`
 `
 
 const CheckpointBottomTag = styled.p`
-    color: ${props => props.status === 'active' ? 'green' : (props.status === 'complete' ? 'grey' : '')};
+    color: ${props => props.status === 'active' ? '#384aff' : (props.status === 'complete' ? 'grey' : '')};
 `
 
 const CheckpointBottom = styled.div`
@@ -115,4 +150,4 @@ const label_status = [
 
 ]
 
-export {InterfaceHeading, HeadingSection1, OrgImg, ContestDetails, DetailRow, CheckpointWrap, CheckpointBottomTag, CheckpointBottom, label_status}
+export { InterfaceHeading, HeadingSection1, OrgImg, ContestDetails, DetailColumn, DetailRow, CheckpointWrap, CheckpointBottomTag, CheckpointBottom, label_status }
