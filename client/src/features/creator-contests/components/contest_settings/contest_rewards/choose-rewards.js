@@ -12,7 +12,7 @@ const Wrap = styled.div`
     flex-direction: column;
     grid-area: rewards;
     width: 90%;
-    margin: 0 auto;
+    margin: 20px auto;
     padding-bottom: 30px;
 `
 const AvailableRewards = styled.div`

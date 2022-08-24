@@ -26,11 +26,21 @@ function reducer(state, action) {
 const PromptsWrap = styled.div`
     display: flex;
     flex-direction: column;
+    &::before{
+        content: '${props => props.title}';
+        position: absolute;
+        transform: translate(0%, -150%);
+        color: #f2f2f2;
+        font-size: 30px;
+    }
 
 `
 
 const PromptBuilderMainHeading = styled.div`
     display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 20px auto
 `
 
 const ExistingPromptContainer = styled.div`
@@ -38,18 +48,25 @@ const ExistingPromptContainer = styled.div`
     flex-wrap: wrap;
     width: 100%;
     justify-content: flex-start;
-    margin: 20px auto;
+    //margin: 20px auto;
 `
 const NewPromptButton = styled.button`
-    background-color: rgb(6, 214, 160);
-    border: none;
-    border-radius: 4px;
-    padding: 5px 10px;
     font-size: 16px;
+    font-weight: 550;
+    color: rgb(6, 214, 160);
+    background-color: rgb(6, 214, 160, .3);
+    border: 2px solid transparent;
+    border-radius: 4px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
+    padding: 5px 10px;
     margin-left: auto;
-    color: black;
+    transition: background-color 0.2s ease-in-out;
+    transition: color 0.3s ease-in-out;
+
+
     &:hover{
-        background-color: rgba(6, 214, 160, 0.8);
+        background-color: rgb(6, 214, 160);
+        color: #fff;
     }
 `
 
@@ -91,7 +108,7 @@ const PromptDataWrap = styled.div`
 
 const EditorWrap = styled.div`
     flex: 1 1 72%;
-    background-color: white;
+    border: 2px solid #4d4d4d;    
     border-radius: 4px;
     height: 500px;
     max-height: 600px;
@@ -101,7 +118,9 @@ const EditorWrap = styled.div`
     text-align: left;
     padding: 10px;
     color: #d3d3d3;
-    background-color: #1c2128;
+    background-color: #262626;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
+
 
 
     * > .ce-popover--opened{
@@ -122,12 +141,15 @@ const EditorWrap = styled.div`
 
 
 const PromptSidebarWrap = styled.div`
-    flex: 1 1 25%;
+    flex: 1 1 15%;
     display: flex;
-    border: 1px solid #444c56;
+    background-color: #262626;
+    border: 2px solid #4d4d4d;
     border-radius: 4px;
     padding: 5px;
     align-self: flex-start;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
+
 `
 
 const PromptTop = styled.div`
@@ -140,12 +162,15 @@ const PromptHeadingInput = styled.div`
 `
 
 const PromptInput = styled.input`
-    border: 2px solid ${props => props.error ? "red" : '#444c56'};
+    font-weight: 550;
+    color: #d3d3d3;
+    background-color: #121212;
+    border: 2px solid ${props => props.error ? "red" : '#d95169'};
     border-radius: 4px;
-    background-color: transparent;
     outline: none;
     padding: 5px 10px;
-    color: #d3d3d3;
+    text-align: center;
+
 `
 const PromptInputError = styled.div`
     margin-top: 5px;
@@ -195,7 +220,7 @@ const SaveButton = styled.button`
 
 `
 const CancelButton = styled.button`
-    border: 2px solid #444c56;
+    border: 2px solid #4d4d4d;
     color: grey;
     border-radius: 100px;
     padding: 10px 15px 10px 15px;
@@ -204,7 +229,7 @@ const CancelButton = styled.button`
 
     &:hover{
         color: #d3d3d3;
-        background-color: rgba(34, 34, 46, 0.8);
+        background-color: #1e1e1e;
         border: 2px solid #d3d3d3;
         &::before{
             content: "cancel";
@@ -293,11 +318,11 @@ const ListRow = styled.div`
                 content: "Labels help users identify and filter submission types";
                 position: absolute;
                 border: none;
-                background-color: #444c56;
+                background-color: #4d4d4d;
                 padding: 3px;
                 border-radius: 4px;
                 top: 0;
-                color: lightgrey;
+                color: #d9d9d9;
                 transform: translate(0%, -120%);
                 animation: ${fade_in} 0.5s ease-in-out;
 
@@ -424,9 +449,8 @@ export default function PromptBuilder({ }) {
     }
 
     return (
-        <PromptsWrap>
+        <PromptsWrap title="Prompt Builder">
             <PromptBuilderMainHeading>
-                <Contest_h2 grid_area={"prompt_builder"}>Prompt Builder</Contest_h2>
                 <NewPromptButton onClick={handleNewPrompt}>new prompt</NewPromptButton>
             </PromptBuilderMainHeading>
             <ExistingPromptContainer>

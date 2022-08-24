@@ -14,10 +14,11 @@ import { grey } from '@mui/material/colors'
 const EditorWrap = styled.div`
     background-color: white;
     border-radius: 10px;
+    border: 2px solid #4d4d4d;
     font-size: 18px;
     text-align: left;
     padding: 10px;
-    background-color: #22272e;
+    background-color: #262626;
     max-height: 80vh;
     width: 100%;
     margin: 0 auto;

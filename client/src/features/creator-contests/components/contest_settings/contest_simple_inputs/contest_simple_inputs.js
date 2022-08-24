@@ -1,11 +1,18 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { ToggleButton } from '../../common/common_components';
-import { Contest_h2, Contest_h3, Contest_h4 } from '../../common/common_styles';
+import { Contest_h2, Contest_h3, Contest_h3_alt, Contest_h3_alt_small, Contest_h4 } from '../../common/common_styles';
 
 const AdditionalParamsWrap = styled.div`
     display: flex;
     flex-direction: column;
+    &::before{
+        content: '${props => props.title}';
+        position: absolute;
+        transform: translate(0%, -150%);
+        color: #f2f2f2;
+        font-size: 30px;
+    }
     
     > * {
         margin-bottom: 30px;
@@ -22,7 +29,7 @@ const ParamsWrap = styled.div`
     display: flex;
     flex-direction: column;
     width: 90%;
-    margin: 0 auto;
+    margin: 20px auto;
     grid-gap: 20px;
 `
 
@@ -38,19 +45,16 @@ export default function SimpleInputs({ }) {
     const [areAnonSubmissions, setAreAnonSubmissions] = useState(false);
 
     return (
-        <AdditionalParamsWrap>
-            <AdditionalParamsMainHeading>
-                <Contest_h2 grid_area={"additional_params"}>Additional Parameters</Contest_h2>
-            </AdditionalParamsMainHeading>
+        <AdditionalParamsWrap title="Additional Parameters">
             <ParamsWrap>
                 <Parameter>
-                    <Contest_h3 >Visible Results</Contest_h3>
+                    <Contest_h3_alt>Visible Results</Contest_h3_alt>
                     <ToggleButton identifier={'visible-results-toggle'} isToggleOn={areResultsVisible} setIsToggleOn={setAreResultsVisible} handleToggle={() => { setAreResultsVisible(!areResultsVisible) }} />
                     <p style={{color: '#a3a3a3'}}>Should contest results be visible during voting?</p>
                     <b></b>
                 </Parameter>
                 <Parameter>
-                    <Contest_h3>Anonymous Submissions</Contest_h3>
+                    <Contest_h3_alt>Anonymous Submissions</Contest_h3_alt>
                     <ToggleButton identifier={'anon-submissions-toggle'} isToggleOn={areAnonSubmissions} setIsToggleOn={setAreAnonSubmissions} handleToggle={() => { setAreAnonSubmissions(!areAnonSubmissions) }} />
                     <p style={{color: '#a3a3a3'}}>Should submitters be anonymous during voting?</p>
                     <b></b>

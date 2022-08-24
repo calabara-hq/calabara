@@ -28,6 +28,8 @@ const ImageUploadBtn = styled.button`
                         linear-gradient(to right, #e00f8e, #2d66dc);
         background-origin: border-box;
         background-clip: padding-box, border-box;
+
+        box-shadow: 0 10px 30px rgb(0 0 0 / 30%), 0 15px 12px rgb(0 0 0 / 22%);
 `
 
 const RemoveImageButton = styled.button`
@@ -43,8 +45,9 @@ const TextArea = styled.textarea`
   outline: none;
   color: #d3d3d3;
   font-size: 16px;
-  border: 2px solid black;
-  background-color: #22272e;
+  border: 2px solid #4d4d4d;
+  background-color: #262626;
+  box-shadow: 0 10px 30px rgb(0 0 0 / 30%), 0 15px 12px rgb(0 0 0 / 22%);
   border-radius: 10px;
   padding: 10px;
   width: 30em;
