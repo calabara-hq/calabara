@@ -1,0 +1,1500 @@
+.Kalend__text {
+  margin: 0;
+  padding: 0;
+  font-family: monospace, SansSerif, sans-serif, serif;
+  font-size: 1em;
+}
+
+.Kalend__Calendar__root {
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  font-size: 10px;
+  display: flex;
+  overflow-x: hidden;
+}
+
+.Kalend__main * {
+  font-family: monospace, SansSerif, sans-serif, serif;
+}
+
+.Kalend__Calendar__table {
+  display: inherit;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  height: 100% !important;
+}
+
+.Kalend__button {
+  padding: inherit;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  -webkit-appearance: auto;
+  -ms-appearance: auto;
+  appearance: auto;
+  letter-spacing: inherit;
+  word-spacing: inherit;
+  line-height: inherit;
+  text-transform: none;
+  text-indent: inherit;
+  text-shadow: none;
+  text-align: inherit;
+  align-items: inherit;
+  box-sizing: inherit;
+  border: none;
+  border-width: inherit;
+  border-style: inherit;
+  border-color: inherit;
+  border-image: inherit;
+  background-color: rgba(0, 0, 0, 0);
+  margin: 0;
+  display: flex;
+}
+
+.Kalend__CalendarDesktopNavigation__container, .Kalend__CalendarDesktopNavigation__container-dark, .Kalend__CalendarDesktopNavigation__container-mobile {
+  height: 70px;
+  max-height: 70px;
+  min-height: 70px;
+  width: auto;
+  border-radius: 8px;
+  flex-direction: row;
+  align-items: center;
+  margin: 0;
+  padding: 0 0 0 12px;
+  display: flex;
+  left: 0;
+}
+
+.Kalend__CalendarDesktopNavigation__container-mobile {
+  flex-direction: column;
+}
+
+.Kalend__CalendarDesktopNavigation__container-dark {
+  background-color: #1e1e1e;
+}
+
+.Kalend__CalendarDesktopNavigation__buttons, .Kalend__CalendarDesktopNavigation__buttons-mobile {
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.Kalend__CalendarDesktopNavigation__buttons-mobile {
+  justify-content: flex-end;
+}
+
+.Kalend__calendarButtonToday {
+  width: 60px;
+  border: .4px solid #e0e0e0;
+  justify-content: center;
+  align-items: center;
+  margin-left: 12px;
+  margin-right: 12px;
+  padding: 6px 4px;
+  display: flex;
+}
+
+.Kalend__Agenda__container {
+  width: 100%;
+  flex-direction: column;
+  display: flex;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+.Kalend__AgendaDayRow__container {
+  width: 100%;
+  flex-direction: row;
+  display: flex;
+}
+
+.Kalend__AgendaDayRow__events {
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  display: flex;
+}
+
+.Kalend__AgendaDayRow__container-day {
+  height: 60px;
+  width: auto;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2px;
+  display: flex;
+}
+
+.Kalend__ButtonBase, .Kalend__ButtonBase-border, .Kalend__ButtonBase-transparent, .Kalend__ButtonBase-primary, .Kalend__ButtonBase-primary-dark, .Kalend__ButtonBase-primary-dark:hover, .Kalend__ButtonBase-primary:hover, .Kalend__ButtonBase-disabled, .Kalend__ButtonBase-normal, .Kalend__ButtonBase-normal:hover {
+  min-height: 20px;
+  cursor: pointer;
+  color: #424242;
+  background-color: rgba(0, 0, 0, 0);
+  border: none;
+  border-radius: 10px;
+  outline-style: none;
+  font-size: 1.6em;
+  font-weight: 400;
+  position: relative;
+  overflow: hidden;
+}
+
+.Kalend__ButtonBase:hover, .Kalend__ButtonBase-border:hover, .Kalend__ButtonBase-transparent:hover, .Kalend__ButtonBase-primary:hover, .Kalend__ButtonBase-primary-dark:hover, .Kalend__ButtonBase-disabled:hover, .Kalend__ButtonBase-normal:hover {
+  background-color: #eee;
+}
+
+.Kalend__ButtonBase-normal, .Kalend__ButtonBase-normal:hover {
+  color: #f5f5f5;
+  background-color: #424242;
+  border: none;
+  padding: 4px 12px;
+}
+
+.Kalend__ButtonBase-normal:hover {
+  background-color: #757575;
+}
+
+.Kalend__ButtonBase-disabled {
+  color: #616161;
+  background-color: #bdbdbd;
+}
+
+.Kalend__ButtonBase-primary, .Kalend__ButtonBase-primary-dark, .Kalend__ButtonBase-primary-dark:hover, .Kalend__ButtonBase-primary:hover {
+  color: #eee;
+  background-color: #ec407a;
+  padding: 4px 12px;
+}
+
+.Kalend__ButtonBase-primary:hover, .Kalend__ButtonBase-primary-dark:hover {
+  background-color: rgba(236, 64, 122, .7);
+}
+
+.Kalend__ButtonBase-primary-dark {
+  color: #424242;
+  background-color: #f48fb1;
+}
+
+.Kalend__ButtonBase-transparent {
+  color: #616161;
+  background-color: rgba(0, 0, 0, 0);
+  padding: 4px 12px;
+}
+
+.Kalend__ButtonBase-transparent:hover {
+  background-color: #eee;
+}
+
+.Kalend__ButtonBase__animation {
+  background-color: rgba(50, 50, 50, .3);
+  border-radius: 50%;
+  -webkit-animation: Kalend__ripple__animation .5s ease-in;
+  animation: Kalend__ripple__animation .5s ease-in;
+  position: absolute;
+  -webkit-transform: scale(0);
+  transform: scale(0);
+}
+
+@-webkit-keyframes Kalend__ripple__animation {
+  from {
+    -webkit-transform: scale(0);
+    transform: scale(0);
+  }
+
+  to {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+}
+
+@keyframes Kalend__ripple__animation {
+  from {
+    -webkit-transform: scale(0);
+    transform: scale(0);
+  }
+
+  to {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+}
+
+.Kalend__ButtonBase__loader-circle, .Kalend__ButtonBase__loader-circle-right, .Kalend__ButtonBase__loader-circle-middle, .Kalend__ButtonBase__loader-circle-left {
+  width: 12px;
+  height: 12px;
+  opacity: 0;
+  -ms-animation-fill-mode: forwards;
+  background-color: #e0e0e0;
+  border-radius: 6px;
+  margin: 0 6px;
+  -webkit-animation-name: Kalend__ButtonBase__animation-pulse-loader;
+  animation-name: Kalend__ButtonBase__animation-pulse-loader;
+  -webkit-animation-duration: 1.2s;
+  animation-duration: 1.2s;
+  -webkit-animation-iteration-count: infinite;
+  animation-iteration-count: infinite;
+  -webkit-animation-delay: 0s;
+  animation-delay: 0s;
+  -webkit-animation-fill-mode: forwards;
+  -moz-animation-fill-mode: forwards;
+  -o-animation-fill-mode: forwards;
+}
+
+.Kalend__ButtonBase__loader-circle-left {
+  -webkit-animation-delay: 0s;
+  animation-delay: 0s;
+}
+
+.Kalend__ButtonBase__loader-circle-middle {
+  -webkit-animation-delay: .3s;
+  animation-delay: .3s;
+}
+
+.Kalend__ButtonBase__loader-circle-right {
+  -webkit-animation-delay: .5s;
+  animation-delay: .5s;
+}
+
+@-webkit-keyframes Kalend__ButtonBase__animation-pulse-loader {
+  0% {
+    opacity: 0;
+    background-color: #9e9e9e;
+  }
+
+  50% {
+    opacity: 1;
+    background-color: #e0e0e0;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes Kalend__ButtonBase__animation-pulse-loader {
+  0% {
+    opacity: 0;
+    background-color: #9e9e9e;
+  }
+
+  50% {
+    opacity: 1;
+    background-color: #e0e0e0;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+.Kalend__Button-long, .Kalend__Button-long:hover {
+  width: 100%;
+  min-height: 40px;
+  border-radius: 8px;
+  justify-content: center;
+  align-items: center;
+  padding: 4px 12px;
+  display: flex;
+}
+
+.Kalend__ButtonBase-border {
+  min-width: 60px;
+  width: auto;
+  border: .4px solid #e0e0e0;
+  justify-content: center;
+  align-items: center;
+  margin-left: 12px;
+  margin-right: 12px;
+  padding: 6px 8px;
+  display: flex;
+}
+
+.Kalend__ButtonIcon__container, .Kalend__ButtonIcon__container-full, .Kalend__ButtonIcon__container-big, .Kalend__ButtonIcon__container-small {
+  width: 50px;
+  height: 50px;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  position: relative;
+}
+
+.Kalend__ButtonIcon__container-small {
+  width: 30px;
+  height: 30px;
+  border-radius: 15px;
+}
+
+.Kalend__ButtonIcon__container-big {
+  width: 55px;
+  height: 55px;
+  border-radius: 27.5px;
+}
+
+.Kalend__ButtonIcon__container-full {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+.Kalend__ButtonIcon, .Kalend__ButtonIcon-inactive, .Kalend__ButtonIcon-inactive:hover, .Kalend__ButtonIcon-inactive:active, .Kalend__ButtonIcon-dark, .Kalend__ButtonIcon-dark:hover, .Kalend__ButtonIcon:hover {
+  fill: #757575;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+  background-color: rgba(0, 0, 0, 0);
+  border: none;
+  border-radius: 27.5px;
+  outline-style: none;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.4em;
+  display: flex;
+}
+
+.Kalend__ButtonIcon:hover, .Kalend__ButtonIcon-inactive:hover, .Kalend__ButtonIcon-dark:hover {
+  opacity: .9;
+  background-color: #e0e0e0;
+}
+
+.Kalend__ButtonIcon-dark {
+  fill: #bdbdbd;
+}
+
+.Kalend__ButtonIcon-inactive:active {
+  background-color: rgba(0, 0, 0, 0);
+  -webkit-animation: none;
+  animation: none;
+}
+
+.Kalend__ButtonIcon-inactive:hover {
+  background-color: rgba(0, 0, 0, 0);
+}
+
+.Kalend__ButtonIcon__svg, .Kalend__ButtonIcon__svg-normal {
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+  fill: #757575;
+  padding: 1px;
+}
+
+.Kalend__ButtonIcon__svg-normal {
+  width: 2.2em;
+  height: 2.2em;
+}
+
+.Kalend__ButtonIcon__backdrop, .Kalend__ButtonIcon__backdrop:active {
+  opacity: .4;
+  width: 100%;
+  height: 100%;
+  background-color: #bdbdbd;
+  border-radius: 50%;
+  -webkit-animation-name: Kalend__ButtonIcon__animation-backdrop;
+  animation-name: Kalend__ButtonIcon__animation-backdrop;
+  -webkit-animation-duration: .4s;
+  animation-duration: .4s;
+  -webkit-animation-delay: 0s;
+  animation-delay: 0s;
+  position: absolute;
+}
+
+.Kalend__ButtonIcon__backdrop:active {
+  -ms-animation-fill-mode: forwards;
+  background-color: #757575;
+  -webkit-animation-name: Kalend__ButtonIcon__animation-press;
+  animation-name: Kalend__ButtonIcon__animation-press;
+  -webkit-animation-duration: .1s;
+  animation-duration: .1s;
+  -webkit-animation-delay: 0s;
+  animation-delay: 0s;
+  -webkit-animation-fill-mode: forwards;
+  -moz-animation-fill-mode: forwards;
+  -o-animation-fill-mode: forwards;
+}
+
+@-webkit-keyframes Kalend__ButtonIcon__animation-press {
+  0% {
+    opacity: .5;
+    background-color: #f5f5f5;
+  }
+
+  100% {
+    opacity: 1;
+    background-color: #e0e0e0;
+  }
+}
+
+@keyframes Kalend__ButtonIcon__animation-press {
+  0% {
+    opacity: .5;
+    background-color: #f5f5f5;
+  }
+
+  100% {
+    opacity: 1;
+    background-color: #e0e0e0;
+  }
+}
+
+@-webkit-keyframes Kalend__ButtonIcon__animation-backdrop {
+  0% {
+    width: 0;
+    height: 0;
+    background-color: #f5f5f5;
+  }
+
+  100% {
+    width: 100%;
+    height: 100%;
+    background-color: #bdbdbd;
+  }
+}
+
+@keyframes Kalend__ButtonIcon__animation-backdrop {
+  0% {
+    width: 0;
+    height: 0;
+    background-color: #f5f5f5;
+  }
+
+  100% {
+    width: 100%;
+    height: 100%;
+    background-color: #bdbdbd;
+  }
+}
+
+.Kalend__CalendarHeader, .Kalend__CalendarHeader-tall-day, .Kalend__CalendarHeader-day, .Kalend__CalendarHeader-small, .Kalend__CalendarHeader-tall-dark, .Kalend__CalendarHeader-tall, .Kalend__CalendarHeader-dark {
+  height: auto;
+  width: 100%;
+  border-radius: 8px;
+  flex-direction: column;
+  align-items: stretch;
+  margin: 0;
+  padding: 0 0 6px;
+  display: flex;
+  left: 0;
+  box-shadow: 0 5px 5px -5px #333;
+}
+
+@media (max-width: 750px) {
+  .Kalend__CalendarHeader, .Kalend__CalendarHeader-tall-day, .Kalend__CalendarHeader-day, .Kalend__CalendarHeader-small, .Kalend__CalendarHeader-tall-dark, .Kalend__CalendarHeader-tall, .Kalend__CalendarHeader-dark {
+    border-radius: 0;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, .14);
+  }
+}
+
+.Kalend__CalendarHeader-dark {
+  box-shadow: none;
+  background-color: #1e1e1e;
+}
+
+@media (max-width: 750px) {
+  .Kalend__CalendarHeader-dark {
+    border-radius: 0 0 8px 8px !important;
+  }
+}
+
+.Kalend__CalendarHeader-tall {
+  height: auto;
+}
+
+.Kalend__CalendarHeader-tall-dark {
+  background-color: #1e1e1e;
+}
+
+.Kalend__CalendarHeader-small {
+  height: 30px;
+}
+
+.Kalend__CalendarHeader-day {
+  flex-direction: row;
+}
+
+.Kalend__header_calendar_days__text {
+  text-align: center;
+  color: #9e9e9e;
+  align-self: center;
+  margin: 0;
+  padding: 1px;
+  font-size: 1.2em;
+}
+
+.Kalend__event_header__container {
+  z-index: 9;
+  height: 40px;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  border-radius: 4px;
+  justify-content: flex-start;
+  align-items: center;
+  padding-left: 4px;
+  display: flex;
+  position: absolute;
+  overflow: hidden;
+}
+
+.Kalend__event_header__text, .Kalend__event_header__text--dark {
+  color: rgba(255, 255, 255, .95);
+  text-align: left;
+  margin: 0;
+  font-size: 1em;
+}
+
+.Kalend__event_header__text--dark {
+  color: #141414;
+}
+
+.Kalend__CalendarHeaderEvents__container {
+  flex-direction: column;
+  justify-content: center;
+  margin: 0 0 0 40px;
+  display: flex;
+  position: relative;
+}
+
+.Kalend__CalendarHeaderEvents__row {
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.Kalend__CalendarHeaderEvents__rows {
+  width: 100%;
+  height: auto;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 2px;
+  display: flex;
+  position: relative;
+}
+
+.Kalend__CalendarHeaderEvents__eventRow {
+  width: 100%;
+  height: 25px;
+  flex-direction: column;
+  display: flex;
+  position: relative;
+}
+
+.Kalend__CalendarHeaderEvents__col-wrapper {
+  justify-content: center;
+  align-self: center;
+  align-items: center;
+}
+
+.Kalend__CalendarHeaderEvents__col {
+  height: 30px;
+  justify-content: center;
+  align-self: center;
+  align-items: center;
+  display: flex;
+}
+
+.Kalend__CalendarHeaderCol, .Kalend__CalendarHeaderCol-dark {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  padding-bottom: 8px;
+  display: flex;
+}
+
+@media (min-width: 750px) {
+  .Kalend__CalendarHeaderCol, .Kalend__CalendarHeaderCol-dark {
+    align-items: flex-start;
+  }
+}
+
+.Kalend__CalendarHeaderCol-dark {
+  background: #1e1e1e;
+}
+
+.Kalend__CalendarHeaderColText__container {
+  height: auto;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.Kalend__CalendarHeaderDates__col {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  display: flex;
+}
+
+.Kalend__CalendarHeaderDates__circle, .Kalend__CalendarHeaderDates__circle-small {
+  height: 32px;
+  width: 32px;
+  color: rgba(22, 4, 4, .87);
+  border-radius: 16px;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+
+.Kalend__CalendarHeaderDates__circle-small {
+  height: 20px;
+  width: 20px;
+  margin-top: 2px;
+}
+
+.Kalend__CalendarHeaderDates__text-size-small {
+  padding: .4px;
+  font-size: 1.1em !important;
+}
+
+.Kalend__CalendarHeaderDates__text, .Kalend__CalendarHeaderDates__text-today, .Kalend__CalendarHeaderDates__text-today-dark, .Kalend__CalendarHeaderDates__text-dark {
+  text-align: center;
+  color: #424242;
+  align-self: center;
+  margin: 0;
+  padding: 1px;
+  font-size: 1.5em;
+  font-weight: 500;
+}
+
+.Kalend__CalendarHeaderDates__text-dark {
+  color: #e0e0e0;
+}
+
+.Kalend__CalendarHeaderDates__text-today, .Kalend__CalendarHeaderDates__text-today-dark {
+  color: #e5e5e5 !important;
+}
+
+.Kalend__CalendarHeaderDates__text-today-dark {
+  color: rgba(22, 4, 4, .87);
+}
+
+.Kalend__CalendarHeaderWeekDays__wrapper {
+  flex-direction: column;
+  justify-content: center;
+  margin: 0;
+  display: flex;
+}
+
+.Kalend__CalendarHeaderWeekDays__container {
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.Kalend__CalendarHeaderWeekDays__col {
+  justify-content: center;
+  align-self: center;
+  align-items: center;
+  display: flex;
+}
+
+.Kalend__CalendarHeaderWeekDays__text {
+  text-align: center;
+  color: #9e9e9e;
+  align-self: center;
+  margin: 0;
+  padding: 1px;
+  font-size: 1.2em;
+}
+
+.Kalend__CalendarHeaderWrapper, .Kalend__CalendarHeaderWrapper-dark {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  display: flex;
+}
+
+@media (min-width: 750px) {
+  .Kalend__CalendarHeaderWrapper, .Kalend__CalendarHeaderWrapper-dark {
+    align-items: flex-start;
+  }
+}
+
+.Kalend__CalendarHeaderWrapper-dark {
+  background: #1e1e1e;
+}
+
+.Kalend__CalendarViewDropdown__wrapper {
+  position: relative;
+}
+
+.Kalend__CalendarViewDropdown__backdrop {
+  z-index: 10;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+}
+
+.Kalend__CalendarViewDropdown__container {
+  height: auto;
+  z-index: 20;
+  background: #fff;
+  border-radius: 8px;
+  flex-direction: column;
+  padding: 16px;
+  display: flex;
+  position: absolute;
+  top: 50px;
+  right: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .12), 0 1px 2px rgba(0, 0, 0, .24);
+}
+
+.Kalend__CalendarViewDropdown__container-content {
+  height: 100%;
+  width: 100%;
+  flex-direction: column;
+  display: flex;
+}
+
+.Kalend__carousel__wrapper {
+  height: 100%;
+  flex-direction: row;
+  display: flex;
+  overflow-x: scroll;
+  overflow-y: hidden;
+}
+
+@media (min-width: 750px) {
+  .Kalend__carousel__wrapper {
+    overflow-x: hidden;
+  }
+}
+
+.Kalend__carousel__control, .Kalend__carousel__control-right, .Kalend__carousel__control-left {
+  height: 100%;
+  width: 100%;
+  align-items: center;
+  display: flex;
+}
+
+.Kalend__carousel__control-left {
+  justify-content: flex-start;
+  -webkit-animation-name: Kalend__carousel-left;
+  animation-name: Kalend__carousel-left;
+  -webkit-animation-duration: .3s;
+  animation-duration: .3s;
+  left: 100px;
+}
+
+.Kalend__carousel__control-right {
+  justify-content: flex-end;
+  -webkit-animation-name: Kalend__carousel-right;
+  animation-name: Kalend__carousel-right;
+  -webkit-animation-duration: .3s;
+  animation-duration: .3s;
+  right: 100px;
+}
+
+@-webkit-keyframes Kalend__carousel-left {
+  0% {
+    left: -100px;
+  }
+
+  100% {
+    left: 100px;
+  }
+}
+
+@keyframes Kalend__carousel-left {
+  0% {
+    left: -100px;
+  }
+
+  100% {
+    left: 100px;
+  }
+}
+
+@-webkit-keyframes Kalend__carousel-right {
+  0% {
+    right: -100px;
+  }
+
+  100% {
+    right: 100px;
+  }
+}
+
+@keyframes Kalend__carousel-right {
+  0% {
+    right: -100px;
+  }
+
+  100% {
+    right: 100px;
+  }
+}
+
+.Kalend__full-screen {
+  height: 100%;
+  width: 100%;
+}
+
+.Kalend__CalendarBody {
+  height: 100%;
+  flex-direction: row;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+.Kalend__calendar-animation {
+  -webkit-animation-name: event-load;
+  animation-name: event-load;
+  -webkit-animation-duration: 1s;
+  animation-duration: 1s;
+}
+
+@-webkit-keyframes Kalend__event-load {
+  0% {
+    right: -1500px;
+  }
+
+  100% {
+    right: 0;
+  }
+}
+
+@keyframes Kalend__event-load {
+  0% {
+    right: -1500px;
+  }
+
+  100% {
+    right: 0;
+  }
+}
+
+.Kalend__DayViewOneDay {
+  flex-direction: column;
+  position: relative;
+}
+
+.Kalend__DayViewOneDay__border-left, .Kalend__DayViewOneDay__border-left-dark {
+  border-left: .6px solid #e0e0e0;
+}
+
+.Kalend__DayViewOneDay__border-left-dark {
+  border-left: .6px solid #1d1f26;
+}
+
+.Kalend__CalendarBodyHours__wrapper {
+  z-index: 2;
+  height: 100%;
+  width: 40px;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  display: flex;
+  position: absolute;
+  top: 0;
+  bottom: 20px;
+  left: 0;
+}
+
+.Kalend__CalendarBodyHours__container {
+  width: 100%;
+  flex-direction: row;
+  display: flex;
+}
+
+.Kalend__CalendarBodyHours__text, .Kalend__CalendarBodyHours__text-dark {
+  text-align-vertical: top;
+  z-index: 10;
+  color: #757575;
+  text-align: center;
+  margin: -10px 0 0 8px;
+  padding: 0;
+  font-size: .9em;
+  position: absolute;
+}
+
+.Kalend__CalendarBodyHours__text-dark {
+  color: #bdbdbd;
+}
+
+.Kalend__CalendarBodyHours__line, .Kalend__CalendarBodyHours__line-dark {
+  height: 1px;
+  z-index: 2;
+  background: #e0e0e0;
+  position: absolute;
+  left: 40px;
+  width: 100vw !important;
+}
+
+.Kalend__CalendarBodyHours__line-dark {
+  background: #1d1f26;
+}
+
+.Kalend__DesktopLayout {
+  display: block;
+}
+
+.Kalend__Event__animate {
+  -ms-animation-fill-mode: forwards;
+  -webkit-animation-name: Kalend__EventDetail_animationShow;
+  animation-name: Kalend__EventDetail_animationShow;
+  -webkit-animation-duration: .3s;
+  animation-duration: .3s;
+  -webkit-animation-delay: 0s;
+  animation-delay: 0s;
+  -webkit-animation-fill-mode: forwards;
+  -moz-animation-fill-mode: forwards;
+  -o-animation-fill-mode: forwards;
+}
+
+.Kalend__Event, .Kalend__Event-agenda, .Kalend__Event-header, .Kalend__Event-normal, .Kalend__Event-month, .Kalend__Event-showMoreMonth {
+  z-index: 2;
+  color: #fff;
+  justify-content: flex-start;
+  align-items: flex-start;
+  display: flex;
+  opacity: 1 !important;
+  min-height: 17px !important;
+  border-radius: 6px !important;
+}
+
+.Kalend__Event-month, .Kalend__Event-showMoreMonth {
+  white-space: nowrap;
+  align-items: center;
+  padding-left: 1px;
+  min-height: auto !important;
+  border: none !important;
+}
+
+.Kalend__Event-normal {
+  border: 1px solid #fff !important;
+}
+
+.Kalend__Event-header {
+  -ms-animation-fill-mode: forwards;
+  align-items: center;
+  padding-left: 3px;
+  -webkit-animation-name: Kalend__EventDetailHeader_animationShow;
+  animation-name: Kalend__EventDetailHeader_animationShow;
+  -webkit-animation-duration: .3s;
+  animation-duration: .3s;
+  -webkit-animation-delay: .5s;
+  animation-delay: .5s;
+  -webkit-animation-fill-mode: forwards;
+  -moz-animation-fill-mode: forwards;
+  -o-animation-fill-mode: forwards;
+  min-height: 20px !important;
+  border: none !important;
+}
+
+.Kalend__Event-agenda {
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 12px;
+  height: 65px !important;
+}
+
+.Kalend__Event-showMoreMonth {
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 4px;
+  padding: 2px;
+  height: 20px !important;
+}
+
+.Kalend__EventButton__elevation {
+  z-index: 9999 !important;
+  cursor: grab !important;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, .4) !important;
+}
+
+@-webkit-keyframes Kalend__EventDetailHeader_animationShow {
+  0% {
+    visibility: hidden;
+  }
+
+  100% {
+    visibility: visible;
+  }
+}
+
+@keyframes Kalend__EventDetailHeader_animationShow {
+  0% {
+    visibility: hidden;
+  }
+
+  100% {
+    visibility: visible;
+  }
+}
+
+@-webkit-keyframes Kalend__EventDetail_animationShow {
+  0% {
+    opacity: .2;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes Kalend__EventDetail_animationShow {
+  0% {
+    opacity: .2;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+.Kalend__Event__summary {
+  webkit-line-clamp: 1;
+  opacity: 1;
+  color: #fff;
+  white-space: inherit;
+  -webkit-box-orient: vertical;
+  margin: 0;
+  padding: 5px 1px 6px 4px;
+  font-size: .8em;
+  font-weight: 600;
+  display: -webkit-box;
+  overflow: hidden;
+}
+
+@media (min-width: 750px) {
+  .Kalend__Event__summary {
+    font-size: .8em;
+  }
+}
+
+.Kalend__Event__summary__type-header, .Kalend__Event__summary__type-month {
+  white-space: nowrap;
+  padding: 1px 1px 1px 3px;
+  font-weight: 500;
+}
+
+.Kalend__Event__summary__type-agenda {
+  padding: 8px;
+  font-size: 1em;
+  font-weight: 600;
+  color: #fff !important;
+}
+
+.Kalend__Event__time {
+  webkit-line-clamp: 1;
+  opacity: 1;
+  color: #f6f4f4;
+  -webkit-box-orient: vertical;
+  margin: 0;
+  padding: 2px 1px 0 4px;
+  font-size: .7em;
+  display: -webkit-box;
+  overflow: hidden;
+}
+
+.Kalend__Event__time__type-header, .Kalend__Event__time__type-month {
+  padding: 1px;
+}
+
+.Kalend__Event__time__type-agenda {
+  padding: 0 8px 8px;
+  font-size: .8em;
+}
+
+.Kalend__EventShowMoreMonth__container {
+  white-space: nowrap;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  display: flex;
+}
+
+.Kalend__EventAgenda__container {
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  padding: 8px;
+  display: flex;
+}
+
+.Kalend__header_calendar_buttons__container, .Kalend__header_calendar_buttons__container-dark, .Kalend__header_calendar_buttons__container-mobile {
+  width: 100%;
+  border: .4px solid #e0e0e0;
+  border-radius: 8px;
+  flex-direction: row;
+  flex: none;
+  align-items: center;
+  padding: 0;
+  display: flex;
+  left: 0;
+}
+
+.Kalend__header_calendar_buttons__container-mobile {
+  height: 100%;
+  width: 100%;
+  min-width: 80px;
+  border: none;
+  flex-direction: column;
+}
+
+.Kalend__header_calendar_buttons__container-dark {
+  background-color: #757575;
+}
+
+.Kalend__header_calendar_button, .Kalend__header_calendar_button-selected-mobile, .Kalend__header_calendar_button-selected-mobile:hover, .Kalend__header_calendar_button-selected, .Kalend__header_calendar_button-selected-dark, .Kalend__header_calendar_button-selected-dark:hover, .Kalend__header_calendar_button-selected:hover, .Kalend__header_calendar_button-dark, .Kalend__header_calendar_button-dark:hover, .Kalend__header_calendar_button-mobile, .Kalend__header_calendar_button-mobile:hover, .Kalend__header_calendar_button:hover {
+  justify-content: center;
+  align-items: center;
+  padding: 6px 4px;
+  display: flex;
+}
+
+.Kalend__header_calendar_button-mobile, .Kalend__header_calendar_button-selected-mobile:hover, .Kalend__header_calendar_button-mobile:hover {
+  width: 100%;
+  border: none;
+  justify-content: flex-start;
+  padding: 8px;
+  font-size: 1.5em;
+}
+
+.Kalend__header_calendar_button-dark {
+  background-color: #757575;
+  border: .5px solid #757575;
+}
+
+.Kalend__header_calendar_button-selected-mobile {
+  width: 100%;
+  background: #f5f5f5;
+  border: none;
+  justify-content: flex-start;
+  padding: 8px;
+  font-size: 1.5em;
+}
+
+.Kalend__header_calendar_button-text, .Kalend__header_calendar_button-text-selected, .Kalend__header_calendar_button-text-selected-dark, .Kalend__header_calendar_button-text-dark {
+  color: #424242;
+  padding: 0 10px !important;
+}
+
+.Kalend__header_calendar_button-text-dark {
+  color: #eee;
+}
+
+.Kalend__header_calendar_button-text-selected, .Kalend__header_calendar_button-text-selected-dark {
+  color: #ec407a !important;
+}
+
+.Kalend__header_calendar_button-text-selected-dark {
+  color: #f48fb1;
+}
+
+.Kalend__HeaderCalendarTitle__container, .Kalend__HeaderCalendarTitle__container-mobile {
+  width: 100%;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 0 24px 0 16px;
+  display: flex;
+}
+
+.Kalend__HeaderCalendarTitle__container-mobile {
+  width: 100%;
+}
+
+.Kalend__HeaderCalendarTitle, .Kalend__HeaderCalendarTitle-dark, .Kalend__HeaderCalendarTitle-mobile {
+  color: rgba(22, 4, 4, .87);
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  margin: 0;
+  padding: 0;
+  font-size: 2em;
+  font-weight: 700;
+  display: -webkit-box;
+}
+
+.Kalend__HeaderCalendarTitle-mobile {
+  width: 100%;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  margin: 0;
+  padding: 0;
+  font-size: 1.6em;
+  display: -webkit-box;
+}
+
+.Kalend__HeaderCalendarTitle-dark {
+  color: #e5e5e5;
+}
+
+.Kalend__MobileLayout {
+  display: block;
+}
+
+.Kalend__MonthView__container {
+  width: 100%;
+  height: 100%;
+  flex-flow: wrap;
+  align-self: stretch;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  position: absolute;
+  top: 0;
+  bottom: 1px;
+  left: 0;
+  right: 0;
+}
+
+.Kalend__Monthview_Event {
+  min-height: 17px;
+  margin-top: 1px;
+  max-height: 17px !important;
+}
+
+.Kalend__MonthOneDay__header-container {
+  height: 25px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.Kalend__MonthOneDay__events-container {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  position: relative;
+}
+
+.Kalend__MonthOneDay__date-container {
+  height: 20px;
+  width: 20px;
+  border-radius: 10px;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.Kalend__MonthOneDay__circle-color, .Kalend__MonthOneDay__circle-color-dark {
+  background: #ec407a;
+}
+
+.Kalend__MonthOneDay__circle-color-dark {
+  background: #f48fb1;
+}
+
+.Kalend__MonthOneDay__date, .Kalend__MonthOneDay__date-today, .Kalend__MonthOneDay__date-today-dark, .Kalend__MonthOneDay__date-past, .Kalend__MonthOneDay__date-past-dark, .Kalend__MonthOneDay__date-dark {
+  color: #1d1f26;
+  margin: 0;
+  padding: 0;
+  font-size: 1em;
+}
+
+.Kalend__MonthOneDay__date-dark {
+  color: #e0e0e0;
+}
+
+.Kalend__MonthOneDay__date-past, .Kalend__MonthOneDay__date-past-dark {
+  color: #bdbdbd;
+}
+
+.Kalend__MonthOneDay__date-past-dark {
+  color: #757575;
+}
+
+.Kalend__MonthOneDay__date-today, .Kalend__MonthOneDay__date-today-dark {
+  color: #e5e5e5;
+}
+
+.Kalend__MonthOneDay__date-today-dark {
+  color: rgba(22, 4, 4, .87);
+}
+
+.Kalend__MonthOneDay__border, .Kalend__MonthOneDay__border-right-dark, .Kalend__MonthOneDay__border-right, .Kalend__MonthOneDay__border-bottom-right, .Kalend__MonthOneDay__border-bottom-right-dark, .Kalend__MonthOneDay__border-bottom-dark, .Kalend__MonthOneDay__border-bottom {
+  width: 14.2857%;
+  height: 16.6667%;
+  margin: 0;
+  padding: 0;
+}
+
+.Kalend__MonthOneDay__border-bottom {
+  box-shadow: inset 0 -1px 1px rgba(0, 0, 0, .1);
+  -webkit-box-shadow: inset -1px -1px rgba(0, 0, 0, .1);
+  -moz-box-shadow: inset -1px -1px rgba(0, 0, 0, .1);
+}
+
+.Kalend__MonthOneDay__border-bottom-dark {
+  box-shadow: inset 0 -1px 1px rgba(255, 255, 255, .05);
+  -webkit-box-shadow: inset -1px -1px rgba(255, 255, 255, .05);
+  -moz-box-shadow: inset -1px -1px rgba(255, 255, 255, .05);
+}
+
+.Kalend__MonthOneDay__border-bottom-right, .Kalend__MonthOneDay__border-bottom-right-dark {
+  box-shadow: inset -1px 0 rgba(0, 0, 0, .1);
+  -webkit-box-shadow: inset -1px -1px rgba(0, 0, 0, .1);
+  -moz-box-shadow: inset -1px -1px rgba(0, 0, 0, .1);
+}
+
+.Kalend__MonthOneDay__border-bottom-right-dark {
+  box-shadow: inset -1px -1px rgba(255, 255, 255, .05);
+}
+
+.Kalend__MonthOneDay__border-right {
+  box-shadow: inset -1px 0 rgba(0, 0, 0, .1);
+  -webkit-box-shadow: inset -1px -1px rgba(0, 0, 0, .1);
+  -moz-box-shadow: inset -1px -1px rgba(0, 0, 0, .1);
+}
+
+.Kalend__MonthOneDay__border-right-dark {
+  box-shadow: inset -1px 0 rgba(255, 255, 255, .05);
+  -webkit-box-shadow: inset -1px -1px rgba(255, 255, 255, .05);
+  -moz-box-shadow: inset -1px -1px rgba(255, 255, 255, .05);
+}
+
+.Kalend__MonthWeekRow__container {
+  width: 100%;
+  height: 16.6667%;
+  border-bottom: 1px solid #e0e0e0;
+  flex-flow: wrap;
+  align-self: stretch;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
+.Kalend__MonthWeekRow__day {
+  height: 24px;
+}
+
+.Kalend__MonthWeekRow__container-events {
+  width: 100%;
+  height: auto;
+  position: relative;
+}
+
+.Kalend__MonthWeekRow__event {
+  min-height: 16px;
+  margin-top: 1px;
+  max-height: 16px !important;
+}
+
+.Kalend__ShowMoreModal__wrapper {
+  width: 100vw;
+  height: 100vh;
+  z-index: 999;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.Kalend__ShowMoreModal__container {
+  min-width: 250px;
+  max-height: 50vh;
+  z-index: 999;
+  background-color: #fff;
+  border-radius: 4px;
+  flex-direction: column;
+  padding: 16px;
+  display: flex;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .04), 0 1px 2px rgba(0, 0, 0, .08);
+}
+
+.Kalend__DaysViewVerticalLine__container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.Kalend__DaysViewVerticalLine__line, .Kalend__DaysViewVerticalLine__line-dark {
+  width: 1px;
+  background-color: #e0e0e0;
+  position: absolute;
+}
+
+.Kalend__DaysViewVerticalLine__line-dark {
+  background-color: #1d1f26;
+}
+
+.Kalend__Dropdown__wrapper {
+  position: relative;
+}
+
+.Kalend__Dropdown__backdrop {
+  z-index: 10;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+}
+
+.Kalend__Dropdown__container {
+  height: auto;
+  z-index: 20;
+  background: #fff;
+  border-radius: 8px;
+  flex-direction: column;
+  padding: 16px;
+  display: flex;
+  position: absolute;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .12), 0 1px 2px rgba(0, 0, 0, .24);
+}
+
+.Kalend__Dropdown__container-content {
+  height: 100%;
+  width: 100%;
+  flex-direction: column;
+  display: flex;
+}
+
+.Kalend__CurrentHourLine {
+  width: 100%;
+  z-index: 250;
+  flex-direction: row;
+  display: flex;
+  position: absolute;
+}
+
+.Kalend__CurrentHourLine__circle, .Kalend__CurrentHourLine__circle-dark {
+  height: 10px;
+  width: 10px;
+  border-radius: 50%;
+  position: absolute;
+  bottom: -5px;
+  left: -2.5px;
+}
+
+.Kalend__CurrentHourLine__line, .Kalend__CurrentHourLine__line-dark {
+  height: 2px;
+  width: 100%;
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+/*# sourceMappingURL=index.css.map */
