@@ -5,7 +5,7 @@ dotenv.config();
 const axios = require('axios')
 
 
-const ipfs_gateway = 'https://gateway.pinata.cloud/ipfs/'
+const ipfs_gateway = 'https://calabara.mypinata.cloud/ipfs/'
 const pinataSDK = require('@pinata/sdk');
 const { Transform } = require('stream');
 const pinata = pinataSDK(process.env.PINATA_API_KEY, process.env.PINATA_API_SECRET)

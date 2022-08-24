@@ -4,15 +4,17 @@ import styled, { keyframes, css } from 'styled-components'
 import { ParseBlocks } from '../block-parser';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
-import { fade_in } from '../../common/common_styles';
+import { fade_in, TagType } from '../../common/common_styles';
 import ViewSubmissionModal from './expand-submission-modal';
 import { useParams } from 'react-router-dom';
 import axios from 'axios'
 import * as WebWorker from '../../../../../app/worker-client.js'
 import { useSelector, useDispatch } from 'react-redux';
 import { selectLogoCache } from "../../../../org-cards/org-cards-reducer";
-
-
+import LazyLoad from 'react-lazyload';
+import { CSSTransitionGroup } from 'react-transition-group';
+import './spinner.css'
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 const SubmissionWrap = styled.div`
     display: flex;
     flex-wrap: wrap;
@@ -30,7 +32,7 @@ const SubmissionPreviewContainer = styled.div`
     flex: 1 1 30%;
     flex-direction: column;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: space-evenly;
     font-size: 15px;
     color: #d3d3d3;
     background-color: #262626;
@@ -39,7 +41,20 @@ const SubmissionPreviewContainer = styled.div`
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
     padding: 20px;
     transition: width 0.6s ease-in-out;
+    height: 24em;
     cursor: pointer;
+
+    > div {
+        height: 100%;
+    }
+    
+    > div > span > span {
+        display: flex !important;
+        flex-direction: column;
+        height: 90%;
+        justify-content: center;
+    }
+
 
     &:hover {
         transform: scale(1.01);
@@ -91,6 +106,7 @@ export default function SubmissionDisplay({ }) {
     const [idToExpand, setIdToExpand] = useState(null);
     const [expandData, setExpandData] = useState(null)
     const [sub_content, set_sub_content] = useState([]);
+    const [subs, set_subs] = useState([]);
     const { ens, contest_hash } = useParams();
 
 
@@ -118,62 +134,148 @@ export default function SubmissionDisplay({ }) {
         setModalOpen(true);
     }
 
-    const fetchAll = async (subs) => {
-        console.log('requesting')
-        const res = await Promise.all(subs.map(sub => fetch('https://cors-anywhere.herokuapp.com/' + sub._url)))
-        const jsons = await Promise.all(res.map(r => r.json()))
-        console.log(jsons)
-        set_sub_content(jsons)
-      }
 
     useEffect(() => {
         (async () => {
             let res = await axios.get(`/creator_contests/fetch_submissions/${ens}/${contest_hash}`);
-            fetchAll(res.data)
+            //console.log(res)
+            let arr = []
+            let final = arr.concat(res.data)
+            final = final.concat(res.data)
+            final = final.concat(res.data)
+
+            //arr.concat(res.data)
+            //arr.concat(res.data)
+            //console.log(final)
+            set_subs(final)
+            //fetchAll(res.data)
         })();
     }, [])
+
+    const fetchAll = async (subs) => {
+        console.log('requesting')
+        console.log(subs)
+        const res = await Promise.all(subs.map(sub => fetch(sub._url)));
+        const jsons = await Promise.all(res.map(r => r.json()))
+        console.log(jsons)
+        set_sub_content(jsons)
+    }
 
     return (
         <>
             <h2 style={{ textAlign: 'center', color: '#d3d3d3', marginBottom: '30px' }}>Submissions</h2>
             <SubmissionWrap>
-                <Submissions sub_content={sub_content} />
+
+                {subs.map((sub, index) => {
+                    return (
+                        <SubmissionPreviewContainer>
+                            
+                            <LazyLoad key={index} throttle={200} height={500}
+                                placeholder={<Placeholder />} debounce={500}>
+                                <CSSTransitionGroup
+                                    transitionName="fade"
+                                    transitionAppear
+                                    transitionAppearTimeout={900}
+                                    transitionEnter={false}
+                                    transitionLeave={false}>
+                                    <Submission sub={sub} />
+                                </CSSTransitionGroup>
+                            </LazyLoad>
+                        </SubmissionPreviewContainer>
+
+                    )
+                })}
+
                 <ViewSubmissionModal modalOpen={modalOpen} handleClose={handleClose} id={idToExpand} TLDRImage={TLDRImage} TLDRText={TLDRText} expandData={expandData} />
             </SubmissionWrap>
         </>
     )
 }
 
-function Submissions({ sub_content/*id, url, handleExpand*/ }) {
+const SubmissionTop = styled.div`
+    display: flex;
+`
+
+const Author = styled.span`
+    border: 2px solid #4d4d4d;
+    border-radius: 10px;
+    padding: 0px 3px;
+    > p{
+        margin: 0;
+        color: #4d4d4d;
+    }
+`
+
+const VoteTotals = styled.span`
+    border: 2px solid #4d4d4d;
+    border-radius: 10px;
+    padding: 0px 3px;
+    margin-left: auto;
+    > p{
+        margin: 0;
+        color: #4d4d4d;
+    }
+`
+
+function Submission({ sub/*id, url, handleExpand*/ }) {
     const { ens, contest_hash } = useParams();
     const [tldr_img, set_tldr_img] = useState();
     const [tldr_text, set_tldr_text] = useState();
     const [submission_body, set_submission_body] = useState();
+    const [inViewLength, setInViewLength] = useState(10);
     //const logoCache = useSelector(selectLogoCache);
     const dispatch = useDispatch();
 
-
     useEffect(() => {
+        console.log('setting view for item ', sub.id)
+        fetch(sub._url).then(res => {
+            res.json().then(json => {
+                console.log(json)
+                set_tldr_img(json.tldr_image)
+                set_tldr_text(json.tldr_text)
+                set_submission_body(json.submission_body)
+            })
+            
+        })
 
 
 
-        (async () => {
-
-
-
-
-        })();
-
-
-        return () => {
-        }
     }, [])
 
-
     return (
-        <WebWorker.ProcessSubmissions subs={sub_content} />
+        <>
+            <SubmissionTop>
+                <TagType>Art</TagType>
+                <Author><p>nick.eth</p></Author>
+                <VoteTotals><p>40 votes</p></VoteTotals>
+            </SubmissionTop>
+            <p>{tldr_text}</p>
+            <LazyLoadImage style={{ maxWidth: '15em', margin: '0 auto', borderRadius: '10px' }} src={tldr_img} effect="blur" />
+        </>
     )
+
+
 }
+
+
+function Placeholder() {
+    return (
+        <div className="placeholder">
+            <div className="spinner">
+                <div className="rect1"></div>
+                <div className="rect2"></div>
+                <div className="rect3"></div>
+                <div className="rect4"></div>
+                <div className="rect5"></div>
+            </div>
+        </div>
+    );
+}
+
+
+
+
+
 
 /*
       < SubmissionPreviewContainer data-url={sub._url} key={index} /*onClick={() => handleExpand(id, tldr_img, tldr_text, submission_body)} >
