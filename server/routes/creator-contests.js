@@ -11,7 +11,7 @@ const { authenticateToken } = require('../middlewares/jwt-middleware.js');
 const { isAdmin } = require('../middlewares/admin-middleware')
 const { clean, asArray } = require('../helpers/common')
 const { getGuildRoles } = require('./discord-routes');
-const { createContest, createSubmission, createSubmission2 } = require('../middlewares/create-contest-middleware.js');
+const { createContest, createSubmission, createSubmission3 } = require('../middlewares/create-contest-middleware.js');
 const { imageUpload } = require('../middlewares/image-upload-middleware.js');
 const { json } = require('body-parser');
 const logger = require('../logger').child({ component: 'creator-contests' })
@@ -77,7 +77,7 @@ contests.post('/create_contest', createContest, async function (req, res, next) 
 })
 
 
-contests.post('/create_submission', createSubmission2, async function (req, res, next) {
+contests.post('/create_submission', createSubmission3, async function (req, res, next) {
     console.log('submission rx!')
     console.log(req.contest_hash);
     console.log(req.url);

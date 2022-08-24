@@ -180,6 +180,27 @@ async function createSubmission2(req, res, next) {
     })
 }
 
+async function createSubmission3(req, res, next) {
+    const { ens, submission, contest_hash } = req.body;
+
+    let created = new Date().toISOString();
+    console.log(submission)
+
+    let submission_hash = crypto.createHash('md5').update(JSON.stringify(submission)).digest('hex').slice(-8);
+
+    let destination_folder = `contest-assets/staging/submissions/${submission_hash}`
+    let submission_url = `${destination_folder}.json`
+
+    const writestream = fs.createWriteStream(path.join(serverRoot, submission_url))
+    writestream.write(JSON.stringify(submission), err => {
+        if (err) console.log(err, 'submission write failure');
+        req.contest_hash = contest_hash;
+        req.url = '/' + submission_url;
+        req.created = created;
+        next();
+    })
+
+}
 
 
-module.exports = { createContest, createSubmission2 };
+module.exports = { createContest, createSubmission3 };
