@@ -73,7 +73,7 @@ export default function ContestInterface({ contest_settings }) {
     const logoCache = useSelector(selectLogoCache);
     const dispatch = useDispatch()
     const [isInfoLoaded, setIsInfoLoaded] = useState(false);
-    const builderScroll = useRef (null)
+    const builderScroll = useRef(null)
     /*
     const stateManager = useContestState(
         contest_settings.date_times.start_date,
@@ -81,6 +81,7 @@ export default function ContestInterface({ contest_settings }) {
         contest_settings.date_times.end_date
     );
     */
+    console.log('here')
     let t0 = new Date();
     let t1 = new Date();
     let t2 = new Date();
@@ -117,13 +118,13 @@ export default function ContestInterface({ contest_settings }) {
     }, [isInfoLoaded])
 
     useEffect(() => {
-        if (isSubmissionBuilder){
-            builderScroll.current.scrollIntoView({behavior: 'smooth'});
+        if (isSubmissionBuilder) {
+            builderScroll.current.scrollIntoView({ behavior: 'smooth' });
         }
 
-    }, [isSubmissionBuilder])    
-    
-    
+    }, [isSubmissionBuilder])
+
+
     return (
         <ContestInterfaceWrap>
             <ContestInterSplit>
@@ -137,8 +138,8 @@ export default function ContestInterface({ contest_settings }) {
 
             {contest_settings && <ContestInfo contest_settings={contest_settings} />}
             <RenderCheckpoint />
-            <div ref= {builderScroll} >
-            {isSubmissionBuilder && <SubmissionBuilder setIsSubmissionBuilder={setIsSubmissionBuilder} setCreateSubmissionIndex={setCreateSubmissionIndex} />}
+            <div ref={builderScroll} >
+                {isSubmissionBuilder && <SubmissionBuilder setIsSubmissionBuilder={setIsSubmissionBuilder} setCreateSubmissionIndex={setCreateSubmissionIndex} />}
             </div>
             {!isSubmissionBuilder && <SubmissionDisplay />}
         </ContestInterfaceWrap>

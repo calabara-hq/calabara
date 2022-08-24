@@ -9,10 +9,13 @@ const htmlToReactParser = new HtmlToReactParser();
 
 
 export const ParseBlocks = ({ data }) => {
+    console.log(data)
 
     if (data.blocks.length > 0) {
         let html = edjsParser.parse(data)
-        let reactElement = htmlToReactParser.parse(html)
+        console.log(html)
+        let reactElement = htmlToReactParser.parse(html[0])
+        console.log(reactElement)
         if (Array.isArray(reactElement)) {
             reactElement = reactElement.filter(el => el != ',')
         }

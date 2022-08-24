@@ -22,7 +22,6 @@ export default function ContestInterfaceController({ }) {
 
     return (
         <>
-        {contest_settings && <p>hi</p>}
             {contest_settings && <ContestInterface contest_settings={contest_settings} />}
         </>
     )
