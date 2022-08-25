@@ -17,7 +17,7 @@ export default function DateTimeSelector(props) {
 
     return (
         <DateTimePicker
-            id='datepicker'
+            id={'datepicker' + props.id}
             label={props.label}
             value={props.date}
             onChange={value => props.setDate(value)}

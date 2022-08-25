@@ -8,6 +8,7 @@ import axios from 'axios';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faCheck } from '@fortawesome/free-solid-svg-icons'
 import { fade_in } from '../../common/common_styles'
+import useWallet from '../../../../hooks/useWallet'
 
 const CreateSubmissionContainer = styled.div`
 display: flex;
@@ -97,12 +98,19 @@ const CancelButton = styled.button`
     }
 `
 
-export default function SubmissionBuilder({ setIsSubmissionBuilder, setCreateSubmissionIndex }) {
+const SubmissionRequirements = styled.div`
+    background-color: red;
+    display: flex;
+    flex-direction: column;
+`
+
+export default function SubmissionBuilder({ handleCloseDrawer, submitter_restrictions }) {
     const [TLDRImage, setTLDRImage] = useState(null)
     const [TLDRText, setTLDRText] = useState('')
     const [longFormValue, setLongFormValue] = useState(null)
     const { ens, contest_hash } = useParams();
 
+    const { walletConnect } = useWallet();
     const ReactEditorJS = createReactEditorJS();
     const editorCore = useRef(null);
 
@@ -119,14 +127,12 @@ export default function SubmissionBuilder({ setIsSubmissionBuilder, setCreateSub
     const handleClose = () => {
         if (TLDRImage || TLDRText) {
             if (window.confirm('you\'re changes will be lost. Do you want to proceed?')) {
-                setIsSubmissionBuilder(false);
-                setCreateSubmissionIndex(-1)
+                handleCloseDrawer();
             }
             else return
         }
         else {
-            setIsSubmissionBuilder(false);
-            setCreateSubmissionIndex(-1)
+            handleCloseDrawer();
         }
     }
 
@@ -158,11 +164,23 @@ export default function SubmissionBuilder({ setIsSubmissionBuilder, setCreateSub
         })
         */
     }
-
+    console.log('hi')
+    console.log(Object.values(submitter_restrictions))
     return (
         <>
             <h2 style={{ textAlign: 'center', color: '#d3d3d3', marginBottom: '30px' }}>Create Submission</h2>
             <CreateSubmissionContainer>
+                <SubmissionRequirements>
+                    {Object.values(submitter_restrictions).length > 0 &&
+                        <>
+                            <h4>Submission Requirements</h4>
+                            {Object.values(submitter_restrictions).map(restriction => {
+                                return <p>{restriction.threshold} {restriction.symbol}</p>
+                            })}
+                        </>
+
+                    }
+                </SubmissionRequirements>
                 <SubmissionActionButtons>
                     <CancelButton onClick={handleClose}><FontAwesomeIcon icon={faTimes} /></CancelButton>
                     <SubmitButton onClick={handleSubmit}><FontAwesomeIcon icon={faCheck} /></SubmitButton>

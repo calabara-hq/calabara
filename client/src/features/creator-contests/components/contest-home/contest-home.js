@@ -23,11 +23,7 @@ export default function ContestHomepage({ }) {
 
     useEffect(() => {
         (async () => {
-            let startTime = performance.now();
             let res = await axios.get(`/creator_contests/fetch_org_contests/${ens}`);
-            let endTime = performance.now() - startTime;
-            console.log('contest home time', endTime)
-            console.log(res.data)
             set_all_contests(res.data)
         })();
     }, [])
@@ -39,6 +35,7 @@ export default function ContestHomepage({ }) {
         <>
             {all_contests && <div>
                 {all_contests.map((el, index) => {
+                    console.log(el)
                     return (
                         <MyStyledParagraphTag onClick={() => handleClick(el._hash)}>Round {index + 1}</MyStyledParagraphTag>
                     )

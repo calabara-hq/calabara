@@ -829,3 +829,5 @@
 {"component":"creator-contests","level":"info","message":"fetch contest stream success","service":"backend","timestamp":"2022-08-24T18:12:21.049Z"}
 {"component":"creator-contests","level":"info","message":"fetch contest stream success","service":"backend","timestamp":"2022-08-24T18:12:27.714Z"}
 {"component":"creator-contests","level":"info","message":"fetch contest stream success","service":"backend","timestamp":"2022-08-24T18:12:45.198Z"}
+{"component":"creator-contests","level":"info","message":"fetch contest stream success","service":"backend","timestamp":"2022-08-24T18:15:34.765Z"}
+{"component":"creator-contests","level":"info","message":"fetch contest stream success","service":"backend","timestamp":"2022-08-24T22:03:07.253Z"}

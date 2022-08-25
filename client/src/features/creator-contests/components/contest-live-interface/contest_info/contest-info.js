@@ -25,7 +25,7 @@ export default function ContestInfo({ contest_settings }) {
     const { batchFetchDashboardData } = useCommon();
     const logoCache = useSelector(selectLogoCache);
 
-
+    console.log(contest_settings)
 
     const calculateRewardsSum = () => {
         let [erc20_sum, erc721_sum, eth_sum] = [0, 0, 0];

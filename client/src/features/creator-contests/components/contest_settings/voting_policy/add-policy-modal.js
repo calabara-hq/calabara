@@ -455,7 +455,7 @@ function AdditionalConfig({ tokenData, setProgress, handleSave, handlePrevious }
                     </TopLevelWrap>
                     <MaxPerSub>
                         <SettingDescription>
-                            <Contest_h3_alt_small >Max per Submission</Contest_h3_alt_small>
+                            <Contest_h3_alt_small >Submission Hard Cap</Contest_h3_alt_small>
                             <p style={{ color: '#a3a3a3' }}>Limit # of usable voting credits on a single submission. </p>
                         </SettingDescription>
                         <ToggleButton identifier={'max-per-sub-toggle'} isToggleOn={isMaxPerSubOn} setIsToggleOn={setIsMaxPerSubOn} handleToggle={handleMaxPerSubToggle} />
@@ -463,7 +463,7 @@ function AdditionalConfig({ tokenData, setProgress, handleSave, handlePrevious }
                     </MaxPerSub>
                     <Hardcap>
                         <SettingDescription>
-                            <Contest_h3_alt_small >Hard cap</Contest_h3_alt_small>
+                            <Contest_h3_alt_small >Contest Hard cap</Contest_h3_alt_small>
                             <p style={{ color: '#a3a3a3' }}>Limit # of usable voting credits across the entire contest.</p>
                         </SettingDescription>
                         <ToggleButton identifier={'hardcap-toggle'} isToggleOn={isHardcapOn} setIsToggleOn={setIsHardcapOn} handleToggle={handleHardcapToggle} />

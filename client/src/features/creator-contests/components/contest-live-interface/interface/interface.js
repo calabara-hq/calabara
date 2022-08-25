@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import ContestInfo from "../contest_info/contest-info";
 import useContestState from "../../../../hooks/useContestState";
-import PromptDisplay from '../prompts/prompt-display';
+import PromptDisplay from '../prompts/prompt-display-2';
 import SubmissionBuilder from '../submissions/submission-builder-3'
 import SubmissionDisplay from '../submissions/test-submission-display2';
 import { useDispatch, useSelector } from "react-redux";
@@ -74,30 +74,13 @@ export default function ContestInterface({ contest_settings }) {
     const dispatch = useDispatch()
     const [isInfoLoaded, setIsInfoLoaded] = useState(false);
     const builderScroll = useRef(null)
-    /*
+
     const stateManager = useContestState(
         contest_settings.date_times.start_date,
         contest_settings.date_times.voting_begin,
-        contest_settings.date_times.end_date
-    );
-    */
-    console.log('here')
-    let t0 = new Date();
-    let t1 = new Date();
-    let t2 = new Date();
-
-    t1.setSeconds(t1.getSeconds() + 120)
-    t2.setSeconds(t2.getSeconds() + 299)
-
-
-    const stateManager = useContestState(
-        t0.toISOString(),
-        t1.toISOString(),
-        t2.toISOString(),
+        contest_settings.date_times.end_date,
 
     )
-
-
 
     useEffect(() => {
         batchFetchDashboardData(ens, info);
@@ -131,11 +114,10 @@ export default function ContestInterface({ contest_settings }) {
                 <ImgWrap>
                     <OrgImg data-src={info.logo}></OrgImg>
                 </ImgWrap>
-                <PromptRight>                
-                    <PromptDisplay setIsSubmissionBuilder={setIsSubmissionBuilder} createSubmissionIndex={createSubmissionIndex} setCreateSubmissionIndex={setCreateSubmissionIndex} />
+                <PromptRight>
+                    <PromptDisplay contest_settings={contest_settings} setIsSubmissionBuilder={setIsSubmissionBuilder} createSubmissionIndex={createSubmissionIndex} setCreateSubmissionIndex={setCreateSubmissionIndex} />
                 </PromptRight>
             </ContestInterSplit>
-
             {contest_settings && <ContestInfo contest_settings={contest_settings} />}
             <RenderCheckpoint />
             <div ref={builderScroll} >

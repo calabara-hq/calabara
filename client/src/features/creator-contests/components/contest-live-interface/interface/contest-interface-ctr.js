@@ -15,8 +15,7 @@ export default function ContestInterfaceController({ }) {
     useEffect(() => {
         (async () => {
             let res = await axios.get(`/creator_contests/fetch_contest/${ens}/${contest_hash}`);
-            console.log(res.data)
-            set_contest_settings(res.data)
+            set_contest_settings(res.data.settings)
         })();
     }, [])
 
