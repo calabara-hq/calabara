@@ -13,7 +13,6 @@ const { pinFromFs, pinJSON } = require('../helpers/ipfs-api');
 
 
 async function createContest(req, res, next) {
-
     const { ens, contest_settings } = req.body;
     contest_settings.created = new Date().toISOString();
     let hash = crypto.createHash('md5').update(JSON.stringify(contest_settings)).digest('hex').slice(-8);
@@ -21,13 +20,8 @@ async function createContest(req, res, next) {
     let destination = `creator-contests/${ens}/${hash}/`
 
     // add the img folder while we're at it
+
     await asyncfs.mkdir(`${destination}/img`, { recursive: true }, (err) => {
-        if (err) return res.sendStatus(401)
-
-    })
-
-    let writestream = fs.createWriteStream(path.join(serverRoot, `${destination}/settings.json`));
-    writestream.write(JSON.stringify(contest_settings), (err) => {
         if (err) return res.sendStatus(401)
         req.hash = hash;
         req.created = contest_settings.created;

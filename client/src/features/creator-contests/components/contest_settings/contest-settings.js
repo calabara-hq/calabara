@@ -7,6 +7,9 @@ import { RainbowThemeContainer } from 'react-rainbow-components';
 import SimpleInputs from "./contest_simple_inputs/contest_simple_inputs";
 import styled from 'styled-components'
 import VotingPolicy from "./voting_policy/voting-policy";
+import axios from "axios";
+import { useParams } from "react-router-dom";
+
 
 const theme = {
     rainbow: {
@@ -100,8 +103,8 @@ const defaultPossibleRewards = {
 export default function ContestSettings() {
 
     const [date_0, setDate_0] = useState(new Date())
-    const [date_1, setDate_1] = useState(false)
-    const [date_2, setDate_2] = useState(false)
+    const [date_1, setDate_1] = useState(new Date())
+    const [date_2, setDate_2] = useState(new Date())
 
     const [rewardOptions, setRewardOptions] = useReducer(reducer, defaultPossibleRewards);
     const [selectedRewards, setSelectedRewards] = useReducer(reducer, {});
@@ -112,13 +115,13 @@ export default function ContestSettings() {
     const [submitterRuleOptions, setSubmitterRuleOptions] = useReducer(reducer, {});
     const [voterRuleOptions, setVoterRuleOptions] = useReducer(reducer, {});
 
-    const [votingStrategy, setVotingStrategy] = useReducer(reducer, {strategy_id: 0x0});
-    
+    const [votingStrategy, setVotingStrategy] = useReducer(reducer, { strategy_id: 0x0 });
+
     const [submitterAppliedRules, setSubmitterAppliedRules] = useReducer(reducer, {});
     const [voterAppliedRules, setVoterAppliedRules] = useReducer(reducer, {});
     const [submitterRuleError, setSubmitterRuleError] = useState(false);
     const [voterRuleError, setVoterRuleError] = useState(false);
-
+    const { ens } = useParams();
 
     /*
 
@@ -153,12 +156,11 @@ export default function ContestSettings() {
 
 
     const printContestData = () => {
-        let contest_obj = {
-            contest_data: {
+        let contest_data = {
                 date_times: {
-                    start_date: date_0,
-                    voting_begin: date_1,
-                    end_date: date_2
+                    start_date: date_0.toISOString(),
+                    voting_begin: date_1.toISOString(),
+                    end_date: date_2.toISOString()
                 },
                 reward_options: rewardOptions,
                 submitter_rewards: submitterRewards,
@@ -166,8 +168,8 @@ export default function ContestSettings() {
                 submitter_restrictions: submitterAppliedRules,
                 voter_restrictions: voterAppliedRules
             }
-        }
-        console.log(contest_obj)
+        
+        axios.post('/creator_contests/create_contest', { ens: ens, contest_settings: contest_data }).then(res => console.log(res))
     }
 
     return (
@@ -212,7 +214,7 @@ export default function ContestSettings() {
                     setVoterRuleError={setVoterRuleError}
                 />
 
-                <VotingPolicy rewardOptions={rewardOptions} votingStrategy={votingStrategy} setVotingStrategy={setVotingStrategy}/>
+                <VotingPolicy rewardOptions={rewardOptions} votingStrategy={votingStrategy} setVotingStrategy={setVotingStrategy} />
                 <PromptBuilder />
                 <SimpleInputs />
                 <button onClick={printContestData}> print contest data</button>

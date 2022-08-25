@@ -30,7 +30,7 @@ const serverRoot = path.normalize(path.join(__dirname, '../'));
 contests.get('/fetch_org_contests/*', async function (req, res, next) {
     let ens = req.url.split('/')[2];
 
-    let contests = await db.query('select * from contests where ens = $1 order by created asc', [ens]).then(clean).then(asArray)
+    let contests = await db.query('select _hash from contests where ens = $1 order by created asc', [ens]).then(clean).then(asArray)
 
     res.send(contests).status(200)
 })
@@ -42,16 +42,9 @@ contests.get('/fetch_contest/*', async function (req, res, next) {
 
 
     // will there be conditions where latest is not the current active contest? need to handle that if so.
-    let latest = await db.query('select _url from contests where ens = $1 and _hash = $2', [ens, contest_hash]).then(clean)
+    let settings = await db.query('select settings from contests where ens = $1 and _hash = $2', [ens, contest_hash]).then(clean)
 
-    fs.createReadStream(path.join(serverRoot, latest._url, 'settings.json'))
-        .on('end', function () {
-            logger.log({ level: 'info', message: 'fetch contest stream success' })
-        })
-        .on('error', function (err) {
-            res.send(err)
-        })
-        .pipe(res)
+    res.send(settings).status(200)
 })
 
 
@@ -69,9 +62,9 @@ contests.get('/fetch_submissions/*', async function (req, res, next) {
 contests.post('/create_contest', createContest, async function (req, res, next) {
 
     const { ens, contest_settings } = req.body
-    const { start_date, end_date } = contest_settings.date_times
-    let _url = `creator-contests/${ens}/${req.hash}/`
-    await db.query('insert into contests (ens, created, _start, _end, _hash, _url) values ($1, $2, $3, $4, $5, $6)', [ens, req.created, start_date, end_date, req.hash, _url])
+    console.log(contest_settings)
+    const { start_date, voting_begin, end_date } = contest_settings.date_times
+    await db.query('insert into contests (ens, created, _start, _voting, _end, _hash, settings) values ($1, $2, $3, $4, $5, $6, $7)', [ens, req.created, start_date, voting_begin, end_date, req.hash, contest_settings])
     // gen a hash, save file to location, write to db
     res.sendStatus(200)
 })
