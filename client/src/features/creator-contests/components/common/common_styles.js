@@ -220,4 +220,20 @@ const ErrorMessage = styled.div`
     }
 `
 
-export { fade_in, Contest_h2, Contest_h2_alt, Contest_h3, Contest_h3_alt, Contest_h3_alt_small, Contest_h4, Label, submission_fade, TagType, SettingsSectionSubHeading, labelColorOptions, ERC20Button, ERC20Button_alt, ERC721Button, ERC721Button_alt, ConfirmButton, ConfirmButtonAlt, ErrorMessage }
+const WarningMessage = styled.div`
+    background: rgba(242, 201, 77, 0.3);
+    color: rgb(242, 201, 77);
+    border-radius: 8px;
+    padding: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin-top: 10px;
+
+    & > p {
+        margin: 0;
+    }
+`
+
+export { fade_in, Contest_h2, Contest_h2_alt, Contest_h3, Contest_h3_alt, Contest_h3_alt_small, Contest_h4, Label, submission_fade, TagType, SettingsSectionSubHeading, labelColorOptions, ERC20Button, ERC20Button_alt, ERC721Button, ERC721Button_alt, ConfirmButton, ConfirmButtonAlt, ErrorMessage, WarningMessage }

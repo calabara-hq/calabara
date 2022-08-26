@@ -52,6 +52,12 @@ export default function useCommon() {
                 case 403:
                     showNotification('error', 'error', 'this wallet is not an organization admin')
                     break;
+                case 419:
+                    showNotification('error', 'error', 'this wallet does not meet submission requirements')
+                    break;
+                case 432:
+                    showNotification('error', 'error', 'this contest is not accepting submissions at this time')
+                    break;
             }
             return null
         }

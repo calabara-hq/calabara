@@ -11,7 +11,7 @@ const { authenticateToken } = require('../middlewares/jwt-middleware.js');
 const { isAdmin } = require('../middlewares/admin-middleware')
 const { clean, asArray } = require('../helpers/common')
 const { getGuildRoles } = require('./discord-routes');
-const { createContest, createSubmission, createSubmission3 } = require('../middlewares/create-contest-middleware.js');
+const { createContest, createSubmission, checkSubmissionRestrictions, checkUserSubmissions, checkEligibility } = require('../middlewares/create-contest-middleware.js');
 const { imageUpload } = require('../middlewares/image-upload-middleware.js');
 const { json } = require('body-parser');
 const logger = require('../logger').child({ component: 'creator-contests' })
@@ -30,7 +30,7 @@ const serverRoot = path.normalize(path.join(__dirname, '../'));
 contests.get('/fetch_org_contests/*', async function (req, res, next) {
     let ens = req.url.split('/')[2];
 
-    let contests = await db.query('select _hash from contests where ens = $1 order by created asc', [ens]).then(clean).then(asArray)
+    let contests = await db.query('select _hash, _start, _voting, _end from contests where ens = $1 order by created asc', [ens]).then(clean).then(asArray)
 
     res.send(contests).status(200)
 })
@@ -60,7 +60,6 @@ contests.get('/fetch_submissions/*', async function (req, res, next) {
 // create a contest
 
 contests.post('/create_contest', createContest, async function (req, res, next) {
-
     const { ens, contest_settings } = req.body
     console.log(contest_settings)
     const { start_date, voting_begin, end_date } = contest_settings.date_times
@@ -70,16 +69,38 @@ contests.post('/create_contest', createContest, async function (req, res, next) 
 })
 
 
-contests.post('/create_submission', createSubmission3, async function (req, res, next) {
-    console.log('submission rx!')
-    console.log(req.contest_hash);
-    console.log(req.url);
-    console.log(req.created);
+///////////////////////////// begin submissions ////////////////////////////////////
+
+
+contests.post('/create_submission', authenticateToken, checkSubmissionRestrictions, checkUserSubmissions, createSubmission, async function (req, res, next) {
+    console.log(req.user)
     const { ens } = req.body;
     await db.query('insert into contest_submissions (ens, contest_hash, created, locked, pinned, _url) values ($1, $2, $3, $4, $5, $6)', [ens, req.contest_hash, req.created, false, false, req.url])
 
-    res.sendStatus(200)
+    res.status(200)
 })
+
+const getUserSubmissions = async (walletAddress, contest_hash) => {
+    let result = await db.query('select * from contest_submissions where contest_hash = $1 and author = $2', [contest_hash, walletAddress]).then(clean).then(asArray)
+    return result
+}
+
+contests.post('/get_user_submissions', authenticateToken, async function (req, res, next) {
+    let {contest_hash} = req.body
+
+    let subs = await getUserSubmissions(req.user.address, contest_hash)
+    res.send(subs).status(200)
+
+})
+
+
+contests.post('/check_user_eligibility', authenticateToken, checkEligibility, async function (req, res, next) {
+
+    res.send(req.restrictions_with_results).status(200)
+})
+
+///////////////////////////// end submissions ////////////////////////////////////
+
 
 ///////////////////////////// begin voting ////////////////////////////////////
 
@@ -124,6 +145,28 @@ contests.post('/retract_sub_votes', async function (req, res, next) {
 })
 
 ///////////////////////////// end voting ////////////////////////////////////
+
+///////////////////////////// begin stats ////////////////////////////////////
+
+contests.get('/org_contest_stats/*', async function (req, res, next) {
+    let ens = req.url.split('/')[2];
+    await db.query('select settings ->> \'submitter_rewards\' as rewards from contests where ens=$1 and _end < $2', [ens, new Date().toISOString()])
+        .then(clean)
+        .then(data => {
+            let obj = { eth: 0, erc20: 0, erc721: 0 }
+            data.map(el => {
+                let parsed = Object.values(JSON.parse(el.rewards))
+                parsed.map(inner => {
+                    obj[Object.keys(inner)[0]] += inner[Object.keys(inner)[0]].amount
+                })
+            })
+            return obj
+        })
+    .then(data => res.send(data).status(200))
+})
+
+
+///////////////////////////// end stats ////////////////////////////////////
 
 
 // used for lazy uploading assets in contest submissions
