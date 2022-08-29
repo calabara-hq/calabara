@@ -71,6 +71,7 @@ export default function useGatekeeper() {
         return 'fail'
     }
 
+
     return {
         queryGatekeeper: async (walletAddress, rules, ruleResults, discordId) => {
             return await queryGatekeeper(walletAddress, rules, ruleResults, discordId)

@@ -9,7 +9,7 @@ import styled from 'styled-components'
 import VotingPolicy from "./voting_policy/voting-policy";
 import axios from "axios";
 import { useParams } from "react-router-dom";
-
+import useDashboardRules from "../../../hooks/useDashboardRules";
 
 const theme = {
     rainbow: {
@@ -122,6 +122,14 @@ export default function ContestSettings() {
     const [submitterRuleError, setSubmitterRuleError] = useState(false);
     const [voterRuleError, setVoterRuleError] = useState(false);
     const { ens } = useParams();
+    const { populateDashboardRules } = useDashboardRules();
+
+
+
+    useEffect(() => {
+        populateDashboardRules(ens)
+    },[])
+
 
     /*
 
@@ -157,19 +165,20 @@ export default function ContestSettings() {
 
     const printContestData = () => {
         let contest_data = {
-                date_times: {
-                    start_date: date_0.toISOString(),
-                    voting_begin: date_1.toISOString(),
-                    end_date: date_2.toISOString()
-                },
-                reward_options: rewardOptions,
-                submitter_rewards: submitterRewards,
-                voter_rewards: voterRewards,
-                submitter_restrictions: submitterAppliedRules,
-                voter_restrictions: voterAppliedRules
-            }
-        
+            date_times: {
+                start_date: date_0.toISOString(),
+                voting_begin: date_1.toISOString(),
+                end_date: date_2.toISOString()
+            },
+            reward_options: rewardOptions,
+            submitter_rewards: submitterRewards,
+            voter_rewards: voterRewards,
+            submitter_restrictions: submitterAppliedRules,
+            voter_restrictions: voterAppliedRules
+        }
+
         axios.post('/creator_contests/create_contest', { ens: ens, contest_settings: contest_data }).then(res => console.log(res))
+        //console.log(contest_data)
     }
 
     return (

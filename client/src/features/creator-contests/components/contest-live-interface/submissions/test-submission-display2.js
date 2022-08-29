@@ -15,6 +15,8 @@ import LazyLoad from 'react-lazyload';
 import { CSSTransitionGroup } from 'react-transition-group';
 import './spinner.css'
 import { LazyLoadImage } from 'react-lazy-load-image-component';
+
+
 const SubmissionWrap = styled.div`
     display: flex;
     flex-wrap: wrap;
@@ -136,30 +138,11 @@ export default function SubmissionDisplay({ }) {
 
 
     useEffect(() => {
-        (async () => {
-            let res = await axios.get(`/creator_contests/fetch_submissions/${ens}/${contest_hash}`);
-            //console.log(res)
-            let arr = []
-            let final = arr.concat(res.data)
-            final = final.concat(res.data)
-            final = final.concat(res.data)
-
-            //arr.concat(res.data)
-            //arr.concat(res.data)
-            //console.log(final)
-            set_subs(final)
-            //fetchAll(res.data)
-        })();
+        fetch(`/creator_contests/fetch_submissions/${ens}/${contest_hash}`)
+        .then(res => res.json())
+        .then(data => set_subs(data))
     }, [])
 
-    const fetchAll = async (subs) => {
-        console.log('requesting')
-        console.log(subs)
-        const res = await Promise.all(subs.map(sub => fetch(sub._url)));
-        const jsons = await Promise.all(res.map(r => r.json()))
-        console.log(jsons)
-        set_sub_content(jsons)
-    }
 
     return (
         <>
@@ -168,21 +151,7 @@ export default function SubmissionDisplay({ }) {
 
                 {subs.map((sub, index) => {
                     return (
-                        <SubmissionPreviewContainer>
-                            
-                            <LazyLoad key={index} throttle={200} height={500}
-                                placeholder={<Placeholder />} debounce={500}>
-                                <CSSTransitionGroup
-                                    transitionName="fade"
-                                    transitionAppear
-                                    transitionAppearTimeout={900}
-                                    transitionEnter={false}
-                                    transitionLeave={false}>
-                                    <Submission sub={sub} />
-                                </CSSTransitionGroup>
-                            </LazyLoad>
-                        </SubmissionPreviewContainer>
-
+                        <Submission sub={sub} handleExpand={handleExpand}/>
                     )
                 })}
 
@@ -217,7 +186,7 @@ const VoteTotals = styled.span`
     }
 `
 
-function Submission({ sub/*id, url, handleExpand*/ }) {
+function Submission({ sub, handleExpand }) {
     const { ens, contest_hash } = useParams();
     const [tldr_img, set_tldr_img] = useState();
     const [tldr_text, set_tldr_text] = useState();
@@ -235,7 +204,7 @@ function Submission({ sub/*id, url, handleExpand*/ }) {
                 set_tldr_text(json.tldr_text)
                 set_submission_body(json.submission_body)
             })
-            
+
         })
 
 
@@ -243,6 +212,34 @@ function Submission({ sub/*id, url, handleExpand*/ }) {
     }, [])
 
     return (
+        <SubmissionPreviewContainer onClick={() => handleExpand(sub.id, tldr_img, tldr_text, submission_body)}>
+            <LazyLoad key={sub.id} throttle={200} height={500}
+                placeholder={<Placeholder />} debounce={500}>
+                <CSSTransitionGroup
+                    transitionName="fade"
+                    transitionAppear
+                    transitionAppearTimeout={900}
+                    transitionEnter={false}
+                    transitionLeave={false}>
+                    <SubmissionTop>
+                        <TagType>Art</TagType>
+                        <Author><p>nick.eth</p></Author>
+                        <VoteTotals><p>40 votes</p></VoteTotals>
+                    </SubmissionTop>
+                    <p>{tldr_text}</p>
+                    <LazyLoadImage style={{ maxWidth: '15em', margin: '0 auto', borderRadius: '10px' }} src={tldr_img} effect="blur" />
+                </CSSTransitionGroup>
+            </LazyLoad>
+        </SubmissionPreviewContainer>
+
+
+    )
+}
+
+
+
+
+/*
         <>
             <SubmissionTop>
                 <TagType>Art</TagType>
@@ -252,10 +249,7 @@ function Submission({ sub/*id, url, handleExpand*/ }) {
             <p>{tldr_text}</p>
             <LazyLoadImage style={{ maxWidth: '15em', margin: '0 auto', borderRadius: '10px' }} src={tldr_img} effect="blur" />
         </>
-    )
-
-
-}
+    */
 
 
 function Placeholder() {

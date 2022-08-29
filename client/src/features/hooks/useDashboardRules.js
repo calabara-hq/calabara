@@ -15,7 +15,6 @@ export default function useDashboardRules() {
 
     const populateDashboardRules = async (ens) => {
         const res = await axios.get('/dashboard/dashboardRules/' + ens);
-        console.log(res)
         dispatch(setDashboardRules(res.data))
     }
 

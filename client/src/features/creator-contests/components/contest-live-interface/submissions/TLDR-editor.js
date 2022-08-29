@@ -70,7 +70,7 @@ const TLDRWrap = styled.div`
 
 `
 
-export default function TLDR({ TLDRimage, setTLDRImage, TLDRText, setTLDRText }) {
+export default function TLDR({isUserEligible, setShowWarning, TLDRimage, setTLDRImage, TLDRText, setTLDRText }) {
     const imageUploader = useRef(null);
 
     function b64toBlob(dataURI) {
@@ -124,12 +124,19 @@ export default function TLDR({ TLDRimage, setTLDRImage, TLDRText, setTLDRText })
         })
     }
 
+    const updateTLDRText = (e) => {
+        setTLDRText(e.target.value);
+        if(!isUserEligible){
+            setShowWarning(true)
+        }
+    }
+
 
 
 return (
     <TLDRWrap>
         <TextAreaWrap textLength={TLDRText.length}>
-            <TextArea placeholder='TLDR text' value={TLDRText} onChange={(e) => setTLDRText(e.target.value)}></TextArea>
+            <TextArea placeholder='TLDR text' value={TLDRText} onChange={updateTLDRText}></TextArea>
         </TextAreaWrap>
         <ImageWrapper>
             <input placeholder="Logo" type="file" accept="image/*" style={{ display: 'none' }} onChange={handleUpload} ref={imageUploader} />

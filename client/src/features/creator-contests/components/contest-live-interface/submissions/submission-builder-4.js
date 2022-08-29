@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import styled from 'styled-components'
+import styled, { css, keyframes } from 'styled-components'
 import TLDR from './TLDR-editor'
 import { createReactEditorJS } from 'react-editor-js'
 import SubmissionEdit from './submission-builder-2'
@@ -10,6 +10,7 @@ import { faTimes, faCheck, faCheckCircle, faTimesCircle } from '@fortawesome/fre
 import { fade_in, WarningMessage } from '../../common/common_styles'
 import useWallet from '../../../../hooks/useWallet'
 import useSubmissionEngine from '../../../../hooks/useSubmissionEngine'
+import useCommon from '../../../../hooks/useCommon'
 
 
 
@@ -125,6 +126,65 @@ const EligibilityCheck = styled.div`
     }
 `
 
+const highlight = (props) => keyframes`
+  0% {
+    opacity: 0;
+    transform: scale(1.0);
+
+  }
+  50% {
+    opacity: 1 !important;
+    transform: scale(1.7);
+  }
+  100% {
+    opacity: 1 !important;
+    transform: scale(1.0);
+    display: visible;
+
+  }
+   
+`;
+
+const highlightAnimation = css`
+  animation: ${highlight} 1s ease;
+`;
+
+
+const RestrictionStatus = styled.span`
+    display: inline-block;
+    &::after{
+        font-family: 'Font Awesome 5 Free';
+        margin-left: 20px;
+        content: '${props => props.status ? "\f058" : "\f057"}';
+        color: ${props => props.status ? 'rgb(6, 214, 160)' : 'grey'};
+        font-weight: 900;
+    }
+    
+   // animation: ${highlight} ${props => props.index * 0.9}s ease-in;
+   //color: #1e1e1e;
+    animation: ${highlight} 1s ease-in;
+    animation-delay: ${props => props.index * 0.3}s;
+   
+`
+
+const RestrictionStatusNotConnected = styled.span`
+    display: inline-block;
+    &::after{
+        font-family: 'Font Awesome 5 Free';
+        margin-left: 20px;
+        content:  "\f057";
+        color:  grey;
+        font-weight: 900;
+    }
+
+`
+
+/*
+style={{marginLeft: '20px', color: !isWalletConnected ? 'grey' : (restriction.user_result ? '#06d6a0' : 'red') }}
+icon={isUserEligible ? faCheckCircle : faTimesCircle}
+
+*/
+
 export default function SubmissionBuilder({ handleCloseDrawer, submitter_restrictions }) {
     const [TLDRImage, setTLDRImage] = useState(null)
     const [TLDRText, setTLDRText] = useState('')
@@ -134,8 +194,8 @@ export default function SubmissionBuilder({ handleCloseDrawer, submitter_restric
     const { walletConnect } = useWallet();
     const ReactEditorJS = createReactEditorJS();
     const editorCore = useRef(null);
-
-
+    const [progress, setProgress] = useState(0);
+    const { authenticated_post } = useCommon();
     const errorCheck = async () => {
         if (!TLDRText && !TLDRImage) {
             alert('at least one TLDR field required!')
@@ -170,10 +230,12 @@ export default function SubmissionBuilder({ handleCloseDrawer, submitter_restric
         let editorData = await editorCore.current.save();
         let submission = {
             tldr_text: TLDRText,
-            tldr_image: TLDRImage.url,
+            tldr_image: TLDRImage != null ? TLDRImage.url : null,
             submission_body: editorData
         }
-        let res = await axios.post('/creator_contests/create_submission', { ens: ens, contest_hash: contest_hash, submission: submission })
+        let res = await authenticated_post('/creator_contests/create_submission', { ens: ens, contest_hash: contest_hash, submission: submission });
+        console.log(res)
+
         /*
         await fetch('/creator_contests/create_submission', {
             method: 'POST',
@@ -189,41 +251,51 @@ export default function SubmissionBuilder({ handleCloseDrawer, submitter_restric
     console.log(Object.values(restrictionResults))
     return (
         <>
-            <h2 style={{ textAlign: 'center', color: '#d3d3d3', marginBottom: '30px' }}>Create Submission</h2>
             <CreateSubmissionContainer>
-                <SubmissionRequirements>
+                {progress === 0 && <SubmissionRequirements>
                     {Object.values(restrictionResults).length > 0 &&
                         <>
-                            <h4>Submission Requirements</h4>
-                            <p>You must meet at least one requirement to submit.</p>
+                            <h2 style={{ marginBottom: '30px' }}>Submission Requirements</h2>
+
+                            {Object.values(restrictionResults).map((restriction, index) => {
+                                if (restriction.type === 'erc20' || restriction.type === 'erc721') {
+                                    return (
+                                        <>
+
+                                            <p style={{ fontSize: '20px' }}>
+                                                {restriction.threshold} {restriction.symbol}
+                                                {isWalletConnected && <RestrictionStatus index={index + 1} isConnected={isWalletConnected} status={restriction.user_result} key={`${isWalletConnected}-${restriction.user_result}`} />}
+                                                {!isWalletConnected && <RestrictionStatusNotConnected />}
+                                            </p>
+                                            {index !== Object.entries(restrictionResults).length - 1 && <p>or</p>}
+                                        </>
+                                    )
+                                }
+                            })}
                             {!isWalletConnected && <EligibilityCheck>
                                 <p>Connect wallet to check eligibility.</p>
                                 <button onClick={walletConnect}>connect wallet</button>
                             </EligibilityCheck>
                             }
-                            {Object.values(restrictionResults).map(restriction => {
-                                return (
-                                    <p>
-                                        {restriction.threshold} {restriction.symbol}
-                                        <FontAwesomeIcon
-                                            style={{
-                                                marginLeft: '20px',
-                                                color: isUserEligible ? '#06d6a0' : 'grey'
-                                            }}
-                                            icon={isUserEligible ? faCheckCircle : faTimesCircle} />
-                                    </p>
-                                )
-                            })}
+                            {isUserEligible && <button onClick={() => { setProgress(1) }}>next</button>}
+
                         </>
 
                     }
                 </SubmissionRequirements>
-                <SubmissionActionButtons>
-                    <CancelButton onClick={handleClose}><FontAwesomeIcon icon={faTimes} /></CancelButton>
-                    <SubmitButton onClick={handleSubmit}><FontAwesomeIcon icon={faCheck} /></SubmitButton>
-                </SubmissionActionButtons>
-                <EditTLDR isUserEligible={isUserEligible} TLDRimage={TLDRImage} setTLDRImage={setTLDRImage} TLDRText={TLDRText} setTLDRText={setTLDRText} />
-                <EditLongForm longFormValue={longFormValue} setLongFormValue={setLongFormValue} ReactEditorJS={ReactEditorJS} editorCore={editorCore} />
+                }
+
+                {progress === 1 &&
+                    <div>
+                        <SubmissionActionButtons>
+                            <CancelButton onClick={handleClose}><FontAwesomeIcon icon={faTimes} /></CancelButton>
+                            <SubmitButton onClick={handleSubmit}><FontAwesomeIcon icon={faCheck} /></SubmitButton>
+                        </SubmissionActionButtons>
+                        <h2 style={{ textAlign: 'center', color: '#d3d3d3', marginBottom: '30px' }}>Create Submission</h2>
+                        <EditTLDR isUserEligible={isUserEligible} TLDRimage={TLDRImage} setTLDRImage={setTLDRImage} TLDRText={TLDRText} setTLDRText={setTLDRText} />
+                        <EditLongForm longFormValue={longFormValue} setLongFormValue={setLongFormValue} ReactEditorJS={ReactEditorJS} editorCore={editorCore} />
+                    </div>
+                }
             </CreateSubmissionContainer>
         </>
     )
@@ -237,7 +309,7 @@ function EditTLDR({ isUserEligible, TLDRimage, setTLDRImage, TLDRText, setTLDRTe
                 <h2 style={{ textAlign: 'left', color: '#d3d3d3' }}>TLDR</h2>
                 <p style={{ color: 'grey' }}>This is what visitors will see on the submission section</p>
             </div>
-            {showWarning && <WarningMessage style={{marginBottom: '10px'}}>You may not be eligible to submit</WarningMessage>}
+            {showWarning && <WarningMessage style={{ marginBottom: '10px' }}>You may not be eligible to submit</WarningMessage>}
             <TLDR setShowWarning={setShowWarning} isUserEligible={isUserEligible} TLDRimage={TLDRimage} setTLDRImage={setTLDRImage} TLDRText={TLDRText} setTLDRText={setTLDRText} />
         </>
     )

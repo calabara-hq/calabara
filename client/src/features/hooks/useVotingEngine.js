@@ -3,40 +3,15 @@ import axios from 'axios';
 import { selectConnectedBool, selectConnectedAddress } from "../wallet/wallet-reducer";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-/**
- * 
- * 0x1 = token
- * 0x2 = arcade
- */
-
-/**
- * 
- * query db for votes cast by a wallet
- * calculate remaining voting power based on strategy
- * 
- */
-
-/*
-*   control the voting power state and actions associated with voting
-*   pull contest strategy from elsewhere
-*   
-
-*   voting power = spent - available
-*/
-
-// TODO 
-// get index of submission
-// create retract votes endpoint
-// 
+import useCommon from './useCommon'
 
 
-let strategy = 0x1
-let total_allowable = 50
 
-const calculateVotingPower = async (strategy, sub_id, walletAddress, contest_hash) => {
-    let res = await axios.post('/creator_contests/fetch_user_spent_votes/', { sub_id: sub_id, walletAddress: walletAddress, contest_hash: contest_hash });
-    console.log(res)
-    return { votes_spent: parseFloat(res.data.votes_spent), curr_voting_power: total_allowable - parseFloat(res.data.votes_spent) }
+
+const calculateVotingPower = async (sub_id, walletAddress, contest_hash) => {
+    let res = await axios.get(`/creator_contests/user_voting_metrics?contest_hash=${contest_hash}&sub_id=${sub_id}&walletAddress=${walletAddress}`);
+    console.log(res.data)
+    return { votes_spent: res.data.votes_spent, curr_voting_power: res.data.voting_power }
 
 }
 
@@ -56,18 +31,20 @@ export default function useVotingEngine(sub_id) {
     const [exceedVotingPowerError, setExceedVotingPowerError] = useState(false);
     const walletAddress = useSelector(selectConnectedAddress);
     const isConnected = useSelector(selectConnectedBool);
+    const { authenticated_post } = useCommon();
     const { contest_hash } = useParams();
 
     useEffect(() => {
         if (isConnected) {
-            calculateVotingPower(strategy, sub_id, walletAddress, contest_hash).then(result => {
-                console.log(result)
+            calculateVotingPower(sub_id, walletAddress, contest_hash).then(result => {
                 setVotingPower(result.curr_voting_power)
                 setSpentVotes(result.votes_spent)
             })
         }
     }, [isConnected])
 
+
+    
 
     const castVote = (numVotes) => {
         if (numVotes > votingPower) return setExceedVotingPowerError(true)
@@ -80,7 +57,7 @@ export default function useVotingEngine(sub_id) {
 
     const retractVotes = async () => {
         retract(sub_id, walletAddress).then(result => {
-            setVotingPower(total_allowable);
+            //setVotingPower(total_allowable);
             setSpentVotes(0);
         })
     }
