@@ -30,15 +30,12 @@ const GkRule = styled.div`
 
     }
 
-
-
-
 `
 
-const Tag = styled.span `
+const Tag = styled.span`
 
             color: #f2f2f2;
-            background-color: ${props => props.tagtype === 'erc20' ? '#03b09f' : (props.tagtype == 'erc721' ? '#ab6afb': '#5865f2')};
+            background-color: ${props => props.tagtype === 'erc20' ? '#03b09f' : (props.tagtype == 'erc721' ? '#ab6afb' : '#5865f2')};
             padding: 3px 3px;
             border-radius: 5px;
             font-size: 15px;
@@ -47,12 +44,6 @@ const Tag = styled.span `
 
 
 `
-
-
-
-
-
-
 
 const ToggleFlex = styled.div`
 
@@ -118,106 +109,21 @@ cursor: pointer;
 
 export default function ToggleOption({ appliedRules, setAppliedRules, ruleError, setRuleError, toggle_identifier }) {
     // fetch available rules
-    // const availableRules = useSelector(selectDashboardRules);
-    // console.log(availableRules)
+    let availableRules = useSelector(selectDashboardRules);
+    // console.log(availableRules2)
 
     /******************/
 
 
-    let availableRules = {
-        "55": {
-            "guildId": "892877917762244680",
-            "serverName": "Calabara",
-            "type": "discord",
-            "available_roles": [
-                {
-                    "role_id": "892877917762244680",
-                    "role_name": "@everyone",
-                    "role_color": 0
-                },
-                {
-                    "role_id": "893184621523660850",
-                    "role_name": "core-team",
-                    "role_color": 15105570
-                },
-                {
-                    "role_id": "895903844926623785",
-                    "role_name": "bot",
-                    "role_color": 6323595
-                },
-                {
-                    "role_id": "896082699402510377",
-                    "role_name": "member",
-                    "role_color": 15277667
-                },
-                {
-                    "role_id": "896088160684089447",
-                    "role_name": "MEE6",
-                    "role_color": 0
-                },
-                {
-                    "role_id": "899761111476359269",
-                    "role_name": "szn1",
-                    "role_color": 1752220
-                },
-                {
-                    "role_id": "907775296659390496",
-                    "role_name": "OG calabarator",
-                    "role_color": 15844367
-                },
-                {
-                    "role_id": "908035108861251605",
-                    "role_name": "sesh",
-                    "role_color": 0
-                },
-                {
-                    "role_id": "919991694030671893",
-                    "role_name": "carl-bot",
-                    "role_color": 0
-                },
-                {
-                    "role_id": "919994529912881192",
-                    "role_name": "onboardee",
-                    "role_color": 10181046
-                },
-                {
-                    "role_id": "956696519384391703",
-                    "role_name": "calabara",
-                    "role_color": 11342935
-                },
-                {
-                    "role_id": "974402409533149217",
-                    "role_name": "Member",
-                    "role_color": 0
-                }
-            ]
-        },
-        "64": {
-            "type": "erc20",
-            "symbol": "SHARK",
-            "address": "0x232AFcE9f1b3AAE7cb408e482E847250843DB931",
-            "decimal": "18"
-        },
-        "72": {
-            "type": "erc721",
-            "symbol": "NOUN",
-            "address": "0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03",
-            "decimal": "0"
-        },
-        "73": {
-            "type": "erc721",
-            "symbol": "MFER",
-            "address": "0x79FCDEF22feeD20eDDacbB2587640e45491b757f",
-            "decimal": "0"
-        }
-    }
 
-    let rules2 = {};
+    let rules = {};
     Object.entries(availableRules).map(([key, val], index) => {
-        rules2[index] = val;
+        if (val.type !== 'discord') {
+            rules[index] = val;
+        }
     })
 
-    availableRules = JSON.parse(JSON.stringify(rules2));
+    availableRules = JSON.parse(JSON.stringify(rules));
 
     /******************/
 
@@ -272,7 +178,8 @@ function Option({ element, option_id, appliedRules, setAppliedRules, ruleError, 
     }
 
     const handleAddDiscordRule = (val) => {
-        setAppliedRules({ type: 'update_single', payload: { [option_id]: val } })
+        console.log(val)
+        setAppliedRules({ type: 'update_single', payload: { [option_id]: { type: 'discord', roles: val } } })
     }
 
     return (
@@ -295,7 +202,7 @@ function Option({ element, option_id, appliedRules, setAppliedRules, ruleError, 
                         </ToggleFlex>
                     </>
                 }
-                {(element.type === 'discord') &&
+                {/*(element.type === 'discord') &&
                     <>
                         <p><b>Type:</b> <Tag tagtype={element.type}>{element.type}</Tag></p>
                         <p><b>Server:</b> {element.serverName}</p>
@@ -309,7 +216,7 @@ function Option({ element, option_id, appliedRules, setAppliedRules, ruleError, 
                             }
                         </ToggleFlex>
                     </>
-                }
+                        */}
             </GkRule>
 
             {ruleError.id == option_id &&

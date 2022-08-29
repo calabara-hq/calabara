@@ -11,7 +11,7 @@ const { authenticateToken } = require('../middlewares/jwt-middleware.js');
 const { isAdmin } = require('../middlewares/admin-middleware')
 const { clean, asArray } = require('../helpers/common')
 const { getGuildRoles } = require('./discord-routes');
-const { createContest, createSubmission, checkSubmissionRestrictions, checkUserSubmissions, checkEligibility } = require('../middlewares/create-contest-middleware.js');
+const { createContest, createSubmission, checkSubmissionRestrictions, checkUserSubmissions, checkEligibility, calculateVotingPower, getContestVotingStrategy } = require('../middlewares/create-contest-middleware.js');
 const { imageUpload } = require('../middlewares/image-upload-middleware.js');
 const { json } = require('body-parser');
 const logger = require('../logger').child({ component: 'creator-contests' })
@@ -104,18 +104,13 @@ contests.post('/check_user_eligibility', authenticateToken, checkEligibility, as
 
 ///////////////////////////// begin voting ////////////////////////////////////
 
-contests.post('/fetch_user_spent_votes/', async function (req, res, next) {
-    let { sub_id, walletAddress, contest_hash } = req.body
+contests.get('/user_voting_metrics', getContestVotingStrategy, calculateVotingPower, async function (req, res, next) {
 
-    let result = await db.query('select votes_spent from contest_votes where contest_hash = $1 and submission_id = $2 and voter = $3', [contest_hash, sub_id, walletAddress])
-        .then(clean)
-        .then(data => {
-            if (data) return data
-            else return { votes_spent: 0 }
-        }).then(num => JSON.stringify(num))
-
-    console.log(result)
-    res.send(result).status(200)
+    let metrics = {
+        votes_spent: 0,
+        voting_power: req.voting_power
+    }
+    res.send(metrics).status(200)
 
 })
 

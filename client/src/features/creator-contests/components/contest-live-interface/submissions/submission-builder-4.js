@@ -258,13 +258,19 @@ export default function SubmissionBuilder({ handleCloseDrawer, submitter_restric
                             <h2 style={{ marginBottom: '30px' }}>Submission Requirements</h2>
 
                             {Object.values(restrictionResults).map((restriction, index) => {
-                                return (
-                                    <p style={{ fontSize: '20px' }}>
-                                        {restriction.threshold} {restriction.symbol}
-                                        {isWalletConnected && <RestrictionStatus index={index + 1} isConnected={isWalletConnected} status={restriction.user_result} key={`${isWalletConnected}-${restriction.user_result}`} />}
-                                        {!isWalletConnected && <RestrictionStatusNotConnected />}
-                                    </p>
-                                )
+                                if (restriction.type === 'erc20' || restriction.type === 'erc721') {
+                                    return (
+                                        <>
+
+                                            <p style={{ fontSize: '20px' }}>
+                                                {restriction.threshold} {restriction.symbol}
+                                                {isWalletConnected && <RestrictionStatus index={index + 1} isConnected={isWalletConnected} status={restriction.user_result} key={`${isWalletConnected}-${restriction.user_result}`} />}
+                                                {!isWalletConnected && <RestrictionStatusNotConnected />}
+                                            </p>
+                                            {index !== Object.entries(restrictionResults).length - 1 && <p>or</p>}
+                                        </>
+                                    )
+                                }
                             })}
                             {!isWalletConnected && <EligibilityCheck>
                                 <p>Connect wallet to check eligibility.</p>
