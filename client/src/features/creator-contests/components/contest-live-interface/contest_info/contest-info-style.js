@@ -22,11 +22,12 @@ const OrgImg = styled.img`
     max-width: 15em;
     border: none;
     border-radius: 4px;
+    margin-bottom: 10px;
 `
 const ContestDetails = styled.div`
     display: flex;
     height: 130px;
-    width: 70%;
+    width: 100%;
     flex-direction: row;
     justify-self: center;
     align-self: center;
@@ -39,7 +40,8 @@ const DetailColumn = styled.div`
     flex-direction: column;
     flex: 1 1 33%;
     justify-content: center;
-    border: 2px solid #4d4d4d;
+    //border: 2px solid #4d4d4d;
+    background-color: #1e1e1e;
     border-radius: 10px;
     margin: 10px;
     padding: 20px;

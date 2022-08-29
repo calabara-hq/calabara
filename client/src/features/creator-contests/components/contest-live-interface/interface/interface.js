@@ -13,12 +13,13 @@ import { InterfaceHeading, HeadingSection1, OrgImg, ContestDetails, DetailRow, C
 import { selectDashboardInfo } from "../../../../dashboard/dashboard-info-reducer";
 import { selectLogoCache } from "../../../../org-cards/org-cards-reducer";
 import useCommon from "../../../../hooks/useCommon";
+import { Contest_h2_alt } from '../../common/common_styles';
 import * as WebWorker from '../../../../../app/worker-client.js'
 
 const ContestInterfaceWrap = styled.div`
     width: 70vw;
     margin: 0 auto;
-    border: 1px solid #22272e;
+    //border: 1px solid #22272e;
     //background-color: #22272e;
     border-radius: 10px;
     padding: 10px;
@@ -52,9 +53,10 @@ const PromptRight = styled.div`
 
 const ImgWrap = styled.div`
     display: flex;
+    flex-direction: column;
+    align-items: center;
     //height: 100%;
     width: 30%;
-    justify-content: center;
     margin: auto;
 
 
@@ -113,6 +115,7 @@ export default function ContestInterface({ contest_settings }) {
             <ContestInterSplit>
                 <ImgWrap>
                     <OrgImg data-src={info.logo}></OrgImg>
+                    <Contest_h2_alt>{info.name}</Contest_h2_alt>
                 </ImgWrap>
                 <PromptRight>
                     <PromptDisplay contest_settings={contest_settings} setIsSubmissionBuilder={setIsSubmissionBuilder} createSubmissionIndex={createSubmissionIndex} setCreateSubmissionIndex={setCreateSubmissionIndex} />

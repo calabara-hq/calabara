@@ -129,7 +129,7 @@ const AddTokenButton = styled.button`
     border-radius: 10px;
     background-color: #262626;
     box-shadow: 0 10px 30px rgb(0 0 0 / 30%), 0 15px 12px rgb(0 0 0 / 22%);
-
+    transition: visibility 0.2s, max-height 0.3s ease-in-out;
 
     &:hover{
         background-color: #1e1e1e;

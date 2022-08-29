@@ -180,6 +180,7 @@ export default function VotingPolicy({ rewardOptions, votingStrategy, setVotingS
 const StrategyStyle = styled.div`
     display: flex;
     flex-direction: column;
+    height: 300px;
     margin: 10px;
     padding: 5px 10px;
     background-color: #262626;
@@ -191,6 +192,8 @@ const StrategyStyle = styled.div`
     justify-content: center;
     cursor: pointer;
     position: relative;
+    transition: visibility 0.2s, max-height 0.3s ease-in-out;
+
 
     &:hover{
         background-color: #1e1e1e;
