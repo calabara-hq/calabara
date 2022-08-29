@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useReducer, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useReducer, useRef, useCallback } from 'react';
 import Editor from 'react-medium-editor';
 import { EDITOR_JS_TOOLS } from './editor_tools';
-import { createReactEditorJS } from 'react-editor-js'
-import styled from 'styled-components'
-import { Contest_h2, Contest_h3 } from '../../common/common_styles'
+import { createReactEditorJS } from 'react-editor-js';
+import styled from 'styled-components';
+import { Contest_h2, Contest_h3 } from '../../common/common_styles';
 import usePromptBuilder from '../../../../hooks/usePromptBuilder';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faPalette, faQuestionCircle, faTimes, faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -40,7 +40,7 @@ const PromptBuilderMainHeading = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin: 20px auto
+    margin: 20px auto;
 `
 
 const ExistingPromptContainer = styled.div`

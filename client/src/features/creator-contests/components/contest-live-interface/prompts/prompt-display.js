@@ -53,6 +53,9 @@ const CollapsiblePrompt = styled.div`
     max-height: ${props => props.isVisible ? '300px' : '0px'};
     transition: visibility 0.2s, max-height 0.3s ease-in-out;
     &:hover{
+        background-color: #1e1e1e;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
+
         transform: scale(1.01);
         transition-duration: 0.5s;
 

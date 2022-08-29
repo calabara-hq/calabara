@@ -61,16 +61,6 @@ export default function ContestInfo({ contest_settings }) {
                 <ContestDetails>
                     <DetailColumn>
                         <DetailRow>
-                            <p>Organization:</p>
-                            <p>Shark DAO</p>
-                        </DetailRow>
-                        <DetailRow>
-                            <p>Status:</p>
-                            {contest_state !== null && <Label color={label_status[contest_state]}>{label_status[contest_state].status}</Label>}
-                        </DetailRow>
-                    </DetailColumn>
-                    <DetailColumn>
-                        <DetailRow>
                             <p>Starts:</p>
                             <p>{start_date}</p>
                         </DetailRow>
@@ -91,6 +81,12 @@ export default function ContestInfo({ contest_settings }) {
                         <DetailRow>
                             <p>Voter Rewards:</p>
                             <FontAwesomeIcon style={{ fontSize: '1.5em', color: Object.keys(contest_settings.voter_rewards).length > 0 ? '#00a368' : 'red' }} icon={Object.keys(contest_settings.voter_rewards).length > 0 ? faCheckCircle : faTimesCircle} />
+                        </DetailRow>
+                    </DetailColumn>
+                    <DetailColumn>
+                        <DetailRow>
+                            <p>Status:</p>
+                            {contest_state !== null && <Label color={label_status[contest_state]}>{label_status[contest_state].status}</Label>}
                         </DetailRow>
                     </DetailColumn>
                 </ContestDetails>
