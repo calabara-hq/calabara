@@ -5,7 +5,7 @@ import { ParseBlocks } from '../block-parser';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronUp, faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import { fade_in, TagType } from '../../common/common_styles';
-import ViewSubmissionModal from './expand-submission-modal';
+import ExpandSubmissionDrawer from './expand-submission-drawer';
 import { useParams } from 'react-router-dom';
 import axios from 'axios'
 import * as WebWorker from '../../../../../app/worker-client.js'
@@ -102,7 +102,7 @@ const DropdownButton = styled.button`
 `
 
 export default function SubmissionDisplay({ }) {
-    const [modalOpen, setModalOpen] = useState(false);
+    const [drawerOpen, setDrawerOpen] = useState(false);
     const [TLDRImage, setTLDRImage] = useState(null);
     const [TLDRText, setTLDRText] = useState(null);
     const [idToExpand, setIdToExpand] = useState(null);
@@ -117,7 +117,9 @@ export default function SubmissionDisplay({ }) {
         setTLDRImage(null);
         setTLDRText(null);
         setExpandData(null);
-        setModalOpen(false);
+        setDrawerOpen(false);
+        document.body.style.overflow = 'unset';
+
     }
 
 
@@ -126,14 +128,9 @@ export default function SubmissionDisplay({ }) {
         setTLDRImage(tldr_img);
         setTLDRText(tldr_text);
         setExpandData(submission_body)
-        //let res = await axios.get(submission_url)
-        console.log(submission_body)
+        setDrawerOpen(true);
+        document.body.style.overflow = 'hidden';
 
-
-
-        //setExpandData(JSON.parse(submission_url));
-
-        setModalOpen(true);
     }
 
 
@@ -155,7 +152,7 @@ export default function SubmissionDisplay({ }) {
                     )
                 })}
 
-                <ViewSubmissionModal modalOpen={modalOpen} handleClose={handleClose} id={idToExpand} TLDRImage={TLDRImage} TLDRText={TLDRText} expandData={expandData} />
+                <ExpandSubmissionDrawer drawerOpen={drawerOpen} handleClose={handleClose} id={idToExpand} TLDRImage={TLDRImage} TLDRText={TLDRText} expandData={expandData} />
             </SubmissionWrap>
         </>
     )

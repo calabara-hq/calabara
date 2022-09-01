@@ -9,11 +9,11 @@ let web3Infura = new Web3(new Web3.providers.HttpProvider('https://mainnet.infur
 
 
 
-const checkWalletTokenBalance = async (walletAddress, contractAddress, decimal) => {
+const checkWalletTokenBalance = async (walletAddress, contractAddress, decimal, block_num) => {
     const tokenContract = new web3Infura.eth.Contract(abi.token_abi, contractAddress);
-    const balance = await tokenContract.methods.balanceOf(walletAddress).call();
+    const balance = await tokenContract.methods.balanceOf(walletAddress).call({}, block_num);
     const adjusted = balance / 10 ** decimal
     return adjusted;
 }
 
-module.exports = {checkWalletTokenBalance}
+module.exports = { checkWalletTokenBalance }

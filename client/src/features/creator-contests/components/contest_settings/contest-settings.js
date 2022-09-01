@@ -128,7 +128,7 @@ export default function ContestSettings() {
 
     useEffect(() => {
         populateDashboardRules(ens)
-    },[])
+    }, [])
 
 
     /*
@@ -164,6 +164,29 @@ export default function ContestSettings() {
 
 
     const printContestData = () => {
+        let strategy
+        if (votingStrategy.strategy_type === 'arcade') {
+            strategy = {
+                strategy_type: votingStrategy.strategy_type,
+                hard_cap: votingStrategy.data.credit_allowance,
+                sub_cap: votingStrategy.data.additional_configs.max_per_sub_limit
+            }
+        }
+
+        if (votingStrategy.strategy_type === 'token') {
+            let { type, symbol, address, decimal } = votingStrategy.data.token_data
+            strategy = {
+                strategy_type: votingStrategy.strategy_type,
+                type: type,
+                symbol: symbol,
+                address: address,
+                decimal: decimal,
+                hard_cap: votingStrategy.data.additional_configs.hardcap_limit,
+                sub_cap: votingStrategy.data.additional_configs.max_per_sub_limit
+            }
+        }
+
+
         let contest_data = {
             date_times: {
                 start_date: date_0.toISOString(),
@@ -174,11 +197,12 @@ export default function ContestSettings() {
             submitter_rewards: submitterRewards,
             voter_rewards: voterRewards,
             submitter_restrictions: submitterAppliedRules,
-            voter_restrictions: voterAppliedRules
+            voter_restrictions: voterAppliedRules,
+            voting_strategy: strategy
         }
 
+        console.log(contest_data)
         axios.post('/creator_contests/create_contest', { ens: ens, contest_settings: contest_data }).then(res => console.log(res))
-        //console.log(contest_data)
     }
 
     return (
