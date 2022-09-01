@@ -40,7 +40,6 @@ async function checkSubmitterEligibility(req, res, next) {
     let restrictions = await db.query('select settings->>\'submitter_restrictions\' as restrictions from contests where ens = $1 and _hash = $2', [ens, contest_hash])
         .then(clean)
         .then(res => Object.values(JSON.parse(res.restrictions)))
-    console.log(restrictions)
 
 
     for (const restriction of restrictions) {

@@ -58,6 +58,9 @@ export default function useCommon() {
                 case 432:
                     showNotification('error', 'error', 'this contest is not accepting submissions at this time')
                     break;
+                case 433:
+                    showNotification('error', 'error', 'this contest is not accepting votes at this time')
+                    break;
             }
             return null
         }

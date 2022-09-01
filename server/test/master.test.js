@@ -7,7 +7,7 @@ const fs = require('fs');
 const { checkWalletTokenBalance } = require('../web3/web3')
 
 let walletAddress = '0xedcC867bc8B5FEBd0459af17a6f134F41f422f0C'
-let jwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZGRyZXNzIjoiMHhlZGNDODY3YmM4QjVGRUJkMDQ1OWFmMTdhNmYxMzRGNDFmNDIyZjBDIiwiaWF0IjoxNjYyMDUzMTgxLCJleHAiOjE2NjIwNTUzNDF9.U1VHjM3xy8NBexmBelwXSCIk1wS0bVElO6ooxKBryVQ'
+let jwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZGRyZXNzIjoiMHhlZGNDODY3YmM4QjVGRUJkMDQ1OWFmMTdhNmYxMzRGNDFmNDIyZjBDIiwiaWF0IjoxNjYyMDY0MDU2LCJleHAiOjE2NjIwNjYyMTZ9.v1TPIT6xHV7PBxQA4x6IWGySYiuVxp2Wi8biD3WRyOw'
 
 
 
