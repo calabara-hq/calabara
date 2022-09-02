@@ -317,8 +317,8 @@ export default function ContestHomepage({ }) {
                             {all_contests.map((el, index) => {
                                 return (
                                     <RoundWrap onClick={() => handleInterface(el._hash)}>
-                                        <ContestTag>Contest {index + 1}</ContestTag>
-                                        <Label color={labelColorOptions[0]}>label</Label>
+                                        <ContestTag>{el._title}</ContestTag>
+                                        <Label color={labelColorOptions[el._prompt_label_color]}>{el._prompt_label}</Label>
                                         <CalculateState contest_info={el} />
                                     </RoundWrap>
 

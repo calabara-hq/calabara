@@ -72,6 +72,36 @@ const DetailRow = styled.div`
     }
 
 `
+const SubRewardDetails = styled.div` 
+        visibility: hidden;
+        position: absolute;
+        display: grid;
+        grid-template-columns: 3fr auto;
+        align-content: center;
+        justify-items: center;
+        height: 100px;
+        transform: translate(360px, -80px);
+        background-color: #4d4d4d;
+        border-radius: 10px;
+        padding: 10px;
+        column-gap: 50px
+
+`
+
+const VoteRewardDetails = styled.div` 
+        visibility: hidden;
+        position: absolute;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        height: 100px;
+        transform: translate(100%, 100%);
+        background-color: #4d4d4d;
+        border-radius: 10px;
+        padding: 10px;
+
+
+`
 
 
 const DetailRowHover = styled.div`
@@ -88,28 +118,16 @@ const DetailRowHover = styled.div`
     //margin-left: 10px;
 
     &:hover{
-        background-color: rgb(77, 77, 77, .30);
-        //border: 2px solid #4d4d4d;
-        border-radius: 4px;
-        padding: 0px 10px 0px 10px;
-    
-        &::after{
+        border-radius: 10px;
+        border: 2px dotted #4d4d4d;
 
-                content: "Labels help users identify and filter submission typesLabels help users identify and filter submission types";
-                position: absolute;
-                text-align: center;
-                color: pink;
-                background-color: #4d4d4d;
-                padding: 3px;
-                border-radius: 4px;
-                top: 0;
-                color: #d9d9d9;
-                transform: translate(0%, -120%);
-                animation: ${fade_in} 0.5s ease-in-out;
+    }
 
-            }
-        }
+    &:hover ${SubRewardDetails}{
 
+        visibility: visible;
+
+    }
     p {
         //margin: auto;
         padding: 5px 0;
@@ -117,7 +135,10 @@ const DetailRowHover = styled.div`
         
 
     }
+
 `
+
+
 
 const CheckpointWrap = styled.div`
 
@@ -205,4 +226,4 @@ const label_status = [
 
 ]
 
-export { InterfaceHeading, HeadingSection1, OrgImg, ContestDetails, DetailColumn, DetailRow, DetailRowHover, CheckpointWrap, CheckpointTop, CheckpointBottomTag, CheckpointBottom, label_status }
+export { InterfaceHeading, HeadingSection1, OrgImg, ContestDetails, DetailColumn, DetailRow, DetailRowHover, SubRewardDetails, CheckpointWrap, CheckpointTop, CheckpointBottomTag, CheckpointBottom, label_status }
