@@ -261,21 +261,6 @@ function Submission({ sub, handleExpand }) {
 }
 
 
-
-
-/*
-        <>
-            <SubmissionTop>
-                <TagType>Art</TagType>
-                <Author><p>nick.eth</p></Author>
-                <VoteTotals><p>40 votes</p></VoteTotals>
-            </SubmissionTop>
-            <p>{tldr_text}</p>
-            <LazyLoadImage style={{ maxWidth: '15em', margin: '0 auto', borderRadius: '10px' }} src={tldr_img} effect="blur" />
-        </>
-    */
-
-
 function Placeholder() {
     return (
         <div className="placeholder">
@@ -289,15 +274,3 @@ function Placeholder() {
         </div>
     );
 }
-
-
-
-
-
-
-/*
-      < SubmissionPreviewContainer data-url={sub._url} key={index} /*onClick={() => handleExpand(id, tldr_img, tldr_text, submission_body)} >
-      <p></p>
-      <PreviewImage></PreviewImage>
-    </SubmissionPreviewContainer>
-*/

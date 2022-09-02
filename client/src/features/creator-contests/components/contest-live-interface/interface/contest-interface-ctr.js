@@ -22,7 +22,6 @@ export default function ContestInterfaceController({ }) {
     return (
         <>
             {contest_data && <ContestInterface contest_settings={contest_data.settings} prompt_data={contest_data.prompt_data} />}
-
         </>
     )
 }

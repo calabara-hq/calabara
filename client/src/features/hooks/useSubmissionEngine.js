@@ -30,6 +30,7 @@ export default function useSubmissionEngine(submitter_restrictions) {
                 ])
                 console.log(eligibility)
                 setUserSubmissions(user_subs);
+                
                 setRestrictionResults(eligibility);
                 if (eligibility.length === 0) {
                     if (user_subs.length < 1) {
