@@ -8,66 +8,68 @@ import useCommon from './useCommon'
 
 
 
-const calculateVotingPower = async (sub_id, walletAddress, contest_hash) => {
-    let res = await axios.get(`/creator_contests/user_voting_metrics?contest_hash=${contest_hash}&sub_id=${sub_id}&walletAddress=${walletAddress}`);
-    console.log(res.data)
-    return { votes_spent: res.data.votes_spent, curr_voting_power: res.data.voting_power }
 
-}
+const calculateVotingPower = async (ens, sub_id, walletAddress, contest_hash) => {
+    let res = await axios.post('/creator_contests/user_voting_metrics', { ens: ens, contest_hash: contest_hash, sub_id: sub_id, walletAddress: walletAddress });
+    return res.data
 
-const sendVote = async (sub_id, numVotes, walletAddress, contest_hash) => {
-    let remaining = await axios.post('/creator_contests/cast_vote/', { contest_hash: 'cd97e8e2', sub_id: sub_id, walletAddress: walletAddress, num_votes: numVotes })
 }
 
 
 const retract = async (sub_id, walletAddress) => {
-    let retracted = await axios.post('/creator_contests/retract_sub_votes/', { sub_id: sub_id, walletAddress: walletAddress })
+    await axios.post('/creator_contests/retract_sub_votes/', { sub_id: sub_id, walletAddress: walletAddress })
+    return
 }
 
 
 export default function useVotingEngine(sub_id) {
-    const [votingPower, setVotingPower] = useState(0);
-    const [spentVotes, setSpentVotes] = useState(0);
-    const [exceedVotingPowerError, setExceedVotingPowerError] = useState(false);
+    const [remaining_vp, set_remaining_vp] = useState(0);
+    const [total_available_vp, set_total_available_vp] = useState(0);
+    const [votes_spent, set_votes_spent] = useState(0);
+    const [restrictions, set_restrictions] = useState(null)
     const walletAddress = useSelector(selectConnectedAddress);
     const isConnected = useSelector(selectConnectedBool);
     const { authenticated_post } = useCommon();
-    const { contest_hash } = useParams();
+
+    const { ens, contest_hash } = useParams();
 
     useEffect(() => {
         if (isConnected) {
-            calculateVotingPower(sub_id, walletAddress, contest_hash).then(result => {
-                setVotingPower(result.curr_voting_power)
-                setSpentVotes(result.votes_spent)
+            calculateVotingPower(ens, sub_id, walletAddress, contest_hash).then(result => {
+                set_remaining_vp(result.metrics.sub_remaining_vp)
+                set_total_available_vp(result.metrics.sub_total_vp)
+                set_votes_spent(result.metrics.sub_votes_spent)
+                set_restrictions(result.restrictions_with_results)
             })
         }
     }, [isConnected])
 
 
-    
 
-    const castVote = (numVotes) => {
-        if (numVotes > votingPower) return setExceedVotingPowerError(true)
+
+    const castVote = async (numVotes) => {
+        if (numVotes > total_available_vp) return false
         else {
-            sendVote(sub_id, numVotes, walletAddress, contest_hash)
-            setVotingPower(votingPower - numVotes);
-            setSpentVotes(spentVotes + numVotes)
+            let spent = await authenticated_post('/creator_contests/cast_vote/', { ens: ens, contest_hash: contest_hash, sub_id: sub_id, walletAddress: walletAddress, num_votes: numVotes })
+            set_remaining_vp(total_available_vp - votes_spent);
+            set_votes_spent(spent.data);
+            return true;
         }
     }
 
     const retractVotes = async () => {
         retract(sub_id, walletAddress).then(result => {
-            //setVotingPower(total_allowable);
-            setSpentVotes(0);
+            set_remaining_vp(total_available_vp);
+            set_votes_spent(0);
         })
     }
 
     return {
-        votingPower: votingPower,
-        spentVotes: spentVotes,
+        remaining_vp: remaining_vp,
+        total_available_vp: total_available_vp,
+        votes_spent: votes_spent,
         isWalletConnected: isConnected,
-        exceedVotingPowerError: exceedVotingPowerError,
-        setExceedVotingPowerError: setExceedVotingPowerError,
+        voting_restrictions: restrictions,
         castVote: async (numVotes) => {
             return await castVote(numVotes);
         },

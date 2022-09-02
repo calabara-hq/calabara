@@ -8,7 +8,6 @@ import * as WebWorker from '../../../../../app/worker-client.js'
 import moment from "moment";
 import { Label, labelColorOptions } from "../../common/common_styles";
 import { ContestDurationCheckpointBar } from "../../../../checkpoint-bar/checkpoint-bar";
-import useContestTimekeeper from "../../../../hooks/useContestTimekeeper";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheckCircle, faTimesCircle, faTimes, faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
 import { InterfaceHeading, HeadingSection1, OrgImg, ContestDetails, DetailColumn, DetailRow, DetailRowHover, CheckpointWrap, CheckpointBottomTag, CheckpointBottom, label_status } from './contest-info-style'

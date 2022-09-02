@@ -3,8 +3,8 @@ import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import ContestInfo from "../contest_info/contest-info";
 import useContestState from "../../../../hooks/useContestState";
-import PromptDisplay from '../prompts/prompt-display-3';
-import SubmissionBuilder from '../submissions/submission-builder-3'
+import PromptDisplay from '../prompts/prompt-display';
+import SubmissionBuilder from '../submissions/submission-builder'
 import SubmissionDisplay from '../submissions/test-submission-display2';
 import { useDispatch, useSelector } from "react-redux";
 import { ContestDurationCheckpointBar } from "../../../../checkpoint-bar/checkpoint-bar";

@@ -4,6 +4,19 @@ import styled from "styled-components";
 import useWallet from "../../../../hooks/useWallet";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheckToSlot, faCircleCheck } from "@fortawesome/free-solid-svg-icons";
+import { ErrorMessage, fade_in } from "../../common/common_styles";
+import { faTimes } from "@fortawesome/free-solid-svg-icons";
+
+
+const VotingContainer = styled.div`
+    background-color: ${props => props.isVoting ? '#262626' : 'none'};
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    width: ${props => props.isVoting ? '40em' : '40em'};
+    position: relative;
+    display: flex;
+`
 
 
 const VoteInput = styled.input`
@@ -13,7 +26,7 @@ const VoteInput = styled.input`
     font-weight: 550;
     color: #f2f2f2;
     background-color: #121212;
-    border: 2px solid #d95169;
+    border: 2px solid ${props => props.error ? '#d95169' : 'rgb(211,151,39)'};
     border-radius: 10px;
     outline: none;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
@@ -95,8 +108,8 @@ const CastVotesButton = styled.button`
     &:hover{
         background-color: rgb(6, 214, 160);
         color: #fff;
-    
     }
+
 `
 const RetractVotesButton = styled.button`
     height: 40px;
@@ -118,59 +131,39 @@ const RetractVotesButton = styled.button`
 
 `
 
-const IntialVoteButtonA = styled.button `
-    height: 40px;
-    font-size: 15px;
-    font-weight: 550;
-    color: rgb(211,151,39);
-    background-color: rgb(211,151,39, .3);
-    border: 2px solid rgb(211,151,39, .3);
-    border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
-    padding: 5px 20px;
-    margin-right: 30px;
+const CancelVoteButton = styled.button`
 
+    border: 2px solid #4d4d4d;
+    color: grey;
+    border-radius: 100px;
+    padding: 5px 15px 5px 15px;
+    background-color: transparent;
+    margin-left: auto;
+    animation: ${fade_in} 0.4s ease-in-out;
     &:hover{
-        background-color: rgb(6, 214, 160);
-        color: #fff;
-    
-    };
-    ////////////////////////////
-    height: 40px;
-    font-size: 15px;
-    font-weight: 550;
-    color: #ffff;
-    border: 2px double transparent;
-    border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
-    padding: 5px 20px;
-    background-image: linear-gradient(#262626, #262626),linear-gradient(90deg,#e00f8e,#2d66dc);
-    background-origin: border-box;
-    background-clip: padding-box,border-box;
-    margin-right: 30px;
-    cursor: pointer;
-
-    &:hover{
-    background-color: #1e1e1e;
-    background-image: linear-gradient(#141416, #141416),
-    linear-gradient(to right, #e00f8e, #2d66dc);
-
+        color: #d3d3d3;
+        background-color: #1e1e1e;
     }
-
-    &:disabled{
-    cursor: not-allowed;
-    background-image: linear-gradient(#262626, #262626),linear-gradient(90deg,#e00f8e,#2d66dc);
-
-    }
-    
 `
 
-const VoteP = styled.p `
 
+
+const VotingStats = styled.div`
+    display: flex;
+    flex-direction: column;
+    position: relative;
+
+    > p {
+        margin: 0;
+    }
+
+`
+
+
+const LightP = styled.p`
     font-size: 15px;
     font-weight: 550;
-    color: #d9d9d9;
-
+    color: grey;
 `
 
 const InputCast = styled.div`
@@ -178,61 +171,90 @@ const InputCast = styled.div`
     flex: 1;
     flex-direction: row;
     align-items: flex-end;
-
-    > p {
-        font-size: 15px;
-        font-weight: 550;
-        color: #d9d9d9;
-
-    }
-
+    animation: ${fade_in} 0.4s ease-in-out;
 `
 
+
+
+
+
+
+
 function SubmissionVotingBox({ sub_id }) {
-    const [votesToSpend, setVotesToSpend] = useState(null);
     const [isVoteButtonClicked, setIsVoteButtonClicked] = useState(false);
+    const [exceedVotingPowerError, setExceedVotingPowerError] = useState(false);
+    const [is_vp_help, set_is_vp_help] = useState(false);
     const { walletConnect } = useWallet();
+    const [votesToSpend, setVotesToSpend] = useState('');
 
     const {
-        votingPower,
-        spentVotes,
+        remaining_vp,
+        votes_spent,
+        total_available_vp,
         isWalletConnected,
+        voting_restrictions,
         castVote,
-        retractVotes,
-        exceedVotingPowerError,
-        setExceedVotingPowerError
+        retractVotes
     } = useVotingEngine(sub_id);
+
+
+
+    useEffect(() => {
+        setVotesToSpend(votes_spent || '')
+    }, [votes_spent])
 
 
     const updateInput = (e) => {
         if (exceedVotingPowerError) setExceedVotingPowerError(false);
-        setVotesToSpend(parseFloat(e.target.value))
+        setVotesToSpend(Math.round(e.target.value) || '')
     }
 
+    const handleVote = async (num_votes) => {
+        if (num_votes != '') {
+            let didCast = await castVote(num_votes)
+            if (!didCast) return setExceedVotingPowerError(true)
+            setIsVoteButtonClicked(false)
+        }
+    }
+
+    const handleCancel = () => {
+        setIsVoteButtonClicked(false)
+        setExceedVotingPowerError(false)
+        setVotesToSpend(votes_spent || '')
+    }
 
     return (
-        <div>
-            {!isVoteButtonClicked &&
-                <InputCast>
-                    <InitialVoteButton disabled={!isWalletConnected} onClick={() => setIsVoteButtonClicked(true)}>vote <FontAwesomeIcon icon={faCheckToSlot}/></InitialVoteButton>
-                    {!isWalletConnected && <ConnectWalletButton onClick={walletConnect}>connect wallet</ConnectWalletButton>}
-                    {spentVotes > 0 &&
+        <>
+            <VotingContainer isVoting={isVoteButtonClicked}>
+                {!isVoteButtonClicked &&
+                    <InputCast>
+                        <InitialVoteButton disabled={!isWalletConnected} onClick={() => setIsVoteButtonClicked(true)}>vote <FontAwesomeIcon icon={faCheckToSlot} /></InitialVoteButton>
+                        {!isWalletConnected && <ConnectWalletButton onClick={walletConnect}>connect wallet</ConnectWalletButton>}
                         <>
-                            <RetractVotesButton onClick={() => retractVotes()}>retract votes</RetractVotesButton>
-                            <p>spent votes: {spentVotes}</p>
+                            {votes_spent > 0 && <RetractVotesButton onClick={retractVotes}>retract votes</RetractVotesButton>}
+                            <VotingStats>
+                                <LightP>votes spent:{" "} {votes_spent}</LightP>
+                                <LightP>voting power: {total_available_vp} </LightP>
+                            </VotingStats>
                         </>
-                    }
-                </InputCast>
-            }
-            {isVoteButtonClicked &&
-                <InputCast>
-                    <VoteInput type="number" value={votesToSpend} onChange={updateInput} placeholder="votes"></VoteInput>
-                    <CastVotesButton onClick={() => {castVote(votesToSpend); setIsVoteButtonClicked(false)}}>cast votes <FontAwesomeIcon icon={faCircleCheck}/></CastVotesButton>
-                    <p>voting power: {votingPower}</p>
-                    {exceedVotingPowerError && <b><p>amount exceeds available voting power</p></b>}
-                </InputCast>
-            }
-        </div>
+                    </InputCast>
+                }
+                {isVoteButtonClicked &&
+                    <>
+                        <InputCast>
+                            <VoteInput error={exceedVotingPowerError} type="number" value={votesToSpend} onChange={updateInput} placeholder="votes"></VoteInput>
+                            <CastVotesButton onClick={() => { handleVote(votesToSpend) }}>cast votes <FontAwesomeIcon icon={faCircleCheck} /></CastVotesButton>
+                            <VotingStats>
+                                <LightP>votes spent: {votes_spent}</LightP>
+                                <LightP>voting power: {total_available_vp}</LightP>
+                            </VotingStats>
+                        </InputCast>
+                        <CancelVoteButton onClick={handleCancel}><FontAwesomeIcon icon={faTimes} /></CancelVoteButton>
+                    </>
+                }
+            </VotingContainer>
+            {exceedVotingPowerError && <ErrorMessage style={{ width: '40em' }}><p>amount exceeds available voting power</p></ErrorMessage>}
+        </>
     )
 }
 

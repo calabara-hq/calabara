@@ -8,13 +8,6 @@ import useGatekeeper from './useGatekeeper';
 import useCommon from './useCommon';
 
 
-const getUserSubmissions = (contest_hash) => {
-    axios.post('/creator_contests/get_user_submissions', { contest_hash: contest_hash }).then(result => { return result.data })
-}
-
-const checkUserEligibility = (contest_hash) => {
-    axios.post('/creator_contests/check_user_eligibility', { contest_hash: contest_hash }).then(result => { return result.data })
-}
 
 
 export default function useSubmissionEngine(submitter_restrictions) {
@@ -35,8 +28,14 @@ export default function useSubmissionEngine(submitter_restrictions) {
                     authenticated_post('/creator_contests/get_user_submissions', { contest_hash: contest_hash, ens: ens }).then(result => { return result.data }),
                     axios.post('/creator_contests/check_user_eligibility', { contest_hash: contest_hash, ens: ens, walletAddress: walletAddress }).then(result => { return result.data })
                 ])
+                console.log(eligibility)
                 setUserSubmissions(user_subs);
                 setRestrictionResults(eligibility);
+                if (eligibility.length === 0) {
+                    if (user_subs.length < 1) {
+                        return setIsUserEligible(true)
+                    }
+                }
 
                 for (const el of eligibility) {
                     if (el.user_result && user_subs.length < 1) {

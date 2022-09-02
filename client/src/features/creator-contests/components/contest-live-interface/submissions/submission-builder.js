@@ -1,126 +1,363 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react'
-import { EDITOR_JS_TOOLS } from '../../../prompt_builder/editor_tools'
+import { useState, useRef, useEffect, useCallback } from 'react'
+import styled, { css, keyframes } from 'styled-components'
+import TLDR from './TLDR-editor'
 import { createReactEditorJS } from 'react-editor-js'
-import { ParseBlocks } from '../../block-parser'
-import styled, { css } from 'styled-components'
-import { fade_in, submission_fade } from '../../../common/common_styles'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faChevronDown, faChevronUp, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons'
-import ReactTooltip from 'react-tooltip';
+import { useParams } from 'react-router-dom'
+import axios from 'axios';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTimes, faCheck, faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
+import { fade_in, WarningMessage } from '../../common/common_styles'
+import useWallet from '../../../../hooks/useWallet'
+import useSubmissionEngine from '../../../../hooks/useSubmissionEngine'
+import useCommon from '../../../../hooks/useCommon'
+import { EDITOR_JS_TOOLS } from '../../contest_settings/prompt_builder/editor_tools'
 
-const SubmissionBuilderWrap = styled.div`
-    display: flex;
-    flex-direction: column;
-    text-align: center;
-    background-color: #22272e;
-    border: none;
-    border-radius: 10px;
-    color: #d3d3d3;
-    width: 100%;
-`
-const SubmissionSplit = styled.div`
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    width: 100%;
-    gap: 30px;
-    
+
+
+const CreateSubmissionContainer = styled.div`
+display: flex;
+position: relative;
+flex-direction: column;
+flex-wrap: wrap;
+align-content: center;
+align-items: stretch;
+//justify-content: space-between;
+background-color: #1e1e1e;
+padding: 10px;
+border: none;
+border-radius: 10px;
+height: none;
+> * {
+    margin-bottom: 15px;
+    margin-top: 15px;
+}
 `
 
-const PromptButtons = styled.div`
+const SubmissionActionButtons = styled.div`
     width: fit-content;
+    position: absolute;
     margin-left: auto;
     margin-bottom: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
+    position: relative;
 `
 
-const SaveButton = styled.button`
+const SubmitButton = styled.button`
     align-self: center;
     margin-left: auto;
     margin-right: 10px;
     border: 2px solid #22272e;
     border-radius: 100px;
     padding: 10px 15px 10px 15px;
-    background-color: lightgreen;
-    color: #22272e;
+    background-color: rgb(6, 214, 160);
+    color: black;
 
     &:hover{
         color: black;
-        background-color: rgba(144, 238, 144, 0.8);
+        background-color: rgba(6, 214, 160, 0.8);
+        &::before{
+            content: "save";
+            position: absolute;
+            border: none;
+            background-color: #444c56;
+            padding: 3px;
+            border-radius: 4px;
+            top: 0;
+            color: lightgrey;
+            transform: translate(-50%, -150%);
+            animation: ${fade_in} 0.5s ease-in-out;
+
+        }
     }
+
+
 `
 const CancelButton = styled.button`
-    border: 2px solid #22272e;
+    border: 2px solid #4d4d4d;
+    color: grey;
     border-radius: 100px;
     padding: 10px 15px 10px 15px;
-    background-color: coral;
+    background-color: transparent;
     margin-right: 10px;
-    color: #22272e;
+
     &:hover{
-        color: black;
-        background-color: rgba(255, 127, 80, 0.8);
-    }
+        color: #d3d3d3;
+        background-color: rgba(34, 34, 46, 0.8);
+        border: 2px solid #d3d3d3;
+        &::before{
+            content: "cancel";
+            position: absolute;
+            border: none;
+            background-color: #1e1e1e;
+            padding: 3px;
+            border-radius: 4px;
+            top: 0;
+            color: lightgrey;
+            transform: translate(-50%, -150%);
+            animation: ${fade_in} 0.5s ease-in-out;
 
-    &:disabled{
-        background-color: grey;
-        color: darkgrey;
+        }
     }
 `
 
-export default function SubmissionBuilder({ }) {
-    const [coverText, setCoverText] = useState("");
-    const [coverImg, setCoverImg] = useState("");
-    let [previewData, setPreviewData] = useState({ blocks: [] })
-
-    const handleSubmit = () => {
-       // setIsSubmissionBuilder(false)
-    }
-
-    const handleCancel = () => {
-     //   setIsSubmissionBuilder(false)
-    }
-
-
-    return (
-        <SubmissionBuilderWrap>
-            <h3>Submission Builder</h3>
-            <PromptButtons>
-                <SaveButton onClick={handleSubmit}><FontAwesomeIcon icon={faCheck} /></SaveButton>
-                <CancelButton onClick={handleCancel}><FontAwesomeIcon icon={faTimes} /></CancelButton>
-            </PromptButtons>
-            <SubmissionSplit>
-                <SubmissionEdit setCoverText={setCoverText} coverImg={coverImg} setCoverImg={setCoverImg} setPreviewData={setPreviewData} />
-                <PreviewEdit previewData={previewData} />
-            </SubmissionSplit>
-
-        </SubmissionBuilderWrap>
-    )
-}
-
-
-const SubmissionEditWrap = styled.div`
-    * > {
-        margin-bottom: 100px;
-    }
-
-`
-
-const SubmissionPreviewWrap = styled.div`
+const SubmissionRequirements = styled.div`
     display: flex;
     flex-direction: column;
 `
 
+const EligibilityCheck = styled.div`
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    > p {
+        margin: 0;
+        margin-right: 20px;
+    }
+    > button {
+        border: double 2px transparent;
+        border-radius: 10px;
+        background-image: linear-gradient(#141416,#141416), linear-gradient(to right,#e00f8e,#2d66dc);
+        background-origin: border-box;
+        background-clip: padding-box,border-box;
+        box-shadow: 0 10px 30px rgb(0 0 0 / 30%), 0 15px 12px rgb(0 0 0 / 22%);
+        padding: 3px 5px;
+    }
+`
+
+const highlight = (props) => keyframes`
+  0% {
+    opacity: 0;
+    transform: scale(1.0);
+
+  }
+  50% {
+    opacity: 1 !important;
+    transform: scale(1.7);
+  }
+  100% {
+    opacity: 1 !important;
+    transform: scale(1.0);
+    display: visible;
+
+  }
+   
+`;
+
+const highlightAnimation = css`
+  animation: ${highlight} 1s ease;
+`;
+
+
+const RestrictionStatus = styled.span`
+    display: inline-block;
+    &::after{
+        font-family: 'Font Awesome 5 Free';
+        margin-left: 20px;
+        content: '${props => props.status ? "\f058" : "\f057"}';
+        color: ${props => props.status ? 'rgb(6, 214, 160)' : 'grey'};
+        font-weight: 900;
+    }
+    
+   // animation: ${highlight} ${props => props.index * 0.9}s ease-in;
+   //color: #1e1e1e;
+    animation: ${highlight} 1s ease-in;
+    animation-delay: ${props => props.index * 0.3}s;
+   
+`
+
+const RestrictionStatusNotConnected = styled.span`
+    display: inline-block;
+    &::after{
+        font-family: 'Font Awesome 5 Free';
+        margin-left: 20px;
+        content:  "\f057";
+        color:  grey;
+        font-weight: 900;
+    }
+
+`
+
+/*
+style={{marginLeft: '20px', color: !isWalletConnected ? 'grey' : (restriction.user_result ? '#06d6a0' : 'red') }}
+icon={isUserEligible ? faCheckCircle : faTimesCircle}
+
+*/
+
+export default function SubmissionBuilder({ handleCloseDrawer, submitter_restrictions }) {
+    const [TLDRImage, setTLDRImage] = useState(null)
+    const [TLDRText, setTLDRText] = useState('')
+    const [longFormValue, setLongFormValue] = useState(null)
+    const { ens, contest_hash } = useParams();
+    const { isWalletConnected, userSubmissions, restrictionResults, isUserEligible } = useSubmissionEngine(submitter_restrictions);
+    const { walletConnect } = useWallet();
+    const ReactEditorJS = createReactEditorJS();
+    const editorCore = useRef(null);
+    const [progress, setProgress] = useState(0);
+    const { authenticated_post } = useCommon();
+    const errorCheck = async () => {
+        if (!TLDRText && !TLDRImage) {
+            alert('at least one TLDR field required!')
+            return true
+        }
+        else return false;
+    }
+
+
+
+    const timeout = useCallback(async () => {
+        setTimeout(() => {
+            handleCloseDrawer();
+        }, 8.63e7)
+    }, [])
+
+
+    useEffect(() => {
+        timeout();
+    }, [])
+
+    const handleClose = () => {
+        if (TLDRImage || TLDRText) {
+            if (window.confirm('you\'re changes will be lost. Do you want to proceed?')) {
+                handleCloseDrawer();
+            }
+            else return
+        }
+        else {
+            handleCloseDrawer();
+        }
+    }
+
+    const handleSubmit = async () => {
+        /*
+                let tldr = {
+                    tldr_text: TLDRText,
+                    tldr_image: ''//TLDRImage.url
+                }
+        */
+
+        let isError = await errorCheck();
+        if (isError) return;
+        let editorData = await editorCore.current.save();
+        let submission = {
+            tldr_text: TLDRText,
+            tldr_image: TLDRImage != null ? TLDRImage.url : null,
+            submission_body: editorData
+        }
+        let res = await authenticated_post('/creator_contests/create_submission', { ens: ens, contest_hash: contest_hash, submission: submission });
+        console.log(res)
+
+        /*
+        await fetch('/creator_contests/create_submission', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: {submission: submission, ens: ens, contest_hash: contest_hash}
+        })
+        */
+    }
+    useEffect(() => {
+        console.log(isUserEligible)
+    }, [isUserEligible])
+    return (
+        <>
+            <CreateSubmissionContainer>
+                {progress === 0 && <SubmissionRequirements>
+                    {Object.values(restrictionResults).length > 0 &&
+                        <>
+                            <h2 style={{ marginBottom: '30px' }}>Submission Requirements</h2>
+
+                            {Object.values(restrictionResults).map((restriction, index) => {
+                                if (restriction.type === 'erc20' || restriction.type === 'erc721') {
+                                    return (
+                                        <>
+
+                                            <p style={{ fontSize: '20px' }}>
+                                                {restriction.threshold} {restriction.symbol}
+                                                {isWalletConnected && <RestrictionStatus index={index + 1} isConnected={isWalletConnected} status={restriction.user_result} key={`${isWalletConnected}-${restriction.user_result}`} />}
+                                                {!isWalletConnected && <RestrictionStatusNotConnected />}
+                                            </p>
+                                            {index !== Object.entries(restrictionResults).length - 1 && <p>or</p>}
+                                        </>
+                                    )
+                                }
+                            })}
+                            {!isWalletConnected && <EligibilityCheck>
+                                <p>Connect wallet to check eligibility.</p>
+                                <button onClick={walletConnect}>connect wallet</button>
+                            </EligibilityCheck>
+                            }
+                            {isUserEligible && <button onClick={() => { setProgress(1) }}>next</button>}
+
+                        </>
+
+                    }
+                </SubmissionRequirements>
+                }
+
+                {progress === 1 &&
+                    <div>
+                        <SubmissionActionButtons>
+                            <CancelButton onClick={handleClose}><FontAwesomeIcon icon={faTimes} /></CancelButton>
+                            <SubmitButton onClick={handleSubmit}><FontAwesomeIcon icon={faCheck} /></SubmitButton>
+                        </SubmissionActionButtons>
+                        <h2 style={{ textAlign: 'center', color: '#d3d3d3', marginBottom: '30px' }}>Create Submission</h2>
+                        <EditTLDR isUserEligible={isUserEligible} TLDRimage={TLDRImage} setTLDRImage={setTLDRImage} TLDRText={TLDRText} setTLDRText={setTLDRText} />
+                        <EditLongForm longFormValue={longFormValue} setLongFormValue={setLongFormValue} ReactEditorJS={ReactEditorJS} editorCore={editorCore} />
+                    </div>
+                }
+            </CreateSubmissionContainer>
+        </>
+    )
+}
+
+function EditTLDR({ isUserEligible, TLDRimage, setTLDRImage, TLDRText, setTLDRText }) {
+    const [showWarning, setShowWarning] = useState(false);
+    return (
+        <>
+            <div style={{ width: '50%' }}>
+                <h2 style={{ textAlign: 'left', color: '#d3d3d3' }}>TLDR</h2>
+                <p style={{ color: 'grey' }}>This is what visitors will see on the submission section</p>
+            </div>
+            {showWarning && <WarningMessage style={{ marginBottom: '10px' }}>You may not be eligible to submit</WarningMessage>}
+            <TLDR setShowWarning={setShowWarning} isUserEligible={isUserEligible} TLDRimage={TLDRimage} setTLDRImage={setTLDRImage} TLDRText={TLDRText} setTLDRText={setTLDRText} />
+        </>
+    )
+}
+
+function EditLongForm({ longFormValue, setLongFormValue, ReactEditorJS, editorCore }) {
+
+
+
+    return (
+        <div>
+            <div>
+                <h2 style={{ textAlign: 'left', color: '#d3d3d3' }}>Submission</h2>
+                <p style={{ color: 'grey' }}>What a visitor sees when your content is expanded</p>
+            </div>
+            <SubmissionEdit longFormValue={longFormValue} setLongFormValue={setLongFormValue} ReactEditorJS={ReactEditorJS} editorCore={editorCore} />
+        </div>
+
+    )
+}
+
 
 const EditorWrap = styled.div`
     background-color: white;
-    border-radius: 4px;
-    min-height: 200px;
-    font-size: 20px;
+    border-radius: 10px;
+    border: 2px solid #4d4d4d;
+    font-size: 18px;
     text-align: left;
     padding: 10px;
-    background-color: #1c2128;
+    background-color: #262626;
+    max-height: 80vh;
+    width: 100%;
+    margin: 0 auto;
+    overflow-y: scroll;
+    color: white;
 
     * > .ce-popover--opened{
         color: black;
@@ -137,136 +374,17 @@ const EditorWrap = styled.div`
     }
 `
 
-function SubmissionEdit({ setPreviewData }) {
-    const ReactEditorJS = createReactEditorJS()
-    const editorCore = useRef(null);
-
+function SubmissionEdit({ ReactEditorJS, editorCore, longFormValue, setLongFormValue }) {
 
     const handleInitialize = useCallback(async (instance) => {
         editorCore.current = instance;
     }, [])
 
-    const handleChange = async () => {
-        let editorData = await editorCore.current.save();
-        console.log(editorData)
-        setPreviewData(editorData)
-    }
+
 
     return (
-        <SubmissionEditWrap>
-            <h2 style={{ textAlign: 'center', margin: '10px 0' }}>Editor</h2>
-            <EditorWrap>
-                <ReactEditorJS value={null} onChange={handleChange} ref={editorCore} onInitialize={handleInitialize} tools={EDITOR_JS_TOOLS} />
-            </EditorWrap>
-        </SubmissionEditWrap>
-    )
-}
-
-
-
-const SubmissionContainer = styled.div`
-    flex-grow: 0;
-    //width: ${props => props.expanded ? '100%' : '30%'};
-    border-radius: 10px;
-    min-height: 30ch;
-    font-size: 20px;
-    text-align: left;
-    padding: 10px;
-    background-color: #1c2128;
-    color: #d3d3d3;
-    display: flex;
-    flex-direction: column;
-
-    img{
-        display: block;
-        max-width: 15em;
-        margin: auto;
-        border-radius: 10px;
-    }
-`
-const SubmissionContent = styled.div`
-    border-radius: 10px;
-    min-height: 200px;
-    max-height:  ${props => props.expanded ? 'auto' : '30ch'};;
-    overflow: ${props => props.expanded ? 'visible' : 'hidden'};
-    font-size: 20px;
-    text-align: left;
-    padding: 10px;
-    background-color: #1c2128;
-    color: #d3d3d3;
-    position: relative;
-    margin-bottom: 20px;
-    //animation: ${fade_in} 0.7s ease-in-out;
-    //animation: ${props => props.expanded ? css`${submission_fade} 0.7s forwards` : ''};
-
-
-    img{
-        display: block;
-       // max-width: ${props => props.expanded ? 'none' : '15em'};
-        margin: auto;
-        border-radius: 10px;
-        margin-bottom: 10px;
-    }
-`
-
-
-const SubmissionWrap = styled.div`
-    display: flex;
-    flex-wrap: wrap;
-    //grid-template-columns: 1fr 1fr 1fr;
-    gap: 30px;
-    margin-bottom: 400px;
-`
-const DropdownButton = styled.button`
-    margin-top: auto;
-    width: 100%;
-    justify-self: center;
-    align-self: center;
-    color: grey;
-    font-size: 16px;
-    background-color: transparent;
-    border: none;
-    border-radius: 10px;
-    padding: 10px 0px;
-    &:hover{
-        background-color: #33373d;
-    }
-`
-
-const PreviewHelpMsg = styled.div`
-    background-color: rgba(169, 152, 255, 0.05);
-    color: rgb(169, 152, 255);
-    padding: 10px;
-    border-radius: 10px;
-
-    p{
-        margin: 0;
-        font-size: 16px;
-    }
-`
-
-
-
-function PreviewEdit({ previewData }) {
-    const [expanded, setExpanded] = useState(false);
-    const handleExpand = () => {
-        if (expanded) return setExpanded(false)
-        setExpanded(true)
-    }
-
-    return (
-        <SubmissionPreviewWrap>
-            <h2 style={{ textAlign: 'center', margin: '10px 0' }}>Preview</h2>
-            <SubmissionContainer expanded={expanded}>
-                <SubmissionContent expanded={expanded}>
-                    {Object.keys(previewData).length > 0 && <ParseBlocks data={previewData} />}
-                </SubmissionContent>
-                <DropdownButton onClick={handleExpand}><FontAwesomeIcon icon={expanded ? faChevronUp : faChevronDown} /></DropdownButton>
-            </SubmissionContainer>
-
-            {/*<PreviewHelpMsg>
-                <p>Content here is collapsed to show how it would be displayed on the main submission page. Without expanding, this is what would be visible.</p>
-    </PreviewHelpMsg>*/}
-        </SubmissionPreviewWrap>
+        <EditorWrap>
+            <ReactEditorJS defaultValue={longFormValue} ref={editorCore} onInitialize={handleInitialize} tools={EDITOR_JS_TOOLS} />
+        </EditorWrap>
     )
 }

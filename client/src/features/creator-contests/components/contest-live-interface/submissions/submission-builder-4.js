@@ -126,6 +126,16 @@ export default function SubmissionBuilder({ handleCloseDrawer, submitter_restric
         else return false;
     }
 
+    const timeout = useCallback(async () => {
+        setTimeout(() => {
+            handleCloseDrawer();
+        }, 8.63e7)
+    }, [])
+
+
+    useEffect(() => {
+        timeout();
+    }, [])
 
     const handleClose = () => {
         if (TLDRImage || TLDRText) {
