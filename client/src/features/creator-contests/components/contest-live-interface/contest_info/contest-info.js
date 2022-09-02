@@ -10,8 +10,8 @@ import { Label, labelColorOptions } from "../../common/common_styles";
 import { ContestDurationCheckpointBar } from "../../../../checkpoint-bar/checkpoint-bar";
 import useContestTimekeeper from "../../../../hooks/useContestTimekeeper";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheckCircle, faTimesCircle, faTimes } from "@fortawesome/free-solid-svg-icons";
-import { InterfaceHeading, HeadingSection1, OrgImg, ContestDetails, DetailColumn, DetailRow, CheckpointWrap, CheckpointBottomTag, CheckpointBottom, label_status } from './contest-info-style'
+import { faCheckCircle, faTimesCircle, faTimes, faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
+import { InterfaceHeading, HeadingSection1, OrgImg, ContestDetails, DetailColumn, DetailRow, DetailRowHover, CheckpointWrap, CheckpointBottomTag, CheckpointBottom, label_status } from './contest-info-style'
 import { selectProgressRatio, selectContestState, selectDurations } from "../interface/contest-interface-reducer";
 
 export default function ContestInfo({ contest_settings }) {
@@ -72,16 +72,17 @@ export default function ContestInfo({ contest_settings }) {
                     <DetailColumn>
                         {rewards_sum.map((reward, index) => {
                             if (reward.sum > 0) return (
-                                <DetailRow key={index}>
+                                <DetailRowHover key={index}>
                                     {index === 0 ? <p>Rewards:</p> : <p>Contest Rewards:</p>}
                                     <p>{reward.sum} {reward.symbol}</p>
-                                </DetailRow>
+                                </DetailRowHover>
                             )
                         })}
-                        <DetailRow>
+                        <DetailRowHover>
                             <p>Voter Rewards:</p>
                             <FontAwesomeIcon style={{ fontSize: '1.5em', color: Object.keys(contest_settings.voter_rewards).length > 0 ? '#00a368' : 'red' }} icon={Object.keys(contest_settings.voter_rewards).length > 0 ? faCheckCircle : faTimesCircle} />
-                        </DetailRow>
+
+                        </DetailRowHover>
                     </DetailColumn>
                     <DetailColumn>
                         <DetailRow>

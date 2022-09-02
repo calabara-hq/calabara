@@ -102,82 +102,7 @@ const CancelButton = styled.button`
     }
 `
 
-const SubmissionRequirements = styled.div`
-    display: flex;
-    flex-direction: column;
-`
 
-const EligibilityCheck = styled.div`
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-    > p {
-        margin: 0;
-        margin-right: 20px;
-    }
-    > button {
-        border: double 2px transparent;
-        border-radius: 10px;
-        background-image: linear-gradient(#141416,#141416), linear-gradient(to right,#e00f8e,#2d66dc);
-        background-origin: border-box;
-        background-clip: padding-box,border-box;
-        box-shadow: 0 10px 30px rgb(0 0 0 / 30%), 0 15px 12px rgb(0 0 0 / 22%);
-        padding: 3px 5px;
-    }
-`
-
-const highlight = (props) => keyframes`
-  0% {
-    opacity: 0;
-    transform: scale(1.0);
-
-  }
-  50% {
-    opacity: 1 !important;
-    transform: scale(1.7);
-  }
-  100% {
-    opacity: 1 !important;
-    transform: scale(1.0);
-    display: visible;
-
-  }
-   
-`;
-
-const highlightAnimation = css`
-  animation: ${highlight} 1s ease;
-`;
-
-
-const RestrictionStatus = styled.span`
-    display: inline-block;
-    &::after{
-        font-family: 'Font Awesome 5 Free';
-        margin-left: 20px;
-        content: '${props => props.status ? "\f058" : "\f057"}';
-        color: ${props => props.status ? 'rgb(6, 214, 160)' : 'grey'};
-        font-weight: 900;
-    }
-    
-   // animation: ${highlight} ${props => props.index * 0.9}s ease-in;
-   //color: #1e1e1e;
-    animation: ${highlight} 1s ease-in;
-    animation-delay: ${props => props.index * 0.3}s;
-   
-`
-
-const RestrictionStatusNotConnected = styled.span`
-    display: inline-block;
-    &::after{
-        font-family: 'Font Awesome 5 Free';
-        margin-left: 20px;
-        content:  "\f057";
-        color:  grey;
-        font-weight: 900;
-    }
-
-`
 
 /*
 style={{marginLeft: '20px', color: !isWalletConnected ? 'grey' : (restriction.user_result ? '#06d6a0' : 'red') }}
@@ -190,11 +115,8 @@ export default function SubmissionBuilder({ handleCloseDrawer, submitter_restric
     const [TLDRText, setTLDRText] = useState('')
     const [longFormValue, setLongFormValue] = useState(null)
     const { ens, contest_hash } = useParams();
-    const { isWalletConnected, userSubmissions, restrictionResults, isUserEligible } = useSubmissionEngine(submitter_restrictions);
-    const { walletConnect } = useWallet();
     const ReactEditorJS = createReactEditorJS();
     const editorCore = useRef(null);
-    const [progress, setProgress] = useState(0);
     const { authenticated_post } = useCommon();
     const errorCheck = async () => {
         if (!TLDRText && !TLDRImage) {
@@ -247,55 +169,20 @@ export default function SubmissionBuilder({ handleCloseDrawer, submitter_restric
         })
         */
     }
-    console.log('hi')
-    console.log(Object.values(restrictionResults))
     return (
         <>
             <CreateSubmissionContainer>
-                {progress === 0 && <SubmissionRequirements>
-                    {Object.values(restrictionResults).length > 0 &&
-                        <>
-                            <h2 style={{ marginBottom: '30px' }}>Submission Requirements</h2>
 
-                            {Object.values(restrictionResults).map((restriction, index) => {
-                                if (restriction.type === 'erc20' || restriction.type === 'erc721') {
-                                    return (
-                                        <>
-
-                                            <p style={{ fontSize: '20px' }}>
-                                                {restriction.threshold} {restriction.symbol}
-                                                {isWalletConnected && <RestrictionStatus index={index + 1} isConnected={isWalletConnected} status={restriction.user_result} key={`${isWalletConnected}-${restriction.user_result}`} />}
-                                                {!isWalletConnected && <RestrictionStatusNotConnected />}
-                                            </p>
-                                            {index !== Object.entries(restrictionResults).length - 1 && <p>or</p>}
-                                        </>
-                                    )
-                                }
-                            })}
-                            {!isWalletConnected && <EligibilityCheck>
-                                <p>Connect wallet to check eligibility.</p>
-                                <button onClick={walletConnect}>connect wallet</button>
-                            </EligibilityCheck>
-                            }
-                            {isUserEligible && <button onClick={() => { setProgress(1) }}>next</button>}
-
-                        </>
-
-                    }
-                </SubmissionRequirements>
-                }
-
-                {progress === 1 &&
                     <div>
                         <SubmissionActionButtons>
                             <CancelButton onClick={handleClose}><FontAwesomeIcon icon={faTimes} /></CancelButton>
                             <SubmitButton onClick={handleSubmit}><FontAwesomeIcon icon={faCheck} /></SubmitButton>
                         </SubmissionActionButtons>
                         <h2 style={{ textAlign: 'center', color: '#d3d3d3', marginBottom: '30px' }}>Create Submission</h2>
-                        <EditTLDR isUserEligible={isUserEligible} TLDRimage={TLDRImage} setTLDRImage={setTLDRImage} TLDRText={TLDRText} setTLDRText={setTLDRText} />
+                        <EditTLDR TLDRimage={TLDRImage} setTLDRImage={setTLDRImage} TLDRText={TLDRText} setTLDRText={setTLDRText} />
                         <EditLongForm longFormValue={longFormValue} setLongFormValue={setLongFormValue} ReactEditorJS={ReactEditorJS} editorCore={editorCore} />
                     </div>
-                }
+                
             </CreateSubmissionContainer>
         </>
     )

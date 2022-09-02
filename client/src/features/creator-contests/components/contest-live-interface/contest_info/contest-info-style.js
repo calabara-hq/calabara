@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import { fade_in } from '../../common/common_styles'
 
 const InterfaceHeading = styled.div`
     display: flex;
@@ -7,7 +8,7 @@ const InterfaceHeading = styled.div`
     align-content: center;
     color: #d3d3d3;
     margin-bottom: 70px;
-    margin-top: 50px;
+    //margin-top: 50px;
 `
 
 const HeadingSection1 = styled.div`
@@ -18,33 +19,29 @@ const HeadingSection1 = styled.div`
 `
 
 const OrgImg = styled.img`
-    flex: 0 0 30%;
-    max-width: 15em;
+    max-width: 10em;
     border: none;
-    border-radius: 4px;
-    margin-bottom: 10px;
+    border-radius: 100px;
 `
 const ContestDetails = styled.div`
     display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
     height: 130px;
     width: 100%;
-    flex-direction: row;
-    justify-self: center;
-    align-self: center;
-    margin: 0 auto;
+
 `
 
 const DetailColumn = styled.div`
     //background-color: grey;
     display: flex;
     flex-direction: column;
-    flex: 1 1 33%;
+    flex: 0 0 31%;
     justify-content: center;
-    //border: 2px solid #4d4d4d;
     background-color: #1e1e1e;
     border-radius: 10px;
-    margin: 10px;
     padding: 20px;
+    //margin: 10px;
 
 
     p {
@@ -67,21 +64,77 @@ const DetailRow = styled.div`
     align-items: center;
     //margin-left: 10px;
 
-    &:nth-child(2){
-        //background-color: blue;
-    }
-
     p {
         //margin: auto;
         padding: 5px 0;
         font-weight: bold;
 
     }
+
+`
+
+
+const DetailRowHover = styled.div`
+    position: relative;
+    display: grid;
+    grid-template-columns: 5fr auto;
+    //width: 100%;
+    //justify-items: center;
+    justify-content: center;
+    justify-items: start;
+    //font-weight: bold;
+    text-align: left;
+    align-items: center;
+    //margin-left: 10px;
+
+    &:hover{
+        background-color: rgb(77, 77, 77, .30);
+        //border: 2px solid #4d4d4d;
+        border-radius: 4px;
+        padding: 0px 10px 0px 10px;
+    
+        &::after{
+
+                content: "Labels help users identify and filter submission typesLabels help users identify and filter submission types";
+                position: absolute;
+                text-align: center;
+                color: pink;
+                background-color: #4d4d4d;
+                padding: 3px;
+                border-radius: 4px;
+                top: 0;
+                color: #d9d9d9;
+                transform: translate(0%, -120%);
+                animation: ${fade_in} 0.5s ease-in-out;
+
+            }
+        }
+
+    p {
+        //margin: auto;
+        padding: 5px 0;
+        font-weight: bold;
+        
+
+    }
 `
 
 const CheckpointWrap = styled.div`
+
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    //background-color: pink;
+
+
+
+
+`
+
+const CheckpointTop = styled.div`
     margin: 0 auto;
-    width: 80%;
+    height: fit-content;
+    width: 70%;
     color: #d3d3d3;
     margin-bottom: 1em;
 
@@ -126,10 +179,10 @@ const CheckpointBottomTag = styled.p`
 const CheckpointBottom = styled.div`
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    width: 85%;
+    width: 75%;
     color: #d3d3d3;
     margin: 0 auto;
-    margin-bottom: 50px;
+    //margin-bottom: 50px;
     font-weight: bold;
     
 
@@ -152,4 +205,4 @@ const label_status = [
 
 ]
 
-export { InterfaceHeading, HeadingSection1, OrgImg, ContestDetails, DetailColumn, DetailRow, CheckpointWrap, CheckpointBottomTag, CheckpointBottom, label_status }
+export { InterfaceHeading, HeadingSection1, OrgImg, ContestDetails, DetailColumn, DetailRow, DetailRowHover, CheckpointWrap, CheckpointTop, CheckpointBottomTag, CheckpointBottom, label_status }

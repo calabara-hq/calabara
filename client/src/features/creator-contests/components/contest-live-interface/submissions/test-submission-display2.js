@@ -139,8 +139,8 @@ export default function SubmissionDisplay({ }) {
 
     useEffect(() => {
         fetch(`/creator_contests/fetch_submissions/${ens}/${contest_hash}`)
-        .then(res => res.json())
-        .then(data => set_subs(data))
+            .then(res => res.json())
+            .then(data => set_subs(data))
     }, [])
 
 
@@ -151,7 +151,7 @@ export default function SubmissionDisplay({ }) {
 
                 {subs.map((sub, index) => {
                     return (
-                        <Submission sub={sub} handleExpand={handleExpand}/>
+                        <Submission sub={sub} handleExpand={handleExpand} />
                     )
                 })}
 
@@ -165,10 +165,20 @@ const SubmissionTop = styled.div`
     display: flex;
 `
 
+const SpanDiv = styled.div`
+    display: flex;
+    flex-direction: row;
+    margin-left: auto;
+    grid-gap: 10px;
+
+
+`
+
 const Author = styled.span`
     border: 2px solid #4d4d4d;
     border-radius: 10px;
     padding: 0px 3px;
+
     > p{
         margin: 0;
         color: #4d4d4d;
@@ -179,11 +189,26 @@ const VoteTotals = styled.span`
     border: 2px solid #4d4d4d;
     border-radius: 10px;
     padding: 0px 3px;
-    margin-left: auto;
+ 
     > p{
         margin: 0;
         color: #4d4d4d;
     }
+`
+
+const AuthorVotes = styled.span`
+
+    border: 2px solid #4d4d4d;
+    border-radius: 10px;
+    padding: 0px 3px;
+
+    > p{
+        margin: 0;
+        color: #4d4d4d;
+    }
+
+
+
 `
 
 function Submission({ sub, handleExpand }) {
@@ -222,15 +247,17 @@ function Submission({ sub, handleExpand }) {
                     transitionEnter={false}
                     transitionLeave={false}>
                     <SubmissionTop>
-                        <TagType>Art</TagType>
+                        <SpanDiv>
                         <Author><p>nick.eth</p></Author>
-                        <VoteTotals><p>40 votes</p></VoteTotals>
-                    </SubmissionTop>
-                    <p>{tldr_text}</p>
-                    <LazyLoadImage style={{ maxWidth: '15em', margin: '0 auto', borderRadius: '10px' }} src={tldr_img} effect="blur" />
-                </CSSTransitionGroup>
-            </LazyLoad>
-        </SubmissionPreviewContainer>
+                        <VoteTotals><p>40 total votes</p></VoteTotals>
+                        <AuthorVotes><p>5 votes</p></AuthorVotes>
+                    </SpanDiv>
+                </SubmissionTop>
+                <p>{tldr_text}</p>
+                <LazyLoadImage style={{ maxWidth: '15em', margin: '0 auto', borderRadius: '10px' }} src={tldr_img} effect="blur" />
+            </CSSTransitionGroup>
+        </LazyLoad>
+        </SubmissionPreviewContainer >
 
 
     )
