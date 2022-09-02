@@ -10,8 +10,16 @@ import { Label, labelColorOptions } from "../../common/common_styles";
 import { ContestDurationCheckpointBar } from "../../../../checkpoint-bar/checkpoint-bar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheckCircle, faTimesCircle, faTimes, faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
-import { InterfaceHeading, HeadingSection1, OrgImg, ContestDetails, DetailColumn, DetailRow, DetailRowHover, CheckpointWrap, CheckpointBottomTag, CheckpointBottom, label_status } from './contest-info-style'
+import { InterfaceHeading, HeadingSection1, OrgImg, ContestDetails, DetailColumn, DetailRow, DetailRowHover, SubRewardDetails, CheckpointWrap, CheckpointBottomTag, CheckpointBottom, label_status } from './contest-info-style'
 import { selectProgressRatio, selectContestState, selectDurations } from "../interface/contest-interface-reducer";
+
+
+
+
+
+
+
+
 
 export default function ContestInfo({ contest_settings }) {
     const { ens } = useParams();
@@ -26,7 +34,7 @@ export default function ContestInfo({ contest_settings }) {
 
     console.log(contest_settings)
 
-    const calculateRewardsSum = () => {
+    const calculateRewardsSum = (test_case) => {
         let [erc20_sum, erc721_sum, eth_sum] = [0, 0, 0];
 
 
@@ -42,18 +50,31 @@ export default function ContestInfo({ contest_settings }) {
             if (reward['erc721']) erc721_sum += reward['erc721']
             if (reward['eth']) eth_sum += reward['eth']
         })
+        if (test_case == 1) {
+            return [
 
-        return [
-            { sum: erc20_sum, symbol: contest_settings.reward_options['erc20'] },
-            { sum: 3, symbol: 'NOUN' },//contest_settings.reward_options['erc721'] },
-            { sum: eth_sum, symbol: 'ETH' },
-        ]
+            ]
+        }
+
+        else if (test_case == 2) {
+            return [
+                { sum: 200, symbol: "SHARK" },
+            ]
+        }
+
+        else if (test_case == 3) {
+            return [
+                { sum: 2, symbol: 'NOUN' },//contest_settings.reward_options['erc721'] },
+                { sum: 200000, symbol: 'SHARK' },
+            ]
+        }
     }
 
     let start_date = moment.utc(contest_settings.date_times.start_date).local().format('ddd. M/D hh:mm A').toString()
 
     let end_date = moment.utc(contest_settings.date_times.end_date).local().format('ddd. M/D hh:mm A').toString()
-    let rewards_sum = calculateRewardsSum();
+    let test_case = 3
+    let rewards_sum = calculateRewardsSum(test_case);
     return (
         <>
             <InterfaceHeading>
@@ -69,14 +90,20 @@ export default function ContestInfo({ contest_settings }) {
                         </DetailRow>
                     </DetailColumn>
                     <DetailColumn>
-                        {rewards_sum.map((reward, index) => {
-                            if (reward.sum > 0) return (
-                                <DetailRowHover key={index}>
-                                    {index === 0 ? <p>Rewards:</p> : <p>Contest Rewards:</p>}
-                                    <p>{reward.sum} {reward.symbol}</p>
-                                </DetailRowHover>
-                            )
-                        })}
+                        <DetailRowHover>
+                            <p>Submittor Rewards:</p>
+                            {rewards_sum.length == 0 && <FontAwesomeIcon style={{ fontSize: '1.5em', color: 'red' }} icon={faTimesCircle} />}
+                            {rewards_sum.length == 1 && <p>{rewards_sum[0].sum} {rewards_sum[0].symbol}</p>}
+                            {rewards_sum.length == 2 && <FontAwesomeIcon style={{ fontSize: '1.5em', color: 'green' }} icon={faCheckCircle} />}
+                            <SubRewardDetails>
+                                <p>Reward 1</p>
+                                <p>{rewards_sum[0].sum} {rewards_sum[0].symbol}</p>
+                                <p>Reward 2</p>
+                                <p>{rewards_sum[1].sum} {rewards_sum[1].symbol}</p>
+                            </SubRewardDetails>
+
+                        </DetailRowHover>
+
                         <DetailRowHover>
                             <p>Voter Rewards:</p>
                             <FontAwesomeIcon style={{ fontSize: '1.5em', color: Object.keys(contest_settings.voter_rewards).length > 0 ? '#00a368' : 'red' }} icon={Object.keys(contest_settings.voter_rewards).length > 0 ? faCheckCircle : faTimesCircle} />
