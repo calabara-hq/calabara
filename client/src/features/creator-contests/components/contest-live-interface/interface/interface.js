@@ -24,7 +24,7 @@ const ContestInterfaceWrap = styled.div`
     margin: 0 auto;
 
 `
-const ContestInterSplit = styled.div`
+const InterfaceTopSplit = styled.div`
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -33,7 +33,7 @@ const ContestInterSplit = styled.div`
     
  `
 
-const InterLeft = styled.div`
+const OrgCard = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -45,7 +45,7 @@ const InterLeft = styled.div`
 
 `
 
-export default function ContestInterface({ contest_settings, prompt_data}) {
+export default function ContestInterface({ contest_settings, prompt_data }) {
     const { ens } = useParams();
     const [isSubmissionBuilder, setIsSubmissionBuilder] = useState(false);
     const [createSubmissionIndex, setCreateSubmissionIndex] = useState(-1);
@@ -91,17 +91,16 @@ export default function ContestInterface({ contest_settings, prompt_data}) {
 
     return (
         <>
-      <BackButton link={'/' + ens + '/creator_contests'} text={"contest home"} />
+            <BackButton link={'/' + ens + '/creator_contests'} text={"contest home"} />
             <ContestInterfaceWrap>
-                <ContestInterSplit>
-                    <InterLeft>
+                <InterfaceTopSplit>
+                    <OrgCard>
                         <OrgImg data-src={info.logo}></OrgImg>
                         <Contest_h2_alt>{info.name}</Contest_h2_alt>
                         <a href={'//' + info.website} target="_blank">{info.website}</a>
-
-                    </InterLeft>
-                        <PromptDisplay contest_settings={contest_settings} prompt_data={prompt_data} setIsSubmissionBuilder={setIsSubmissionBuilder} createSubmissionIndex={createSubmissionIndex} setCreateSubmissionIndex={setCreateSubmissionIndex} />
-                </ContestInterSplit>
+                    </OrgCard>
+                    <PromptDisplay contest_settings={contest_settings} prompt_data={prompt_data} setIsSubmissionBuilder={setIsSubmissionBuilder} createSubmissionIndex={createSubmissionIndex} setCreateSubmissionIndex={setCreateSubmissionIndex} />
+                </InterfaceTopSplit>
                 {contest_settings && <ContestInfo contest_settings={contest_settings} />}
                 <RenderCheckpoint />
                 <div ref={builderScroll} >

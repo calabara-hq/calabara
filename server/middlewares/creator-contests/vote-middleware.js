@@ -105,7 +105,8 @@ async function getContestVotingStrategy(req, res, next) {
 async function verifyVotingWindow(ens, contest_hash) {
     let window = await db.query('select _voting, _end from contests where ens=$1 and _hash=$2', [ens, contest_hash])
         .then(clean)
-    if (!(window._voting < created && created < dates._end)) {
+    let created = new Date().toISOString();
+    if (!(window._voting < created && created < window._end)) {
         return res.sendStatus(433)
     }
     return true
