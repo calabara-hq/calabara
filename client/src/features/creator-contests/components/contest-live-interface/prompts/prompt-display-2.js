@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import { ParseBlocks } from "../block-parser";
-import styled from 'styled-components';
-import { Label, labelColorOptions, fade_in } from "../../common/common_styles";
+import styled, { css, keyframes } from 'styled-components'
+
+import { Label, labelColorOptions, fade_in, Contest_h2_alt } from "../../common/common_styles";
 import { contest_data } from "../temp-data";
 import SubmissionModal from "../submissions/edit-submission-modal";
 import Drawer from 'react-modern-drawer'
 import 'react-modern-drawer/dist/index.css'
 import SubmissionBuilder from "../submissions/submission-builder-4";
+import useSubmissionEngine from "../../../../hooks/useSubmissionEngine";
+import useWallet from "../../../../hooks/useWallet";
 
 const PromptContainer = styled.div`
     display: flex;
@@ -26,11 +29,9 @@ const PromptContainerWrap = styled.div`
     flex-wrap: wrap;
     flex-direction: row;
     justify-content: center;
-    align-content: flex-end;
+    align-content: flex-start;
     align-items: center;
     //margin-bottom: auto;
-
-
 
 `
 
@@ -80,30 +81,71 @@ const PromptContent = styled.div`
     width: 100%;
 `
 
-
-const AltSubmissionButton = styled.button`
-    width: 12em;
-    //font-weight: 550;
-    padding: 5px 5px;
-    border: 2px solid ${props => props.isCreating ? 'rgb(138,128,234)' : 'transparent'};
-    border-radius: 4px;
+const SubButton = styled.div`
+    display:flex;
+    flex-direction: row;
     margin-left: auto;
     margin-top: 2em;
     margin-right: 10px;
     margin-bottom: 10px;
-    color: ${props => props.isCreating ? 'rgb(138,128,234)' : 'rgb(138,128,234)'};
-    background-color: ${props => props.isCreating ? 'transparent' : 'rgb(138,128,234,.3)'};
+    grid-gap: 10px;
+`
+
+
+const AltSubmissionButton = styled.button`
+    height: 40px;
+    font-size: 15px;
+    //font-weight: 550;
+    color: rgb(138,128,234);
+    background-color: rgb(138,128,234,.3);
+    border: 2px solid rgb(138,128,234,.3);
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
+    padding: 5px 5px;
     transition: background-color 0.2s ease-in-out;
     transition: color 0.3s ease-in-out;
 
     &:hover{
-        //border: 2px solid white;
-        background-color: ${props => props.isCreating ? 'transparent' : 'rgb(138,128,234)'};
-        color: ${props => props.isCreating ? 'rgb(138,128,234)' : '#fff'};
+        background-color: rgb(138,128,234);
+        color: #fff;
 
     }
 
+    &:disabled{
+
+    cursor: not-allowed;
+    color: rgb(138, 128, 234, .3);
+    background-color: #262626;
+    
+    }
+
 `
+
+
+const ConnectWalletButton = styled.button`
+    height: 40px;
+    //width: 12em;
+    font-size: 15px;
+    //font-weight: 550;
+    color: #f2f2f2;
+    background-image: linear-gradient(#262626, #262626),linear-gradient(90deg,#e00f8e,#2d66dc);
+    background-origin: border-box;
+    background-clip: padding-box,border-box;
+    border: 2px double transparent;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
+    padding: 5px 20px;
+    cursor: pointer;
+
+    &:hover{
+        background-color: #1e1e1e;
+        background-image: linear-gradient(#141416, #141416),
+        linear-gradient(to right, #e00f8e, #2d66dc);
+
+    }
+    
+`
+
 const DrawerWrapper = styled.div`
     display: flex;
     flex-direction: column;
@@ -129,11 +171,98 @@ const FadeDiv = styled.div`
 
 `
 
+const SubmissionRequirements = styled.div`
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #262626;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
+    border: 2px solid #4d4d4d;
+    border-radius: 4px;
+    padding: 5px;
+    margin: 20px auto;
+`
+
+const EligibilityCheck = styled.div`
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    > p {
+        margin: 0;
+        margin-right: 20px;
+    }
+    > button {
+        border: double 2px transparent;
+        border-radius: 10px;
+        background-image: linear-gradient(#141416,#141416), linear-gradient(to right,#e00f8e,#2d66dc);
+        background-origin: border-box;
+        background-clip: padding-box,border-box;
+        box-shadow: 0 10px 30px rgb(0 0 0 / 30%), 0 15px 12px rgb(0 0 0 / 22%);
+        padding: 3px 5px;
+    }
+`
+
+const highlight = (props) => keyframes`
+  0% {
+    opacity: 0;
+    transform: scale(1.0);
+
+  }
+  50% {
+    opacity: 1 !important;
+    transform: scale(1.7);
+  }
+  100% {
+    opacity: 1 !important;
+    transform: scale(1.0);
+    display: visible;
+
+  }
+   
+`;
+
+const highlightAnimation = css`
+  animation: ${highlight} 1s ease;
+`;
+
+
+const RestrictionStatus = styled.span`
+    display: inline-block;
+    &::after{
+        font-family: 'Font Awesome 5 Free';
+        margin-left: 20px;
+        content: '${props => props.status ? "\f058" : "\f057"}';
+        color: ${props => props.status ? 'rgb(6, 214, 160)' : 'grey'};
+        font-weight: 900;
+    }
+    
+   // animation: ${highlight} ${props => props.index * 0.9}s ease-in;
+   //color: #1e1e1e;
+    animation: ${highlight} 1s ease-in;
+    animation-delay: ${props => props.index * 0.3}s;
+   
+`
+
+const RestrictionStatusNotConnected = styled.span`
+    display: inline-block;
+    &::after{
+        font-family: 'Font Awesome 5 Free';
+        margin-left: 20px;
+        content:  "\f057";
+        color:  grey;
+        font-weight: 900;
+    }
+
+`
 
 export default function PromptDisplay({ setIsSubmissionBuilder, createSubmissionIndex, setCreateSubmissionIndex, contest_settings }) {
     const [openPromptIndex, setOpenPromptIndex] = useState(-1);
     const [modalOpen, setModalOpen] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
+    const { isWalletConnected, userSubmissions, restrictionResults, isUserEligible } = useSubmissionEngine(contest_settings.submitter_restrictions);
+    const { walletConnect } = useWallet();
+
 
 
     const handleOpenPrompt = (index) => {
@@ -194,6 +323,7 @@ export default function PromptDisplay({ setIsSubmissionBuilder, createSubmission
         setIsCreating(false)
     }
     console.log(contest_settings)
+    console.log(isUserEligible)
 
     return (
         <PromptContainerWrap>
@@ -211,6 +341,7 @@ export default function PromptDisplay({ setIsSubmissionBuilder, createSubmission
                     )
                 })}
             </PromptContainer>
+
             <Drawer
                 open={openPromptIndex > -1}
                 onClose={() => handlePromptClick(null, openPromptIndex)}
@@ -223,20 +354,48 @@ export default function PromptDisplay({ setIsSubmissionBuilder, createSubmission
                     <DrawerWrapper>
 
                         {!isCreating &&
-                            <PromptWrap>
-                                <PromptTop>
-                                    <h4>{contest_data.prompts[openPromptIndex].title}</h4>
-                                    <Label color={labelColorOptions[contest_data.prompts[openPromptIndex].label.color]}>{contest_data.prompts[openPromptIndex].label.name}</Label>
-                                </PromptTop>
-                                <PromptContent>
-                                    <ParseBlocks data={contest_data.prompts[openPromptIndex]} />
-                                    <AltSubmissionButton onClick={handleCreateSubmission}>Create Submission</AltSubmissionButton>
-                                </PromptContent>
-                            </PromptWrap>
+                            <>
+                                <PromptWrap>
+                                    <PromptTop>
+                                        <h4>{contest_data.prompts[openPromptIndex].title}</h4>
+                                        <Label color={labelColorOptions[contest_data.prompts[openPromptIndex].label.color]}>{contest_data.prompts[openPromptIndex].label.name}</Label>
+                                    </PromptTop>
+                                    <PromptContent>
+                                        <ParseBlocks data={contest_data.prompts[openPromptIndex]} />
+                                    </PromptContent>
+                                </PromptWrap>
+
+                                <SubmissionRequirements>
+                                    {Object.values(restrictionResults).length > 0 &&
+                                        <>
+                                            <Contest_h2_alt style={{ marginBottom: '30px', marginTop: '20px' }}>Submission Requirements</Contest_h2_alt>
+                                            {Object.values(restrictionResults).map((restriction, index) => {
+                                                if (restriction.type === 'erc20' || restriction.type === 'erc721') {
+                                                    return (
+                                                        <>
+                                                            <p style={{ fontSize: '18px' }}>
+                                                                {restriction.threshold} {restriction.symbol}
+                                                                {isWalletConnected && <RestrictionStatus index={index + 1} isConnected={isWalletConnected} status={restriction.user_result} key={`${isWalletConnected}-${restriction.user_result}`} />}
+                                                                {!isWalletConnected && <RestrictionStatusNotConnected />}
+                                                            </p>
+                                                            {index !== Object.entries(restrictionResults).length - 1 && <p>or</p>}
+                                                        </>
+                                                    )
+                                                }
+                                            })}
+
+                                            <SubButton>
+                                                {!isWalletConnected && <ConnectWalletButton onClick={walletConnect}>Connect Wallet</ConnectWalletButton>}
+                                                <AltSubmissionButton disabled={!isUserEligible} onClick={handleCreateSubmission}>Create Submission</AltSubmissionButton>
+                                            </SubButton>
+                                        </>
+                                    }
+                                </SubmissionRequirements>
+                            </>
                         }
                         {isCreating &&
                             <FadeDiv>
-                                <SubmissionBuilder handleCloseDrawer={handleCloseDrawer} submitter_restrictions={contest_settings.submitter_restrictions}/>
+                                <SubmissionBuilder handleCloseDrawer={handleCloseDrawer} submitter_restrictions={contest_settings.submitter_restrictions} />
                             </FadeDiv>
                         }
                     </DrawerWrapper>

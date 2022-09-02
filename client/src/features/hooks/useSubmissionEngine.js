@@ -32,19 +32,23 @@ export default function useSubmissionEngine(submitter_restrictions) {
             // check if wallet already submitted in this contest
             (async () => {
                 let [user_subs, eligibility] = await Promise.all([
-                    authenticated_post('/creator_contests/get_user_submissions', { contest_hash: contest_hash, ens: ens}).then(result => { return result.data }),
-                    authenticated_post('/creator_contests/check_user_eligibility', { contest_hash: contest_hash, ens: ens }).then(result => { return result.data })
+                    authenticated_post('/creator_contests/get_user_submissions', { contest_hash: contest_hash, ens: ens }).then(result => { return result.data }),
+                    axios.post('/creator_contests/check_user_eligibility', { contest_hash: contest_hash, ens: ens, walletAddress: walletAddress }).then(result => { return result.data })
                 ])
                 setUserSubmissions(user_subs);
                 setRestrictionResults(eligibility);
 
-                for(const el of eligibility){
-                    if(el.user_result && user_subs.length < 1){
-                       return setIsUserEligible(true)
+                for (const el of eligibility) {
+                    if (el.user_result && user_subs.length < 1) {
+                        return setIsUserEligible(true)
                     }
                 }
             })();
 
+        }
+
+        else {
+            setIsUserEligible(false)
         }
     }, [isConnected])
 

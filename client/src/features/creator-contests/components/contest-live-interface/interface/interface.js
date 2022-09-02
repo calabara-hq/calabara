@@ -3,68 +3,47 @@ import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import ContestInfo from "../contest_info/contest-info";
 import useContestState from "../../../../hooks/useContestState";
-import PromptDisplay from '../prompts/prompt-display-2';
+import PromptDisplay from '../prompts/prompt-display-3';
 import SubmissionBuilder from '../submissions/submission-builder-3'
 import SubmissionDisplay from '../submissions/test-submission-display2';
 import { useDispatch, useSelector } from "react-redux";
 import { ContestDurationCheckpointBar } from "../../../../checkpoint-bar/checkpoint-bar";
 import { selectProgressRatio, selectDurations } from './contest-interface-reducer';
-import { InterfaceHeading, HeadingSection1, OrgImg, ContestDetails, DetailRow, CheckpointWrap, CheckpointBottomTag, CheckpointBottom, label_status } from '../contest_info/contest-info-style';
+import { InterfaceHeading, HeadingSection1, OrgImg, ContestDetails, DetailRow, CheckpointWrap, CheckpointTop, CheckpointBottomTag, CheckpointBottom, label_status } from '../contest_info/contest-info-style';
 import { selectDashboardInfo } from "../../../../dashboard/dashboard-info-reducer";
 import { selectLogoCache } from "../../../../org-cards/org-cards-reducer";
 import useCommon from "../../../../hooks/useCommon";
 import { Contest_h2_alt } from '../../common/common_styles';
+import BackButton from '../../../../back-button/back-button';
 import * as WebWorker from '../../../../../app/worker-client.js'
 
 const ContestInterfaceWrap = styled.div`
-    width: 70vw;
-    margin: 0 auto;
-    //border: 1px solid #22272e;
-    //background-color: #22272e;
-    border-radius: 10px;
-    padding: 10px;
     display: flex;
     flex-direction: column;
+    width: 70vw;
+    margin: 0 auto;
+
 `
 const ContestInterSplit = styled.div`
     display: flex;
     flex-direction: row;
-    padding-top: 20px;
+    justify-content: center;
+    height: 250px;
+    margin-bottom: 20px;
     
-
-
-
-
  `
 
-
-
-const PromptRight = styled.div`
-    display: flex;
-    width: 70%;
-
-
-
-
-`
-
-
-
-
-const ImgWrap = styled.div`
+const InterLeft = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    //height: 100%;
-    width: 30%;
-    margin: auto;
-
-
+    flex: 0 1 25%;
+    justify-content: space-evenly;
+    align-items: center;
+    background-color: #1e1e1e;
+    border-radius: 10px;
 
 `
-
-
-
 
 export default function ContestInterface({ contest_settings }) {
     const { ens } = useParams();
@@ -111,23 +90,26 @@ export default function ContestInterface({ contest_settings }) {
 
 
     return (
-        <ContestInterfaceWrap>
-            <ContestInterSplit>
-                <ImgWrap>
-                    <OrgImg data-src={info.logo}></OrgImg>
-                    <Contest_h2_alt>{info.name}</Contest_h2_alt>
-                </ImgWrap>
-                <PromptRight>
-                    <PromptDisplay contest_settings={contest_settings} setIsSubmissionBuilder={setIsSubmissionBuilder} createSubmissionIndex={createSubmissionIndex} setCreateSubmissionIndex={setCreateSubmissionIndex} />
-                </PromptRight>
-            </ContestInterSplit>
-            {contest_settings && <ContestInfo contest_settings={contest_settings} />}
-            <RenderCheckpoint />
-            <div ref={builderScroll} >
-                {isSubmissionBuilder && <SubmissionBuilder setIsSubmissionBuilder={setIsSubmissionBuilder} setCreateSubmissionIndex={setCreateSubmissionIndex} />}
-            </div>
-            {!isSubmissionBuilder && <SubmissionDisplay />}
-        </ContestInterfaceWrap>
+        <>
+      <BackButton link={'/' + ens + '/creator_contests'} text={"contest home"} />
+            <ContestInterfaceWrap>
+                <ContestInterSplit>
+                    <InterLeft>
+                        <OrgImg data-src={info.logo}></OrgImg>
+                        <Contest_h2_alt>{info.name}</Contest_h2_alt>
+                        <a href={'//' + info.website} target="_blank">{info.website}</a>
+
+                    </InterLeft>
+                        <PromptDisplay contest_settings={contest_settings} setIsSubmissionBuilder={setIsSubmissionBuilder} createSubmissionIndex={createSubmissionIndex} setCreateSubmissionIndex={setCreateSubmissionIndex} />
+                </ContestInterSplit>
+                {contest_settings && <ContestInfo contest_settings={contest_settings} />}
+                <RenderCheckpoint />
+                <div ref={builderScroll} >
+                    {isSubmissionBuilder && <SubmissionBuilder setIsSubmissionBuilder={setIsSubmissionBuilder} setCreateSubmissionIndex={setCreateSubmissionIndex} />}
+                </div>
+                {!isSubmissionBuilder && <SubmissionDisplay />}
+            </ContestInterfaceWrap>
+        </>
     )
 }
 
@@ -137,10 +119,10 @@ function RenderCheckpoint() {
     const durations = useSelector(selectDurations);
 
     return (
-        <>
-            <CheckpointWrap>
+        <CheckpointWrap>
+            <CheckpointTop>
                 <ContestDurationCheckpointBar percent={barProgress} />
-            </CheckpointWrap>
+            </CheckpointTop>
             <CheckpointBottom>
                 {durations.map((duration, index) => {
                     return (
@@ -148,6 +130,6 @@ function RenderCheckpoint() {
                     )
                 })}
             </CheckpointBottom>
-        </>
+        </CheckpointWrap>
     )
 }
