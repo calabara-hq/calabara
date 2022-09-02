@@ -56,7 +56,7 @@ const NewPromptButton = styled.button`
     color: rgb(6, 214, 160);
     background-color: rgb(6, 214, 160, .3);
     border: 2px solid transparent;
-    border-radius: 4px;
+    border-radius: 10px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
     padding: 5px 10px;
     margin-left: auto;
@@ -80,9 +80,11 @@ const PromptStyle = styled.div`
     grid-gap: 20px;
     justify-content: flex-start;
     align-items: flex-start;
-    border: 2px solid black;
+    border: 2px solid #4d4d4d;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
+
     border-radius: 4px;
-    background-color: #1c2128;
+    background-color: #262626;
     color: #d3d3d3;
     padding: 5px;
     cursor: pointer;

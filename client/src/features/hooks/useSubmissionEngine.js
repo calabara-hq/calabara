@@ -36,6 +36,7 @@ export default function useSubmissionEngine(submitter_restrictions) {
                         return setIsUserEligible(true)
                     }
                 }
+
                 for (const el of eligibility) {
                     if (el.user_result && user_subs.length < 1) {
                         return setIsUserEligible(true)
@@ -43,6 +44,10 @@ export default function useSubmissionEngine(submitter_restrictions) {
                 }
             })();
 
+        }
+
+        else {
+            setIsUserEligible(false)
         }
     }, [isConnected])
 

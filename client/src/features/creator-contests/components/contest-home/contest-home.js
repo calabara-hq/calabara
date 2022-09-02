@@ -1,21 +1,21 @@
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import axios from 'axios'
 import { useParams, useHistory } from "react-router-dom";
 import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPencil, faPlus } from '@fortawesome/free-solid-svg-icons';
-
-import { OrgImg } from "../contest-live-interface/contest_info/contest-info-style";
-import { Label, labelColorOptions, Contest_h3_alt } from "../common/common_styles";
-import { label_status } from "../contest-live-interface/contest_info/contest-info-style";
+import BackButton from "../../../back-button/back-button";
+import { Label, labelColorOptions, Contest_h2_alt, Contest_h3_alt, TagType } from "../common/common_styles";
+import { label_status, OrgImg } from "../contest-live-interface/contest_info/contest-info-style";
 import contestInterfaceReducer, { selectContestState } from "../contest-live-interface/interface/contest-interface-reducer";
 import { contest_data } from "../contest-live-interface/temp-data";
-import CreatorContestLogo from "../../../../img/creator-contest.png"
+import CreatorContestLogo from "../../../../img/cc.png"
 import moment from "moment";
 import useCommon from "../../../hooks/useCommon";
 import { selectDashboardInfo } from "../../../dashboard/dashboard-info-reducer";
-
+import { selectLogoCache } from "../../../org-cards/org-cards-reducer";
+import * as WebWorker from '../../../../app/worker-client.js'
 
 
 const ContestTag = styled.p`
@@ -31,47 +31,66 @@ const ContestHomeWrap = styled.div`
     flex-direction: column;
     width: 70vw;
     margin: 0 auto;
-    //border: 1px solid #22272e;
-    //background-color: #22272e;
-    border-radius: 10px;
-    padding: 10px;
+
 `
 
 const ContestHomeSplit = styled.div`
     display: flex;
     flex-direction: row;
-    justify-content: space-evenly;
-    height: 300px;
+    justify-content: center;
+    height: 250px;
     margin-bottom: 20px;
-    margin-right: 10px;
+    
     
  `
+
+const HomeLeft = styled.div`
+    display: flex;
+    flex-direction: column;
+    flex: 0 1 25%;
+    justify-content: space-evenly;
+    align-items: center;
+    background-color: #1e1e1e;
+    border-radius: 10px;
+
+`
+
+const OrgImgTo = styled.img`
+    max-width: 10em;
+    border: none;
+    border-radius: 100px;
+    //margin-bottom: 10px;
+`
 
 const HomeRight = styled.div`
     display: flex;
     flex: 0 0 70%;
-    flex-direction: column;
+    flex-direction: row-reverse;
     align-items: center;
     justify-content: center;   
     background-color: #1e1e1e;
     border-radius: 10px;
-    margin-left: 10px;
+    margin-left: 20px;
     padding: 20px;
+
 
 `
 
-const TopRight = styled.div`
+const TopText = styled.div` 
     display: flex;
-    flex: 0 0 50%;
     flex-direction: column;
-    align-items: center;
-    width: 100%;
-    //background-color: pink;
-    margin-bottom: 10px;
-    > img {
-        max-width: 90%;
-        max-height: 90%;
 
+
+    > h3 {
+        font-size: 25px;
+        color: #d9d9d9;
+        text-align: center;
+        margin: 0px 0px 10px 0px;
+    }
+    > li{
+        font-size: 15px;
+        color: pink;
+        text-align: left;
 
     }
 
@@ -80,21 +99,32 @@ const TopRight = styled.div`
 
 `
 
-
-const ImgWrap = styled.div`
+const TopRight = styled.div`
     display: flex;
-    flex: 0 0 25%;
+    flex-direction: column;
+    flex: 1 0 40%;
+    align-items: center;
     justify-content: center;
-    border: 2px solid #4d4d4d;
-    border-radius: 10px;
+
+    > h1 {
+        color: #d9d9d9;
+        font-size: 35px;
+        
+    }
+
+    > img {
+        max-width: 80%;
+        max-height: 90%;
+
+    }
 
 `
 
 const SplitBottom = styled.div`
     display: flex;
     flex-direction: row;
-    justify-content: space-evenly;
-    align-items: flex-start;
+    justify-content: center;
+    margin-bottom: 70px;
 
 
 
@@ -104,9 +134,12 @@ const RoundContainer = styled.div`
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    align-content: flex-start;
     flex: 0 0 70%;
+    height: fit-content;
     background-color: #1e1e1e;
     border-radius: 10px;
+    margin-right: 20px;
 
 `
 
@@ -135,56 +168,25 @@ const RoundWrap = styled.div`
 `
 
 const SplitBotR = styled.div`
-
     display: flex;
     flex-direction: column;
+    justify-content: flex-start;
     flex: 0 0 25%;
 
-
-
-
-
 `
 
-const ButContainer = styled.div`
-    display: flex;
-    flex: 0 0 25%;
-
-
-
-
-
-`
-
-const StatContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    height: 200px;
-    justify-content: center;
-    align-items: center;
-    border: 2px solid #4d4d4d;
-    border-radius: 10px;
-    margin-right: 10px;
-    margin-top: 10px;
-
-
-
-`
 const NewContest = styled.button`
     font-size: 16px;
     font-weight: 550;
     color: rgb(6, 214, 160);
     background-color: rgb(6, 214, 160, .3);
     border: 2px solid transparent;
-    border-radius: 4px;
+    border-radius: 10px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
     padding: 5px 10px;
-    margin-right: 10px;
     transition: background-color 0.2s ease-in-out;
     transition: color 0.3s ease-in-out;
     transition: visibility 0.2s, max-height 0.3s ease-in-out;
-
-
 
     &:hover{
         transform: scale(1.01);
@@ -192,9 +194,44 @@ const NewContest = styled.button`
         background-color: rgb(6, 214, 160);
         color: #fff;
     }
+
 `
 
+const StatContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    height: 250px;
+    justify-content: space-evenly;
+    align-items: center;
+    background-color: #1e1e1e;
+    //border: 2px solid #4d4d4d;
+    border-radius: 10px;
+    //margin-right: 10px;
+    margin-top: 20px;
 
+    > p {
+        color: #d9d9d9;
+        font-weight: 550;
+
+    }
+
+    > *{
+        text-align: center;
+    }
+
+`
+
+const OptionType = styled.p`
+    color: lightgrey;
+    margin: 10px 0;
+
+    & > span{
+        padding: 3px 3px;
+        border-radius: 4px;
+        font-size: 15px;
+        font-weight: 550;
+    }
+`
 
 
 
@@ -208,6 +245,10 @@ export default function ContestHomepage({ }) {
     const history = useHistory();
     const { batchFetchDashboardData } = useCommon()
     const info = useSelector(selectDashboardInfo)
+    const logoCache = useSelector(selectLogoCache);
+    const dispatch = useDispatch()
+
+
 
 
 
@@ -221,66 +262,94 @@ export default function ContestHomepage({ }) {
             set_all_contests(res.data)
             let stats = await axios.get(`/creator_contests/org_contest_stats/${ens}`);
             set_total_rewards([stats.data.eth, stats.data.erc20, stats.data.erc721])
+
         })();
     }, [])
 
+    useEffect(() => {
+        if (info.ens == ens) {
+            WebWorker.processImages(dispatch, logoCache);
 
-    const handleClick = (_hash) => {
+        }
+    }, [info])
+
+
+
+    const handleInterface = (_hash) => {
         history.push(`creator_contests/${_hash}`)
     }
+
+    const handleSettings = () => {
+        history.push(`contest_settings`)
+    }
+
+
     return (
-        <ContestHomeWrap>
-            <ContestHomeSplit>
-                <ImgWrap>
-                <Contest_h3_alt>{info.name}</Contest_h3_alt>
+        <>
+            <BackButton link={'/' + ens + '/dashboard'} text={"dashboard"} />
+            <ContestHomeWrap>
+                <ContestHomeSplit>
+                    <HomeLeft>
+                        <OrgImgTo data-src={info.logo}></OrgImgTo>
+                        <Contest_h2_alt>{info.name}</Contest_h2_alt>
+                        <a href={'//' + info.website} target="_blank">{info.website}</a>
+                    </HomeLeft>
+                    <HomeRight>
+                        <TopText>
+                        <h3>Earn Retroactive Rewards through contributions</h3>
+                        <li>Incentivize creatives, artists, and builders</li>
+                        <li>Path to membership via proof of work</li>
+                        <li>Attract more creatives to the ecosystem</li>
+                        <li>Gamify collaboration amongst community members</li>
+                        <li>Curate excellent contributions</li>
+                        <li>Increase governane participation</li>
+                        <li>Most importantly, HAVE FUN :)</li>
 
-                </ImgWrap>
-                <HomeRight>
-                    <TopRight>
-                        <img src={CreatorContestLogo} />
-                    </TopRight>
-                    <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English.</p>
-                </HomeRight>
-            </ContestHomeSplit>
-            <SplitBottom>
-                {all_contests &&
-                    <RoundContainer>
-                        {all_contests.map((el, index) => {
-                            return (
-                                <RoundWrap onClick={() => handleClick(el._hash)}>
-                                    <ContestTag>Contest {index + 1}</ContestTag>
-                                    <Label color={labelColorOptions[0]}>label</Label>
-                                    <CalculateState contest_info={el} />
-                                </RoundWrap>
-
-
-                            )
-
-                        })}
-
-                    </RoundContainer>
-                }
-                <SplitBotR>
-                    <NewContest><FontAwesomeIcon icon={faPlus} /> New Contest </NewContest>
-
-                    <StatContainer>
-                        <h3>{info.name}</h3>
-                        <p>ETH: {total_rewards[0] ? total_rewards[0] : '--'}</p>
-                        <p>ERC-20: {total_rewards[1] ? total_rewards[1] : '--'}</p>
-                        <p>ERC-721: {total_rewards[2] ? total_rewards[2] : '--'}</p>
-
-                    </StatContainer>
-                </SplitBotR>
-
-            </SplitBottom>
+                        </TopText>
+                        <TopRight>
+                            <img src={CreatorContestLogo} />
+                        </TopRight>
+                    </HomeRight>
+                </ContestHomeSplit>
+                <SplitBottom>
+                    {all_contests &&
+                        <RoundContainer>
+                            {all_contests.map((el, index) => {
+                                return (
+                                    <RoundWrap onClick={() => handleInterface(el._hash)}>
+                                        <ContestTag>Contest {index + 1}</ContestTag>
+                                        <Label color={labelColorOptions[0]}>label</Label>
+                                        <CalculateState contest_info={el} />
+                                    </RoundWrap>
 
 
+                                )
+
+                            })}
+
+                        </RoundContainer>
+                    }
+                    <SplitBotR>
+                        <NewContest onClick={handleSettings}><FontAwesomeIcon icon={faPlus} /> New Contest </NewContest>
+
+                        <StatContainer>
+                            <Contest_h3_alt>Total Rewards Distributed: </Contest_h3_alt>
+                            <OptionType><TagType>ETH:</TagType> {total_rewards[0] ? total_rewards[0] : '--'}</OptionType>
+                            <OptionType><TagType type='erc20'>ERC-20:</TagType> {total_rewards[1] ? total_rewards[1].symbol : '--'}</OptionType>
+                            <OptionType><TagType type='erc721'>ERC-721:</TagType>  {total_rewards[2] ? total_rewards[2].symbol : '--'}</OptionType>
+                        </StatContainer>
+                    </SplitBotR>
+
+                </SplitBottom>
 
 
 
 
 
-        </ContestHomeWrap>
+
+
+            </ContestHomeWrap>
+        </>
     )
 
 
