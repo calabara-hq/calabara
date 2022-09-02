@@ -13,7 +13,7 @@ const path = require('path')
 const mediaBasePath = path.normalize(path.join(__dirname, '../../contest-assets/staging/media'))
 const submissionBasePath = path.normalize(path.join(__dirname, '../../contest-assets/staging/submissions'))
 
-const stale_threshold = 60 // files older than this var (minutes) will be deleted in garbage collection
+const stale_threshold = 1440 // files older than this var (minutes) will be deleted in garbage collection
 
 
 

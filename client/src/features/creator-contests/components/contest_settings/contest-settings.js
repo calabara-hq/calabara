@@ -2,7 +2,7 @@ import React, { useEffect, useReducer, useRef, useState } from "react"
 import ContestDateTimeBlock from "./datepicker/start-end-date"
 import ContestRewardsBlock from "./contest_rewards/contest-rewards"
 import ContestParticipantRestrictions from "./contest_gatekeeper/particpant_restrictions";
-import PromptBuilder from "./prompt_builder/prompt_builder";
+import PromptBuilder from "./prompt_builder/prompt-builder-2";
 import { RainbowThemeContainer } from 'react-rainbow-components';
 import SimpleInputs from "./contest_simple_inputs/contest_simple_inputs";
 import styled from 'styled-components'
@@ -10,6 +10,7 @@ import VotingPolicy from "./voting_policy/voting-policy";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import useDashboardRules from "../../../hooks/useDashboardRules";
+import useCommon from "../../../hooks/useCommon";
 
 const theme = {
     rainbow: {
@@ -76,26 +77,24 @@ function reducer(state, action) {
     }
 }
 
+
+const initialPromptData = {
+    prompt_heading: null,
+    prompt_heading_error: false,
+    prompt_label: null,
+    prompt_label_error: false,
+    prompt_label_color: 0,
+    prompt_content_error: false,
+    prompt_cover_image: null
+}
+
+
 const defaultPossibleRewards = {
     'ETH': {
         type: 'ETH',
         symbol: 'ETH',
         img: 'eth'
-    },
-    /*
-    'erc721': {
-        type: 'erc721',
-        symbol: 'NOUN',
-        address: '0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03'
-    },
-    'erc20': {
-        type: 'erc20',
-        symbol: 'SHARK',
-        address: '0x232AFcE9f1b3AAE7cb408e482E847250843DB931',
-        0xdac17f958d2ee523a2206206994597c13d831ec7
-        decimal: '18'
     }
-    */
 }
 
 
@@ -124,6 +123,10 @@ export default function ContestSettings() {
     const { ens } = useParams();
     const { populateDashboardRules } = useDashboardRules();
 
+
+    const [promptBuilderData, setPromptBuilderData] = useReducer(reducer, initialPromptData)
+    const promptEditorCore = useRef(null);
+    const { authenticated_post } = useCommon();
 
 
     useEffect(() => {
@@ -163,7 +166,7 @@ export default function ContestSettings() {
     }, [date_0])
 
 
-    const printContestData = () => {
+    const handleSave = async () => {
         let strategy
         if (votingStrategy.strategy_type === 'arcade') {
             strategy = {
@@ -186,6 +189,8 @@ export default function ContestSettings() {
             }
         }
 
+        const promptEditorData = await promptEditorCore.current.save();
+        console.log(promptEditorData)
 
         let contest_data = {
             date_times: {
@@ -201,8 +206,17 @@ export default function ContestSettings() {
             voting_strategy: strategy
         }
 
+        let prompt_data = {
+            editorData: promptEditorData,
+            coverImage: promptBuilderData.prompt_cover_image ? promptBuilderData.prompt_cover_image.url : null,
+            promptLabel: promptBuilderData.prompt_label,
+            promptLabelColor: promptBuilderData.prompt_label_color
+        }
+
+
         console.log(contest_data)
-        axios.post('/creator_contests/create_contest', { ens: ens, contest_settings: contest_data }).then(res => console.log(res))
+        console.log(prompt_data)
+        authenticated_post('/creator_contests/create_contest', { ens: ens, contest_settings: contest_data, prompt_data: prompt_data }).then(res => console.log(res))
     }
 
     return (
@@ -248,9 +262,9 @@ export default function ContestSettings() {
                 />
 
                 <VotingPolicy rewardOptions={rewardOptions} votingStrategy={votingStrategy} setVotingStrategy={setVotingStrategy} />
-                <PromptBuilder />
+                <PromptBuilder promptBuilderData={promptBuilderData} setPromptBuilderData={setPromptBuilderData} promptEditorCore={promptEditorCore} />
                 <SimpleInputs />
-                <button onClick={printContestData}> print contest data</button>
+                <button onClick={handleSave}> save</button>
             </ContestSettingsWrap >
         </RainbowThemeContainer>
     )

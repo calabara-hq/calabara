@@ -3,10 +3,9 @@ import { ParseBlocks } from "../block-parser";
 import styled from 'styled-components';
 import { Label, labelColorOptions, fade_in } from "../../common/common_styles";
 import { contest_data } from "../temp-data";
-import SubmissionModal from "../submissions/edit-submission-modal";
 import Drawer from 'react-modern-drawer'
 import 'react-modern-drawer/dist/index.css'
-import SubmissionBuilder from "../submissions/submission-builder-4";
+import SubmissionBuilder from "../submissions/submission-builder";
 
 const PromptContainer = styled.div`
     display: flex;

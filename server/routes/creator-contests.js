@@ -58,10 +58,10 @@ contests.get('/fetch_submissions/*', async function (req, res, next) {
 // create a contest
 
 // TURTLES protect this
-contests.post('/create_contest', createContest, async function (req, res, next) {
-    const { ens, contest_settings } = req.body
+contests.post('/create_contest', authenticateToken, isAdmin, createContest, async function (req, res, next) {
+    const { ens, contest_settings, prompt_data } = req.body
     const { start_date, voting_begin, end_date } = contest_settings.date_times
-    await db.query('insert into contests (ens, created, _start, _voting, _end, _hash, settings) values ($1, $2, $3, $4, $5, $6, $7)', [ens, req.created, start_date, voting_begin, end_date, req.hash, contest_settings])
+    await db.query('insert into contests (ens, created, _start, _voting, _end, _hash, settings, prompt_data, locked, pinned) values ($1, $2, $3, $4, $5, $6, $7, $8, false, false)', [ens, req.created, start_date, voting_begin, end_date, req.hash, contest_settings, prompt_data])
     res.sendStatus(200)
 })
 
