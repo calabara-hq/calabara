@@ -45,7 +45,7 @@ const InterLeft = styled.div`
 
 `
 
-export default function ContestInterface({ contest_settings }) {
+export default function ContestInterface({ contest_settings, prompt_data}) {
     const { ens } = useParams();
     const [isSubmissionBuilder, setIsSubmissionBuilder] = useState(false);
     const [createSubmissionIndex, setCreateSubmissionIndex] = useState(-1);
@@ -100,7 +100,7 @@ export default function ContestInterface({ contest_settings }) {
                         <a href={'//' + info.website} target="_blank">{info.website}</a>
 
                     </InterLeft>
-                        <PromptDisplay contest_settings={contest_settings} setIsSubmissionBuilder={setIsSubmissionBuilder} createSubmissionIndex={createSubmissionIndex} setCreateSubmissionIndex={setCreateSubmissionIndex} />
+                        <PromptDisplay contest_settings={contest_settings} prompt_data={prompt_data} setIsSubmissionBuilder={setIsSubmissionBuilder} createSubmissionIndex={createSubmissionIndex} setCreateSubmissionIndex={setCreateSubmissionIndex} />
                 </ContestInterSplit>
                 {contest_settings && <ContestInfo contest_settings={contest_settings} />}
                 <RenderCheckpoint />

@@ -6,7 +6,7 @@ import { useDispatch } from "react-redux";
 import { setContestHash } from "./contest-interface-reducer";
 
 export default function ContestInterfaceController({ }) {
-    const [contest_settings, set_contest_settings] = useState(null);
+    const [contest_data, set_contest_data] = useState(null);
     const { ens, contest_hash } = useParams();
 
     // on page load, fetch all the contests for this org and display.
@@ -15,13 +15,13 @@ export default function ContestInterfaceController({ }) {
     useEffect(() => {
         (async () => {
             let res = await axios.get(`/creator_contests/fetch_contest/${ens}/${contest_hash}`);
-            set_contest_settings(res.data.settings)
+            set_contest_data(res.data)
         })();
     }, [])
 
     return (
         <>
-            {contest_settings && <ContestInterface contest_settings={contest_settings} />}
+            {contest_data && <ContestInterface contest_settings={contest_data.settings} prompt_data={contest_data.prompt_data} />}
         </>
     )
 }

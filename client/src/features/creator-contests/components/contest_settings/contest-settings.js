@@ -208,6 +208,7 @@ export default function ContestSettings() {
 
         let prompt_data = {
             editorData: promptEditorData,
+            title: promptBuilderData.prompt_heading,
             coverImage: promptBuilderData.prompt_cover_image ? promptBuilderData.prompt_cover_image.url : null,
             promptLabel: promptBuilderData.prompt_label,
             promptLabelColor: promptBuilderData.prompt_label_color

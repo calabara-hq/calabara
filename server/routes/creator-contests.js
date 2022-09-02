@@ -23,7 +23,7 @@ const serverRoot = path.normalize(path.join(__dirname, '../'));
 contests.get('/fetch_org_contests/*', async function (req, res, next) {
     let ens = req.url.split('/')[2];
 
-    let contests = await db.query('select _hash, _start, _voting, _end from contests where ens = $1 order by created asc', [ens])
+    let contests = await db.query('select _hash, _start, _voting, _end, prompt_data->>\'title\' as _title, prompt_data->>\'promptLabelColor\' as _prompt_label_color, prompt_data->>\'promptLabel\' as _prompt_label from contests where ens = $1 order by created asc', [ens])
         .then(clean)
         .then(asArray)
 
@@ -37,10 +37,10 @@ contests.get('/fetch_contest/*', async function (req, res, next) {
 
 
     // will there be conditions where latest is not the current active contest? need to handle that if so.
-    let settings = await db.query('select settings from contests where ens = $1 and _hash = $2', [ens, contest_hash])
+    let data = await db.query('select settings, prompt_data from contests where ens = $1 and _hash = $2', [ens, contest_hash])
         .then(clean)
 
-    res.send(settings).status(200)
+    res.send(data).status(200)
 })
 
 
