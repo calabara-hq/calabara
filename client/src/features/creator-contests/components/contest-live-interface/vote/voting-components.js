@@ -6,6 +6,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheckToSlot, faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 import { ErrorMessage, fade_in } from "../../common/common_styles";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
+let compact_formatter = Intl.NumberFormat('en', { notation: 'compact' })
+let round_formatter = Intl.NumberFormat('en', { maximumFractionDigits: 0 })
+
+
 
 
 const VotingContainer = styled.div`
@@ -164,6 +168,14 @@ const LightP = styled.p`
     font-size: 15px;
     font-weight: 550;
     color: grey;
+    cursor: pointer;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Old versions of Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; 
+
 `
 
 const InputCast = styled.div`
@@ -186,6 +198,11 @@ function SubmissionVotingBox({ sub_id }) {
     const [is_vp_help, set_is_vp_help] = useState(false);
     const { walletConnect } = useWallet();
     const [votesToSpend, setVotesToSpend] = useState('');
+    const [formatVotesSpent, setFormatVotesSpent] = useState(true);
+    const [formatVotingPower, setFormatVotingPower] = useState(true);
+
+    console.log('re rendering')
+
 
     const {
         remaining_vp,
@@ -223,6 +240,14 @@ function SubmissionVotingBox({ sub_id }) {
         setVotesToSpend(votes_spent || '')
     }
 
+    const formatSpent = () => {
+        setFormatVotesSpent(!formatVotesSpent)
+    }
+
+    const formatVP = () => {
+        setFormatVotingPower(!formatVotingPower)
+    }
+
     return (
         <>
             <VotingContainer isVoting={isVoteButtonClicked}>
@@ -232,10 +257,12 @@ function SubmissionVotingBox({ sub_id }) {
                         {!isWalletConnected && <ConnectWalletButton onClick={walletConnect}>connect wallet</ConnectWalletButton>}
                         <>
                             {votes_spent > 0 && <RetractVotesButton onClick={retractVotes}>retract votes</RetractVotesButton>}
-                            <VotingStats>
-                                <LightP>votes spent:{" "} {votes_spent}</LightP>
-                                <LightP>voting power: {total_available_vp} </LightP>
-                            </VotingStats>
+                            {isWalletConnected &&
+                                <VotingStats>
+                                    <LightP onClick={formatSpent}>votes spent:{" "} {formatVotesSpent ? compact_formatter.format(votes_spent) : round_formatter.format(votes_spent)}</LightP>
+                                    <LightP onClick={formatVP}>voting power: {formatVotingPower ? compact_formatter.format(total_available_vp) : round_formatter.format(total_available_vp)} </LightP>
+                                </VotingStats>
+                            }
                         </>
                     </InputCast>
                 }
@@ -245,8 +272,8 @@ function SubmissionVotingBox({ sub_id }) {
                             <VoteInput error={exceedVotingPowerError} type="number" value={votesToSpend} onChange={updateInput} placeholder="votes"></VoteInput>
                             <CastVotesButton onClick={() => { handleVote(votesToSpend) }}>cast votes <FontAwesomeIcon icon={faCircleCheck} /></CastVotesButton>
                             <VotingStats>
-                                <LightP>votes spent: {votes_spent}</LightP>
-                                <LightP>voting power: {total_available_vp}</LightP>
+                                <LightP>votes spent: {compact_formatter.format(votes_spent)}</LightP>
+                                <LightP>voting power: {compact_formatter.format(total_available_vp)}</LightP>
                             </VotingStats>
                         </InputCast>
                         <CancelVoteButton onClick={handleCancel}><FontAwesomeIcon icon={faTimes} /></CancelVoteButton>

@@ -71,7 +71,7 @@ contests.post('/create_contest', authenticateToken, isAdmin, createContest, asyn
 
 contests.post('/create_submission', authenticateToken, checkSubmissionRestrictions, checkUserSubmissions, createSubmission, async function (req, res, next) {
     const { ens } = req.body;
-    await db.query('insert into contest_submissions (ens, contest_hash, created, locked, pinned, _url) values ($1, $2, $3, $4, $5, $6)', [ens, req.contest_hash, req.created, false, false, req.url])
+    await db.query('insert into contest_submissions (ens, contest_hash, author, created, locked, pinned, _url) values ($1, $2, $3, $4, $5, $6, $7)', [ens, req.contest_hash, req.user.address, req.created, false, false, req.url])
     res.status(200)
 })
 
@@ -93,7 +93,13 @@ contests.post('/get_user_submissions', authenticateToken, async function (req, r
 
 contests.post('/check_user_eligibility', checkSubmitterEligibility, async function (req, res, next) {
 
-    res.send(req.restrictions_with_results).status(200)
+    const data = {
+        restrictions: req.restrictions_with_results,
+        has_already_submitted: req.has_already_submitted
+    }
+
+
+    res.send(data).status(200)
 })
 
 ///////////////////////////// end submissions ////////////////////////////////////

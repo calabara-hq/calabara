@@ -25,7 +25,6 @@ const OrgImg = styled.img`
 `
 const ContestDetails = styled.div`
     display: flex;
-    flex-direction: row;
     justify-content: space-evenly;
     height: 130px;
     width: 100%;

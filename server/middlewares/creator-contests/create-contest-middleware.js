@@ -3,6 +3,10 @@ const crypto = require('crypto')
 const serverRoot = path.normalize(path.join(__dirname, '../'));
 const asyncfs = require('fs').promises;
 const fs = require('fs');
+const dotenv = require('dotenv')
+
+dotenv.config();
+
 // generate a contest identifier hash
 
 // create folder with hash and writestream and write file to disk
@@ -16,6 +20,7 @@ const fs = require('fs');
 async function createContest(req, res, next) {
     const { ens, contest_settings } = req.body;
     contest_settings.created = new Date().toISOString();
+    contest_settings.sw_version = process.env.SW_VERSION;
     let hash = crypto.createHash('md5').update(JSON.stringify(contest_settings)).digest('hex').slice(-8);
     contest_settings.hash = hash;
     let destination = `creator-contests/${ens}/${hash}/`

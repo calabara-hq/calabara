@@ -351,7 +351,7 @@ const ConnectWalletButton = styled.button`
 
 function ExpandedPromptSidebar({ contest_settings, prompt_data, isCreating, setIsCreating }) {
     const { walletConnect } = useWallet();
-    const { isWalletConnected, userSubmissions, restrictionResults, isUserEligible } = useSubmissionEngine(contest_settings.submitter_restrictions);
+    const { isWalletConnected, alreadySubmittedError, restrictionResults, isUserEligible } = useSubmissionEngine(contest_settings.submitter_restrictions);
 
 
     const handleCreateSubmission = () => {
@@ -362,7 +362,7 @@ function ExpandedPromptSidebar({ contest_settings, prompt_data, isCreating, setI
         setIsCreating(false);
     }
 
-    
+
 
     return (
         <>
@@ -382,6 +382,7 @@ function ExpandedPromptSidebar({ contest_settings, prompt_data, isCreating, setI
                         {Object.values(restrictionResults).length > 0 &&
                             <>
                                 <Contest_h2_alt style={{ marginBottom: '30px', marginTop: '20px' }}>Submission Requirements</Contest_h2_alt>
+                                {alreadySubmittedError && <p style={{ fontSize: '18px' }}>Limit 1 submission <RestrictionStatus isConnected={isWalletConnected} status={!alreadySubmittedError} key={`${isWalletConnected}-already-submitted`} /></p>}
                                 {Object.values(restrictionResults).map((restriction, index) => {
                                     if (restriction.type === 'erc20' || restriction.type === 'erc721') {
                                         return (
@@ -396,6 +397,7 @@ function ExpandedPromptSidebar({ contest_settings, prompt_data, isCreating, setI
                                         )
                                     }
                                 })}
+
 
                                 <SubButton>
                                     {!isWalletConnected && <ConnectWalletButton onClick={walletConnect}>Connect Wallet</ConnectWalletButton>}

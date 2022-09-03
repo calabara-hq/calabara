@@ -13,7 +13,7 @@ import useCommon from './useCommon';
 export default function useSubmissionEngine(submitter_restrictions) {
     const walletAddress = useSelector(selectConnectedAddress);
     const isConnected = useSelector(selectConnectedBool);
-    const [userSubmissions, setUserSubmissions] = useState([])
+    const [alreadySubmittedError, setAlreadySubmittedError] = useState(false)
     const { ens, contest_hash } = useParams();
     const { contestQueryGatekeeper } = useGatekeeper();
     const [restrictionResults, setRestrictionResults] = useState(Object.values(submitter_restrictions))
@@ -24,22 +24,19 @@ export default function useSubmissionEngine(submitter_restrictions) {
         if (isConnected) {
             // check if wallet already submitted in this contest
             (async () => {
-                let [user_subs, eligibility] = await Promise.all([
-                    authenticated_post('/creator_contests/get_user_submissions', { contest_hash: contest_hash, ens: ens }).then(result => { return result.data }),
-                    axios.post('/creator_contests/check_user_eligibility', { contest_hash: contest_hash, ens: ens, walletAddress: walletAddress }).then(result => { return result.data })
-                ])
-                console.log(eligibility)
-                setUserSubmissions(user_subs);
-                
-                setRestrictionResults(eligibility);
-                if (eligibility.length === 0) {
-                    if (user_subs.length < 1) {
+                console.log('re fetching!!!')
+                let eligibility = await axios.post('/creator_contests/check_user_eligibility', { contest_hash: contest_hash, ens: ens, walletAddress: walletAddress }).then(result => { return result.data })
+
+                setAlreadySubmittedError(eligibility.has_already_submitted);
+
+                setRestrictionResults(eligibility.restrictions);
+                if (eligibility.restrictions.length === 0) {
+                    if (!eligibility.has_already_submitted) {
                         return setIsUserEligible(true)
                     }
                 }
-
-                for (const el of eligibility) {
-                    if (el.user_result && user_subs.length < 1) {
+                for (const el of eligibility.restrictions) {
+                    if (el.user_result && !eligibility.has_already_submitted) {
                         return setIsUserEligible(true)
                     }
                 }
@@ -55,7 +52,7 @@ export default function useSubmissionEngine(submitter_restrictions) {
 
 
     return {
-        userSubmissions: userSubmissions,
+        alreadySubmittedError: alreadySubmittedError,
         isWalletConnected: isConnected,
         restrictionResults: restrictionResults,
         isUserEligible: isUserEligible,

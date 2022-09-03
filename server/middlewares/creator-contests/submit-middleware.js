@@ -9,7 +9,6 @@ const { clean, asArray } = require('../../helpers/common')
 const { checkWalletTokenBalance } = require('../../web3/web3')
 
 
-
 async function checkSubmissionRestrictions(req, res, next) {
     const walletAddress = req.user.address;
     const { ens, submission, contest_hash } = req.body;
@@ -32,15 +31,22 @@ async function checkSubmissionRestrictions(req, res, next) {
 }
 
 // same as above, but check and return results for all rules
+// also check if user submitted previously
 // this route is also unprotected
 
 async function checkSubmitterEligibility(req, res, next) {
     const { ens, walletAddress, contest_hash } = req.body;
 
-    let restrictions = await db.query('select settings->>\'submitter_restrictions\' as restrictions from contests where ens = $1 and _hash = $2', [ens, contest_hash])
-        .then(clean)
-        .then(res => Object.values(JSON.parse(res.restrictions)))
+    let [restrictions, user_submissions] = await Promise.all([
+        db.query('select settings->>\'submitter_restrictions\' as restrictions from contests where ens = $1 and _hash = $2', [ens, contest_hash])
+            .then(clean)
+            .then(res => Object.values(JSON.parse(res.restrictions))),
 
+        db.query('select id from contest_submissions where ens = $1 and contest_hash=$2 and author=$3', [ens, contest_hash, walletAddress])
+            .then(clean)
+            .then(asArray)
+
+    ])
 
     for (const restriction of restrictions) {
         if (restriction.type === 'erc20' || restriction.type === 'erc721') {
@@ -49,6 +55,8 @@ async function checkSubmitterEligibility(req, res, next) {
         }
     }
 
+
+    req.has_already_submitted = user_submissions.length > 0
     req.restrictions_with_results = restrictions;
     next();
 }
@@ -57,7 +65,7 @@ async function checkSubmitterEligibility(req, res, next) {
 
 async function checkUserSubmissions(req, res, next) {
     const walletAddress = req.user.address;
-    const { ens, submission, contest_hash } = req.body;
+    const { ens, contest_hash } = req.body;
 
     let submissions = await db.query('select id from contest_submissions where ens = $1 and contest_hash=$2 and author=$3', [ens, contest_hash, walletAddress])
         .then(clean)
@@ -85,6 +93,8 @@ async function createSubmission(req, res, next) {
     if (!(dates._start < created && created < dates._voting)) {
         return res.sendStatus(432)
     }
+
+    submission.created = created;
 
     let submission_hash = crypto.createHash('md5').update(JSON.stringify(submission)).digest('hex').slice(-8);
 
