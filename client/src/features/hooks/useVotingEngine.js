@@ -35,6 +35,7 @@ export default function useVotingEngine(sub_id) {
 
     useEffect(() => {
         if (isConnected) {
+            console.log('re fetching!!!')
             calculateVotingPower(ens, sub_id, walletAddress, contest_hash).then(result => {
                 set_remaining_vp(result.metrics.sub_remaining_vp)
                 set_total_available_vp(result.metrics.sub_total_vp)
