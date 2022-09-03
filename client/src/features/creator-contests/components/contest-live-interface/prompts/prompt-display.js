@@ -15,12 +15,12 @@ import useWallet from "../../../../hooks/useWallet";
 const DefaultContainerWrap = styled.div`
     display: flex;
     flex: 0 0 70%;
-    
     flex-direction: column;
     background-color: #1e1e1e;
     border-radius: 10px;
     margin-left: 20px;
     padding: 10px;
+    
 
 `
 
@@ -36,6 +36,7 @@ const PromptContainer = styled.div`
 
     &:hover {
         cursor: pointer;
+        
     }
 
 
@@ -147,23 +148,28 @@ const PromptContent = styled.div`
 
 
 const AltSubmissionButton = styled.button`
-    width: 12em;
+     height: 40px;
+    font-size: 15px;
     //font-weight: 550;
+    color: rgb(138,128,234);
+    background-color: rgb(138,128,234,.3);
+    border: 2px solid rgb(138,128,234,.3);
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
     padding: 5px 5px;
-    border: 2px solid ${props => props.isCreating ? 'rgb(138,128,234)' : 'transparent'};
-    border-radius: 4px;
-    margin-left: auto;
-    margin-top: 2em;
-    margin-right: 10px;
-    margin-bottom: 10px;
-    color: ${props => props.isCreating ? 'rgb(138,128,234)' : 'rgb(138,128,234)'};
-    background-color: ${props => props.isCreating ? 'transparent' : 'rgb(138,128,234,.3)'};
-    transition: background-color 0.2s ease-in-out;
+    transition: background-color 0.2 ease-in-out;
     transition: color 0.3s ease-in-out;
     &:hover{
-        //border: 2px solid white;
-        background-color: ${props => props.isCreating ? 'transparent' : 'rgb(138,128,234)'};
-        color: ${props => props.isCreating ? 'rgb(138,128,234)' : '#fff'};
+        background-color: rgb(138,128,234);
+        color: #fff;
+    
+    }
+
+    &:disabled{
+    cursor: not-allowed;
+    color: rgb(138,128,234,.3);
+    background-color: #262626;
+
     }
 `
 
@@ -234,10 +240,10 @@ const SubmissionRequirements = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #262626;
+    background-color: #1e1e1e;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
     border: 2px solid #4d4d4d;
-    border-radius: 4px;
+    border-radius: 10px;
     padding: 5px;
     margin: 20px auto;
 `

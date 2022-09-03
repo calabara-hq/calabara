@@ -166,38 +166,60 @@ const SpanDiv = styled.div`
     display: flex;
     flex-direction: row;
     margin-left: auto;
+    margin-top: auto;
     grid-gap: 10px;
 
 
 `
 
 const Author = styled.span`
-    border: 2px solid #4d4d4d;
-    border-radius: 10px;
+    //border: 2px solid #4d4d4d;
+    //border-radius: 10px;
     padding: 0px 3px;
+    color: #f2f2f2;
+    background-image: linear-gradient(#262626, #262626),linear-gradient(90deg,#e00f8e,#2d66dc);
+    background-origin: border-box;
+    background-clip: padding-box,border-box;
+    border: 2px double transparent;
+    border-radius: 4px;
+    //box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
+
+
 
     > p{
         margin: 0;
-        color: #4d4d4d;
+        color: #d9d9d9;
     }
 `
 
 const VoteTotals = styled.span`
-    border: 2px solid #4d4d4d;
-    border-radius: 10px;
-    padding: 0px 3px;
+    color: rgb(211,151,39);
+    background-color: #1e1e1e;
+    border: 2px solid rgb(211,151,39);
+    border-radius: 4px;
+    //box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
+    padding: 0px 5px;
+
+
+
  
     > p{
         margin: 0;
-        color: #4d4d4d;
+        //color: #d3d3d3;
     }
 `
 
 const AuthorVotes = styled.span`
 
-    border: 2px solid #4d4d4d;
-    border-radius: 10px;
-    padding: 0px 3px;
+    //border: 2px solid #4d4d4d;
+    //border-radius: 10px;
+    //padding: 0px 3px;
+    color: rgb(211,151,39);
+    background-color: #1e1e1e;
+    border: 2px solid rgb(211,151,39, .3);
+    border-radius: 4px;
+    //box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
+
 
     > p{
         margin: 0;
@@ -243,17 +265,17 @@ function Submission({ sub, handleExpand }) {
                     transitionAppearTimeout={900}
                     transitionEnter={false}
                     transitionLeave={false}>
-                    <SubmissionTop>
-                        <SpanDiv>
-                        <Author><p>nick.eth</p></Author>
-                        <VoteTotals><p>40 total votes</p></VoteTotals>
-                        <AuthorVotes><p>5 votes</p></AuthorVotes>
-                    </SpanDiv>
-                </SubmissionTop>
+
                 <p>{tldr_text}</p>
                 <LazyLoadImage style={{ maxWidth: '15em', margin: '0 auto', borderRadius: '10px' }} src={tldr_img} effect="blur" />
+
             </CSSTransitionGroup>
         </LazyLoad>
+        <SubmissionTop>
+                        <SpanDiv>
+                        <VoteTotals><p>40 votes</p></VoteTotals>
+                    </SpanDiv>
+                </SubmissionTop>
         </SubmissionPreviewContainer >
 
 
