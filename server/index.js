@@ -6,6 +6,9 @@ const dotenv = require('dotenv');
 const initialize_cron = require('./sys/cron/main')
 dotenv.config();
 const initialize_discord_bot = require('./discord-bot/deploy-commands.js')
+const { socketConnection } = require('./sys/socket/socket-io')
+
+const { Server } = require('socket.io')
 
 
 
@@ -21,8 +24,11 @@ let cert = fs.readFileSync("localhost.cert", "utf-8");
 var server = http.createServer(app)
 var secureServer = https.createServer({ key, cert }, app);
 
+
+
 if (process.env.NODE_ENV === 'development') {
     secureServer.listen(3001, () => {
+        socketConnection(secureServer)
         initialize_discord_bot()
             .then(res => console.log(res))
             .then(console.log('Running at Port 3001'))
@@ -41,16 +47,16 @@ else if (process.env.NODE_ENV === 'test') {
 
 else if (process.env.NODE_ENV === 'production') {
     server.listen(80)
+    socketConnection(secureServer)
     secureServer.listen(443, () => {
         initialize_discord_bot()
             .then(res => console.log(res))
             .then(console.log('Running at Port 3001'))
             .then(() => secureServer.emit('app_started'))
     })
-
-
 }
+
 
 initialize_cron();
 
-module.exports = { server, secureServer }
+

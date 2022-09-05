@@ -45,13 +45,18 @@ async function verifyVotingPower(req, res, next) {
     const walletAddress = req.user.address
 
 
-    let [is_voting_window, total_contest_spent, sub_spent, total_contest_vp] = await Promise.all([
+    let [is_voting_window, self_voting_error, total_contest_spent, sub_spent, total_contest_vp] = await Promise.all([
         verifyVotingWindow(ens, contest_hash),
+        checkSelfVoting(ens, contest_hash, sub_id, walletAddress),
         getTotalSpentVotes(contest_hash, walletAddress),
         getSubmissionSpentVotes(contest_hash, sub_id, walletAddress),
         getTotalVotingPower(req.strategy, walletAddress)
     ])
 
+
+    if(self_voting_error){
+        return res.sendStatus(433)
+    }
 
     let total_votes_available = total_contest_vp - (total_contest_spent - sub_spent)
     let submission_votes_available = Math.min(total_votes_available, req.strategy.sub_cap || total_votes_available)
@@ -110,6 +115,17 @@ async function verifyVotingWindow(ens, contest_hash) {
         return res.sendStatus(433)
     }
     return true
+}
+
+async function checkSelfVoting(ens, contest_hash, sub_id, walletAddress) {
+
+    const result = await db.query('select settings->>\'self_voting\' as self_voting, author from contests inner join contest_submissions on contests._hash = contest_submissions.contest_hash where contests.ens=$1 and contests._hash=$2 and contest_submissions.id = $3', [ens, contest_hash, sub_id])
+        .then(clean)
+    if (!JSON.parse(result.self_voting) && walletAddress === result.author) {
+        return true
+    }
+    return false
+
 }
 
 const getSubmissionSpentVotes = async (contest_hash, sub_id, walletAddress) => {
@@ -175,8 +191,6 @@ async function calculateSubmissionVotingPower(req, res, next) {
 module.exports = {
     checkVoterRestrictions,
     verifyVotingPower,
-
-
     checkVoterEligibility,
     getContestVotingStrategy,
     calculateSubmissionVotingPower,

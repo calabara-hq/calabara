@@ -11,6 +11,7 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import useDashboardRules from "../../../hooks/useDashboardRules";
 import useCommon from "../../../hooks/useCommon";
+import { rewardOptionsActions, rewardOptionsState } from "./contest_rewards/reducers/reward-options-reducer";
 
 const theme = {
     rainbow: {
@@ -90,10 +91,11 @@ const initialPromptData = {
 
 
 const defaultPossibleRewards = {
-    'ETH': {
+    'eth': {
         type: 'ETH',
         symbol: 'ETH',
-        img: 'eth'
+        img: 'eth',
+        contract: null
     }
 }
 
@@ -125,8 +127,11 @@ export default function ContestSettings() {
 
 
     const [promptBuilderData, setPromptBuilderData] = useReducer(reducer, initialPromptData)
+    const [simpleInputData, setSimpleInputData] = useReducer(reducer, { anonSubmissions: false, visibleVotes: false, selfVoting: false })
+
     const promptEditorCore = useRef(null);
     const { authenticated_post } = useCommon();
+
 
 
     useEffect(() => {
@@ -203,7 +208,10 @@ export default function ContestSettings() {
             voter_rewards: voterRewards,
             submitter_restrictions: submitterAppliedRules,
             voter_restrictions: voterAppliedRules,
-            voting_strategy: strategy
+            voting_strategy: strategy,
+            anon_subs: simpleInputData.anonSubmissions,
+            visible_votes: simpleInputData.visibleVotes,
+            self_voting: simpleInputData.selfVoting
         }
 
         let prompt_data = {
@@ -214,10 +222,13 @@ export default function ContestSettings() {
             promptLabelColor: promptBuilderData.prompt_label_color
         }
 
-
         console.log(contest_data)
-        console.log(prompt_data)
-        authenticated_post('/creator_contests/create_contest', { ens: ens, contest_settings: contest_data, prompt_data: prompt_data }).then(res => console.log(res))
+        if (window.confirm('are you sure you want to continue?')) {
+            authenticated_post('/creator_contests/create_contest', { ens: ens, contest_settings: contest_data, prompt_data: prompt_data }).then(res => console.log(res))
+        }
+        else {
+            console.log('nothing happened')
+        }
     }
 
     return (
@@ -236,7 +247,6 @@ export default function ContestSettings() {
                     setDate_1={setDate_1}
                     setDate_2={setDate_2}
                 />
-
                 <ContestRewardsBlock
                     rewardOptions={rewardOptions}
                     setRewardOptions={setRewardOptions}
@@ -251,6 +261,7 @@ export default function ContestSettings() {
                     theme={theme.rainbow}
                 />
 
+
                 <ContestParticipantRestrictions
                     submitterAppliedRules={submitterAppliedRules}
                     setSubmitterAppliedRules={setSubmitterAppliedRules}
@@ -264,7 +275,7 @@ export default function ContestSettings() {
 
                 <VotingPolicy rewardOptions={rewardOptions} votingStrategy={votingStrategy} setVotingStrategy={setVotingStrategy} />
                 <PromptBuilder promptBuilderData={promptBuilderData} setPromptBuilderData={setPromptBuilderData} promptEditorCore={promptEditorCore} />
-                <SimpleInputs />
+                <SimpleInputs simpleInputData={simpleInputData} setSimpleInputData={setSimpleInputData} />
                 <button onClick={handleSave}> save</button>
             </ContestSettingsWrap >
         </RainbowThemeContainer>

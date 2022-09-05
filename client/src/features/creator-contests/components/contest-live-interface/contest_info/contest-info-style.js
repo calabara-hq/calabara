@@ -8,69 +8,62 @@ const InterfaceHeading = styled.div`
     align-content: center;
     color: #d3d3d3;
     margin-bottom: 70px;
+    background-color: blue;
     //margin-top: 50px;
 `
 
-const HeadingSection1 = styled.div`
-    display: flex;
-    color: #d3d3d3;
-    width: 85%;
-    //margin-left: 20px;
-`
+
 
 const OrgImg = styled.img`
     max-width: 10em;
     border: none;
     border-radius: 100px;
 `
+
+const ContestDetailWrapper = styled.div`
+    color: #bfbfbf;
+    width: 100%;
+`
 const ContestDetails = styled.div`
     display: flex;
-    justify-content: space-evenly;
-    height: 130px;
-    width: 100%;
+    flex-wrap: wrap;
+    margin: -10px;
 
 `
 
-const DetailColumn = styled.div`
-    //background-color: grey;
+const DetailBox = styled.div`
+    flex: 1 0 31%;
     display: flex;
     flex-direction: column;
-    flex: 0 0 31%;
     justify-content: center;
     background-color: #1e1e1e;
     border-radius: 10px;
-    padding: 20px;
-    //margin: 10px;
+    margin: 10px;
 
-
-    p {
-        //margin: auto;
+`
+const DetailItem = styled.div`
+    display: flex;
+    align-items: center;
+    > p {
+        margin: 0;
     }
-
-
-
 `
 
 const DetailRow = styled.div`
-    display: grid;
-    grid-template-columns: 5fr auto;
-    //width: 100%;
-    //justify-items: center;
-    justify-content: center;
-    justify-items: start;
-    //font-weight: bold;
-    text-align: left;
+    display: flex;
     align-items: center;
-    //margin-left: 10px;
-
-    p {
-        //margin: auto;
-        padding: 5px 0;
+    margin: 10px;
+    ${DetailItem}:first-child{
         font-weight: bold;
-
+    }
+    ${DetailItem}:nth-child(2){
+        margin-left: auto;
+        text-align: right;
     }
 
 `
+
+
 const SubRewardDetails = styled.div` 
         visibility: hidden;
         position: absolute;
@@ -83,7 +76,7 @@ const SubRewardDetails = styled.div`
         background-color: #4d4d4d;
         border-radius: 10px;
         padding: 10px;
-        column-gap: 50px
+        column-gap: 50px;
 
 `
 
@@ -118,7 +111,6 @@ const DetailRowHover = styled.div`
 
     &:hover{
         border-radius: 10px;
-        border: 2px dotted #4d4d4d;
 
     }
 
@@ -140,19 +132,16 @@ const DetailRowHover = styled.div`
 
 
 const CheckpointWrap = styled.div`
-
+    margin-top: 70px;
     display: flex;
     flex-direction: column;
     width: 100%;
-    //background-color: pink;
-
-
-
 
 `
 
 const CheckpointTop = styled.div`
     margin: 0 auto;
+    background-color: pink;
     height: fit-content;
     width: 70%;
     color: #d3d3d3;
@@ -225,4 +214,4 @@ const label_status = [
 
 ]
 
-export { InterfaceHeading, HeadingSection1, OrgImg, ContestDetails, DetailColumn, DetailRow, DetailRowHover, SubRewardDetails, CheckpointWrap, CheckpointTop, CheckpointBottomTag, CheckpointBottom, label_status }
+export { InterfaceHeading, OrgImg, ContestDetails, ContestDetailWrapper, DetailBox, DetailItem, DetailRow, DetailRowHover, SubRewardDetails, CheckpointWrap, CheckpointTop, CheckpointBottomTag, CheckpointBottom, label_status }

@@ -4,6 +4,14 @@ const fade_in = keyframes`
     0% {opacity: 0}
     100% {opacity: 1}
 `
+const fade_out = keyframes`
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+`
 
 
 const Contest_h2 = styled.h2`
@@ -236,4 +244,4 @@ const WarningMessage = styled.div`
     }
 `
 
-export { fade_in, Contest_h2, Contest_h2_alt, Contest_h3, Contest_h3_alt, Contest_h3_alt_small, Contest_h4, Label, submission_fade, TagType, SettingsSectionSubHeading, labelColorOptions, ERC20Button, ERC20Button_alt, ERC721Button, ERC721Button_alt, ConfirmButton, ConfirmButtonAlt, ErrorMessage, WarningMessage }
+export { fade_in, fade_out, Contest_h2, Contest_h2_alt, Contest_h3, Contest_h3_alt, Contest_h3_alt_small, Contest_h4, Label, submission_fade, TagType, SettingsSectionSubHeading, labelColorOptions, ERC20Button, ERC20Button_alt, ERC721Button, ERC721Button_alt, ConfirmButton, ConfirmButtonAlt, ErrorMessage, WarningMessage }

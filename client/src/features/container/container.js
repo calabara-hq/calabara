@@ -14,6 +14,7 @@ import ContestSettings from '../creator-contests/components/contest_settings/con
 import Homepage from '../homepage/homepage'
 import ContestInterfaceController from '../creator-contests/components/contest-live-interface/interface/contest-interface-ctr'
 import ContestHomepage from '../creator-contests/components/contest-home/contest-home'
+import DisplayWinners from '../creator-contests/components/contest-live-interface/winners/contest-winners'
 
 export default function Container() {
 
@@ -68,12 +69,19 @@ export default function Container() {
       </Route>
 
       <Route exact path="/:ens/creator_contests">
-        <ContestHomepage/>
+        <ContestHomepage />
       </Route>
+      
 
-      <Route path="/:ens/creator_contests/:contest_hash">
+      <Route exact path="/:ens/creator_contests/:contest_hash">
         <ContestInterfaceController />
       </Route>
+
+      <Route exact path="/:ens/creator_contests/:contest_hash/winners">
+        <DisplayWinners />
+      </Route>
+
+
     </div>
   )
 }

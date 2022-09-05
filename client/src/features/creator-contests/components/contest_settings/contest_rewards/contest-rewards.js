@@ -46,7 +46,7 @@ const ParticipantRewardsWrap = styled.div`
 
 
 
-export default function ContestRewardsBlock({ theme, rewardOptions, setRewardOptions, selectedRewards, setSelectedRewards, submitterRewards, setSubmitterRewards, voterRewards, setVoterRewards, errorMatrix, setErrorMatrix }) {
+export default function ContestRewardsBlock({ theme, rewardOptions2, setRewardOptions2, rewardOptions, setRewardOptions, selectedRewards, setSelectedRewards, submitterRewards, setSubmitterRewards, voterRewards, setVoterRewards, errorMatrix, setErrorMatrix }) {
 
     const handleErrors = () => {
         let err_matrix_copy = JSON.parse(JSON.stringify(errorMatrix))
@@ -86,8 +86,8 @@ export default function ContestRewardsBlock({ theme, rewardOptions, setRewardOpt
 
             {Object.keys(selectedRewards).length > 0 &&
                 <ParticipantRewardsWrap>
-                    <SubmitterRewardsBlock errorMatrix={errorMatrix} setErrorMatrix={setErrorMatrix} submitterRewards={submitterRewards} setSubmitterRewards={setSubmitterRewards} selectedRewards={selectedRewards} theme={theme} />
-                    {isVoterBlockVisible() && <VoterRewardsBlock num_voting_rewards={Object.values(submitterRewards)} submitter_rewards={Object.values(submitterRewards)} selectedRewards={selectedRewards} voterRewards={voterRewards} setVoterRewards={setVoterRewards} />}
+                    <SubmitterRewardsBlock rewardOptions={rewardOptions} errorMatrix={errorMatrix} setErrorMatrix={setErrorMatrix} submitterRewards={submitterRewards} setSubmitterRewards={setSubmitterRewards} selectedRewards={selectedRewards} theme={theme} />
+                    {isVoterBlockVisible() && <VoterRewardsBlock rewardOptions={rewardOptions} num_voting_rewards={Object.values(submitterRewards)} submitter_rewards={Object.values(submitterRewards)} selectedRewards={selectedRewards} voterRewards={voterRewards} setVoterRewards={setVoterRewards} />}
                 </ParticipantRewardsWrap>
             }
             {/*<button onClick={handleErrors}>submit</button>*/}

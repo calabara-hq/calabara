@@ -1,9 +1,10 @@
-import ContestInterface from "./interface";
 import { useHistory, useParams } from "react-router-dom";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import axios from 'axios';
 import { useDispatch } from "react-redux";
 import { setContestHash } from "./contest-interface-reducer";
+import { Placeholder } from "../../common/common_components";
+const ContestInterface = React.lazy(() => import('./interface'));
 
 export default function ContestInterfaceController({ }) {
     const [contest_data, set_contest_data] = useState(null);
@@ -20,9 +21,9 @@ export default function ContestInterfaceController({ }) {
     }, [])
 
     return (
-        <>
+        <Suspense fallback={<Placeholder />}>
             {contest_data && <ContestInterface contest_settings={contest_data.settings} prompt_data={contest_data.prompt_data} />}
-        </>
+        </Suspense>
     )
 }
 

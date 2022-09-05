@@ -5,7 +5,7 @@ import CounterButton from '../../../common/CounterButton';
 import { HelpText } from 'react-rainbow-components';
 import { RewardTypeWrap, NumberWinnersContainer, RewardsMainContent } from '../reward-styles';
 
-export default function SubmitterRewardsBlock({ errorMatrix, setErrorMatrix, submitterRewards, setSubmitterRewards, selectedRewards, theme }) {
+export default function SubmitterRewardsBlock({ rewardOptions, errorMatrix, setErrorMatrix, submitterRewards, setSubmitterRewards, selectedRewards, theme }) {
     const [numWinners, setNumWinners] = useState(1)
 
     const handleWinnersIncrement = () => {
@@ -38,13 +38,13 @@ export default function SubmitterRewardsBlock({ errorMatrix, setErrorMatrix, sub
                     <Contest_h3_alt_small>Number of Winners</Contest_h3_alt_small>
                     <CounterButton counter={numWinners} handleIncrement={handleWinnersIncrement} handleDecrement={handleWinnersDecrement} />
                 </NumberWinnersContainer>
-                <SubmitterRewardsGrid numWinners={numWinners} submitterRewards={submitterRewards} setSubmitterRewards={setSubmitterRewards} selectedRewards={selectedRewards} errorMatrix={errorMatrix} setErrorMatrix={setErrorMatrix} theme={theme} />
+                <SubmitterRewardsGrid rewardOptions={rewardOptions} numWinners={numWinners} submitterRewards={submitterRewards} setSubmitterRewards={setSubmitterRewards} selectedRewards={selectedRewards} errorMatrix={errorMatrix} setErrorMatrix={setErrorMatrix} theme={theme} />
             </RewardsMainContent>
         </RewardTypeWrap>
     )
 }
 
-function SubmitterRewardsGrid({ numWinners, selectedRewards, submitterRewards, setSubmitterRewards, errorMatrix, setErrorMatrix, theme }) {
+function SubmitterRewardsGrid({ rewardOptions, numWinners, selectedRewards, submitterRewards, setSubmitterRewards, errorMatrix, setErrorMatrix, theme }) {
 
     return (
         <SubmitterRewardsGridLayout>
@@ -55,7 +55,7 @@ function SubmitterRewardsGrid({ numWinners, selectedRewards, submitterRewards, s
             {
                 Array.from(Array(numWinners)).map((val, idx) => {
                     return (
-                        <RewardGridRow idx={idx} theme={theme} val={val} submitterRewards={submitterRewards} setSubmitterRewards={setSubmitterRewards} selectedRewards={selectedRewards} errorMatrix={errorMatrix} setErrorMatrix={setErrorMatrix} />
+                        <RewardGridRow rewardOptions={rewardOptions} idx={idx} theme={theme} val={val} submitterRewards={submitterRewards} setSubmitterRewards={setSubmitterRewards} selectedRewards={selectedRewards} errorMatrix={errorMatrix} setErrorMatrix={setErrorMatrix} />
                     )
                 })
             }
@@ -63,9 +63,10 @@ function SubmitterRewardsGrid({ numWinners, selectedRewards, submitterRewards, s
     )
 }
 
-function RewardGridRow({ theme, idx, submitterRewards, setSubmitterRewards, selectedRewards, errorMatrix, setErrorMatrix }) {
+function RewardGridRow({ rewardOptions, theme, idx, submitterRewards, setSubmitterRewards, selectedRewards, errorMatrix, setErrorMatrix }) {
 
     const updateRewards = (e) => {
+        console.log(rewardOptions)
         const { name, value } = e.target;
         let err_matrix_copy = JSON.parse(JSON.stringify(errorMatrix))
         switch (name) {
@@ -75,17 +76,17 @@ function RewardGridRow({ theme, idx, submitterRewards, setSubmitterRewards, sele
                 setErrorMatrix(err_matrix_copy)
                 break;
             case '1':
-                setSubmitterRewards({ type: 'update_single', payload: { [idx]: Object.assign(submitterRewards[idx] || {}, { eth: { amount: Number(value) || 0, contract: null, sybmol: 'ETH' } }) } })
+                setSubmitterRewards({ type: 'update_single', payload: { [idx]: Object.assign(submitterRewards[idx] || {}, { eth: { amount: Number(value) || 0, address: null, symbol: 'ETH' } }) } })
                 err_matrix_copy[idx][1] = null
                 setErrorMatrix(err_matrix_copy)
                 break;
             case '2':
-                setSubmitterRewards({ type: 'update_single', payload: { [idx]: Object.assign(submitterRewards[idx] || {}, { erc20: { amount: Number(value) || 0, contract: 'blahblahblah', sybmol: 'SHARK' } }) } })
+                setSubmitterRewards({ type: 'update_single', payload: { [idx]: Object.assign(submitterRewards[idx] || {}, { erc20: { amount: Number(value) || 0, address: rewardOptions.erc20.address, symbol: rewardOptions.erc20.symbol } }) } })
                 err_matrix_copy[idx][2] = null
                 setErrorMatrix(err_matrix_copy)
                 break;
             case '3':
-                setSubmitterRewards({ type: 'update_single', payload: { [idx]: Object.assign(submitterRewards[idx] || {}, { erc721: { amount: Number(value) || 0, contract: 'nounshshshsh', sybmol: 'NOUN' } }) } })
+                setSubmitterRewards({ type: 'update_single', payload: { [idx]: Object.assign(submitterRewards[idx] || {}, { erc721: { amount: Number(value) || 0, address: rewardOptions.erc721.address, symbol: rewardOptions.erc721.symbol } }) } })
                 err_matrix_copy[idx][3] = null
                 setErrorMatrix(err_matrix_copy)
                 break;

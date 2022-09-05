@@ -15,6 +15,9 @@ import LazyLoad from 'react-lazyload';
 import { CSSTransitionGroup } from 'react-transition-group';
 import './spinner.css'
 import { LazyLoadImage } from 'react-lazy-load-image-component';
+import { Placeholder } from '../../common/common_components';
+//import { io } from "socket.io-client";
+//const socket = io();
 
 
 const SubmissionWrap = styled.div`
@@ -27,34 +30,47 @@ const SubmissionWrap = styled.div`
     padding: 10px;
     border: none;
     border-radius: 10px;
+
+    margin: -10px -10px 30px -10px;
 `
 
 const SubmissionPreviewContainer = styled.div`
-    display: flex;
-    flex: 1 1 30%;
+    //display: flex;
+    flex: 0 1 30%;
     flex-direction: column;
     flex-wrap: wrap;
-    justify-content: space-evenly;
-    font-size: 15px;
+    justify-content: space-between;
+    font-size: 16px;
     color: #d3d3d3;
     background-color: #262626;
     border: 2px solid #4d4d4d;
-    border-radius: 4px;
+    border-radius: 10px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
     padding: 20px;
     transition: width 0.6s ease-in-out;
     height: 24em;
+    margin: 10px;
     cursor: pointer;
+    overflow: hidden;
+
+    // TURTLES need to set this up to wrap submission containers properly
+    @media(max-width: 1720px){
+        flex: 1 1 28%;
+    }
+    
+    
 
     > div {
         height: 100%;
+        display: flex;
+        flex-direction: column;
     }
     
-    > div > span > span {
-        display: flex !important;
+    > div > span {
+        height: 100%;
+        display: flex;
         flex-direction: column;
-        height: 90%;
-        justify-content: center;
+
     }
 
 
@@ -64,53 +80,26 @@ const SubmissionPreviewContainer = styled.div`
         background-color: #1e1e1e;
     }
 `
-
-const PreviewImage = styled.img`
-    max-width: 15em;
-    margin: auto;
-    border-radius: 10px;
-`
-
-const CollapsibleSubmission = styled.div`
+const LazyStyledImage = styled.div`
     display: flex;
-    flex-direction: column;
     justify-content: center;
-    align-items: flex-start;
-    grid-gap: 20px;
-    border-radius: 4px;
-    background-color: #1c2128;
-    color: #d3d3d3;
-    padding: 5px;
-    cursor: pointer;
-    margin-bottom: 10px;
-   
+    align-items: center;
+    height: 100%;
 `
-const DropdownButton = styled.button`
-    margin-top: auto;
-    width: 100%;
-    justify-self: center;
-    align-self: center;
-    color: grey;
-    font-size: 16px;
-    background-color: transparent;
-    border: none;
-    border-radius: 10px;
-    padding: 10px 0px;
-    &:hover{
-        background-color: #33373d;
-    }
-`
+
 
 export default function SubmissionDisplay({ }) {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [TLDRImage, setTLDRImage] = useState(null);
     const [TLDRText, setTLDRText] = useState(null);
     const [idToExpand, setIdToExpand] = useState(null);
-    const [expandData, setExpandData] = useState(null)
+    const [expandData, setExpandData] = useState(null);
+    const [author, setAuthor] = useState(null);
     const [sub_content, set_sub_content] = useState([]);
     const [subs, set_subs] = useState([]);
     const { ens, contest_hash } = useParams();
 
+    console.log('re rendering')
 
     const handleClose = () => {
         setIdToExpand(null);
@@ -123,38 +112,75 @@ export default function SubmissionDisplay({ }) {
     }
 
 
-    const handleExpand = async (id, tldr_img, tldr_text, submission_body) => {
+    const handleExpand = async (id, tldr_img, tldr_text, submission_body, author) => {
         setIdToExpand(id)
         setTLDRImage(tldr_img);
         setTLDRText(tldr_text);
-        setExpandData(submission_body)
+        setExpandData(submission_body);
+        console.log(author)
+        setAuthor(author);
         setDrawerOpen(true);
         document.body.style.overflow = 'hidden';
-
     }
 
 
     useEffect(() => {
+
+        console.log('connecting to socket')
+
         fetch(`/creator_contests/fetch_submissions/${ens}/${contest_hash}`)
             .then(res => res.json())
             .then(data => set_subs(data))
-    }, [])
 
+        /*
+    socket.on('connect', () => {
+        console.log('connected to websocket')
+    })
+
+    socket.on('disconnect', () => {
+        console.log('disconnected from socket')
+    })
+
+    return () => {
+        socket.off('connect')
+        socket.off('disconnect')
+    }
+    */
+    }, [])
+    /*
+        useEffect(() => {
+    
+            const submissionListener = (submission) => {
+                console.log(submission)
+                set_subs((prev_subs) => {
+                    const new_subs = [...prev_subs]
+                    new_subs.push(submission);
+                    return new_subs
+                })
+            }
+    
+            socket.on('new_submission', submissionListener)
+        }, [socket])
+    */
 
     return (
-        <>
-            <h2 style={{ textAlign: 'center', color: '#d3d3d3', marginBottom: '30px' }}>Submissions</h2>
-            <SubmissionWrap>
+        <div>
+            {subs.length > 0 &&
+                <>
+                    <h2 style={{ textAlign: 'center', color: '#d3d3d3', marginBottom: '30px' }}>Submissions</h2>
+                    <SubmissionWrap>
 
-                {subs.map((sub, index) => {
-                    return (
-                        <Submission sub={sub} handleExpand={handleExpand} />
-                    )
-                })}
+                        {subs.map((sub, index) => {
+                            return (
+                                <Submission sub={sub} handleExpand={handleExpand} />
+                            )
+                        })}
 
-                <ExpandSubmissionDrawer drawerOpen={drawerOpen} handleClose={handleClose} id={idToExpand} TLDRImage={TLDRImage} TLDRText={TLDRText} expandData={expandData} />
-            </SubmissionWrap>
-        </>
+                        <ExpandSubmissionDrawer drawerOpen={drawerOpen} handleClose={handleClose} id={idToExpand} TLDRImage={TLDRImage} TLDRText={TLDRText} expandData={expandData} author={author} />
+                    </SubmissionWrap>
+                </>
+            }
+        </div>
     )
 }
 
@@ -183,9 +209,6 @@ const Author = styled.span`
     border: 2px double transparent;
     border-radius: 4px;
     //box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
-
-
-
     > p{
         margin: 0;
         color: #d9d9d9;
@@ -231,32 +254,34 @@ const AuthorVotes = styled.span`
 `
 
 function Submission({ sub, handleExpand }) {
+    const [tldr_img, set_tldr_img] = useState(null);
+    const [tldr_text, set_tldr_text] = useState(null);
+    const [submission_body, set_submission_body] = useState(null);
     const { ens, contest_hash } = useParams();
-    const [tldr_img, set_tldr_img] = useState();
-    const [tldr_text, set_tldr_text] = useState();
-    const [submission_body, set_submission_body] = useState();
-    const [inViewLength, setInViewLength] = useState(10);
-    //const logoCache = useSelector(selectLogoCache);
-    const dispatch = useDispatch();
+
+
 
     useEffect(() => {
         console.log('setting view for item ', sub.id)
         fetch(sub._url).then(res => {
             res.json().then(json => {
-                console.log(json)
                 set_tldr_img(json.tldr_image)
                 set_tldr_text(json.tldr_text)
                 set_submission_body(json.submission_body)
             })
-
         })
 
 
-
+        /*
+        TURTLES come back and implement vote streaming
+        fetch(`/creator_contests/fetch_submission_votes?ens=${ens}&contest_hash=${contest_hash}&sub_id=${sub.id}`)
+        .then(res => res.json())
+        .then(json => {console.log(json)})
+        */
     }, [])
 
     return (
-        <SubmissionPreviewContainer onClick={() => handleExpand(sub.id, tldr_img, tldr_text, submission_body)}>
+        <SubmissionPreviewContainer onClick={() => handleExpand(sub.id, tldr_img, tldr_text, submission_body, sub.author)}>
             <LazyLoad key={sub.id} throttle={200} height={500}
                 placeholder={<Placeholder />} debounce={500}>
                 <CSSTransitionGroup
@@ -266,33 +291,23 @@ function Submission({ sub, handleExpand }) {
                     transitionEnter={false}
                     transitionLeave={false}>
 
-                <p>{tldr_text}</p>
-                <LazyLoadImage style={{ maxWidth: '15em', margin: '0 auto', borderRadius: '10px' }} src={tldr_img} effect="blur" />
+                    <p>{tldr_text}</p>
+                    <LazyStyledImage>
+                        <LazyLoadImage style={{ maxWidth: '12em', margin: '0 auto', borderRadius: '10px' }} src={tldr_img} effect="blur" />
+                    </LazyStyledImage>
 
-            </CSSTransitionGroup>
-        </LazyLoad>
-        <SubmissionTop>
-                        <SpanDiv>
-                        <VoteTotals><p>40 votes</p></VoteTotals>
-                    </SpanDiv>
-                </SubmissionTop>
+                </CSSTransitionGroup>
+            </LazyLoad>
+            <SubmissionTop>
+                {/*
+                <SpanDiv>
+                    {sub.votes && <VoteTotals><p>{sub.votes} votes</p></VoteTotals>}
+                </SpanDiv>
+        */}
+            </SubmissionTop>
         </SubmissionPreviewContainer >
 
 
     )
 }
 
-
-function Placeholder() {
-    return (
-        <div className="placeholder">
-            <div className="spinner">
-                <div className="rect1"></div>
-                <div className="rect2"></div>
-                <div className="rect3"></div>
-                <div className="rect4"></div>
-                <div className="rect5"></div>
-            </div>
-        </div>
-    );
-}

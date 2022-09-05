@@ -15,7 +15,7 @@ import {
 import { NumberWinnersContainer, RewardsMainContent, RewardTypeWrap } from '../reward-styles';
 
 
-export default function VoterRewardsBlock({ selectedRewards, voterRewards, setVoterRewards }) {
+export default function VoterRewardsBlock({ rewardOptions, selectedRewards, voterRewards, setVoterRewards }) {
     const [isToggleOn, setIsToggleOn] = useState(false)
 
 
@@ -24,6 +24,7 @@ export default function VoterRewardsBlock({ selectedRewards, voterRewards, setVo
 
     // don't allow nft rewards (can't be fractionalized)
     let { erc721, ...valid_rewards } = selectedRewards
+    console.log(selectedRewards)
     let possible_rewards = Object.values(valid_rewards).map((el) => { return { value: el, label: el } })
 
     const [numVoterRewards, setNumVoterRewards] = useState(1)
@@ -51,7 +52,7 @@ export default function VoterRewardsBlock({ selectedRewards, voterRewards, setVo
         <RewardTypeWrap>
             <SettingsSectionSubHeading>
                 <HeadingWithToggle>
-                    <Contest_h3_alt style={{ marginRight: '4em'}} animated={true}>Voter Rewards</Contest_h3_alt>
+                    <Contest_h3_alt style={{ marginRight: '4em' }} animated={true}>Voter Rewards</Contest_h3_alt>
                     <ToggleButton identifier={'voter-rewards-toggle'} isToggleOn={isToggleOn} setIsToggleOn={setIsToggleOn} handleToggle={handleToggle} />
                 </HeadingWithToggle>
             </SettingsSectionSubHeading>
@@ -62,7 +63,7 @@ export default function VoterRewardsBlock({ selectedRewards, voterRewards, setVo
                 </NumberWinnersContainer>
                 <VotingRewardSelectorWrap>
                     {Array.from(Array(numVoterRewards)).map((el, idx) => {
-                        return <VotingRewardsRow index={idx} possible_ranks={possible_ranks} possible_rewards={possible_rewards} voterRewards={voterRewards} setVoterRewards={setVoterRewards} />
+                        return <VotingRewardsRow rewardOptions={rewardOptions} index={idx} possible_ranks={possible_ranks} possible_rewards={possible_rewards} voterRewards={voterRewards} setVoterRewards={setVoterRewards} />
                     })}
                 </VotingRewardSelectorWrap>
             </RewardsMainContent>}
@@ -72,15 +73,38 @@ export default function VoterRewardsBlock({ selectedRewards, voterRewards, setVo
 
 
 
-function VotingRewardsRow({ possible_ranks, possible_rewards, index, voterRewards, setVoterRewards }) {
+function VotingRewardsRow({ rewardOptions, possible_ranks, possible_rewards, index, voterRewards, setVoterRewards }) {
     const [rank, setRank] = useState(1);
-    const [reward_type, setRewardType] = useState(null)
+    const [reward_type, setRewardType] = useState('eth')
     const [reward, setReward] = useState(0)
 
-
+    /*
     useEffect(() => {
+        console.log(reward_type)
         setVoterRewards({ type: 'update_single', payload: { [index]: Object.assign(voterRewards[index] || {}, { rank: rank, [reward_type]: { amount: Number(reward), contract: 'xyz', symbol: 'xyz' } }) } })
     }, [rank, reward_type, reward])
+    */
+    console.log(rewardOptions)
+
+
+    const updateReward = (type, value) => {
+        let symbol = rewardOptions[reward_type].symbol
+        console.log(symbol)
+        if (type === 'rank') {
+            setRank(value);
+            setVoterRewards({ type: 'update_single', payload: { [index]: Object.assign(voterRewards[index] || {}, { rank: value, [reward_type]: { amount: Number(reward), address: rewardOptions[reward_type].address || null, symbol: symbol} }) } })
+        }
+        else if (type === 'amount') {
+            setReward(value)
+            setVoterRewards({ type: 'update_single', payload: { [index]: Object.assign(voterRewards[index] || {}, { rank: rank, [reward_type]: { amount: Number(value), address: rewardOptions[reward_type].address || null, symbol: symbol } }) } })
+        }
+        else if (type === 'type') {
+            let parsed_type
+            if(value === 'ETH') parsed_type = 'eth'
+            else parsed_type = 'erc20'
+            setVoterRewards({ type: 'update_single', payload: { [index]: Object.assign(voterRewards[index] || {}, { rank: rank, [parsed_type]: { amount: Number(reward), address: rewardOptions[parsed_type].address || null, symbol: rewardOptions[parsed_type].symbol } }) } })
+        }
+    }
 
     return (
 
@@ -92,18 +116,18 @@ function VotingRewardsRow({ possible_ranks, possible_rewards, index, voterReward
                     components={{ IndicatorSeparator: () => null }}
                     selectType={'rank'}
                     options={possible_ranks}
-                    onChange={(e) => { setRank(e.value) }}
+                    onChange={(e) => { updateReward('rank', e.value) }}
                     defaultValue={{ value: 1, label: 1 }} />
             </VoterRankWrapper>
             <Contest_h4>will split </Contest_h4>
             <VoterRewardInput>
-                <RewardsGridInput type="number" onChange={(e) => { setReward(e.target.value) }} onWheel={(e) => e.target.blur()} />
+                <RewardsGridInput type="number" onChange={(e) => { updateReward('amount', e.target.value) }} onWheel={(e) => e.target.blur()} />
                 <Select
                     styles={customSelectorStyles}
                     components={{ IndicatorSeparator: () => null }}
                     selectType={'reward'}
                     options={possible_rewards}
-                    onChange={(e) => { setRewardType(e.value) }}
+                    onChange={(e) => { updateReward('type', e.value) }}
                     defaultValue={{ value: possible_rewards[0].value, label: possible_rewards[0].label }} />
             </VoterRewardInput>
 

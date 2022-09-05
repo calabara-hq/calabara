@@ -195,7 +195,7 @@ function Option({ element, option_id, appliedRules, setAppliedRules, ruleError, 
                             <ToggleSwitch setRuleError={setRuleError} ruleError={ruleError} addRule={addRule} deleteRule={deleteRule} option_id={option_id} isGatekeeperOn={isGatekeeperOn} setIsGatekeeperOn={setIsGatekeeperOn} appliedRules={appliedRules} setAppliedRules={setAppliedRules} toggle_identifier={toggle_identifier} />
                             {isGatekeeperOn &&
                                 <>
-                                    <input type="number" value={appliedRules[option_id]['threshold']} placeholder="threshold" onChange={handleThresholdChange}></input>
+                                    <input onWheel={(e) => e.target.blur()} type="number" value={appliedRules[option_id]['threshold']} placeholder="threshold" onChange={handleThresholdChange}></input>
 
                                 </>
                             }

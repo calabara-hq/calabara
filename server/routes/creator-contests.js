@@ -4,18 +4,16 @@ const dotenv = require('dotenv')
 const path = require('path')
 const contests = express();
 contests.use(express.json())
-const asyncfs = require('fs').promises;
-const fs = require('fs');
-const FormData = require('form-data');
 const { authenticateToken } = require('../middlewares/jwt-middleware.js');
 const { isAdmin } = require('../middlewares/admin-middleware')
 const { clean, asArray } = require('../helpers/common')
 const { createContest } = require('../middlewares/creator-contests/create-contest-middleware');
 const { createSubmission, checkSubmissionRestrictions, checkUserSubmissions, checkSubmitterEligibility } = require('../middlewares/creator-contests/submit-middleware.js');
-const { calculateSubmissionVotingPower, getContestVotingStrategy, checkVoterEligibility, checkVoterRestrictions, verifyVotingPower } = require('../middlewares/creator-contests/vote-middleware.js');
 const { imageUpload } = require('../middlewares/image-upload-middleware.js');
-const { json } = require('body-parser');
+const { calc_sub_vp__unprotected, calc_sub_vp__PROTECTED } = require('../middlewares/creator-contests/vote-middleware-2.js');
 const logger = require('../logger').child({ component: 'creator-contests' })
+const { sendSocketMessage } = require('../sys/socket/socket-io');
+const { get_winners, get_winners_as_csv } = require('../middlewares/creator-contests/fetch-winners-middleware.js');
 
 const serverRoot = path.normalize(path.join(__dirname, '../'));
 
@@ -49,15 +47,55 @@ contests.get('/fetch_contest/*', async function (req, res, next) {
 contests.get('/fetch_submissions/*', async function (req, res, next) {
     let ens = req.url.split('/')[2];
     let contest_hash = req.url.split('/')[3];
-    let subs = await db.query('select id, _url from contest_submissions where ens = $1 and contest_hash = $2', [ens, contest_hash])
+    let subs = await db.query('select id, _url from contest_submissions where ens=$1 and contest_hash=$2', [ens, contest_hash])
         .then(clean)
         .then(asArray)
+    console.log(subs)
     res.send(subs).status(200)
+})
+
+/*
+contests.get('/fetch_submissions/*', async function (req, res, next) {
+    let ens = req.url.split('/')[2];
+    let contest_hash = req.url.split('/')[3];
+    let subs = await db.query('select contest_submissions.id,\
+                            contest_submissions._url,\
+                            case when (contests.settings->>\'visible_votes\')::boolean = false then null else contest_votes.votes_spent end as votes,\
+                            case when (contests.settings->>\'anon_subs\')::boolean = true then null else contest_submissions.author end as author\
+                            from contests\
+                            left join contest_submissions\
+                            on contests._hash = contest_submissions.contest_hash\
+                            left join contest_votes\
+                            on contests._hash = contest_votes.contest_hash\
+                            where contests.ens = $1 and contest_submissions.contest_hash = $2', [ens, contest_hash])
+        .then(clean)
+        .then(asArray)
+    console.log(subs)
+    res.send(subs).status(200)
+})
+*/
+
+// fetch all the winners for a contest
+// get the reward strategy
+// return the url, author, num votes, reward
+// check window last
+
+contests.get('/fetch_contest_winners', get_winners, async function (req, res, next) {
+    const { ens, contest_hash } = req.query
+    let result = req.sub_winners
+    res.send(result).status(200);
+
+})
+
+contests.get('/fetch_contest_winners_as_csv', get_winners_as_csv, async function (req, res, next) {
+    const { ens, contest_hash } = req.query
+    let result = req.csvContent
+    res.send(result).status(200);
+
 })
 
 // create a contest
 
-// TURTLES protect this
 contests.post('/create_contest', authenticateToken, isAdmin, createContest, async function (req, res, next) {
     const { ens, contest_settings, prompt_data } = req.body
     const { start_date, voting_begin, end_date } = contest_settings.date_times
@@ -65,14 +103,23 @@ contests.post('/create_contest', authenticateToken, isAdmin, createContest, asyn
     res.sendStatus(200)
 })
 
+/*
+TURTLES come back and implement vote streaming
+// if in voting window and contest is configured for active voting, return the votes
+contests.get('/fetch_submission_votes', async function (req, res, next) {
+    const { ens, contest_hash, sub_id } = req.query;
+    
+})
+*/
 
 ///////////////////////////// begin submissions ////////////////////////////////////
 
 
 contests.post('/create_submission', authenticateToken, checkSubmissionRestrictions, checkUserSubmissions, createSubmission, async function (req, res, next) {
     const { ens } = req.body;
-    await db.query('insert into contest_submissions (ens, contest_hash, author, created, locked, pinned, _url) values ($1, $2, $3, $4, $5, $6, $7)', [ens, req.contest_hash, req.user.address, req.created, false, false, req.url])
-    res.status(200)
+    let result = await db.query('insert into contest_submissions (ens, contest_hash, author, created, locked, pinned, _url) values ($1, $2, $3, $4, $5, $6, $7) returning id ', [ens, req.contest_hash, req.user.address, req.created, false, false, req.url]).then(clean)
+    sendSocketMessage('new_submission', { id: result.id, _url: req.url })
+    res.sendStatus(200)
 })
 
 const getUserSubmissions = async (walletAddress, contest_hash) => {
@@ -102,53 +149,49 @@ contests.post('/check_user_eligibility', checkSubmitterEligibility, async functi
     res.send(data).status(200)
 })
 
+
+
 ///////////////////////////// end submissions ////////////////////////////////////
 
 
 ///////////////////////////// begin voting ////////////////////////////////////
 
-contests.post('/user_voting_metrics', checkVoterEligibility, getContestVotingStrategy, calculateSubmissionVotingPower, async function (req, res, next) {
+contests.post('/user_voting_metrics', calc_sub_vp__unprotected, async function (req, res, next) {
     let result = {
         metrics: {
             sub_total_vp: req.sub_total_vp,
             sub_votes_spent: req.sub_votes_spent,
             sub_remaining_vp: req.sub_remaining_vp,
         },
-        restrictions_with_results: req.restrictions_with_results
+        restrictions_with_results: req.restrictions_with_results,
+        is_self_voting_error: req.is_self_voting_error
     }
     res.send(result).status(200)
 })
 
 
-// TURTLES protect this
 // authenticate user, check restrictions, get strategy, check voting power
-contests.post('/cast_vote', authenticateToken, checkVoterRestrictions, getContestVotingStrategy, verifyVotingPower, async function (req, res, next) {
+contests.post('/cast_vote', authenticateToken, calc_sub_vp__PROTECTED, async function (req, res, next) {
     let { contest_hash, sub_id, num_votes } = req.body;
     let walletAddress = req.user.address
-    if (req.verified) {
-        let result = await db.query('insert into contest_votes (contest_hash, submission_id, voter, votes_spent)\
+    let result = await db.query('insert into contest_votes (contest_hash, submission_id, voter, votes_spent)\
                                 values ($1, $2, $3, $4)\
                                 on conflict (voter, submission_id)\
                                 do update set votes_spent = $4\
                                 returning votes_spent',
-            [contest_hash, sub_id, walletAddress, num_votes])
-            .then(clean)
-            .then(data => {
-                return JSON.stringify(data.votes_spent)
-            })
+        [contest_hash, sub_id, walletAddress, num_votes])
+        .then(clean)
+        .then(data => {
+            return JSON.stringify(data.votes_spent)
+        })
 
-        res.send(result).status(200)
-    }
-    else {
-        res.sendStatus(419)
-    }
+    res.send(result).status(200)
 
 })
 
-// TURTLES protect this
-contests.post('/retract_sub_votes', async function (req, res, next) {
-    let { sub_id, walletAddress } = req.body;
-    db.query('delete from contest_votes where submission_id = $1 and voter = $2', [sub_id, walletAddress])
+contests.post('/retract_sub_votes', authenticateToken, async function (req, res, next) {
+    let { sub_id } = req.body;
+    db.query('delete from contest_votes where submission_id = $1 and voter = $2', [sub_id, req.user.address])
         .then(() => res.sendStatus(200))
 
 })
@@ -227,6 +270,18 @@ if (process.env.NODE_ENV === 'test') {
 
 }
 
+
+contests.post('/user_voting_metrics_alt', calc_sub_vp__unprotected, async function (req, res, next) {
+    let result = {
+        metrics: {
+            sub_total_vp: req.sub_total_vp,
+            sub_votes_spent: req.sub_votes_spent,
+            sub_remaining_vp: req.sub_remaining_vp,
+        },
+        restrictions_with_results: req.restrictions_with_results,
+    }
+    res.send(result).status(200)
+})
 
 ///////////////////////// end dev / test routes ////////////////////////////////////
 

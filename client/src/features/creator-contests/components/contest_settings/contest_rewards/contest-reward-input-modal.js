@@ -34,12 +34,14 @@ const ModalHeading = styled.p`
     width: 'fit-content';
 `
 
+// edit type is either new or existing
+// tokenType is either erc20 or erc721
 
-export default function EditRewardsModal({ modalOpen, handleClose, existingRewardData, type }) {
 
+export default function EditRewardsModal({ modalOpen, handleClose, existingRewardData, tokenType }) {
+    console.log(tokenType)
     const handleSave = (data) => {
-        console.log(data)
-        handleClose('save', data)
+        handleClose(data)
     }
     return (
         <div>
@@ -52,7 +54,7 @@ export default function EditRewardsModal({ modalOpen, handleClose, existingRewar
                         <div>
                             <ModalHeading>Create Reward Option</ModalHeading>
                         </div>
-                        <AddNewToken existingRewardData={existingRewardData} type={type} showBackButton={false} handleNextButton={handleSave} />
+                        <AddNewToken existingRewardData={existingRewardData} type={tokenType} showBackButton={false} handleNextButton={handleSave} />
                     </ModalWrapper>
 
                 </Box>
