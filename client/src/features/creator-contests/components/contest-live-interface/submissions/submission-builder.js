@@ -5,10 +5,12 @@ import { createReactEditorJS } from 'react-editor-js'
 import { useParams } from 'react-router-dom'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faCheck, faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
-import { fade_in, WarningMessage } from '../../common/common_styles'
+import { fade_in, fade_out, WarningMessage } from '../../common/common_styles'
 import useCommon from '../../../../hooks/useCommon'
 import { EDITOR_JS_TOOLS } from '../../contest_settings/prompt_builder/editor_tools'
-
+import { Placeholder } from '../../common/common_components'
+import './spinner.css'
+import { showNotification } from '../../../../notifications/notifications'
 
 const CreateSubmissionContainer = styled.div`
     display: flex;
@@ -23,10 +25,19 @@ const CreateSubmissionContainer = styled.div`
     border: none;
     border-radius: 10px;
     height: none;
+    animation: ${props => (props.isSaving ? css`${fade_out} 0.3s forwards` : '')};
     > * {
         margin-bottom: 15px;
         margin-top: 15px;
     }
+`
+
+const SavingSubmissionDiv = styled.div`
+    animation: ${fade_in} 0.4s ease-in-out;
+    height: 70vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 `
 
 const SubmissionActionButtons = styled.div`
@@ -92,7 +103,7 @@ const CancelButton = styled.button`
     }
 `
 
-export default function SubmissionBuilder({ handleCloseDrawer, restrictionResults, isUserEligible }) {
+export default function SubmissionBuilder({ handleCloseDrawer, restrictionResults, isUserEligible, toggleDrawer }) {
     const [TLDRImage, setTLDRImage] = useState(null)
     const [TLDRText, setTLDRText] = useState('')
     const [longFormValue, setLongFormValue] = useState(null)
@@ -100,17 +111,26 @@ export default function SubmissionBuilder({ handleCloseDrawer, restrictionResult
     const ReactEditorJS = createReactEditorJS();
     const editorCore = useRef(null);
     const { authenticated_post } = useCommon();
+    const [isSaving, setIsSaving] = useState(false);
     const errorCheck = async () => {
+
         if (!TLDRText && !TLDRImage) {
             alert('at least one TLDR field required!')
+            showNotification('error', 'error', 'Atleast one TLDR field is required')
+            return true
+        }
+        else if ((TLDRImage && (TLDRText.length > 150)) || (!TLDRImage && (TLDRText.length > 250))) {
+            showNotification('error', 'error', 'Your TLDR section is too long')
             return true
         }
         else return false;
     }
 
+    console.log('re rendering')
+
 
     const handleClose = () => {
-        if (TLDRImage || TLDRText) {
+        if ((!isSaving) && (TLDRImage || TLDRText)) {
             if (window.confirm('you\'re changes will be lost. Do you want to proceed?')) {
                 handleCloseDrawer();
             }
@@ -124,29 +144,43 @@ export default function SubmissionBuilder({ handleCloseDrawer, restrictionResult
     const handleSubmit = async () => {
         let isError = await errorCheck();
         if (isError) return;
+        setIsSaving(true);
         let editorData = await editorCore.current.save();
         let submission = {
             tldr_text: TLDRText,
             tldr_image: TLDRImage != null ? TLDRImage.url : null,
             submission_body: editorData
         }
+
         let res = await authenticated_post('/creator_contests/create_submission', { ens: ens, contest_hash: contest_hash, submission: submission });
+        setTimeout(() => {
+            toggleDrawer();
+        }, 500)
     }
-    console.log('hi')
-    console.log(Object.values(restrictionResults))
+
+
     return (
         <>
-            <CreateSubmissionContainer>
+            <CreateSubmissionContainer isSaving={isSaving}>
+                {!isSaving &&
+                    <>
+                        <SubmissionActionButtons>
+                            <CancelButton onClick={handleClose}><FontAwesomeIcon icon={faTimes} /></CancelButton>
+                            <SubmitButton onClick={handleSubmit}><FontAwesomeIcon icon={faCheck} /></SubmitButton>
+                        </SubmissionActionButtons>
+                        <h2 style={{ textAlign: 'center', color: '#d3d3d3', marginBottom: '30px' }}>Create Submission</h2>
+                        <EditTLDR isUserEligible={isUserEligible} TLDRimage={TLDRImage} setTLDRImage={setTLDRImage} TLDRText={TLDRText} setTLDRText={setTLDRText} />
+                        <EditLongForm longFormValue={longFormValue} setLongFormValue={setLongFormValue} ReactEditorJS={ReactEditorJS} editorCore={editorCore} />
+                    </>
 
-                <SubmissionActionButtons>
-                    <CancelButton onClick={handleClose}><FontAwesomeIcon icon={faTimes} /></CancelButton>
-                    <SubmitButton onClick={handleSubmit}><FontAwesomeIcon icon={faCheck} /></SubmitButton>
-                </SubmissionActionButtons>
-                <h2 style={{ textAlign: 'center', color: '#d3d3d3', marginBottom: '30px' }}>Create Submission</h2>
-                <EditTLDR isUserEligible={isUserEligible} TLDRimage={TLDRImage} setTLDRImage={setTLDRImage} TLDRText={TLDRText} setTLDRText={setTLDRText} />
-                <EditLongForm longFormValue={longFormValue} setLongFormValue={setLongFormValue} ReactEditorJS={ReactEditorJS} editorCore={editorCore} />
+                }
 
             </CreateSubmissionContainer>
+            {isSaving &&
+                <SavingSubmissionDiv>
+                    <Placeholder />
+                </SavingSubmissionDiv>
+            }
         </>
     )
 }

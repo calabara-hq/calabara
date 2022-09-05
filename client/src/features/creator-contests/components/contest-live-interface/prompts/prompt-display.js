@@ -14,13 +14,12 @@ import useWallet from "../../../../hooks/useWallet";
 
 const DefaultContainerWrap = styled.div`
     display: flex;
-    flex: 0 0 70%;
+    flex: 1 0 70%;
     flex-direction: column;
     background-color: #1e1e1e;
     border-radius: 10px;
-    margin-left: 20px;
     padding: 10px;
-    
+    position: relative;
 
 `
 
@@ -173,6 +172,12 @@ const AltSubmissionButton = styled.button`
     }
 `
 
+const CreateSubmissionButtonContainer = styled.div`
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+`
+
 
 
 export default function PromptDisplay({ contest_settings, prompt_data }) {
@@ -208,8 +213,10 @@ export default function PromptDisplay({ contest_settings, prompt_data }) {
                     <PromptCoverImage>
                         <img src={prompt_data.coverImage} />
                     </PromptCoverImage>
-
                 </PromptDataSplit>
+                <CreateSubmissionButtonContainer>
+                    <AltSubmissionButton>Create Submission</AltSubmissionButton>
+                </CreateSubmissionButtonContainer>
             </PromptContainer>
             <Drawer
                 open={isDrawerOpen}
@@ -221,7 +228,7 @@ export default function PromptDisplay({ contest_settings, prompt_data }) {
             >
                 {isDrawerOpen &&
                     <DrawerWrapper>
-                        {<ExpandedPromptSidebar contest_settings={contest_settings} prompt_data={prompt_data} isCreating={isCreating} setIsCreating={setIsCreating} />}
+                        {<ExpandedPromptSidebar contest_settings={contest_settings} prompt_data={prompt_data} isCreating={isCreating} setIsCreating={setIsCreating} toggleDrawer={handlePromptClick}/>}
                     </DrawerWrapper>
                 }
             </Drawer>
@@ -349,7 +356,7 @@ const ConnectWalletButton = styled.button`
     
 `
 
-function ExpandedPromptSidebar({ contest_settings, prompt_data, isCreating, setIsCreating }) {
+function ExpandedPromptSidebar({ contest_settings, prompt_data, isCreating, setIsCreating, toggleDrawer }) {
     const { walletConnect } = useWallet();
     const { isWalletConnected, alreadySubmittedError, restrictionResults, isUserEligible } = useSubmissionEngine(contest_settings.submitter_restrictions);
 
@@ -410,7 +417,7 @@ function ExpandedPromptSidebar({ contest_settings, prompt_data, isCreating, setI
             }
             {isCreating &&
                 <FadeDiv>
-                    <SubmissionBuilder handleCloseDrawer={handleCloseDrawer} restrictionResults={restrictionResults} isUserEligible={isUserEligible} />
+                    <SubmissionBuilder handleCloseDrawer={handleCloseDrawer} restrictionResults={restrictionResults} isUserEligible={isUserEligible} toggleDrawer={toggleDrawer}/>
                 </FadeDiv>
             }
         </>

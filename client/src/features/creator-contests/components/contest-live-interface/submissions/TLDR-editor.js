@@ -56,7 +56,8 @@ const TextArea = styled.textarea`
 `
 const TextAreaWrap = styled.div`
 &::after{
-        content: ${props => `"${props.textLength} / 250 "`};
+        content: ${props => `"${props.textLength} / ${props.maxLength} "`};
+        color: ${props => props.textLength > props.maxLength ? 'rgb(178, 31, 71)' : ''};
         position: absolute;
         transform: translate(-110%, -100%)
     }
@@ -71,6 +72,13 @@ const TLDRWrap = styled.div`
 `
 
 export default function TLDR({isUserEligible, setShowWarning, TLDRimage, setTLDRImage, TLDRText, setTLDRText }) {
+    
+    const tldr_max_length = {
+        with_img: "150",
+        no_img: "250"
+    }
+    
+    
     const imageUploader = useRef(null);
 
     function b64toBlob(dataURI) {
@@ -135,7 +143,7 @@ export default function TLDR({isUserEligible, setShowWarning, TLDRimage, setTLDR
 
 return (
     <TLDRWrap>
-        <TextAreaWrap textLength={TLDRText.length}>
+        <TextAreaWrap textLength={TLDRText.length} maxLength={TLDRimage ? 150 : 250}>
             <TextArea placeholder='TLDR text' value={TLDRText} onChange={updateTLDRText}></TextArea>
         </TextAreaWrap>
         <ImageWrapper>

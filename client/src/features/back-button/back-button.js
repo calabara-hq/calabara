@@ -6,8 +6,7 @@ import { useHistory } from 'react-router-dom'
 const BackButtonDiv = styled.div`
 
     margin: 20px auto;
-    width: 90%;
-
+    width: ${props => props.customWidth ? props.customWidth : '90%'};
     > span::before{
     font-family: 'Font Awesome 5 Free';
     margin-right: 10px;
@@ -30,10 +29,10 @@ const BackButtonDiv = styled.div`
 
 `
 
-export default function BackButton({link, text}){
+export default function BackButton({link, text, customWidth}){
     const history = useHistory();
     return(
-      <BackButtonDiv>
+      <BackButtonDiv customWidth={customWidth}>
         <span onClick={() => {history.push(link)}}>{text}</span>
       </BackButtonDiv>
     )

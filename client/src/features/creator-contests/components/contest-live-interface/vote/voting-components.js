@@ -3,7 +3,7 @@ import useVotingEngine from "../../../../hooks/useVotingEngine";
 import styled from "styled-components";
 import useWallet from "../../../../hooks/useWallet";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheckToSlot, faCircleCheck } from "@fortawesome/free-solid-svg-icons";
+import { faCheckToSlot, faCircleCheck, faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
 import { ErrorMessage, fade_in } from "../../common/common_styles";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 let compact_formatter = Intl.NumberFormat('en', { notation: 'compact' })
@@ -191,17 +191,13 @@ const InputCast = styled.div`
 
 
 
-
 function SubmissionVotingBox({ sub_id }) {
     const [isVoteButtonClicked, setIsVoteButtonClicked] = useState(false);
     const [exceedVotingPowerError, setExceedVotingPowerError] = useState(false);
-    const [is_vp_help, set_is_vp_help] = useState(false);
     const { walletConnect } = useWallet();
     const [votesToSpend, setVotesToSpend] = useState('');
     const [formatVotesSpent, setFormatVotesSpent] = useState(true);
     const [formatVotingPower, setFormatVotingPower] = useState(true);
-
-    console.log('re rendering')
 
 
     const {
@@ -210,6 +206,7 @@ function SubmissionVotingBox({ sub_id }) {
         total_available_vp,
         isWalletConnected,
         voting_restrictions,
+        is_self_voting_error,
         castVote,
         retractVotes
     } = useVotingEngine(sub_id);
@@ -253,15 +250,17 @@ function SubmissionVotingBox({ sub_id }) {
             <VotingContainer isVoting={isVoteButtonClicked}>
                 {!isVoteButtonClicked &&
                     <InputCast>
-                        <InitialVoteButton disabled={!isWalletConnected} onClick={() => setIsVoteButtonClicked(true)}>vote <FontAwesomeIcon icon={faCheckToSlot} /></InitialVoteButton>
+                        <InitialVoteButton disabled={!isWalletConnected || is_self_voting_error} onClick={() => setIsVoteButtonClicked(true)}>vote <FontAwesomeIcon icon={faCheckToSlot} /></InitialVoteButton>
                         {!isWalletConnected && <ConnectWalletButton onClick={walletConnect}>connect wallet</ConnectWalletButton>}
                         <>
                             {votes_spent > 0 && <RetractVotesButton onClick={retractVotes}>retract votes</RetractVotesButton>}
-                            {isWalletConnected &&
-                                <VotingStats>
-                                    <LightP onClick={formatSpent}>votes spent:{" "} {formatVotesSpent ? compact_formatter.format(votes_spent) : round_formatter.format(votes_spent)}</LightP>
-                                    <LightP onClick={formatVP}>voting power: {formatVotingPower ? compact_formatter.format(total_available_vp) : round_formatter.format(total_available_vp)} </LightP>
-                                </VotingStats>
+                            {(isWalletConnected && !is_self_voting_error) &&
+                                <>
+                                    <VotingStats>
+                                        <LightP onClick={formatSpent}>votes spent:{" "} {formatVotesSpent ? compact_formatter.format(votes_spent) : round_formatter.format(votes_spent)}</LightP>
+                                        <LightP onClick={formatVP}>voting power: {formatVotingPower ? compact_formatter.format(total_available_vp) : round_formatter.format(total_available_vp)} </LightP>
+                                    </VotingStats>
+                                </>
                             }
                         </>
                     </InputCast>
@@ -269,8 +268,8 @@ function SubmissionVotingBox({ sub_id }) {
                 {isVoteButtonClicked &&
                     <>
                         <InputCast>
-                            <VoteInput error={exceedVotingPowerError} type="number" value={votesToSpend} onChange={updateInput} placeholder="votes"></VoteInput>
-                            <CastVotesButton onClick={() => { handleVote(votesToSpend) }}>cast votes <FontAwesomeIcon icon={faCircleCheck} /></CastVotesButton>
+                            <VoteInput onWheel={(e) => e.target.blur()} error={exceedVotingPowerError} type="number" value={votesToSpend} onChange={updateInput} placeholder="votes"></VoteInput>
+                            <CastVotesButton onClick={() => { handleVote(votesToSpend) }} disabled={!votesToSpend}>cast votes <FontAwesomeIcon icon={faCircleCheck} /></CastVotesButton>
                             <VotingStats>
                                 <LightP>votes spent: {compact_formatter.format(votes_spent)}</LightP>
                                 <LightP>voting power: {compact_formatter.format(total_available_vp)}</LightP>
@@ -280,8 +279,8 @@ function SubmissionVotingBox({ sub_id }) {
                     </>
                 }
             </VotingContainer>
-            {exceedVotingPowerError && <ErrorMessage style={{ width: '40em' }}><p>amount exceeds available voting power</p></ErrorMessage>}
         </>
+
     )
 }
 

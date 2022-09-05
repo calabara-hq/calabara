@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useReducer } from 'react'
+import React, { useEffect, useState, useReducer, useContext } from 'react'
 import autoMergeLevel1 from 'redux-persist/es/stateReconciler/autoMergeLevel1'
 import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -7,6 +7,10 @@ import ethLogo from '../../../../../img/eth.png'
 import EditRewardsModal from './contest-reward-input-modal';
 import { Contest_h3_alt, ERC20Button_alt, TagType } from '../../common/common_styles';
 import { ERC20Button, ERC721Button_alt } from '../../common/common_styles';
+import { rewardOptionsActions, rewardOptionsState } from './reducers/reward-options-reducer';
+import { useDispatch, useSelector } from 'react-redux';
+
+
 const Wrap = styled.div`
     display: flex;
     flex-direction: column;
@@ -102,40 +106,29 @@ const EtherScanLinkButton = styled.button`
   }
 `
 
-export default function RewardSelector({ rewardOptions, setRewardOptions, selectedRewards, setSelectedRewards }) {
+export default function RewardSelector({ }) {
     // need to raise this higher in the tree later on. just for testing now
-
-
-    const [editType, setEditType] = useState(null);
+    const [tokenType, setTokenType] = useState(null);
     const [editRewardsModalOpen, setEditRewardsModalOpen] = useState(false);
+    const dispatch = useDispatch();
+    const rewardOptions = useSelector(rewardOptionsState.getRewardOptions)
+    //const selectedRewards = useSelector(rewardOptionsState.getSelectedRewards)
 
-    useEffect(() => { console.log(rewardOptions) }, [rewardOptions])
 
-    const handleEditRewardOption = (type) => {
-        setEditType(type)
+    const handleEditRewardOption = (tokenType) => {
+        setTokenType(tokenType)
         setEditRewardsModalOpen(true)
 
     }
 
 
 
+    useEffect(() => {
+        console.log(rewardOptions)
+    }, [rewardOptions])
 
-    const handleRewardsModalClose = (mode, payload) => {
-        if (mode === 'delete') {
-            let options_copy = JSON.parse(JSON.stringify(rewardOptions))
-            let selected_copy = JSON.parse(JSON.stringify(selectedRewards))
-
-            delete options_copy[payload.type];
-            delete selected_copy[payload.type];
-            setRewardOptions({ type: 'update_all', payload: options_copy })
-            setSelectedRewards({ type: 'update_all', payload: selected_copy })
-
-        }
-        else if (mode === 'save') {
-            console.log(payload)
-            setRewardOptions({ type: 'update_single', payload: { [payload.type]: { type: payload.type, symbol: payload.symbol, address: payload.address } } })
-            if (selectedRewards[payload.type]) setSelectedRewards({ type: 'update_single', payload: { [payload.type]: payload.symbol } })
-        }
+    const handleRewardsModalClose = (payload) => {
+        dispatch(rewardOptionsActions.addReward({ type: payload.type, symbol: payload.symbol, address: payload.address, selected: false}))
         setEditRewardsModalOpen(false)
 
     }
@@ -157,7 +150,7 @@ export default function RewardSelector({ rewardOptions, setRewardOptions, select
                                     {el.symbol != 'ETH' && <p><b>Symbol:</b> {el.symbol}</p>}
                                     {el.address && <EtherScanLinkButton onClick={() => { window.open('https://etherscan.io/address/' + el.address) }} className="gatekeeper-config">{el.address.substring(0, 6)}...{el.address.substring(38, 42)} <i className="fas fa-external-link-alt"></i></EtherScanLinkButton>}
                                     {el.img && <img style={{ margin: '0 auto' }} src={ethLogo}></img>}
-                                    <ToggleSwitch id={idx} value={el} selectedRewards={selectedRewards} setSelectedRewards={setSelectedRewards} />
+                                    <ToggleSwitch id={idx} value={el} />
                                 </>
                             </RewardOption>
 
@@ -169,27 +162,27 @@ export default function RewardSelector({ rewardOptions, setRewardOptions, select
                 {!rewardOptions.erc20 && <ERC20Button_alt onClick={() => handleEditRewardOption('erc20')}><FontAwesomeIcon icon={faPlus} /> ERC-20</ERC20Button_alt>}
                 {!rewardOptions.erc721 && <ERC721Button_alt onClick={() => handleEditRewardOption('erc721')}><FontAwesomeIcon icon={faPlus} /> ERC-721</ERC721Button_alt>}
             </NewRewardContainer>
-            <EditRewardsModal modalOpen={editRewardsModalOpen} handleClose={handleRewardsModalClose} existingRewardData={rewardOptions[editType]} type={editType} />
+            <EditRewardsModal modalOpen={editRewardsModalOpen} handleClose={handleRewardsModalClose} existingRewardData={rewardOptions[tokenType]} tokenType={tokenType} />
         </Wrap>
     )
 }
 
-function ToggleSwitch({ id, value, selectedRewards, setSelectedRewards }) {
-
-    const [isRuleChecked, setIsRuleChecked] = useState(false)
-
+function ToggleSwitch({ id, value }) {
+    const [isRewardSelected, setIsRewardSelected] = useState(false)
+    const dispatch = useDispatch();
     const handleToggle = () => {
 
-        if (!isRuleChecked) {
-            setIsRuleChecked(true)
-            setSelectedRewards({ type: 'update_single', payload: { [value.type]: value.symbol } })
+        if (!isRewardSelected) {
+            setIsRewardSelected(true)
+            dispatch(rewardOptionsActions.setRewardSelected({ type: value.type}))
         }
         else {
-            setIsRuleChecked(false)
-            let options_copy = { ...selectedRewards }
-            delete options_copy[value.type];
-            setSelectedRewards({ type: 'update_all', payload: options_copy })
+            setIsRewardSelected(false)
+            //let options_copy = { ...selectedRewards }
+            //delete options_copy[value.type];
+            //setSelectedRewards({ type: 'update_all', payload: options_copy })
         }
+
     }
 
 
@@ -197,8 +190,8 @@ function ToggleSwitch({ id, value, selectedRewards, setSelectedRewards }) {
 
     return (
         <div className="gatekeeper-toggle">
-            <input checked={isRuleChecked} onChange={handleToggle} className="react-switch-checkbox" id={`react-switch-toggle${id}`} type="checkbox" />
-            <label style={{ background: isRuleChecked && '#06D6A0' }} className="react-switch-label" htmlFor={`react-switch-toggle${id}`}>
+            <input checked={isRewardSelected} onChange={handleToggle} className="react-switch-checkbox" id={`react-switch-toggle${id}`} type="checkbox" />
+            <label style={{ background: isRewardSelected && '#06D6A0' }} className="react-switch-label" htmlFor={`react-switch-toggle${id}`}>
                 <span className={`react-switch-button`} />
             </label>
         </div>

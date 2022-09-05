@@ -17,7 +17,7 @@ let settings = {
             "eth": {
                 "amount": 12,
                 "contract": null,
-                "sybmol": "ETH"
+                "symbol": "ETH"
             }
         }
     },

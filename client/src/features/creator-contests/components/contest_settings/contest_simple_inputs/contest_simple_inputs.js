@@ -37,26 +37,44 @@ const Parameter = styled.div`
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
+    align-items: center;
 `
 
 
-export default function SimpleInputs({ }) {
-    const [areResultsVisible, setAreResultsVisible] = useState(false);
-    const [areAnonSubmissions, setAreAnonSubmissions] = useState(false);
+export default function SimpleInputs({ simpleInputData, setSimpleInputData }) {
+
+    const toggleVisibleVotes = () => {
+        setSimpleInputData({ type: "update_single", payload: { visibleVotes: !simpleInputData.visibleVotes } })
+    }
+
+    const toggleAnonSubs = () => {
+        setSimpleInputData({ type: "update_single", payload: { anonSubmissions: !simpleInputData.anonSubmissions } })
+    }
+
+    const toggleSelfVoting = () => {
+        setSimpleInputData({ type: "update_single", payload: { selfVoting: !simpleInputData.selfVoting } })
+    }
+
 
     return (
         <AdditionalParamsWrap title="Additional Parameters">
             <ParamsWrap>
                 <Parameter>
                     <Contest_h3_alt>Visible Results</Contest_h3_alt>
-                    <ToggleButton identifier={'visible-results-toggle'} isToggleOn={areResultsVisible} setIsToggleOn={setAreResultsVisible} handleToggle={() => { setAreResultsVisible(!areResultsVisible) }} />
-                    <p style={{color: '#a3a3a3'}}>Should contest results be visible during voting?</p>
+                    <ToggleButton identifier={'visible-results-toggle'} isToggleOn={simpleInputData.visibleVotes} handleToggle={toggleVisibleVotes} />
+                    <p style={{ color: '#a3a3a3' }}>Should contest results be visible during voting?</p>
                     <b></b>
                 </Parameter>
                 <Parameter>
                     <Contest_h3_alt>Anonymous Submissions</Contest_h3_alt>
-                    <ToggleButton identifier={'anon-submissions-toggle'} isToggleOn={areAnonSubmissions} setIsToggleOn={setAreAnonSubmissions} handleToggle={() => { setAreAnonSubmissions(!areAnonSubmissions) }} />
-                    <p style={{color: '#a3a3a3'}}>Should submitters be anonymous during voting?</p>
+                    <ToggleButton identifier={'anon-submissions-toggle'} isToggleOn={simpleInputData.anonSubmissions} handleToggle={toggleAnonSubs} />
+                    <p style={{ color: '#a3a3a3' }}>Should submitters be anonymous during voting?</p>
+                    <b></b>
+                </Parameter>
+                <Parameter>
+                    <Contest_h3_alt>Self Voting</Contest_h3_alt>
+                    <ToggleButton identifier={'self-voting-toggle'} isToggleOn={simpleInputData.selfVoting} handleToggle={toggleSelfVoting} />
+                    <p style={{ color: '#a3a3a3' }}>Are participants able to vote on their own submissions?</p>
                     <b></b>
                 </Parameter>
             </ParamsWrap>

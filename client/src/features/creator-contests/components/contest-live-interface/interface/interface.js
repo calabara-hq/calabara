@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, Suspense } from 'react'
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import ContestInfo from "../contest_info/contest-info";
@@ -9,14 +9,15 @@ import SubmissionDisplay from '../submissions/test-submission-display';
 import { useDispatch, useSelector } from "react-redux";
 import { ContestDurationCheckpointBar } from "../../../../checkpoint-bar/checkpoint-bar";
 import { selectProgressRatio, selectDurations } from './contest-interface-reducer';
-import { InterfaceHeading, HeadingSection1, OrgImg, ContestDetails, DetailRow, CheckpointWrap, CheckpointTop, CheckpointBottomTag, CheckpointBottom, label_status } from '../contest_info/contest-info-style';
+import { OrgImg, ContestDetails, DetailRow, CheckpointWrap, CheckpointTop, CheckpointBottomTag, CheckpointBottom, label_status } from '../contest_info/contest-info-style';
 import { selectDashboardInfo } from "../../../../dashboard/dashboard-info-reducer";
 import { selectLogoCache } from "../../../../org-cards/org-cards-reducer";
 import useCommon from "../../../../hooks/useCommon";
 import { Contest_h2_alt } from '../../common/common_styles';
 import BackButton from '../../../../back-button/back-button';
 import * as WebWorker from '../../../../../app/worker-client.js'
-
+import { Placeholder } from '../../common/common_components';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 const ContestInterfaceWrap = styled.div`
     display: flex;
     flex-direction: column;
@@ -28,8 +29,12 @@ const InterfaceTopSplit = styled.div`
     display: flex;
     flex-direction: row;
     justify-content: center;
-    height: 250px;
-    margin-bottom: 20px;
+    margin: -10px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+    > * {
+        margin: 10px;
+    }
     
  `
 
@@ -37,11 +42,14 @@ const OrgCard = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    flex: 0 1 25%;
+    flex: 1 0 25%;
     justify-content: space-evenly;
     align-items: center;
     background-color: #1e1e1e;
     border-radius: 10px;
+    > * {
+        margin: 10px;
+    }
 
 `
 
@@ -51,9 +59,6 @@ export default function ContestInterface({ contest_settings, prompt_data }) {
     const [createSubmissionIndex, setCreateSubmissionIndex] = useState(-1);
     const info = useSelector(selectDashboardInfo)
     const { batchFetchDashboardData } = useCommon();
-    const logoCache = useSelector(selectLogoCache);
-    const dispatch = useDispatch()
-    const [isInfoLoaded, setIsInfoLoaded] = useState(false);
     const builderScroll = useRef(null)
 
     const stateManager = useContestState(
@@ -65,21 +70,10 @@ export default function ContestInterface({ contest_settings, prompt_data }) {
 
     useEffect(() => {
         batchFetchDashboardData(ens, info);
-        console.log(info)
-    }, [info])
-
-
-    useEffect(() => {
-        if (info.ens == ens && !isInfoLoaded) {
-            setIsInfoLoaded(true)
-        }
     }, [info])
 
 
 
-    useEffect(() => {
-        WebWorker.processImages(dispatch, logoCache);
-    }, [isInfoLoaded])
 
     useEffect(() => {
         if (isSubmissionBuilder) {
@@ -91,14 +85,10 @@ export default function ContestInterface({ contest_settings, prompt_data }) {
 
     return (
         <>
-            <BackButton link={'/' + ens + '/creator_contests'} text={"contest home"} />
+            <BackButton customWidth={'70%'} link={'/' + ens + '/creator_contests'} text={"contest home"} />
             <ContestInterfaceWrap>
                 <InterfaceTopSplit>
-                    <OrgCard>
-                        <OrgImg data-src={info.logo}></OrgImg>
-                        <Contest_h2_alt>{info.name}</Contest_h2_alt>
-                        <a href={'//' + info.website} target="_blank">{info.website}</a>
-                    </OrgCard>
+                    {info && <RenderOrgCard info={info} />}
                     <PromptDisplay contest_settings={contest_settings} prompt_data={prompt_data} setIsSubmissionBuilder={setIsSubmissionBuilder} createSubmissionIndex={createSubmissionIndex} setCreateSubmissionIndex={setCreateSubmissionIndex} />
                 </InterfaceTopSplit>
                 {contest_settings && <ContestInfo contest_settings={contest_settings} />}
@@ -112,6 +102,19 @@ export default function ContestInterface({ contest_settings, prompt_data }) {
     )
 }
 
+
+function RenderOrgCard({ info }) {
+    console.log(info.logo)
+
+
+    return (
+        <OrgCard>
+            <LazyLoadImage style={{ maxWidth: '12em', margin: '0 auto', borderRadius: '100px' }} src={`/${info.logo}`} effect="blur" />
+            <Contest_h2_alt>{info.name}</Contest_h2_alt>
+            <a href={'//' + info.website} target="_blank">{info.website}</a>
+        </OrgCard>
+    )
+}
 
 function RenderCheckpoint() {
     const barProgress = useSelector(selectProgressRatio);

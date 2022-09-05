@@ -45,37 +45,6 @@ const DrawerWrapper = styled.div`
         margin-bottom: 30px;
     }
 `
-
-
-export default function ExpandSubmissionDrawer({ drawerOpen, handleClose, id, TLDRImage, TLDRText, expandData }) {
-    const contest_state = useSelector(selectContestState)
-
-    useEffect(() => {},[contest_state])
-
-    return (
-
-        <Drawer
-            open={drawerOpen}
-            onClose={handleClose}
-            direction='right'
-            className='bla bla bla'
-            size='60vw'
-            style={{ backgroundColor: '#1e1e1e', overflowY: 'scroll' }}
-        >
-            {drawerOpen &&
-                <DrawerWrapper>
-                    {contest_state === 1 && <SubmissionVotingBox sub_id={id} />}
-                    <SubmissionWrap>
-                        <p>{TLDRText}</p>
-                        <img src={TLDRImage}></img>
-                        {expandData && <ParseBlocks data={expandData} />}
-                    </SubmissionWrap>
-                </DrawerWrapper>
-            }
-        </Drawer>
-    )
-}
-
 const SubmissionWrap = styled.div`
     display: flex;
     flex-direction: column;
@@ -112,32 +81,32 @@ const SubmissionWrap = styled.div`
 
 
 
-function ViewSubmission({ drawerOpen, handleClose, TLDRImage, TLDRText, expandData }) {
+export default function ExpandSubmissionDrawer({ drawerOpen, handleClose, id, TLDRImage, TLDRText, expandData, author }) {
+    const contest_state = useSelector(selectContestState)
+    useEffect(() => { }, [contest_state])
+
     return (
+
         <Drawer
             open={drawerOpen}
             onClose={handleClose}
             direction='right'
             className='bla bla bla'
-            size='40vw'
+            size='60vw'
             style={{ backgroundColor: '#1e1e1e', overflowY: 'scroll' }}
         >
-            <DrawerWrapper>
-                <SubmissionWrap>
-                    <p>{TLDRText}</p>
-                    <img src={TLDRImage}></img>
-                    <ParseBlocks data={expandData} />
-                </SubmissionWrap>
-            </DrawerWrapper>
+            {drawerOpen &&
+                <DrawerWrapper>
+                    {contest_state === 1 && <SubmissionVotingBox sub_id={id}/>}
+                    <SubmissionWrap>
+                        {author && <p>{author}</p>}
+                        <p>{TLDRText}</p>
+                        <img src={TLDRImage}></img>
+                        {expandData && <ParseBlocks data={expandData} />}
+                    </SubmissionWrap>
+                </DrawerWrapper>
+            }
         </Drawer>
-
     )
 }
 
-/*
-<SubmissionWrap>
-    <p>{TLDRText}</p>
-    <img src={TLDRImage}></img>
-    <ParseBlocks data={expandData} />
-</SubmissionWrap>
-*/

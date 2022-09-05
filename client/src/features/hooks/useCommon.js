@@ -61,6 +61,15 @@ export default function useCommon() {
                 case 433:
                     showNotification('error', 'error', 'this contest is not accepting votes at this time')
                     break;
+                case 434:
+                    showNotification('error', 'error', 'this wallet does not meet voting requirements')
+                    break;
+                case 435:
+                    showNotification('error', 'error', 'you cannot vote on your own submission')
+                    break
+                case 436:
+                    showNotification('error', 'error', 'amount exceeds available voting power')
+                    break
             }
             return null
         }
