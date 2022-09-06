@@ -111,8 +111,8 @@ export default function ContestInfo({ contest_settings }) {
                             <DetailItem>
                                 <p>More Details</p>
                             </DetailItem>
-                            <DetailItem>
-                                <FontAwesomeIcon icon={faQuestionCircle} style ={{fontSize: '1.5em' , cursor: 'pointer'}} onClick={handleDrawerOpen}/>
+                            <DetailItem shouldHover={true}>
+                                <button onClick={handleDrawerOpen}><FontAwesomeIcon icon={faQuestionCircle}/></button>
                             </DetailItem>
                         </DetailRow>
                         <DetailRow>
@@ -140,7 +140,7 @@ const DrawerWrapper = styled.div`
     width: 95%;
     margin: 0 auto;
     margin-left: 20px;
-    margin-top: 50px;
+    margin-top: 20px;
     height: 100%;
     color: #d3d3d3;
     animation: ${fade_in} 0.5s ease-in-out;

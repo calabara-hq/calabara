@@ -6,6 +6,7 @@ import { useParams } from "react-router-dom";
 import useContract from './useContract';
 import useGatekeeper from './useGatekeeper';
 import useCommon from './useCommon';
+import { selectContestState } from '../creator-contests/components/contest-live-interface/interface/contest-interface-reducer';
 
 
 
@@ -13,6 +14,7 @@ import useCommon from './useCommon';
 export default function useSubmissionEngine(submitter_restrictions) {
     const walletAddress = useSelector(selectConnectedAddress);
     const isConnected = useSelector(selectConnectedBool);
+    const contestState = useSelector(selectContestState)
     const [alreadySubmittedError, setAlreadySubmittedError] = useState(false)
     const { ens, contest_hash } = useParams();
     const { contestQueryGatekeeper } = useGatekeeper();
@@ -24,7 +26,7 @@ export default function useSubmissionEngine(submitter_restrictions) {
         if (isConnected) {
             // check if wallet already submitted in this contest
             (async () => {
-                
+                if (contestState !== 0)return setIsUserEligible(false)
                 let eligibility = await axios.post('/creator_contests/check_user_eligibility', { contest_hash: contest_hash, ens: ens, walletAddress: walletAddress }).then(result => { return result.data })
 
                 setAlreadySubmittedError(eligibility.has_already_submitted);

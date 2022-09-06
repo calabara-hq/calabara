@@ -143,6 +143,10 @@ const PromptWrap = styled.div`
     border-radius: 10px;
     padding: 10px;
     width: 95%;
+
+    > p {
+        font-size: 15px;
+    }
 `
 
 const FadeDiv = styled.div`
@@ -158,6 +162,7 @@ const PromptTop = styled.div`
         margin-left: 50px;
         margin-right: 5px;
     }
+
 `
 
 const PromptContent = styled.div`
@@ -214,7 +219,6 @@ export default function PromptDisplay({ contest_settings, prompt_data }) {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
     const contestState = useSelector(selectContestState);
-
 
 
     const handlePromptClick = () => {
@@ -279,7 +283,13 @@ export default function PromptDisplay({ contest_settings, prompt_data }) {
 
 
 
-
+const ImgDrawer = styled.img` 
+    float: right;
+    max-width: 12em;
+    border-radius: 10px;
+    margin-left: 10px;
+    margin-bottom: 10px;
+`
 
 
 const SubmissionRequirements = styled.div`
@@ -422,19 +432,17 @@ function ExpandedPromptSidebar({ contest_settings, prompt_data, isCreating, setI
     }
 
 
-
     return (
         <>
             {!isCreating &&
                 <>
                     <PromptWrap>
+                    <ImgDrawer src={prompt_data.coverImage} />
                         <PromptTop>
-                            <h4>{prompt_data.title}</h4>
+                            <h3>{prompt_data.title}</h3>
                             <Label color={labelColorOptions[prompt_data.promptLabelColor]}>{prompt_data.promptLabel}</Label>
                         </PromptTop>
-                        <PromptContent>
                             <ParseBlocks data={prompt_data.editorData} />
-                        </PromptContent>
                     </PromptWrap>
 
                     <SubmissionRequirements>
