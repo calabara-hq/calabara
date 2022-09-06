@@ -29,6 +29,13 @@ const ContestDetails = styled.div`
     flex-wrap: wrap;
     margin: -10px;
 
+    > div:nth-child(2){
+        &:hover{
+            cursor: pointer;
+            background-color: #262626;
+        }
+    }
+
 `
 
 const DetailBox = styled.div`
@@ -53,6 +60,7 @@ const DetailRow = styled.div`
     display: flex;
     align-items: center;
     margin: 10px;
+
     ${DetailItem}:first-child{
         font-weight: bold;
     }
@@ -60,6 +68,7 @@ const DetailRow = styled.div`
         margin-left: auto;
         text-align: right;
     }
+
 
 `
 
@@ -108,14 +117,15 @@ const DetailRowHover = styled.div`
     text-align: left;
     align-items: center;
     //margin-left: 10px;
+  
 
     &:hover{
+
         border-radius: 10px;
 
     }
 
     &:hover ${SubRewardDetails}{
-
         visibility: visible;
 
     }

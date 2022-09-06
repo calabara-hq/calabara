@@ -138,10 +138,10 @@ const DrawerWrapper = styled.div`
 
 const PromptWrap = styled.div`
     background-color: #262626;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
-    border: 2px solid #4d4d4d;
-    border-radius: 4px;
-    padding: 5px;
+    //box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
+    //border: 2px solid #4d4d4d;
+    border-radius: 10px;
+    padding: 10px;
     width: 95%;
 `
 
@@ -174,14 +174,18 @@ const AltSubmissionButton = styled.button`
     color: rgb(138,128,234);
     background-color: rgb(138,128,234,.3);
     border: 2px solid rgb(138,128,234,.3);
-    border-radius: 10px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
-    padding: 5px 5px;
+
+    border-radius: 10px;
+    padding: 5px 20px;
     transition: background-color 0.2 ease-in-out;
     transition: color 0.3s ease-in-out;
+    overflow: hidden;
+
     &:hover{
         background-color: rgb(138,128,234);
         color: #fff;
+
     
     }
 
@@ -201,6 +205,7 @@ const CreateSubmissionButtonContainer = styled.div`
     left: 0;
     right: 0;
     margin: 0 auto;
+
 `
 
 
@@ -278,16 +283,26 @@ export default function PromptDisplay({ contest_settings, prompt_data }) {
 
 
 const SubmissionRequirements = styled.div`
-    width: 70%;
+    width: 95%;
     display: flex;
     flex-direction: column;
     align-items: center;
     background-color: #1e1e1e;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
-    border: 2px solid #4d4d4d;
+    //box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
+    border: 1px solid #4d4d4d;
     border-radius: 10px;
     padding: 5px;
-    margin: 20px auto;
+    margin-top: 20px;
+
+    > h2 {
+        text-align: center;
+        font-size: 18px;
+        font-weight: 500;
+    }
+
+    > p {
+        font-size: 14px;
+    }
 `
 
 const EligibilityCheck = styled.div`
@@ -362,7 +377,9 @@ const RestrictionStatusNotConnected = styled.span`
 const SubButton = styled.div`
     display:flex;
     flex-direction: row;
-    margin-left: auto;
+    flex-wrap: wrap;
+    justify-content: center;
+    //margin-left: auto;
     margin-top: 2em;
     margin-right: 10px;
     margin-bottom: 10px;
@@ -383,6 +400,7 @@ const ConnectWalletButton = styled.button`
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
     padding: 5px 20px;
     cursor: pointer;
+    overflow: hidden;
     &:hover{
         background-color: #1e1e1e;
         background-image: linear-gradient(#141416, #141416),
@@ -422,13 +440,13 @@ function ExpandedPromptSidebar({ contest_settings, prompt_data, isCreating, setI
                     <SubmissionRequirements>
                         {Object.values(restrictionResults).length > 0 &&
                             <>
-                                <Contest_h2_alt style={{ marginBottom: '30px', marginTop: '20px' }}>Submission Requirements</Contest_h2_alt>
+                                <h2 style={{ marginBottom: '30px', marginTop: '20px' }}>Submission Requirements</h2>
                                 {alreadySubmittedError && <p style={{ fontSize: '18px' }}>Limit 1 submission <RestrictionStatus isConnected={isWalletConnected} status={!alreadySubmittedError} key={`${isWalletConnected}-already-submitted`} /></p>}
                                 {Object.values(restrictionResults).map((restriction, index) => {
                                     if (restriction.type === 'erc20' || restriction.type === 'erc721') {
                                         return (
                                             <>
-                                                <p style={{ fontSize: '18px' }}>
+                                                <p>
                                                     {restriction.threshold} {restriction.symbol}
                                                     {isWalletConnected && <RestrictionStatus index={index + 1} isConnected={isWalletConnected} status={restriction.user_result} key={`${isWalletConnected}-${restriction.user_result}`} />}
                                                     {!isWalletConnected && <RestrictionStatusNotConnected />}

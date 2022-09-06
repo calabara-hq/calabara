@@ -64,7 +64,7 @@ const OrgImgTo = styled.img`
 const HomeRight = styled.div`
     display: flex;
     flex: 0 0 70%;
-    flex-direction: row-reverse;
+    flex-direction: row;
     align-items: center;
     justify-content: center;   
     background-color: #1e1e1e;
@@ -83,7 +83,7 @@ const TopText = styled.div`
     > h3 {
         font-size: 25px;
         color: #d9d9d9;
-        text-align: center;
+        text-align: left;
         margin: 0px 0px 10px 0px;
     }
     > li{
@@ -108,6 +108,7 @@ const TopRight = styled.div`
     > h1 {
         color: #d9d9d9;
         font-size: 35px;
+        
         
     }
 
@@ -279,7 +280,7 @@ export default function ContestHomepage({ }) {
 
     return (
         <>
-            <BackButton link={'/' + ens + '/dashboard'} text={"dashboard"} />
+            <BackButton customWidth={'68%'} link={'/' + ens + '/dashboard'} text={"dashboard"} />
             <ContestHomeWrap>
                 <ContestHomeSplit>
                     <HomeLeft>
@@ -289,15 +290,7 @@ export default function ContestHomepage({ }) {
                     </HomeLeft>
                     <HomeRight>
                         <TopText>
-                            <h3>Earn Retroactive Rewards through contributions</h3>
-                            <li>Incentivize creatives, artists, and builders</li>
-                            <li>Path to membership via proof of work</li>
-                            <li>Attract more creatives to the ecosystem</li>
-                            <li>Gamify collaboration amongst community members</li>
-                            <li>Curate excellent contributions</li>
-                            <li>Increase governane participation</li>
-                            <li>Most importantly, HAVE FUN :)</li>
-
+                        <h3>Get Creative, Earn Rewards, & Contribute to your DAO</h3>
                         </TopText>
                         <TopRight>
                             <img src={CreatorContestLogo} />
