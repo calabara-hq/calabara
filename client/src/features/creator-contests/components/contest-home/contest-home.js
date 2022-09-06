@@ -179,21 +179,21 @@ const SplitBottomRight = styled.div`
 const NewContest = styled.button`
     font-size: 16px;
     font-weight: 550;
-    color: rgb(6, 214, 160);
-    background-color: rgb(6, 214, 160, .3);
-    border: 2px solid transparent;
+    color: #f2f2f2;
+    background-image: linear-gradient(#262626, #262626),linear-gradient(90deg,#e00f8e,#2d66dc);
+    background-origin: border-box;
+    background-clip: padding-box,border-box;
+    border: 2px double transparent;
     border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
     padding: 5px 10px;
     transition: background-color 0.2s ease-in-out;
     transition: color 0.3s ease-in-out;
     transition: visibility 0.2s, max-height 0.3s ease-in-out;
 
     &:hover{
-        transform: scale(1.01);
-        transition-duration: .5s;
-        background-color: rgb(6, 214, 160);
-        color: #fff;
+        background-color: #1e1e1e;
+        background-image: linear-gradient(#141416, #141416),
+        linear-gradient(to right, #e00f8e, #2d66dc);
     }
 
 `

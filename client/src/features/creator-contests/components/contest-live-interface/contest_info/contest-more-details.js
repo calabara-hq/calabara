@@ -47,7 +47,7 @@ const VoterRow = styled.div`
     }
     > li {
         & span{
-        margin-left: auto;
+        margin-left: 10px;
         padding: 3px 3px;
         border-radius: 4px;
         font-size: 15px;
@@ -216,8 +216,9 @@ function TokenComponent({ voting_strategy }) {
 
     return (
         <VoterRow>
-            <p>This contest uses <b>{voting_strategy.strategy_type}</b> strategy</p>
+            <p>This contest uses <b>{voting_strategy.strategy_type}</b> strategy:</p>
             <li>Type: <b>{voting_strategy.symbol}</b> <TagType type={voting_strategy.type}>{voting_strategy.type}</TagType></li>
+            <li>1 <b>{voting_strategy.symbol}</b> equals 1 <b>voting credit</b></li>
             {voting_strategy.hard_cap > 0 &&
                 <li>Contest Hard Cap: <b>{voting_strategy.hard_cap}</b></li>
             }
@@ -238,7 +239,7 @@ function ArcadeComponent({ voting_strategy }) {
 
     return (
         <VoterRow>
-            <p>This contest uses <b>{voting_strategy.strategy_type} strategy</b></p>
+            <p>This contest uses <b>{voting_strategy.strategy_type} strategy:</b></p>
             <li>Total Votes: <b>{voting_strategy.hard_cap}</b></li>
             {voting_strategy.sub_cap > 0 &&
                 <li>Max votes per submission: <b>{voting_strategy.sub_cap}</b></li>

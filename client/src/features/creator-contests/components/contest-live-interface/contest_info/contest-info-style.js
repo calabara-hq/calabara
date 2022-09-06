@@ -54,6 +54,21 @@ const DetailItem = styled.div`
     > p {
         margin: 0;
     }
+
+    > button {
+        cursor: pointer;
+        border: none;
+        color: rgb(191, 191, 191, .5);
+        background-color: transparent;
+        font-size: 1.5em;
+        padding: 0px 0px;
+        font: none;
+
+        &:hover{
+            color: rgb(191, 191, 191);
+        }
+    }
+
 `
 
 const DetailRow = styled.div`
