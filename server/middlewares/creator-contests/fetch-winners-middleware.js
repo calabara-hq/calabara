@@ -23,6 +23,17 @@ const pre_process = async (ens, contest_hash) => {
 }
 
 
+async function verifyContestOver(req, res, next) {
+    const { ens, contest_hash } = req.query
+
+    let result = await db.query('select _end from contests where ens = $1 and _hash = $2', [ens, contest_hash])
+        .then(clean)
+    let now = new Date().toISOString();
+    if (now < result._end) return res.sendStatus(438)
+    next()
+
+}
+
 async function get_winners(req, res, next) {
     const { ens, contest_hash } = req.query
     let { submissions, rewards } = await pre_process(ens, contest_hash)
@@ -36,7 +47,7 @@ async function get_winners(req, res, next) {
     Object.values(rewards.sub_rewards).map((reward, index) => {
         let winner = submissions[reward.rank - 1]
         sub_winners.push({ rank: reward.rank, reward, winner })
-       // rewards.eth ? final_winners.push()
+        // rewards.eth ? final_winners.push()
     })
 
     // map over voter rewards
@@ -94,4 +105,4 @@ async function get_winners_as_csv(req, res, next) {
 }
 
 
-module.exports = { get_winners, get_winners_as_csv }
+module.exports = { get_winners, get_winners_as_csv, verifyContestOver }

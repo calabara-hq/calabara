@@ -4,6 +4,8 @@ import RewardSelector from "./choose-rewards";
 import { Contest_h2, Contest_h2_alt, Contest_h3, fade_in } from '../../common/common_styles'
 import SubmitterRewardsBlock from "./submitter-rewards/submitter-rewards";
 import VoterRewardsBlock from "./voter-rewards/voter-rewards";
+import { rewardOptionsState } from "./reducers/reward-options-reducer";
+import { useSelector } from "react-redux";
 
 const Rewards = styled.div`
     display: flex;
@@ -46,8 +48,10 @@ const ParticipantRewardsWrap = styled.div`
 
 
 
-export default function ContestRewardsBlock({ theme, rewardOptions2, setRewardOptions2, rewardOptions, setRewardOptions, selectedRewards, setSelectedRewards, submitterRewards, setSubmitterRewards, voterRewards, setVoterRewards, errorMatrix, setErrorMatrix }) {
+export default function ContestRewardsBlock({ theme, voterRewards, setVoterRewards, errorMatrix, setErrorMatrix }) {
+    const selectedRewards = useSelector(rewardOptionsState.getSelectedRewards)
 
+    /*
     const handleErrors = () => {
         let err_matrix_copy = JSON.parse(JSON.stringify(errorMatrix))
         let submitter_rewards_arr = Object.values(submitterRewards)
@@ -68,7 +72,7 @@ export default function ContestRewardsBlock({ theme, rewardOptions2, setRewardOp
         })
         setVoterRewards({ type: 'update_all', payload: Object.fromEntries(voter_rewards_arr) })
     }
-
+    */
 
 
     const isVoterBlockVisible = () => {
@@ -80,14 +84,14 @@ export default function ContestRewardsBlock({ theme, rewardOptions2, setRewardOp
         <Rewards theme={theme} title='Contest Rewards'>
 
             <RewardsMainHeading>
-                <RewardSelector rewardOptions={rewardOptions} setRewardOptions={setRewardOptions} selectedRewards={selectedRewards} setSelectedRewards={setSelectedRewards} />
+                <RewardSelector />
             </RewardsMainHeading>
 
 
             {Object.keys(selectedRewards).length > 0 &&
                 <ParticipantRewardsWrap>
-                    <SubmitterRewardsBlock rewardOptions={rewardOptions} errorMatrix={errorMatrix} setErrorMatrix={setErrorMatrix} submitterRewards={submitterRewards} setSubmitterRewards={setSubmitterRewards} selectedRewards={selectedRewards} theme={theme} />
-                    {isVoterBlockVisible() && <VoterRewardsBlock rewardOptions={rewardOptions} num_voting_rewards={Object.values(submitterRewards)} submitter_rewards={Object.values(submitterRewards)} selectedRewards={selectedRewards} voterRewards={voterRewards} setVoterRewards={setVoterRewards} />}
+                    <SubmitterRewardsBlock errorMatrix={errorMatrix} setErrorMatrix={setErrorMatrix} theme={theme} />
+                    {isVoterBlockVisible() && <VoterRewardsBlock voterRewards={voterRewards} setVoterRewards={setVoterRewards} />}
                 </ParticipantRewardsWrap>
             }
             {/*<button onClick={handleErrors}>submit</button>*/}

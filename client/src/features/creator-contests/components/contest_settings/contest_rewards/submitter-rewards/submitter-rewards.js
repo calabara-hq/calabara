@@ -4,24 +4,29 @@ import { SubmitterRewardsGridLayout, GridInputContainer, RewardsGridInput, Count
 import CounterButton from '../../../common/CounterButton';
 import { HelpText } from 'react-rainbow-components';
 import { RewardTypeWrap, NumberWinnersContainer, RewardsMainContent } from '../reward-styles';
+import { rewardOptionsActions, rewardOptionsState } from '../reducers/reward-options-reducer';
+import { submitterRewardActions, submitterRewardsState } from '../reducers/submitter-rewards-reducer';
+import { useDispatch, useSelector } from 'react-redux';
 
-export default function SubmitterRewardsBlock({ rewardOptions, errorMatrix, setErrorMatrix, submitterRewards, setSubmitterRewards, selectedRewards, theme }) {
-    const [numWinners, setNumWinners] = useState(1)
+export default function SubmitterRewardsBlock({ errorMatrix, setErrorMatrix, theme }) {
+    const selectedRewards = useSelector(rewardOptionsState.getSelectedRewards)
+    const numWinners = useSelector(submitterRewardsState.getNumWinners)
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        
+    }, [numWinners])
 
     const handleWinnersIncrement = () => {
         if (numWinners < 10) {
-            setNumWinners(numWinners + 1);
+            dispatch(submitterRewardActions.incrementWinners())
             let errorMatrix = Array.from({ length: numWinners + 1 }, () => Array.from({ length: 4 }, () => null))
             setErrorMatrix(errorMatrix)
         }
     }
     const handleWinnersDecrement = (value) => {
         if (numWinners > 1) {
-            let rewards_copy = Object.entries(submitterRewards)
-            rewards_copy.pop();
-            rewards_copy = Object.fromEntries(rewards_copy)
-            setSubmitterRewards({ type: 'update_all', payload: rewards_copy })
-            setNumWinners(numWinners - 1);
+            dispatch(submitterRewardActions.decrementWinners())
             let errorMatrix = Array.from({ length: numWinners - 1 }, () => Array.from({ length: 4 }, () => null))
             setErrorMatrix(errorMatrix)
         }
@@ -30,6 +35,7 @@ export default function SubmitterRewardsBlock({ rewardOptions, errorMatrix, setE
 
     return (
         <RewardTypeWrap>
+
             <SettingsSectionSubHeading>
                 <Contest_h3_alt grid_area={'section_title'}>Submitter Rewards</Contest_h3_alt>
             </SettingsSectionSubHeading>
@@ -38,24 +44,25 @@ export default function SubmitterRewardsBlock({ rewardOptions, errorMatrix, setE
                     <Contest_h3_alt_small>Number of Winners</Contest_h3_alt_small>
                     <CounterButton counter={numWinners} handleIncrement={handleWinnersIncrement} handleDecrement={handleWinnersDecrement} />
                 </NumberWinnersContainer>
-                <SubmitterRewardsGrid rewardOptions={rewardOptions} numWinners={numWinners} submitterRewards={submitterRewards} setSubmitterRewards={setSubmitterRewards} selectedRewards={selectedRewards} errorMatrix={errorMatrix} setErrorMatrix={setErrorMatrix} theme={theme} />
+                <SubmitterRewardsGrid numWinners={numWinners} selectedRewards={selectedRewards} errorMatrix={errorMatrix} setErrorMatrix={setErrorMatrix} theme={theme} />
             </RewardsMainContent>
+
         </RewardTypeWrap>
     )
 }
 
-function SubmitterRewardsGrid({ rewardOptions, numWinners, selectedRewards, submitterRewards, setSubmitterRewards, errorMatrix, setErrorMatrix, theme }) {
+function SubmitterRewardsGrid({ rewardOptions, numWinners, selectedRewards, errorMatrix, setErrorMatrix, theme }) {
 
     return (
         <SubmitterRewardsGridLayout>
             <p>Rank</p>
-            {selectedRewards.ETH ? <p>{selectedRewards.ETH}</p> : <b></b>}
-            {selectedRewards.erc20 ? <p>{selectedRewards.erc20}</p> : <b></b>}
-            {selectedRewards.erc721 ? <p>{selectedRewards.erc721}</p> : <b></b>}
+            {selectedRewards.eth ? <p>{selectedRewards.eth.symbol}</p> : <b></b>}
+            {selectedRewards.erc20 ? <p>{selectedRewards.erc20.symbol}</p> : <b></b>}
+            {selectedRewards.erc721 ? <p>{selectedRewards.erc721.symbol}</p> : <b></b>}
             {
                 Array.from(Array(numWinners)).map((val, idx) => {
                     return (
-                        <RewardGridRow rewardOptions={rewardOptions} idx={idx} theme={theme} val={val} submitterRewards={submitterRewards} setSubmitterRewards={setSubmitterRewards} selectedRewards={selectedRewards} errorMatrix={errorMatrix} setErrorMatrix={setErrorMatrix} />
+                        <RewardGridRow idx={idx} theme={theme} val={val} selectedRewards={selectedRewards} errorMatrix={errorMatrix} setErrorMatrix={setErrorMatrix} />
                     )
                 })
             }
@@ -63,30 +70,33 @@ function SubmitterRewardsGrid({ rewardOptions, numWinners, selectedRewards, subm
     )
 }
 
-function RewardGridRow({ rewardOptions, theme, idx, submitterRewards, setSubmitterRewards, selectedRewards, errorMatrix, setErrorMatrix }) {
+function RewardGridRow({ theme, idx, selectedRewards, errorMatrix, setErrorMatrix }) {
+    const dispatch = useDispatch();
+    const rewardOptions = useSelector(rewardOptionsState.getRewardOptions)
+    const submitterRewards = useSelector(submitterRewardsState.getSubmitterRewards)
 
     const updateRewards = (e) => {
-        console.log(rewardOptions)
+
         const { name, value } = e.target;
         let err_matrix_copy = JSON.parse(JSON.stringify(errorMatrix))
         switch (name) {
             case '0':
-                setSubmitterRewards({ type: 'update_single', payload: { [idx]: Object.assign(submitterRewards[idx] || {}, { rank: Number(value) }) } })
+                dispatch(submitterRewardActions.updateSubmitterRewards({ index: idx, type: 'rank', value: Number(value) }))
                 err_matrix_copy[idx][0] = null
                 setErrorMatrix(err_matrix_copy)
                 break;
             case '1':
-                setSubmitterRewards({ type: 'update_single', payload: { [idx]: Object.assign(submitterRewards[idx] || {}, { eth: { amount: Number(value) || 0, address: null, symbol: 'ETH' } }) } })
+                dispatch(submitterRewardActions.updateSubmitterRewards({ index: idx, type: 'eth', value: { type: 'eth', symbol: 'ETH', address: null, amount: Number(value) } }))
                 err_matrix_copy[idx][1] = null
                 setErrorMatrix(err_matrix_copy)
                 break;
             case '2':
-                setSubmitterRewards({ type: 'update_single', payload: { [idx]: Object.assign(submitterRewards[idx] || {}, { erc20: { amount: Number(value) || 0, address: rewardOptions.erc20.address, symbol: rewardOptions.erc20.symbol } }) } })
+                dispatch(submitterRewardActions.updateSubmitterRewards({ index: idx, type: 'erc20', value: { type: 'erc20', symbol: rewardOptions.erc20.symbol, address: rewardOptions.erc20.address, decimal: rewardOptions.erc20.decimal, amount: Number(value) } }))
                 err_matrix_copy[idx][2] = null
                 setErrorMatrix(err_matrix_copy)
                 break;
             case '3':
-                setSubmitterRewards({ type: 'update_single', payload: { [idx]: Object.assign(submitterRewards[idx] || {}, { erc721: { amount: Number(value) || 0, address: rewardOptions.erc721.address, symbol: rewardOptions.erc721.symbol } }) } })
+                dispatch(submitterRewardActions.updateSubmitterRewards({ index: idx, type: 'erc721', value: { type: 'erc721', symbol: rewardOptions.erc721.symbol, address: rewardOptions.erc721.address, decimal: rewardOptions.erc721.decimal, amount: Number(value) } }))
                 err_matrix_copy[idx][3] = null
                 setErrorMatrix(err_matrix_copy)
                 break;
@@ -105,7 +115,7 @@ function RewardGridRow({ rewardOptions, theme, idx, submitterRewards, setSubmitt
             </GridInputContainer>
 
             <GridInputContainer>
-                {selectedRewards.ETH ?
+                {selectedRewards.eth ?
                     <RewardsGridInput name='1' theme={theme} type="number" onChange={updateRewards} onWheel={(e) => e.target.blur()}></RewardsGridInput>
                     : <b></b>
                 }

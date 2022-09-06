@@ -74,7 +74,7 @@ const nth = {
 
 function ContestRewardDetails({ contest_settings }) {
     Object.values(contest_settings.voter_rewards).map(reward => {
-        console.log(reward)
+        
     })
 
     return (

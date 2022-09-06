@@ -17,7 +17,6 @@ import ContestMoreDetails from "./contest-more-details.js";
 
 
 
-
 const processSubmitterRewards = (contest_settings) => {
     let compact_formatter = Intl.NumberFormat('en', { notation: 'compact' })
 
@@ -43,9 +42,11 @@ const processSubmitterRewards = (contest_settings) => {
 
 
 export default function ContestInfo({ contest_settings }) {
+    console.log(contest_settings)
     const [drawerOpen, setDrawerOpen] = useState(false)
     const { ens } = useParams();
     const contest_state = useSelector(selectContestState);
+
 
 
 
@@ -160,7 +161,7 @@ function ContestInfoDrawer({ contest_settings, drawerOpen, handleClose }) {
         >
             {drawerOpen &&
                 <DrawerWrapper>
-                    <ContestMoreDetails contest_settings={contest_settings} mode={0}/>
+                    <ContestMoreDetails contest_settings={contest_settings} mode={0} />
                 </DrawerWrapper>
             }
         </Drawer>

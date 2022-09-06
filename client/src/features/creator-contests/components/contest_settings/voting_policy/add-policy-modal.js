@@ -163,7 +163,7 @@ function TokenStrategy({ rewardOptions, availableRules, votingStrategy, setVotin
     const [tokenData, setTokenData] = useState(null);
     const [progress, setProgress] = useState(votingStrategy.strategy_id === 0x1 ? 0 : 1);
 
-    console.log(votingStrategy)
+    
 
     let options = {};
     // squirrel; add reward options to the mix & remove duplicates
@@ -442,7 +442,7 @@ function AdditionalConfig({ tokenData, setProgress, handleSave, handlePrevious }
         }
     }
 
-    console.log(handlePrevious)
+    
 
     return (
         <AdditionalConfigWrap>

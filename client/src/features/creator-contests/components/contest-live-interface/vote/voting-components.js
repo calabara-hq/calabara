@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import useVotingEngine from "../../../../hooks/useVotingEngine";
 import styled from "styled-components";
-import useWallet from "../../../../hooks/useWallet";
+import { useWalletContext } from "../../../../../app/WalletContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheckToSlot, faCircleCheck, faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
 import { ErrorMessage, fade_in } from "../../common/common_styles";
@@ -194,7 +194,7 @@ const InputCast = styled.div`
 function SubmissionVotingBox({ sub_id }) {
     const [isVoteButtonClicked, setIsVoteButtonClicked] = useState(false);
     const [exceedVotingPowerError, setExceedVotingPowerError] = useState(false);
-    const { walletConnect } = useWallet();
+    const { walletConnect } = useWalletContext();
     const [votesToSpend, setVotesToSpend] = useState('');
     const [formatVotesSpent, setFormatVotesSpent] = useState(true);
     const [formatVotingPower, setFormatVotingPower] = useState(true);

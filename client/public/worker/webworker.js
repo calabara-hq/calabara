@@ -52,7 +52,7 @@ async function pullLogo(endpoint) {
         fetch(img_url)
           .then(response => response.blob())
           .then(blob => URL.createObjectURL(blob))
-          //.then(x => console.log(x))
+          //.then(x => 
       })
       */
     // Create an object URL for the response
@@ -63,7 +63,7 @@ async function pullLogo(endpoint) {
     const img_response = await fetch(result.tldr_image)
     .then(async result => result.blob())
     .then(blob => this.tldr_image = URL.createObjectURL(blob))
-    //.then(img_result => console.log(img_result)/*this.tldr_image = img_result.blob())
+    //.then(img_result => 
   })
   */
 

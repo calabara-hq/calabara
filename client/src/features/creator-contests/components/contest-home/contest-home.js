@@ -1,22 +1,21 @@
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import axios from 'axios'
 import { useParams, useHistory } from "react-router-dom";
 import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPencil, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import BackButton from "../../../back-button/back-button";
-import { Label, labelColorOptions, Contest_h2_alt, Contest_h3_alt, TagType } from "../common/common_styles";
-import { label_status, OrgImg } from "../contest-live-interface/contest_info/contest-info-style";
-import contestInterfaceReducer, { selectContestState } from "../contest-live-interface/interface/contest-interface-reducer";
-import { contest_data } from "../contest-live-interface/temp-data";
+import { Label, labelColorOptions, Contest_h2_alt, Contest_h3_alt, TagType, fade_in } from "../common/common_styles";
+import { label_status } from "../contest-live-interface/contest_info/contest-info-style";
 import CreatorContestLogo from "../../../../img/cc.png"
 import moment from "moment";
 import useCommon from "../../../hooks/useCommon";
 import { selectDashboardInfo } from "../../../dashboard/dashboard-info-reducer";
 import { selectLogoCache } from "../../../org-cards/org-cards-reducer";
 import * as WebWorker from '../../../../app/worker-client.js'
-
+import fetchHomepageData from "./homepage-data-fetch";
+const homepage_data = fetchHomepageData();
 
 const ContestTag = styled.p`
     color: #d9d9d9;
@@ -140,6 +139,7 @@ const RoundContainer = styled.div`
     background-color: #1e1e1e;
     border-radius: 10px;
     margin-right: 20px;
+    animation: ${fade_in} 0.4s ease-in-out;
 
 `
 
@@ -167,7 +167,7 @@ const RoundWrap = styled.div`
 
 `
 
-const SplitBotR = styled.div`
+const SplitBottomRight = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -204,10 +204,10 @@ const StatContainer = styled.div`
     justify-content: space-evenly;
     align-items: center;
     background-color: #1e1e1e;
-    //border: 2px solid #4d4d4d;
     border-radius: 10px;
-    //margin-right: 10px;
     margin-top: 20px;
+    animation: ${fade_in} 0.4s ease-in-out;
+
 
     > p {
         color: #d9d9d9;
@@ -235,8 +235,6 @@ const OptionType = styled.p`
 
 
 
-
-
 export default function ContestHomepage({ }) {
     const [all_contests, set_all_contests] = useState(null);
     const [contest_hash, set_contest_hash] = useState(null);
@@ -256,14 +254,14 @@ export default function ContestHomepage({ }) {
     // if one is clicked, set the contest_hash in the url and fetch the settings
 
     useEffect(() => {
-        (async () => {
-            batchFetchDashboardData(ens, info)
-            let res = await axios.get(`/creator_contests/fetch_org_contests/${ens}`);
-            set_all_contests(res.data)
-            let stats = await axios.get(`/creator_contests/org_contest_stats/${ens}`);
-            set_total_rewards([stats.data.eth, stats.data.erc20, stats.data.erc721])
 
-        })();
+        batchFetchDashboardData(ens, info)
+        /*
+        let res = await axios.get(`/creator_contests/fetch_org_contests/${ens}`);
+        set_all_contests(res.data)
+        let stats = await axios.get(`/creator_contests/org_contest_stats/${ens}`);
+        set_total_rewards([stats.data.eth, stats.data.erc20, stats.data.erc721])
+        */
     }, [])
 
     useEffect(() => {
@@ -273,11 +271,6 @@ export default function ContestHomepage({ }) {
         }
     }, [info])
 
-
-
-    const handleInterface = (_hash) => {
-        history.push(`creator_contests/${_hash}`)
-    }
 
     const handleSettings = () => {
         history.push(`contest_settings`)
@@ -296,14 +289,14 @@ export default function ContestHomepage({ }) {
                     </HomeLeft>
                     <HomeRight>
                         <TopText>
-                        <h3>Earn Retroactive Rewards through contributions</h3>
-                        <li>Incentivize creatives, artists, and builders</li>
-                        <li>Path to membership via proof of work</li>
-                        <li>Attract more creatives to the ecosystem</li>
-                        <li>Gamify collaboration amongst community members</li>
-                        <li>Curate excellent contributions</li>
-                        <li>Increase governane participation</li>
-                        <li>Most importantly, HAVE FUN :)</li>
+                            <h3>Earn Retroactive Rewards through contributions</h3>
+                            <li>Incentivize creatives, artists, and builders</li>
+                            <li>Path to membership via proof of work</li>
+                            <li>Attract more creatives to the ecosystem</li>
+                            <li>Gamify collaboration amongst community members</li>
+                            <li>Curate excellent contributions</li>
+                            <li>Increase governane participation</li>
+                            <li>Most importantly, HAVE FUN :)</li>
 
                         </TopText>
                         <TopRight>
@@ -312,47 +305,60 @@ export default function ContestHomepage({ }) {
                     </HomeRight>
                 </ContestHomeSplit>
                 <SplitBottom>
-                    {all_contests &&
-                        <RoundContainer>
-                            {all_contests.map((el, index) => {
-                                return (
-                                    <RoundWrap onClick={() => handleInterface(el._hash)}>
-                                        <ContestTag>{el._title}</ContestTag>
-                                        <Label color={labelColorOptions[el._prompt_label_color]}>{el._prompt_label}</Label>
-                                        <CalculateState contest_info={el} />
-                                    </RoundWrap>
+                    <Suspense fallback={<RoundContainer style={{ height: '500px' }} />}>
+                        <ListContests />
+                    </Suspense>
 
-
-                                )
-
-                            })}
-
-                        </RoundContainer>
-                    }
-                    <SplitBotR>
+                    <SplitBottomRight>
                         <NewContest onClick={handleSettings}><FontAwesomeIcon icon={faPlus} /> New Contest </NewContest>
-
-                        <StatContainer>
-                            <Contest_h3_alt>Total Rewards Distributed: </Contest_h3_alt>
-                            <OptionType><TagType>ETH:</TagType> {total_rewards[0] ? total_rewards[0] : '--'}</OptionType>
-                            <OptionType><TagType type='erc20'>ERC-20:</TagType> {total_rewards[1] ? total_rewards[1].symbol : '--'}</OptionType>
-                            <OptionType><TagType type='erc721'>ERC-721:</TagType>  {total_rewards[2] ? total_rewards[2].symbol : '--'}</OptionType>
-                        </StatContainer>
-                    </SplitBotR>
+                        <Suspense fallback={<StatContainer style={{ height: '230px' }} />}>
+                            <ListStats />
+                        </Suspense>
+                    </SplitBottomRight>
 
                 </SplitBottom>
-
-
-
-
-
-
-
             </ContestHomeWrap>
         </>
     )
+}
+
+function ListContests() {
+    const history = useHistory();
+    const all_contests = homepage_data.contests.read();
 
 
+    const handleInterface = (_hash) => {
+        history.push(`creator_contests/${_hash}`)
+    }
+
+
+    return (
+        <RoundContainer>
+            {all_contests.map(el => {
+                return (
+                    <RoundWrap onClick={() => handleInterface(el._hash)}>
+                        <ContestTag>{el._title}</ContestTag>
+                        <Label color={labelColorOptions[el._prompt_label_color]}>{el._prompt_label}</Label>
+                        <CalculateState contest_info={el} />
+                    </RoundWrap>
+                )
+            })}
+        </RoundContainer>
+    )
+}
+
+function ListStats() {
+    const total_rewards = homepage_data.stats.read();
+    return (
+        <StatContainer>
+
+            <Contest_h3_alt>Total Rewards Distributed: </Contest_h3_alt>
+            <OptionType><TagType>ETH:</TagType> {total_rewards.eth ? total_rewards.eth : '--'}</OptionType>
+            <OptionType><TagType type='erc20'>ERC-20:</TagType> {total_rewards.erc20 ? total_rewards.erc20.symbol : '--'}</OptionType>
+            <OptionType><TagType type='erc721'>ERC-721:</TagType>  {total_rewards.erc721 ? total_rewards.erc721.symbol : '--'}</OptionType>
+
+        </StatContainer>
+    )
 }
 
 const calculateDuration = (t0, t1, t2) => {
@@ -372,13 +378,13 @@ const calculateDuration = (t0, t1, t2) => {
 
 function CalculateState({ contest_info }) {
     const [contestState, setContestState] = useState(0)
-    console.log(contest_info)
+
 
 
     useEffect(() => {
 
         let results = calculateDuration(contest_info._start, contest_info._voting, contest_info._end)
-        console.log(results)
+
         let index = results.indexOf('active');
         let cc_state = index = index > -1 ? index : 2;
         setContestState(cc_state)

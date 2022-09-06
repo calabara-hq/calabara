@@ -17,9 +17,10 @@ import useDashboardRules from '../hooks/useDashboardRules'
 import useDashboard from '../hooks/useDashboard'
 import useOrganization from '../hooks/useOrganization'
 import useCommon from '../hooks/useCommon'
-import useWallet from '../hooks/useWallet'
 import useContract from '../hooks/useContract'
 import AddNewToken from '../creator-contests/components/common/add_token'
+import { useWalletContext } from '../../app/WalletContext'
+
 
 export default function SettingsManager() {
     const [fieldsReady, setFieldsReady] = useState(false)
@@ -155,7 +156,7 @@ function OrganizationENSComponent({ standardProps }) {
     const walletAddress = useSelector(selectConnectedAddress);
     const isConnected = useSelector(selectConnectedAddress);
     const history = useHistory();
-    const { validAddress } = useWallet();
+    const { validAddress } = useWalletContext();
 
     useEffect(() => {
 
@@ -928,7 +929,7 @@ function SaveComponent({ standardProps, infoErrorController, adminErrorControlle
     const { populateDashboardRules } = useDashboardRules();
     const { updateDashboardInfo } = useDashboard();
     const { authenticated_post } = useCommon();
-    const { validAddress } = useWallet();
+    const { validAddress } = useWalletContext();
 
 
     const errorCheckInfo = async () => {

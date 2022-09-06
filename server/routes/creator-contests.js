@@ -7,13 +7,13 @@ contests.use(express.json())
 const { authenticateToken } = require('../middlewares/jwt-middleware.js');
 const { isAdmin } = require('../middlewares/admin-middleware')
 const { clean, asArray } = require('../helpers/common')
-const { createContest } = require('../middlewares/creator-contests/create-contest-middleware');
+const { createContest, isNick } = require('../middlewares/creator-contests/create-contest-middleware');
 const { createSubmission, checkSubmissionRestrictions, checkUserSubmissions, checkSubmitterEligibility } = require('../middlewares/creator-contests/submit-middleware.js');
 const { imageUpload } = require('../middlewares/image-upload-middleware.js');
 const { calc_sub_vp__unprotected, calc_sub_vp__PROTECTED } = require('../middlewares/creator-contests/vote-middleware-2.js');
 const logger = require('../logger').child({ component: 'creator-contests' })
 const { sendSocketMessage } = require('../sys/socket/socket-io');
-const { get_winners, get_winners_as_csv } = require('../middlewares/creator-contests/fetch-winners-middleware.js');
+const { get_winners, get_winners_as_csv, verifyContestOver } = require('../middlewares/creator-contests/fetch-winners-middleware.js');
 
 const serverRoot = path.normalize(path.join(__dirname, '../'));
 
@@ -80,10 +80,14 @@ contests.get('/fetch_submissions/*', async function (req, res, next) {
 // return the url, author, num votes, reward
 // check window last
 
-contests.get('/fetch_contest_winners', get_winners, async function (req, res, next) {
+contests.get('/fetch_contest_winners', verifyContestOver, async function (req, res, next) {
     const { ens, contest_hash } = req.query
-    let result = req.sub_winners
-    res.send(result).status(200);
+    console.log(ens, contest_hash)
+    let subs_full_details = await db.query('select contest_submissions.id, _url, author, sum(votes_spent) as votes from contest_submissions left join contest_votes on contest_submissions.id = contest_votes.submission_id where contest_submissions.ens=$1 and contest_submissions.contest_hash=$2 group by contest_submissions.id order by votes desc', [ens, contest_hash])
+        .then(clean)
+        .then(asArray)
+    console.log(subs_full_details)
+    res.send(subs_full_details).status(200);
 
 })
 
@@ -96,7 +100,7 @@ contests.get('/fetch_contest_winners_as_csv', get_winners_as_csv, async function
 
 // create a contest
 
-contests.post('/create_contest', authenticateToken, isAdmin, createContest, async function (req, res, next) {
+contests.post('/create_contest', authenticateToken, isAdmin, isNick, createContest, async function (req, res, next) {
     const { ens, contest_settings, prompt_data } = req.body
     const { start_date, voting_begin, end_date } = contest_settings.date_times
     await db.query('insert into contests (ens, created, _start, _voting, _end, _hash, settings, prompt_data, locked, pinned) values ($1, $2, $3, $4, $5, $6, $7, $8, false, false)', [ens, req.created, start_date, voting_begin, end_date, req.hash, contest_settings, prompt_data])

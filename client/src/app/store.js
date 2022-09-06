@@ -17,6 +17,8 @@ import rulesReducer from '../features/gatekeeper/gatekeeper-rules-reducer';
 import userReducer from '../features/user/user-reducer';
 import contestStateReducer from '../features/creator-contests/components/contest-live-interface/interface/contest-interface-reducer';
 import rewardOptionsReducer from '../features/creator-contests/components/contest_settings/contest_rewards/reducers/reward-options-reducer';
+import submitterRewardsReducer from '../features/creator-contests/components/contest_settings/contest_rewards/reducers/submitter-rewards-reducer';
+import voterRewardsReducer from '../features/creator-contests/components/contest_settings/contest_rewards/reducers/voter-rewards-reducer';
 
 
 const reducer = combineReducers({
@@ -29,7 +31,9 @@ const reducer = combineReducers({
   gatekeeperRules: rulesReducer,
   user: userReducer,
   contestState: contestStateReducer,
-  rewardOptions: rewardOptionsReducer
+  rewardOptions: rewardOptionsReducer,
+  submitterRewards: submitterRewardsReducer,
+  voterRewards: voterRewardsReducer
 });
 
 const persistConfig = {

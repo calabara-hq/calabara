@@ -126,7 +126,7 @@ export default function SubmissionBuilder({ handleCloseDrawer, restrictionResult
         else return false;
     }
 
-    console.log('re rendering')
+    
 
 
     const handleClose = () => {
