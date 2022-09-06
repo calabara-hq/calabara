@@ -208,6 +208,9 @@ const CheckpointTop = styled.div`
 
 const CheckpointBottomTag = styled.p`
     color: ${props => props.status === 'active' ? '#384aff' : (props.status === 'complete' ? 'grey' : '')};
+    animation: ${fade_in} 0.2s ease-in;
+
+
 `
 
 const CheckpointBottom = styled.div`
@@ -218,16 +221,19 @@ const CheckpointBottom = styled.div`
     margin: 0 auto;
     //margin-bottom: 50px;
     font-weight: bold;
+
     
 
     ${CheckpointBottomTag}:nth-child(1){
         text-align: left;
+
     }
     ${CheckpointBottomTag}:nth-child(2){
         text-align: center;
     }
     ${CheckpointBottomTag}:nth-child(3){
         text-align: right;
+
     }
 `
 

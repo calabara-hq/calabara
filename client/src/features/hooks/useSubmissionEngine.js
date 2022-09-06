@@ -28,7 +28,7 @@ export default function useSubmissionEngine(submitter_restrictions) {
             (async () => {
                 if (contestState !== 0)return setIsUserEligible(false)
                 let eligibility = await axios.post('/creator_contests/check_user_eligibility', { contest_hash: contest_hash, ens: ens, walletAddress: walletAddress }).then(result => { return result.data })
-
+                console.log(eligibility)
                 setAlreadySubmittedError(eligibility.has_already_submitted);
 
                 setRestrictionResults(eligibility.restrictions);

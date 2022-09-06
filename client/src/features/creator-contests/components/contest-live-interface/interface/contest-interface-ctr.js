@@ -1,29 +1,71 @@
 import { useHistory, useParams } from "react-router-dom";
 import React, { useState, useEffect, Suspense } from "react";
 import axios from 'axios';
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setContestHash } from "./contest-interface-reducer";
 import { Placeholder } from "../../common/common_components";
-const ContestInterface = React.lazy(() => import('./interface'));
+import { socket } from "../../service/socket";
+import { selectContestState } from "./contest-interface-reducer";
+import fetchContest from "./interface-data-fetch";
+import ContestInterface from './interface'
+import styled from 'styled-components'
 
-export default function ContestInterfaceController({ }) {
-    const [contest_data, set_contest_data] = useState(null);
+
+const FallbackInterface = styled.div`
+    width: 70vw;
+    height: 80vh;
+`
+
+
+
+export default function ContestInterfaceController() {
     const { ens, contest_hash } = useParams();
+    let fetch_data = fetchContest(ens, contest_hash);
 
-    // on page load, fetch all the contests for this org and display.
-    // if one is clicked, set the contest_hash in the url and fetch the settings
+
 
     useEffect(() => {
-        (async () => {
-            let res = await axios.get(`/creator_contests/fetch_contest/${ens}/${contest_hash}`);
-            set_contest_data(res.data)
-        })();
+        console.log('trying to connect to socket')
+
+        socket.emit('subscribe', contest_hash, error => {
+            if (error) {
+                console.log(error)
+            }
+        })
+
+
+        /*
+
+        /*
+        socket.on('connect', () => {
+            socket.join(contest_hash)
+        })
+
+        socket.on('disconnect', () => {
+            socket.leave(contest_hash)
+
+        })
+        */
+
+        return () => {
+            socket.off('connect')
+            socket.off('disconnect')
+        }
     }, [])
 
+
+
     return (
-        <Suspense fallback={<Placeholder />}>
-            {contest_data && <ContestInterface contest_settings={contest_data.settings} prompt_data={contest_data.prompt_data} />}
+        <Suspense fallback={<FallbackInterface />}>
+            <RenderInterface fetch_data={fetch_data} />
         </Suspense>
     )
 }
 
+function RenderInterface({ fetch_data }) {
+    let contest_data = fetch_data.read();
+
+    return (
+        <ContestInterface contest_settings={contest_data.settings} prompt_data={contest_data.prompt_data} />
+    )
+}

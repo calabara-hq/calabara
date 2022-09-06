@@ -122,7 +122,7 @@ contests.get('/fetch_submission_votes', async function (req, res, next) {
 contests.post('/create_submission', authenticateToken, checkSubmissionRestrictions, checkUserSubmissions, createSubmission, async function (req, res, next) {
     const { ens } = req.body;
     let result = await db.query('insert into contest_submissions (ens, contest_hash, author, created, locked, pinned, _url) values ($1, $2, $3, $4, $5, $6, $7) returning id ', [ens, req.contest_hash, req.user.address, req.created, false, false, req.url]).then(clean)
-    sendSocketMessage('new_submission', { id: result.id, _url: req.url })
+    sendSocketMessage(req.contest_hash, 'new_submission', { id: result.id, _url: req.url })
     res.sendStatus(200)
 })
 

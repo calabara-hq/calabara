@@ -84,3 +84,50 @@ export function ContestSubmissionCheckpointBar({ percent }) {
   );
 
 }
+
+
+export function ContestSubmissionCheckpointFallback() {
+
+  return (
+    <ProgressBar percent={0}>
+      <Step>
+        {({ accomplished, index }) => (
+
+          <div
+            className={`indexedStep`}
+          >
+          </div>
+
+        )}
+      </Step>
+      <Step>
+        {({ accomplished, index }) => (
+          <div
+            className={`indexedStep`}
+          >
+
+          </div>
+        )}
+      </Step>
+      <Step>
+        {({ accomplished, index }) => (
+          <div
+            className={`indexedStep`}
+          >
+
+          </div>
+        )}
+      </Step>
+      <Step>
+        {({ accomplished, index }) => (
+          <div
+            className={`indexedStep`}
+          >
+
+          </div>
+        )}
+      </Step>
+    </ProgressBar>
+  );
+
+}
