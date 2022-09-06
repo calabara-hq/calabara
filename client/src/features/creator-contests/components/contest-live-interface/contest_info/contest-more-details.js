@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
-import { fade_in } from '../../common/common_styles'
+import { fade_in, Label, TagType } from '../../common/common_styles'
 
 
 const DetailWrap = styled.div`
     display: flex;
     flex-direction: column;
-    background-color: #262626;
-    border-radius: 10px;
-    animation: ${fade_in} 0.4s ease-in-out;
     > * {
-        margin: 10px;
+        background-color: #262626;
+        border-radius: 10px;
+        animation: ${fade_in} 0.4s ease-in-out;
+        margin-bottom: 20px;
     }
 `
 
@@ -22,6 +22,7 @@ const RewardContainer = styled.div`
 const RewardRow = styled.div`
     display: flex;
     border: 1px dotted grey;
+    border-radius: 4px;
 
     > * {
         margin: 10px;
@@ -32,12 +33,71 @@ const RewardRow = styled.div`
 
 `
 
+const VoterRow = styled.div`
+    display: flex;
+    flex-direction: column;
+    border: 1px dotted grey;
+    border-radius: 4px;
+
+    > * {
+        margin: 10px;
+    }
+    > p {
+        //text-align: left;
+    }
+    > li {
+        & span{
+        margin-left: auto;
+        padding: 3px 3px;
+        border-radius: 4px;
+        font-size: 15px;
+        font-weight: 550;
+        }
+    }
+
+`
+
 const RewardDetailWrap = styled.div`
+
+
+    > * {
+        margin: 10px;
+    }
+
     > * {
         margin-bottom: 30px;
     }
 
 `
+
+const VotingDetailWrap = styled.div`
+
+    > * {
+        margin: 10px;
+    }
+
+    > * {
+        margin-bottom: 20px;
+    }   
+
+    > h3 {
+        margin-top: 20px;
+    margin-bottom: 10px;
+    }
+
+`
+const OptionType = styled.p`
+    color: lightgrey;
+    margin: 10px 0;
+
+    & > span{
+        padding: 3px 3px;
+        border-radius: 4px;
+        font-size: 15px;
+        font-weight: 550;
+    }
+`
+
 
 
 // show details about rewards and some other things
@@ -50,10 +110,13 @@ export default function ContestMoreDetails({ mode, contest_settings }) {
 
 
     return (
-        <DetailWrap>
+        <>
             <h2>Contest Details</h2>
-            <ContestRewardDetails contest_settings={contest_settings} />
-        </DetailWrap>
+            <DetailWrap>
+                <ContestRewardDetails contest_settings={contest_settings} />
+                <VotingPowerDetails contest_settings={contest_settings} />
+            </DetailWrap>
+        </>
     )
 
 }
@@ -123,6 +186,74 @@ function ContestRewardDetails({ contest_settings }) {
                 }
 
             </div>
+
         </RewardDetailWrap>
     )
 }
+
+function VotingPowerDetails({ contest_settings }) {
+    console.log(contest_settings)
+    return (
+        <VotingDetailWrap>
+            <h3>Voting Power Calulation</h3>
+            <p>Voter Power is configured in two categories:</p>
+            <li><b>Token:</b> Voting credits are based on ERC-20 or ERC-721 holdings.</li>
+            <li><b>Arcade:</b> A uniform number of credits alloted to each voter.</li>
+            {contest_settings.voting_strategy.strategy_type == 'token' ?
+                <TokenComponent voting_strategy={contest_settings.voting_strategy} />
+                :
+                <ArcadeComponent voting_strategy={contest_settings.voting_strategy} />
+            }
+        </VotingDetailWrap>
+    )
+
+
+
+}
+
+function TokenComponent({ voting_strategy }) {
+
+
+    return (
+        <VoterRow>
+            <p>This contest uses <b>{voting_strategy.strategy_type}</b> strategy</p>
+            <li>Type: <b>{voting_strategy.symbol}</b> <TagType type={voting_strategy.type}>{voting_strategy.type}</TagType></li>
+            {voting_strategy.hard_cap > 0 &&
+                <li>Contest Hard Cap: <b>{voting_strategy.hard_cap}</b></li>
+            }
+            {voting_strategy.sub_cap > 0 &&
+                <li>Max votes per submission: <b>{voting_strategy.sub_cap}</b></li>
+            }
+
+        </VoterRow>
+
+    )
+
+
+
+}
+
+function ArcadeComponent({ voting_strategy }) {
+
+
+    return (
+        <VoterRow>
+            <p>This contest uses <b>{voting_strategy.strategy_type} strategy</b></p>
+            <li>Total Votes: <b>{voting_strategy.hard_cap}</b></li>
+            {voting_strategy.sub_cap > 0 &&
+                <li>Max votes per submission: <b>{voting_strategy.sub_cap}</b></li>
+            }
+        </VoterRow>
+
+
+    )
+
+
+}
+
+/*                {contest_settings.voting_strategy.strategy_type == 'token' ? 
+                <p>This contest uses <b>{contest_settings.voting_strategy.symbol}</b> <b>{contest_settings.voting_strategy.strategy_type}</b></p>
+                : 
+                <p>This contest uses <b>{contest_settings.voting_strategy.strategy_type} strategy</b></p>
+}
+*/
