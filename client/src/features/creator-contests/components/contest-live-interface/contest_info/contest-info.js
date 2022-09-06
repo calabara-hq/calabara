@@ -5,7 +5,7 @@ import * as WebWorker from '../../../../../app/worker-client.js'
 import moment from "moment";
 import { Label, labelColorOptions, fade_in } from "../../common/common_styles";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheckCircle, faTimesCircle, faTimes, faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
+import { faCheckCircle, faTimesCircle, faTimes, faQuestionCircle} from "@fortawesome/free-solid-svg-icons";
 import { InterfaceHeading, ContestDetails, DetailRow, DetailRowHover, CheckpointWrap, CheckpointBottomTag, CheckpointBottom, label_status, DetailBox, DetailItem, ContestDetailWrapper } from './contest-info-style'
 import { selectContestState } from "../interface/contest-interface-reducer";
 import Drawer from 'react-modern-drawer';
@@ -105,10 +105,13 @@ export default function ContestInfo({ contest_settings }) {
                             </DetailItem>
                         </DetailRow>
                     </DetailBox>
-                    <DetailBox>
+                    <DetailBox >
                         <DetailRow>
                             <DetailItem>
-                                <p>More details</p>
+                                <p>More Details</p>
+                            </DetailItem>
+                            <DetailItem>
+                                <FontAwesomeIcon icon={faQuestionCircle} style ={{fontSize: '1.5em' , cursor: 'pointer'}} onClick={handleDrawerOpen}/>
                             </DetailItem>
                         </DetailRow>
                         <DetailRow>
@@ -160,7 +163,7 @@ function ContestInfoDrawer({ contest_settings, drawerOpen, handleClose }) {
         >
             {drawerOpen &&
                 <DrawerWrapper>
-                    <ContestMoreDetails contest_settings={contest_settings} mode={0}/>
+                    <ContestMoreDetails contest_settings={contest_settings} mode={0} />
                 </DrawerWrapper>
             }
         </Drawer>
