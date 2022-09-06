@@ -14,7 +14,6 @@ import ContestSettings from '../creator-contests/components/contest_settings/con
 import Homepage from '../homepage/homepage'
 import ContestInterfaceController from '../creator-contests/components/contest-live-interface/interface/contest-interface-ctr'
 import ContestHomepage from '../creator-contests/components/contest-home/contest-home'
-import DisplayWinners from '../creator-contests/components/contest-live-interface/winners/contest-winners'
 import { WalletProvider } from '../../app/WalletContext'
 
 
@@ -99,9 +98,6 @@ function Application({ }) {
         <ContestInterfaceController />
       </Route>
 
-      <Route exact path="/:ens/creator_contests/:contest_hash/winners">
-        <DisplayWinners />
-      </Route>
     </WalletProvider>
 
   )

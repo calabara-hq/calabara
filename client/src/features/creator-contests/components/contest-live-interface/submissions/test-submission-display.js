@@ -161,8 +161,6 @@ export default function SubmissionDisplay({ contest_state }) {
 
 
     useEffect(() => {
-
-        
         
         if (contest_state < 2) {
             fetch(`/creator_contests/fetch_submissions/${ens}/${contest_hash}`)
@@ -175,19 +173,6 @@ export default function SubmissionDisplay({ contest_state }) {
             fetch(`/creator_contests/fetch_contest_winners/?ens=${ens}&contest_hash=${contest_hash}`)
                 .then(res => res.json())
                 .then(data => set_subs(data))
-        }
-
-        socket.on('connect', () => {
-            
-        })
-
-        socket.on('disconnect', () => {
-            
-        })
-
-        return () => {
-            socket.off('connect')
-            socket.off('disconnect')
         }
 
     }, [])

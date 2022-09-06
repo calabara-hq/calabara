@@ -7,7 +7,7 @@ import PromptDisplay from '../prompts/prompt-display';
 import SubmissionBuilder from '../submissions/submission-builder'
 //import SubmissionDisplay from '../submissions/test-submission-display';
 import { useDispatch, useSelector } from "react-redux";
-import { ContestDurationCheckpointBar } from "../../../../checkpoint-bar/checkpoint-bar";
+import { ContestDurationCheckpointBar, ContestSubmissionCheckpointFallback } from "../../../../checkpoint-bar/checkpoint-bar";
 import { selectProgressRatio, selectDurations } from './contest-interface-reducer';
 import { OrgImg, ContestDetails, DetailRow, CheckpointWrap, CheckpointTop, CheckpointBottomTag, CheckpointBottom, label_status } from '../contest_info/contest-info-style';
 import { selectDashboardInfo } from "../../../../dashboard/dashboard-info-reducer";
@@ -16,9 +16,11 @@ import useCommon from "../../../../hooks/useCommon";
 import { Contest_h2_alt } from '../../common/common_styles';
 import BackButton from '../../../../back-button/back-button';
 import * as WebWorker from '../../../../../app/worker-client.js'
-import { Placeholder } from '../../common/common_components';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { selectContestState } from "../interface/contest-interface-reducer";
+import { Placeholder } from '../../common/common_components';
+import DisplayWinners from '../winners/contest-winners';
+
 const SubmissionDisplay = React.lazy(() => import('../submissions/test-submission-display'))
 
 const ContestInterfaceWrap = styled.div`
@@ -56,8 +58,9 @@ const OrgCard = styled.div`
 
 `
 
+
 export default function ContestInterface({ contest_settings, prompt_data }) {
-    const { ens } = useParams();
+    const { ens, contest_hash } = useParams();
     const [isSubmissionBuilder, setIsSubmissionBuilder] = useState(false);
     const [createSubmissionIndex, setCreateSubmissionIndex] = useState(-1);
     const info = useSelector(selectDashboardInfo)
@@ -65,13 +68,6 @@ export default function ContestInterface({ contest_settings, prompt_data }) {
     const builderScroll = useRef(null);
     const contest_state = useSelector(selectContestState)
 
-
-    const stateManager = useContestState(
-        contest_settings.date_times.start_date,
-        contest_settings.date_times.voting_begin,
-        contest_settings.date_times.end_date,
-
-    )
 
     useEffect(() => {
         batchFetchDashboardData(ens, info);
@@ -98,6 +94,7 @@ export default function ContestInterface({ contest_settings, prompt_data }) {
                 </InterfaceTopSplit>
                 {contest_settings && <ContestInfo contest_settings={contest_settings} />}
                 <RenderCheckpoint />
+                <DisplayWinners contest_state={contest_state} />
                 <Suspense fallback={<Placeholder />}>
                     <SubmissionDisplay contest_state={contest_state} />
                 </Suspense>
