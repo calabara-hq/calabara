@@ -39,6 +39,7 @@ export default function useVotingEngine(sub_id) {
         if (isConnected) {
             
             calculateVotingPower(ens, sub_id, walletAddress, contest_hash).then(result => {
+                console.log(result)
                 if (!result.is_self_voting_error) {
                     set_is_self_voting_error(false);
                     set_remaining_vp(result.metrics.sub_remaining_vp)

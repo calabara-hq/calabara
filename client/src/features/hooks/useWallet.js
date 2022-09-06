@@ -89,10 +89,9 @@ export default function useWallet() {
         if (!jwt_valid) handleDisconnectClick();
     }, 15000)
 
-    /*
+
     useEffect(() => {
         (async () => {
-            console.log('IM HERE')
             const selected = localStorage.getItem('selectedWallet');
             if (selected != '' && selected != undefined && selected != 'undefined') {
                 const res = await onboard.walletSelect(selected);
@@ -100,23 +99,23 @@ export default function useWallet() {
 
                     try {
                         await onboard.walletCheck();
-                    }catch(err) {console.log(err)}
+                    } catch (err) { console.log(err) }
                     const state = onboard.getState();
-                    const checkSumAddr = web3Infura.utils.toChecksumAddress(state.address)
-                    let is_jwt_valid = checkCurrentJwt()
+                    if (state.address) {
+                        const checkSumAddr = web3Infura.utils.toChecksumAddress(state.address)
+                        let is_jwt_valid = checkCurrentJwt()
 
-                    // we'll auto connect if possible. otherwise just wait for connect click
+                        // we'll auto connect if possible. otherwise just wait for connect click
 
-                    if (is_jwt_valid) {
-                        dispatch(setConnected(checkSumAddr))
-                        await registerUser(checkSumAddr)
+                        if (is_jwt_valid) {
+                            dispatch(setConnected(checkSumAddr))
+                            await registerUser(checkSumAddr)
+                        }
                     }
-
                 }
             }
         })();
     }, [])
-    */
 
     useEffect(() => {
         if (isConnected) {
@@ -204,7 +203,7 @@ export default function useWallet() {
                 let walletCheck = await onboard.walletCheck();
             } catch (err) { console.log(err) }
 
-            
+
             const state = onboard.getState();
 
             if (state.address) {
@@ -228,7 +227,7 @@ export default function useWallet() {
                     }
                 }
             }
-            
+
         }
 
 

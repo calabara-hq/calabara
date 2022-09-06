@@ -213,6 +213,7 @@ function SubmissionVotingBox({ sub_id }) {
 
 
 
+    
     useEffect(() => {
         setVotesToSpend(votes_spent || '')
     }, [votes_spent])
@@ -244,6 +245,7 @@ function SubmissionVotingBox({ sub_id }) {
     const formatVP = () => {
         setFormatVotingPower(!formatVotingPower)
     }
+
 
     return (
         <>

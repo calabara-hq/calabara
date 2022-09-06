@@ -10,11 +10,10 @@ const { checkWalletTokenBalance } = require('../../web3/web3')
 
 
 // return restrictions and voting_strategy
-const pre_process = async (ens, contest_hash, sub_id) => {
-    console.log(ens, contest_hash)
-    let query1 = 'select settings->>\'voter_restrictions\' as restrictions,\
-                    settings->> \'self_voting\' as self_voting,\
-                    settings->>\'voting_strategy\' as strategy,\
+const pre_process = async (ens, contest_hash, sub_id, walletAddress) => {
+    let query1 = 'select settings->\'voter_restrictions\' as restrictions,\
+                    settings-> \'self_voting\' as self_voting,\
+                    settings->\'voting_strategy\' as strategy,\
                     _voting, _end\
                     from contests where ens = $1 and _hash = $2'
 
@@ -27,16 +26,13 @@ const pre_process = async (ens, contest_hash, sub_id) => {
         ]
     )
 
-    console.log(contest_meta)
-    console.log(sub_author)
 
     let curr_time = new Date().toISOString()
-
     return {
-        restrictions: Object.values(JSON.parse(contest_meta.restrictions)),
-        strategy: JSON.parse(contest_meta.strategy),
+        restrictions: Object.values(contest_meta.restrictions),
+        strategy: contest_meta.strategy,
         is_voting_window: ((contest_meta._voting < curr_time) && (curr_time < contest_meta._end)),
-        is_self_voting_error: sub_author.author && !JSON.parse(contest_meta.self_voting)
+        is_self_voting_error: (walletAddress === sub_author.author) && !JSON.parse(contest_meta.self_voting)
     }
 
 }
@@ -81,7 +77,7 @@ async function calc_sub_vp__unprotected(req, res, next) {
 
     const mode = { protected: false };
 
-    let contest_params = await pre_process(ens, contest_hash, sub_id);
+    let contest_params = await pre_process(ens, contest_hash, sub_id, walletAddress);
 
     let restriction_results = await compute_restrictions(mode, walletAddress, contest_params.restrictions);
 
@@ -120,7 +116,7 @@ async function calc_sub_vp__PROTECTED(req, res, next) {
     const walletAddress = req.user.address;
     const mode = { protected: true };
 
-    let contest_params = await pre_process(ens, contest_hash, sub_id);
+    let contest_params = await pre_process(ens, contest_hash, sub_id, walletAddress);
 
     if (contest_params.is_self_voting_error) return res.sendStatus(435);
     if (!contest_params.is_voting_window) return res.sendStatus(433);
