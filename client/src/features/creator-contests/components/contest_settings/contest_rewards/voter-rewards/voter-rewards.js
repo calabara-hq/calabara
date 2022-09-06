@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import CounterButton from '../../../common/CounterButton';
 import Select from 'react-select'
 import { Contest_h2, Contest_h2_alt, Contest_h3, Contest_h3_alt, Contest_h3_alt_small, Contest_h4, SettingsSectionSubHeading } from '../../../common/common_styles';
 import { ToggleButton } from '../../../common/common_components';
+import { rewardOptionsActions, rewardOptionsState } from '../reducers/reward-options-reducer';
+import { voterRewardsActions, voterRewardsState } from '../reducers/voter-rewards-reducer';
+import { useSelector, useDispatch } from 'react-redux';
 import {
     customSelectorStyles,
     VotingRewardSelectorWrap,
@@ -15,8 +18,20 @@ import {
 import { NumberWinnersContainer, RewardsMainContent, RewardTypeWrap } from '../reward-styles';
 
 
-export default function VoterRewardsBlock({ rewardOptions, selectedRewards, voterRewards, setVoterRewards }) {
-    const [isToggleOn, setIsToggleOn] = useState(false)
+export default function VoterRewardsBlock({ voterRewards, setVoterRewards }) {
+    const [isToggleOn, setIsToggleOn] = useState(false);
+    const rewardOptions = useSelector(rewardOptionsState.getRewardOptions)
+    const selectedRewards = useSelector(rewardOptionsState.getSelectedRewards)
+    const numVoterRewards = useSelector(voterRewardsState.getNumWinners)
+    const dispatch = useDispatch();
+
+
+    // clear voter rewards if selected rewards gets flipped off
+    useEffect(() => {
+        if (Object.values(selectedRewards).length === 0) {
+            dispatch(voterRewardsActions.clearRewardOptions())
+        }
+    }, [selectedRewards])
 
 
     // allow voting rewards for ranks 1 -> 10
@@ -24,26 +39,22 @@ export default function VoterRewardsBlock({ rewardOptions, selectedRewards, vote
 
     // don't allow nft rewards (can't be fractionalized)
     let { erc721, ...valid_rewards } = selectedRewards
-    console.log(selectedRewards)
-    let possible_rewards = Object.values(valid_rewards).map((el) => { return { value: el, label: el } })
+    let possible_rewards = Object.values(valid_rewards).map((el) => { return { value: el.type, label: el.symbol } })
 
-    const [numVoterRewards, setNumVoterRewards] = useState(1)
 
     const handleVoterRewardsIncrement = () => {
-        if (numVoterRewards < 10) setNumVoterRewards(numVoterRewards + 1)
+        if (numVoterRewards < 10) dispatch(voterRewardsActions.incrementWinners())
     }
 
     const handleVoterRewardsDecrement = () => {
-        if (numVoterRewards > 1) setNumVoterRewards(numVoterRewards - 1)
+        if (numVoterRewards > 1) dispatch(voterRewardsActions.decrementWinners())
     }
 
     const handleToggle = () => {
-        if (!isToggleOn) {
-            setIsToggleOn(true)
+        if (isToggleOn) {
+            dispatch(voterRewardsActions.clearRewardOptions())
         }
-        else {
-            setIsToggleOn(false)
-        }
+        setIsToggleOn(!isToggleOn)
     }
 
 
@@ -73,38 +84,25 @@ export default function VoterRewardsBlock({ rewardOptions, selectedRewards, vote
 
 
 
-function VotingRewardsRow({ rewardOptions, possible_ranks, possible_rewards, index, voterRewards, setVoterRewards }) {
+function VotingRewardsRow({ rewardOptions, possible_ranks, possible_rewards, index }) {
     const [rank, setRank] = useState(1);
     const [reward_type, setRewardType] = useState('eth')
     const [reward, setReward] = useState(0)
+    const dispatch = useDispatch();
+    const voterRewards = useSelector(voterRewardsState.getvoterRewards)
 
-    /*
     useEffect(() => {
-        console.log(reward_type)
-        setVoterRewards({ type: 'update_single', payload: { [index]: Object.assign(voterRewards[index] || {}, { rank: rank, [reward_type]: { amount: Number(reward), contract: 'xyz', symbol: 'xyz' } }) } })
+        dispatch(voterRewardsActions.updatevoterRewards(
+            {
+                index: index,
+                value: {
+                    [reward_type]: { ...rewardOptions[reward_type], amount: Number(reward) },
+                    rank: rank
+                }
+            }))
+
     }, [rank, reward_type, reward])
-    */
-    console.log(rewardOptions)
 
-
-    const updateReward = (type, value) => {
-        let symbol = rewardOptions[reward_type].symbol
-        console.log(symbol)
-        if (type === 'rank') {
-            setRank(value);
-            setVoterRewards({ type: 'update_single', payload: { [index]: Object.assign(voterRewards[index] || {}, { rank: value, [reward_type]: { amount: Number(reward), address: rewardOptions[reward_type].address || null, symbol: symbol} }) } })
-        }
-        else if (type === 'amount') {
-            setReward(value)
-            setVoterRewards({ type: 'update_single', payload: { [index]: Object.assign(voterRewards[index] || {}, { rank: rank, [reward_type]: { amount: Number(value), address: rewardOptions[reward_type].address || null, symbol: symbol } }) } })
-        }
-        else if (type === 'type') {
-            let parsed_type
-            if(value === 'ETH') parsed_type = 'eth'
-            else parsed_type = 'erc20'
-            setVoterRewards({ type: 'update_single', payload: { [index]: Object.assign(voterRewards[index] || {}, { rank: rank, [parsed_type]: { amount: Number(reward), address: rewardOptions[parsed_type].address || null, symbol: rewardOptions[parsed_type].symbol } }) } })
-        }
-    }
 
     return (
 
@@ -116,18 +114,18 @@ function VotingRewardsRow({ rewardOptions, possible_ranks, possible_rewards, ind
                     components={{ IndicatorSeparator: () => null }}
                     selectType={'rank'}
                     options={possible_ranks}
-                    onChange={(e) => { updateReward('rank', e.value) }}
+                    onChange={(e) => { setRank(e.value) }}
                     defaultValue={{ value: 1, label: 1 }} />
             </VoterRankWrapper>
             <Contest_h4>will split </Contest_h4>
             <VoterRewardInput>
-                <RewardsGridInput type="number" onChange={(e) => { updateReward('amount', e.target.value) }} onWheel={(e) => e.target.blur()} />
+                <RewardsGridInput type="number" onChange={(e) => { setReward(e.target.value) }} onWheel={(e) => e.target.blur()} />
                 <Select
                     styles={customSelectorStyles}
                     components={{ IndicatorSeparator: () => null }}
                     selectType={'reward'}
                     options={possible_rewards}
-                    onChange={(e) => { updateReward('type', e.value) }}
+                    onChange={(e) => { setRewardType(e.value) }}
                     defaultValue={{ value: possible_rewards[0].value, label: possible_rewards[0].label }} />
             </VoterRewardInput>
 

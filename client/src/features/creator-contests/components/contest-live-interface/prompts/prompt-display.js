@@ -8,8 +8,9 @@ import Drawer from 'react-modern-drawer'
 import 'react-modern-drawer/dist/index.css'
 import { fade_in, Contest_h2_alt } from "../../common/common_styles";
 import useSubmissionEngine from "../../../../hooks/useSubmissionEngine";
-import useWallet from "../../../../hooks/useWallet";
-
+import { useWalletContext } from "../../../../../app/WalletContext";
+import { contestState, selectContestState } from "../interface/contest-interface-reducer";
+import { useSelector } from "react-redux";
 
 
 const DefaultContainerWrap = styled.div`
@@ -41,6 +42,11 @@ const PromptContainer = styled.div`
 
 `
 
+const PromptContainerTop = styled.div`
+    display: flex;
+    width: 100%;
+`
+
 
 const PromptHeading = styled.div`
     display: flex;
@@ -65,17 +71,21 @@ const PromptDataSplit = styled.div`
     display: flex;
     width: 100%;
     margin-top: 15px;
+    height: 100%;
+
+`
+
+const PromptLeft = styled.div`
+    flex: 1 1 70%;
+    height: 100%;
+    overflow: hidden;
 
 `
 
 
 const PromptBody = styled.div`
-    flex: 1 1 70%;
-    height: 100%;
-    //max-height: 20ch;
-    overflow: hidden;
-    //margin: 10px;
     align-self: flex-start;
+    margin-top: 10px;
     
 
     > p {
@@ -85,13 +95,25 @@ const PromptBody = styled.div`
     }
 `
 
-const PromptCoverImage = styled.div`
+
+
+const PromptRight = styled.div`
     flex: 1 0 30%;
+    display: flex;
+    flex-direction: column;
     position: relative;
-    justify-self: center;
-    align-self: flex-start;
-    text-align: center;
+
+`
+
+
+const PromptCoverImage = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-height: 100%;
     > img {
+        align-self: center;
+        justify-self: center;
         max-width: 12em;
         border-radius: 10px;
     }
@@ -147,9 +169,8 @@ const PromptContent = styled.div`
 
 
 const AltSubmissionButton = styled.button`
-     height: 40px;
+    height: 40px;
     font-size: 15px;
-    //font-weight: 550;
     color: rgb(138,128,234);
     background-color: rgb(138,128,234,.3);
     border: 2px solid rgb(138,128,234,.3);
@@ -177,9 +198,13 @@ const AltSubmissionButton = styled.button`
 `
 
 const CreateSubmissionButtonContainer = styled.div`
+    display: flex;
+    justify-content: center;
     position: absolute;
-    bottom: 10px;
-    right: 10px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
 
 `
 
@@ -188,6 +213,10 @@ const CreateSubmissionButtonContainer = styled.div`
 export default function PromptDisplay({ contest_settings, prompt_data }) {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
+    const contestState = useSelector(selectContestState);
+
+
+
     const handlePromptClick = () => {
         if (!isDrawerOpen) {
             setIsDrawerOpen(true);
@@ -201,27 +230,33 @@ export default function PromptDisplay({ contest_settings, prompt_data }) {
         }
     }
 
-    console.log(prompt_data)
-
 
     return (
         <DefaultContainerWrap>
             <PromptContainer onClick={handlePromptClick}>
-                <PromptHeading>
-                    <h2>{prompt_data.title}</h2>
-                    <Label color={labelColorOptions[prompt_data.promptLabelColor]}>{prompt_data.promptLabel}</Label>
-                </PromptHeading>
+
                 <PromptDataSplit>
-                    <PromptBody>
-                        <ParseBlocks data={prompt_data.editorData} />
-                    </PromptBody>
-                    <PromptCoverImage>
-                        <img src={prompt_data.coverImage} />
-                    </PromptCoverImage>
+                    <PromptLeft>
+                        <PromptHeading>
+                            <h2>{prompt_data.title}</h2>
+                            <Label color={labelColorOptions[prompt_data.promptLabelColor]}>{prompt_data.promptLabel}</Label>
+                        </PromptHeading>
+                        <PromptBody>
+                            <ParseBlocks data={prompt_data.editorData} />
+                        </PromptBody>
+                    </PromptLeft>
+                    <PromptRight>
+                        <PromptCoverImage>
+                            <img src={prompt_data.coverImage} />
+                        </PromptCoverImage>
+                        {contestState === 0 &&
+                            <CreateSubmissionButtonContainer>
+                                <AltSubmissionButton>Create Submission</AltSubmissionButton>
+                            </CreateSubmissionButtonContainer>
+                        }
+                    </PromptRight>
                 </PromptDataSplit>
-                <CreateSubmissionButtonContainer>
-                    <AltSubmissionButton>Create Submission</AltSubmissionButton>
-                </CreateSubmissionButtonContainer>
+
             </PromptContainer>
             <Drawer
                 open={isDrawerOpen}
@@ -233,7 +268,7 @@ export default function PromptDisplay({ contest_settings, prompt_data }) {
             >
                 {isDrawerOpen &&
                     <DrawerWrapper>
-                        {<ExpandedPromptSidebar contest_settings={contest_settings} prompt_data={prompt_data} isCreating={isCreating} setIsCreating={setIsCreating} toggleDrawer={handlePromptClick}/>}
+                        {<ExpandedPromptSidebar contest_settings={contest_settings} prompt_data={prompt_data} isCreating={isCreating} setIsCreating={setIsCreating} toggleDrawer={handlePromptClick} />}
                     </DrawerWrapper>
                 }
             </Drawer>
@@ -375,9 +410,8 @@ const ConnectWalletButton = styled.button`
 `
 
 function ExpandedPromptSidebar({ contest_settings, prompt_data, isCreating, setIsCreating, toggleDrawer }) {
-    const { walletConnect } = useWallet();
+    const { walletConnect } = useWalletContext();
     const { isWalletConnected, alreadySubmittedError, restrictionResults, isUserEligible } = useSubmissionEngine(contest_settings.submitter_restrictions);
-
 
     const handleCreateSubmission = () => {
         setIsCreating(true);
@@ -435,7 +469,7 @@ function ExpandedPromptSidebar({ contest_settings, prompt_data, isCreating, setI
             }
             {isCreating &&
                 <FadeDiv>
-                    <SubmissionBuilder handleCloseDrawer={handleCloseDrawer} restrictionResults={restrictionResults} isUserEligible={isUserEligible} toggleDrawer={toggleDrawer}/>
+                    <SubmissionBuilder handleCloseDrawer={handleCloseDrawer} restrictionResults={restrictionResults} isUserEligible={isUserEligible} toggleDrawer={toggleDrawer} />
                 </FadeDiv>
             }
         </>

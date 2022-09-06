@@ -9,7 +9,7 @@ import { Contest_h3_alt, ERC20Button_alt, TagType } from '../../common/common_st
 import { ERC20Button, ERC721Button_alt } from '../../common/common_styles';
 import { rewardOptionsActions, rewardOptionsState } from './reducers/reward-options-reducer';
 import { useDispatch, useSelector } from 'react-redux';
-
+import { submitterRewardActions } from './reducers/submitter-rewards-reducer';
 
 const Wrap = styled.div`
     display: flex;
@@ -112,7 +112,7 @@ export default function RewardSelector({ }) {
     const [editRewardsModalOpen, setEditRewardsModalOpen] = useState(false);
     const dispatch = useDispatch();
     const rewardOptions = useSelector(rewardOptionsState.getRewardOptions)
-    //const selectedRewards = useSelector(rewardOptionsState.getSelectedRewards)
+    const selectedRewards = useSelector(rewardOptionsState.getSelectedRewards)
 
 
     const handleEditRewardOption = (tokenType) => {
@@ -122,13 +122,8 @@ export default function RewardSelector({ }) {
     }
 
 
-
-    useEffect(() => {
-        console.log(rewardOptions)
-    }, [rewardOptions])
-
     const handleRewardsModalClose = (payload) => {
-        dispatch(rewardOptionsActions.addReward({ type: payload.type, symbol: payload.symbol, address: payload.address, selected: false}))
+        dispatch(rewardOptionsActions.addReward({ type: payload.type, symbol: payload.symbol, address: payload.address, selected: false, decimal: payload.decimal }))
         setEditRewardsModalOpen(false)
 
     }
@@ -139,7 +134,7 @@ export default function RewardSelector({ }) {
             <Contest_h3_alt>Select Rewards</Contest_h3_alt>
             <AvailableRewards>
                 {Object.values(rewardOptions).map((el, idx) => {
-                    console.log(el)
+                    
                     return (
                         <>
 
@@ -150,7 +145,7 @@ export default function RewardSelector({ }) {
                                     {el.symbol != 'ETH' && <p><b>Symbol:</b> {el.symbol}</p>}
                                     {el.address && <EtherScanLinkButton onClick={() => { window.open('https://etherscan.io/address/' + el.address) }} className="gatekeeper-config">{el.address.substring(0, 6)}...{el.address.substring(38, 42)} <i className="fas fa-external-link-alt"></i></EtherScanLinkButton>}
                                     {el.img && <img style={{ margin: '0 auto' }} src={ethLogo}></img>}
-                                    <ToggleSwitch id={idx} value={el} />
+                                    <ToggleSwitch selectedRewards={selectedRewards} id={idx} value={el} />
                                 </>
                             </RewardOption>
 
@@ -167,22 +162,25 @@ export default function RewardSelector({ }) {
     )
 }
 
-function ToggleSwitch({ id, value }) {
+function ToggleSwitch({ selectedRewards, id, value }) {
     const [isRewardSelected, setIsRewardSelected] = useState(false)
     const dispatch = useDispatch();
+
+    // clear submitter rewards if selected rewards gets flipped off
+    useEffect(() => {
+        if (Object.values(selectedRewards).length === 0) {
+            dispatch(submitterRewardActions.clearRewardOptions())
+        }
+    }, [selectedRewards])
+
+
     const handleToggle = () => {
-
-        if (!isRewardSelected) {
-            setIsRewardSelected(true)
-            dispatch(rewardOptionsActions.setRewardSelected({ type: value.type}))
+        // if this is the first reward toggled, push {} to the initial rewards state
+        if (!isRewardSelected && Object.values(selectedRewards.length === 0)) {
+            dispatch(submitterRewardActions.incrementWinners())
         }
-        else {
-            setIsRewardSelected(false)
-            //let options_copy = { ...selectedRewards }
-            //delete options_copy[value.type];
-            //setSelectedRewards({ type: 'update_all', payload: options_copy })
-        }
-
+        setIsRewardSelected(!isRewardSelected)
+        dispatch(rewardOptionsActions.toggleSelectedReward({ type: value.type }))
     }
 
 

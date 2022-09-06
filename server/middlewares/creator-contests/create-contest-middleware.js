@@ -14,7 +14,10 @@ dotenv.config();
 // pass hash and timestamp to endpoint
 
 
-
+async function isNick(req, res, next) {
+    if(req.user.address != '0xedcC867bc8B5FEBd0459af17a6f134F41f422f0C') return res.sendStatus(437)
+    next()
+}
 
 
 async function createContest(req, res, next) {
@@ -40,5 +43,6 @@ async function createContest(req, res, next) {
 }
 
 module.exports = {
-    createContest
+    createContest,
+    isNick
 };

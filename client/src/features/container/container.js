@@ -1,7 +1,7 @@
 import React from 'react'
 import { BrowserRouter as Router, Switch, Route, Link, useLocation } from 'react-router-dom'
 import '../../css/container.css'
-import Nav from '../navbar/navbar'
+import { HomepageNav, ApplicationNav } from '../navbar/navbar'
 import Cards from '../org-cards/org-cards'
 import Dashboard from '../dashboard/dashboard'
 import Analytics from '../snapshot-analytics/snapshot-analytics'
@@ -15,8 +15,12 @@ import Homepage from '../homepage/homepage'
 import ContestInterfaceController from '../creator-contests/components/contest-live-interface/interface/contest-interface-ctr'
 import ContestHomepage from '../creator-contests/components/contest-home/contest-home'
 import DisplayWinners from '../creator-contests/components/contest-live-interface/winners/contest-winners'
+import { WalletProvider } from '../../app/WalletContext'
+
 
 export default function Container() {
+
+
 
   const location = useLocation();
 
@@ -24,17 +28,35 @@ export default function Container() {
 
   return (
     <div className='application-container'>
+      <Switch>
+        <Route exact path="/">
+          <HomepageNav />
+          <Homepage />
+        </Route>
 
-      <Nav homepage={homepage} />
+        <Route path="/*">
+          <Application />
+        </Route>
+      </Switch>
+    </div>
 
-      <Route exact path="/">
-        <Homepage />
-      </Route>
+
+  )
+}
+
+
+
+
+function Application({ }) {
+  return (
+    <WalletProvider>
+
+
+      <ApplicationNav />
 
       <Route path="/:ens/dashboard">
         <Dashboard />
       </Route>
-
 
       <Route path="/explore">
         <Cards />
@@ -71,7 +93,7 @@ export default function Container() {
       <Route exact path="/:ens/creator_contests">
         <ContestHomepage />
       </Route>
-      
+
 
       <Route exact path="/:ens/creator_contests/:contest_hash">
         <ContestInterfaceController />
@@ -80,8 +102,7 @@ export default function Container() {
       <Route exact path="/:ens/creator_contests/:contest_hash/winners">
         <DisplayWinners />
       </Route>
+    </WalletProvider>
 
-
-    </div>
   )
 }

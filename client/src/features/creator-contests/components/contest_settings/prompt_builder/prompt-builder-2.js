@@ -350,7 +350,6 @@ function PromptSidebar({ labelInputRef, error, promptLabel, handleLabelChange, p
 
 function ColorSelector({ promptLabelColor, handleLabelColorChange }) {
 
-    useEffect(() => { console.log(promptLabelColor) }, [promptLabelColor])
 
     return (
         <ColorSelectorWrap>

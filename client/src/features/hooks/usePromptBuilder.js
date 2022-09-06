@@ -121,7 +121,7 @@ export default function usePromptBuilder() {
     }
 
     const handleLabelColorChange = (color) => {
-        console.log(color)
+        
         setPromptData({ type: "SET_PROMPT_LABEL_COLOR", payload: color })
     }
 

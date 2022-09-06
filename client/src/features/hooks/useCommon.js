@@ -7,11 +7,10 @@ import { setInstallableWidgets, setInstalledWidgets } from '../dashboard/dashboa
 import { populateOrganizations } from '../org-cards/org-cards-reducer';
 import { setIsTokenExpired } from '../wallet/wallet-reducer';
 import { showNotification } from '../notifications/notifications';
-import useWallet from './useWallet';
-
+import { useWalletContext } from '../../app/WalletContext';
 export default function useCommon() {
     const dispatch = useDispatch();
-    const { secure_sign, walletConnect } = useWallet();
+    const { secure_sign, walletConnect } = useWalletContext();
 
     const batchFetchDashboardData = async (ens, info) => {
         if (info.ens !== ens) {
@@ -69,6 +68,12 @@ export default function useCommon() {
                     break
                 case 436:
                     showNotification('error', 'error', 'amount exceeds available voting power')
+                    break
+                case 437:
+                    showNotification('error', 'error', 'only select addresses are able to create contests at this time')
+                    break
+                case 438:
+                    showNotification('error', 'error', 'the contest is not over yet!')
                     break
             }
             return null

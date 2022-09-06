@@ -110,7 +110,7 @@ cursor: pointer;
 export default function ToggleOption({ appliedRules, setAppliedRules, ruleError, setRuleError, toggle_identifier }) {
     // fetch available rules
     let availableRules = useSelector(selectDashboardRules);
-    // console.log(availableRules2)
+    // 
 
     /******************/
 
@@ -178,7 +178,7 @@ function Option({ element, option_id, appliedRules, setAppliedRules, ruleError, 
     }
 
     const handleAddDiscordRule = (val) => {
-        console.log(val)
+        
         setAppliedRules({ type: 'update_single', payload: { [option_id]: { type: 'discord', roles: val } } })
     }
 

@@ -37,7 +37,7 @@ export default function useVotingEngine(sub_id) {
 
     useEffect(() => {
         if (isConnected) {
-            console.log('re fetching!!!')
+            
             calculateVotingPower(ens, sub_id, walletAddress, contest_hash).then(result => {
                 if (!result.is_self_voting_error) {
                     set_is_self_voting_error(false);

@@ -39,7 +39,7 @@ const ModalHeading = styled.p`
 
 
 export default function EditRewardsModal({ modalOpen, handleClose, existingRewardData, tokenType }) {
-    console.log(tokenType)
+    
     const handleSave = (data) => {
         handleClose(data)
     }

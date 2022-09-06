@@ -1,12 +1,11 @@
 import React from 'react'
 import Identicon from '../identicon/identicon';
-import useWallet from '../hooks/useWallet';
-
+import { useWalletContext } from '../../app/WalletContext';
 
 
 
 export default function Wallet() {
-  const {walletDisconnect, walletConnect, walletAddress, isConnected, connectBtnTxt, isMoreExpanded, setIsMoreExpanded} = useWallet();
+  const {walletDisconnect, walletConnect, walletAddress, isConnected, connectBtnTxt, isMoreExpanded, setIsMoreExpanded} = useWalletContext();
 
   const handleBlur = (e) => {
     if (!e.currentTarget.contains(e.relatedTarget)) {

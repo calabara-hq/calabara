@@ -12,6 +12,10 @@ import { useParams } from "react-router-dom";
 import useDashboardRules from "../../../hooks/useDashboardRules";
 import useCommon from "../../../hooks/useCommon";
 import { rewardOptionsActions, rewardOptionsState } from "./contest_rewards/reducers/reward-options-reducer";
+import { voterRewardsState } from "./contest_rewards/reducers/voter-rewards-reducer";
+import { submitterRewardsState } from "./contest_rewards/reducers/submitter-rewards-reducer";
+import { useSelector } from "react-redux";
+
 
 const theme = {
     rainbow: {
@@ -90,34 +94,13 @@ const initialPromptData = {
 }
 
 
-const defaultPossibleRewards = {
-    'eth': {
-        type: 'ETH',
-        symbol: 'ETH',
-        img: 'eth',
-        contract: null
-    }
-}
-
-
-
 export default function ContestSettings() {
 
     const [date_0, setDate_0] = useState(new Date())
     const [date_1, setDate_1] = useState(new Date())
     const [date_2, setDate_2] = useState(new Date())
-
-    const [rewardOptions, setRewardOptions] = useReducer(reducer, defaultPossibleRewards);
-    const [selectedRewards, setSelectedRewards] = useReducer(reducer, {});
-    const [submitterRewards, setSubmitterRewards] = useReducer(reducer, {});
     const [errorMatrix, setErrorMatrix] = useState([[null, null, null, null]]);
-    const [voterRewards, setVoterRewards] = useReducer(reducer, []);
-
-    const [submitterRuleOptions, setSubmitterRuleOptions] = useReducer(reducer, {});
-    const [voterRuleOptions, setVoterRuleOptions] = useReducer(reducer, {});
-
     const [votingStrategy, setVotingStrategy] = useReducer(reducer, { strategy_id: 0x0 });
-
     const [submitterAppliedRules, setSubmitterAppliedRules] = useReducer(reducer, {});
     const [voterAppliedRules, setVoterAppliedRules] = useReducer(reducer, {});
     const [submitterRuleError, setSubmitterRuleError] = useState(false);
@@ -130,7 +113,6 @@ export default function ContestSettings() {
     const [simpleInputData, setSimpleInputData] = useReducer(reducer, { anonSubmissions: false, visibleVotes: false, selfVoting: false })
 
     const promptEditorCore = useRef(null);
-    const { authenticated_post } = useCommon();
 
 
 
@@ -171,6 +153,82 @@ export default function ContestSettings() {
     }, [date_0])
 
 
+    return (
+        <RainbowThemeContainer
+            className="rainbow-align-content_center rainbow-m-vertical_large rainbow-p-horizontal_small rainbow-m_auto"
+            style={containerStyles}
+            theme={theme}
+
+        >
+            <ContestSettingsWrap theme={theme}>
+                <ContestDateTimeBlock
+                    date_0={date_0}
+                    date_1={date_1}
+                    date_2={date_2}
+                    setDate_0={setDate_0}
+                    setDate_1={setDate_1}
+                    setDate_2={setDate_2}
+                />
+                <ContestRewardsBlock
+                    errorMatrix={errorMatrix}
+                    setErrorMatrix={setErrorMatrix}
+                    theme={theme.rainbow}
+                />
+
+
+                <ContestParticipantRestrictions
+                    submitterAppliedRules={submitterAppliedRules}
+                    setSubmitterAppliedRules={setSubmitterAppliedRules}
+                    voterAppliedRules={voterAppliedRules}
+                    setVoterAppliedRules={setVoterAppliedRules}
+                    submitterRuleError={submitterRuleError}
+                    setSubmitterRuleError={setSubmitterRuleError}
+                    voterRuleError={voterRuleError}
+                    setVoterRuleError={setVoterRuleError}
+                />
+
+                <VotingPolicy votingStrategy={votingStrategy} setVotingStrategy={setVotingStrategy} />
+                <PromptBuilder promptBuilderData={promptBuilderData} setPromptBuilderData={setPromptBuilderData} promptEditorCore={promptEditorCore} />
+                <SimpleInputs simpleInputData={simpleInputData} setSimpleInputData={setSimpleInputData} />
+                <SaveSettings
+                    date_0={date_0}
+                    date_1={date_1}
+                    date_2={date_2}
+                    promptEditorCore={promptEditorCore}
+                    votingStrategy={votingStrategy}
+                    submitterAppliedRules={submitterAppliedRules}
+                    voterAppliedRules={voterAppliedRules}
+                    simpleInputData={simpleInputData}
+                    promptBuilderData={promptBuilderData}
+
+                />
+            </ContestSettingsWrap >
+        </RainbowThemeContainer>
+    )
+}
+
+
+
+function SaveSettings(props) {
+    const rewardOptions = useSelector(rewardOptionsState.getRewardOptions)
+    const submitterRewards = useSelector(submitterRewardsState.getSubmitterRewards)
+    const voterRewards = useSelector(voterRewardsState.getvoterRewards)
+    const { authenticated_post } = useCommon();
+    const { ens } = useParams();
+
+    const {
+        date_0,
+        date_1,
+        date_2,
+        promptEditorCore,
+        votingStrategy,
+        submitterAppliedRules,
+        voterAppliedRules,
+        simpleInputData,
+        promptBuilderData
+    } = props
+
+
     const handleSave = async () => {
         let strategy
         if (votingStrategy.strategy_type === 'arcade') {
@@ -195,7 +253,6 @@ export default function ContestSettings() {
         }
 
         const promptEditorData = await promptEditorCore.current.save();
-        console.log(promptEditorData)
 
         let contest_data = {
             date_times: {
@@ -222,62 +279,15 @@ export default function ContestSettings() {
             promptLabelColor: promptBuilderData.prompt_label_color
         }
 
-        console.log(contest_data)
+        
+
         if (window.confirm('are you sure you want to continue?')) {
-            authenticated_post('/creator_contests/create_contest', { ens: ens, contest_settings: contest_data, prompt_data: prompt_data }).then(res => console.log(res))
+            authenticated_post('/creator_contests/create_contest', { ens: ens, contest_settings: contest_data, prompt_data: prompt_data })
         }
-        else {
-            console.log('nothing happened')
-        }
+
     }
 
     return (
-        <RainbowThemeContainer
-            className="rainbow-align-content_center rainbow-m-vertical_large rainbow-p-horizontal_small rainbow-m_auto"
-            style={containerStyles}
-            theme={theme}
-
-        >
-            <ContestSettingsWrap theme={theme}>
-                <ContestDateTimeBlock
-                    date_0={date_0}
-                    date_1={date_1}
-                    date_2={date_2}
-                    setDate_0={setDate_0}
-                    setDate_1={setDate_1}
-                    setDate_2={setDate_2}
-                />
-                <ContestRewardsBlock
-                    rewardOptions={rewardOptions}
-                    setRewardOptions={setRewardOptions}
-                    selectedRewards={selectedRewards}
-                    setSelectedRewards={setSelectedRewards}
-                    submitterRewards={submitterRewards}
-                    setSubmitterRewards={setSubmitterRewards}
-                    voterRewards={voterRewards}
-                    setVoterRewards={setVoterRewards}
-                    errorMatrix={errorMatrix}
-                    setErrorMatrix={setErrorMatrix}
-                    theme={theme.rainbow}
-                />
-
-
-                <ContestParticipantRestrictions
-                    submitterAppliedRules={submitterAppliedRules}
-                    setSubmitterAppliedRules={setSubmitterAppliedRules}
-                    voterAppliedRules={voterAppliedRules}
-                    setVoterAppliedRules={setVoterAppliedRules}
-                    submitterRuleError={submitterRuleError}
-                    setSubmitterRuleError={setSubmitterRuleError}
-                    voterRuleError={voterRuleError}
-                    setVoterRuleError={setVoterRuleError}
-                />
-
-                <VotingPolicy rewardOptions={rewardOptions} votingStrategy={votingStrategy} setVotingStrategy={setVotingStrategy} />
-                <PromptBuilder promptBuilderData={promptBuilderData} setPromptBuilderData={setPromptBuilderData} promptEditorCore={promptEditorCore} />
-                <SimpleInputs simpleInputData={simpleInputData} setSimpleInputData={setSimpleInputData} />
-                <button onClick={handleSave}> save</button>
-            </ContestSettingsWrap >
-        </RainbowThemeContainer>
+        <button onClick={handleSave}>save</button>
     )
 }

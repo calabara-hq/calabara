@@ -89,13 +89,18 @@ export default function useWallet() {
         if (!jwt_valid) handleDisconnectClick();
     }, 15000)
 
+    /*
     useEffect(() => {
         (async () => {
+            console.log('IM HERE')
             const selected = localStorage.getItem('selectedWallet');
             if (selected != '' && selected != undefined && selected != 'undefined') {
                 const res = await onboard.walletSelect(selected);
                 if (res) {
-                    await onboard.walletCheck();
+
+                    try {
+                        await onboard.walletCheck();
+                    }catch(err) {console.log(err)}
                     const state = onboard.getState();
                     const checkSumAddr = web3Infura.utils.toChecksumAddress(state.address)
                     let is_jwt_valid = checkCurrentJwt()
@@ -111,7 +116,7 @@ export default function useWallet() {
             }
         })();
     }, [])
-
+    */
 
     useEffect(() => {
         if (isConnected) {
@@ -193,29 +198,39 @@ export default function useWallet() {
         else {
             res = await onboard.walletSelect();
         }
+
         if (res) {
-            await onboard.walletCheck();
+            try {
+                let walletCheck = await onboard.walletCheck();
+            } catch (err) { console.log(err) }
+
+            
             const state = onboard.getState();
-            const checkSumAddr = web3Infura.utils.toChecksumAddress(state.address)
 
-            let is_jwt_valid = checkCurrentJwt()
+            if (state.address) {
+                const checkSumAddr = web3Infura.utils.toChecksumAddress(state.address)
 
-            // we'll auto connect if possible.
+                let is_jwt_valid = checkCurrentJwt()
 
-            if (is_jwt_valid) {
-                dispatch(setConnected(checkSumAddr))
-                await registerUser(checkSumAddr)
-            }
-            // otherwise, start the auth flow and get a new token
+                // we'll auto connect if possible.
 
-            else {
-                let sig_res = await secure_sign(checkSumAddr, dispatch)
-                if (sig_res) {
+                if (is_jwt_valid) {
                     dispatch(setConnected(checkSumAddr))
                     await registerUser(checkSumAddr)
                 }
+                // otherwise, start the auth flow and get a new token
+
+                else {
+                    let sig_res = await secure_sign(checkSumAddr, dispatch)
+                    if (sig_res) {
+                        dispatch(setConnected(checkSumAddr))
+                        await registerUser(checkSumAddr)
+                    }
+                }
             }
+            
         }
+
 
     }
 
@@ -240,7 +255,7 @@ export default function useWallet() {
             const signatureResult = await signMessage(nonce_from_server.data.nonce);
 
             try {
-                
+
                 let jwt_result = await axios.post('/authentication/generate_jwt', { sig: signatureResult.sig, address: walletAddress })
                 dispatch(setIsTokenExpired(false))
                 localStorage.setItem('jwt', jwt_result.data.jwt)
@@ -275,7 +290,7 @@ export default function useWallet() {
             return await getAddress()
         },
         validAddress: async (address) => {
-           return await validAddress(address)
+            return await validAddress(address)
         },
         walletAddress,
         isConnected,

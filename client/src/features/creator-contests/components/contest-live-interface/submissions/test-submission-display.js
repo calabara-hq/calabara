@@ -16,9 +16,7 @@ import { CSSTransitionGroup } from 'react-transition-group';
 import './spinner.css'
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { Placeholder } from '../../common/common_components';
-//import { io } from "socket.io-client";
-//const socket = io();
-
+import { socket } from '../../service/socket';
 
 const SubmissionWrap = styled.div`
     display: flex;
@@ -34,8 +32,25 @@ const SubmissionWrap = styled.div`
     margin: -10px -10px 30px -10px;
 `
 
+
+const uniqueRankStyles =
+    [
+        `border: 2px solid #DAA520;
+
+    `,
+        `border: 2px solid blue;
+    `
+        ,
+        `border: 2px solid blue;
+    `
+    ]
+
+
+
+
 const SubmissionPreviewContainer = styled.div`
     //display: flex;
+    position: relative;
     flex: 0 1 30%;
     flex-direction: column;
     flex-wrap: wrap;
@@ -51,7 +66,23 @@ const SubmissionPreviewContainer = styled.div`
     height: 24em;
     margin: 10px;
     cursor: pointer;
-    overflow: hidden;
+    //overflow: hidden;
+    ${props => (props.contest_rank && props.contest_rank < 4) ? css`${uniqueRankStyles[props.contest_rank - 1]}` : ''}
+
+    &::after{
+        content: '${props => props.contest_rank === 1 ? "\f521" : ""}';
+        color: #DAA520;
+        position: absolute;
+        //background-color: red;
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+        font-size: 30px;
+        top: 0;
+        right: 0;
+        transform: translate(50%, -50%);
+
+    }
+
 
     // TURTLES need to set this up to wrap submission containers properly
     @media(max-width: 1720px){
@@ -88,7 +119,7 @@ const LazyStyledImage = styled.div`
 `
 
 
-export default function SubmissionDisplay({ }) {
+export default function SubmissionDisplay({ contest_state }) {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [TLDRImage, setTLDRImage] = useState(null);
     const [TLDRText, setTLDRText] = useState(null);
@@ -99,7 +130,8 @@ export default function SubmissionDisplay({ }) {
     const [subs, set_subs] = useState([]);
     const { ens, contest_hash } = useParams();
 
-    console.log('re rendering')
+
+    
 
     const handleClose = () => {
         setIdToExpand(null);
@@ -117,51 +149,63 @@ export default function SubmissionDisplay({ }) {
         setTLDRImage(tldr_img);
         setTLDRText(tldr_text);
         setExpandData(submission_body);
-        console.log(author)
+        
         setAuthor(author);
         setDrawerOpen(true);
         document.body.style.overflow = 'hidden';
     }
 
 
+
+
+
+
     useEffect(() => {
 
-        console.log('connecting to socket')
+        
+        
+        if (contest_state < 2) {
+            fetch(`/creator_contests/fetch_submissions/${ens}/${contest_hash}`)
+                .then(res => res.json())
+                .then(data => set_subs(data))
+        }
 
-        fetch(`/creator_contests/fetch_submissions/${ens}/${contest_hash}`)
-            .then(res => res.json())
-            .then(data => set_subs(data))
+        else if (contest_state === 2) {
+            // get the winners
+            fetch(`/creator_contests/fetch_contest_winners/?ens=${ens}&contest_hash=${contest_hash}`)
+                .then(res => res.json())
+                .then(data => set_subs(data))
+        }
 
-        /*
-    socket.on('connect', () => {
-        console.log('connected to websocket')
-    })
+        socket.on('connect', () => {
+            
+        })
 
-    socket.on('disconnect', () => {
-        console.log('disconnected from socket')
-    })
+        socket.on('disconnect', () => {
+            
+        })
 
-    return () => {
-        socket.off('connect')
-        socket.off('disconnect')
-    }
-    */
+        return () => {
+            socket.off('connect')
+            socket.off('disconnect')
+        }
+
     }, [])
-    /*
-        useEffect(() => {
-    
-            const submissionListener = (submission) => {
-                console.log(submission)
-                set_subs((prev_subs) => {
-                    const new_subs = [...prev_subs]
-                    new_subs.push(submission);
-                    return new_subs
-                })
-            }
-    
-            socket.on('new_submission', submissionListener)
-        }, [socket])
-    */
+
+    useEffect(() => {
+
+        const submissionListener = (submission) => {
+            
+            set_subs((prev_subs) => {
+                const new_subs = [...prev_subs]
+                new_subs.push(submission);
+                return new_subs
+            })
+        }
+
+        socket.on('new_submission', submissionListener)
+    }, [socket])
+
 
     return (
         <div>
@@ -172,7 +216,7 @@ export default function SubmissionDisplay({ }) {
 
                         {subs.map((sub, index) => {
                             return (
-                                <Submission sub={sub} handleExpand={handleExpand} />
+                                <Submission sub={sub} index={index} handleExpand={handleExpand} contest_state={contest_state} />
                             )
                         })}
 
@@ -253,35 +297,41 @@ const AuthorVotes = styled.span`
 
 `
 
-function Submission({ sub, handleExpand }) {
+function Submission({ sub, handleExpand, index, contest_state }) {
     const [tldr_img, set_tldr_img] = useState(null);
     const [tldr_text, set_tldr_text] = useState(null);
     const [submission_body, set_submission_body] = useState(null);
+    const [rank, setRank] = useState(null);
     const { ens, contest_hash } = useParams();
 
 
 
     useEffect(() => {
-        console.log('setting view for item ', sub.id)
+        
         fetch(sub._url).then(res => {
             res.json().then(json => {
                 set_tldr_img(json.tldr_image)
                 set_tldr_text(json.tldr_text)
                 set_submission_body(json.submission_body)
+                if (contest_state === 2) {
+                    setRank(index + 1)
+                }
+
             })
         })
+
 
 
         /*
         TURTLES come back and implement vote streaming
         fetch(`/creator_contests/fetch_submission_votes?ens=${ens}&contest_hash=${contest_hash}&sub_id=${sub.id}`)
         .then(res => res.json())
-        .then(json => {console.log(json)})
+        .then(json => {
         */
     }, [])
 
     return (
-        <SubmissionPreviewContainer onClick={() => handleExpand(sub.id, tldr_img, tldr_text, submission_body, sub.author)}>
+        <SubmissionPreviewContainer onClick={() => handleExpand(sub.id, tldr_img, tldr_text, submission_body, sub.author)} contest_rank={rank}>
             <LazyLoad key={sub.id} throttle={200} height={500}
                 placeholder={<Placeholder />} debounce={500}>
                 <CSSTransitionGroup

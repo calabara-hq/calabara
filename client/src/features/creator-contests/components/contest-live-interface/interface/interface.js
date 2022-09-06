@@ -5,7 +5,7 @@ import ContestInfo from "../contest_info/contest-info";
 import useContestState from "../../../../hooks/useContestState";
 import PromptDisplay from '../prompts/prompt-display';
 import SubmissionBuilder from '../submissions/submission-builder'
-import SubmissionDisplay from '../submissions/test-submission-display';
+//import SubmissionDisplay from '../submissions/test-submission-display';
 import { useDispatch, useSelector } from "react-redux";
 import { ContestDurationCheckpointBar } from "../../../../checkpoint-bar/checkpoint-bar";
 import { selectProgressRatio, selectDurations } from './contest-interface-reducer';
@@ -18,6 +18,9 @@ import BackButton from '../../../../back-button/back-button';
 import * as WebWorker from '../../../../../app/worker-client.js'
 import { Placeholder } from '../../common/common_components';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
+import { selectContestState } from "../interface/contest-interface-reducer";
+const SubmissionDisplay = React.lazy(() => import('../submissions/test-submission-display'))
+
 const ContestInterfaceWrap = styled.div`
     display: flex;
     flex-direction: column;
@@ -59,7 +62,9 @@ export default function ContestInterface({ contest_settings, prompt_data }) {
     const [createSubmissionIndex, setCreateSubmissionIndex] = useState(-1);
     const info = useSelector(selectDashboardInfo)
     const { batchFetchDashboardData } = useCommon();
-    const builderScroll = useRef(null)
+    const builderScroll = useRef(null);
+    const contest_state = useSelector(selectContestState)
+
 
     const stateManager = useContestState(
         contest_settings.date_times.start_date,
@@ -93,18 +98,18 @@ export default function ContestInterface({ contest_settings, prompt_data }) {
                 </InterfaceTopSplit>
                 {contest_settings && <ContestInfo contest_settings={contest_settings} />}
                 <RenderCheckpoint />
-                <div ref={builderScroll} >
-                    {isSubmissionBuilder && <SubmissionBuilder setIsSubmissionBuilder={setIsSubmissionBuilder} setCreateSubmissionIndex={setCreateSubmissionIndex} />}
-                </div>
-                {!isSubmissionBuilder && <SubmissionDisplay />}
+                <Suspense fallback={<Placeholder />}>
+                    <SubmissionDisplay contest_state={contest_state} />
+                </Suspense>
             </ContestInterfaceWrap>
         </>
     )
 }
 
 
+
 function RenderOrgCard({ info }) {
-    console.log(info.logo)
+
 
 
     return (

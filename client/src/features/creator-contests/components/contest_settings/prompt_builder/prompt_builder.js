@@ -392,7 +392,7 @@ export default function PromptBuilder({ }) {
     }, [])
 
     useEffect(() => {
-        console.log(prompt_content_error)
+        
     },[prompt_content_error])
 
     const handleSubmit = async () => {
@@ -446,7 +446,7 @@ export default function PromptBuilder({ }) {
     }
 
     const clearEmptyContentError = () => {
-        console.log(prompt_content_error)
+        
         if(prompt_content_error) return setPromptData({type: "CLEAR_PROMPT_CONTENT_ERROR"})
     }
 
@@ -524,7 +524,7 @@ function PromptSidebar({ labelInputRef, error, promptLabel, handleLabelChange, p
 
 function ColorSelector({ promptLabelColor, handleLabelColorChange }) {
 
-    useEffect(() => { console.log(promptLabelColor) }, [promptLabelColor])
+    useEffect(() => { 
 
     return (
         <ColorSelectorWrap>
