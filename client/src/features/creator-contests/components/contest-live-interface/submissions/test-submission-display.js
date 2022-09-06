@@ -17,6 +17,7 @@ import './spinner.css'
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { Placeholder } from '../../common/common_components';
 import { socket } from '../../service/socket';
+import { selectContestState } from '../interface/contest-interface-reducer';
 
 const SubmissionWrap = styled.div`
     display: flex;
@@ -67,7 +68,7 @@ const SubmissionPreviewContainer = styled.div`
     margin: 10px;
     cursor: pointer;
     //overflow: hidden;
-    ${props => (props.contest_rank && props.contest_rank < 4) ? css`${uniqueRankStyles[props.contest_rank - 1]}` : ''}
+    ${props => (props.contest_rank && props.contest_rank < 2) ? css`${uniqueRankStyles[props.contest_rank - 1]}` : ''}
 
     &::after{
         content: '${props => props.contest_rank === 1 ? "\f521" : ""}';
@@ -119,7 +120,7 @@ const LazyStyledImage = styled.div`
 `
 
 
-export default function SubmissionDisplay({ contest_state }) {
+export default function SubmissionDisplay({ }) {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [TLDRImage, setTLDRImage] = useState(null);
     const [TLDRText, setTLDRText] = useState(null);
@@ -129,9 +130,9 @@ export default function SubmissionDisplay({ contest_state }) {
     const [sub_content, set_sub_content] = useState([]);
     const [subs, set_subs] = useState([]);
     const { ens, contest_hash } = useParams();
+    const contest_state = useSelector(selectContestState)
 
 
-    
 
     const handleClose = () => {
         setIdToExpand(null);
@@ -149,7 +150,7 @@ export default function SubmissionDisplay({ contest_state }) {
         setTLDRImage(tldr_img);
         setTLDRText(tldr_text);
         setExpandData(submission_body);
-        
+
         setAuthor(author);
         setDrawerOpen(true);
         document.body.style.overflow = 'hidden';
@@ -161,7 +162,6 @@ export default function SubmissionDisplay({ contest_state }) {
 
 
     useEffect(() => {
-        
         if (contest_state < 2) {
             fetch(`/creator_contests/fetch_submissions/${ens}/${contest_hash}`)
                 .then(res => res.json())
@@ -170,6 +170,7 @@ export default function SubmissionDisplay({ contest_state }) {
 
         else if (contest_state === 2) {
             // get the winners
+            console.log('we are here')
             fetch(`/creator_contests/fetch_contest_winners/?ens=${ens}&contest_hash=${contest_hash}`)
                 .then(res => res.json())
                 .then(data => set_subs(data))
@@ -180,7 +181,7 @@ export default function SubmissionDisplay({ contest_state }) {
     useEffect(() => {
 
         const submissionListener = (submission) => {
-            
+
             set_subs((prev_subs) => {
                 const new_subs = [...prev_subs]
                 new_subs.push(submission);
@@ -292,7 +293,7 @@ function Submission({ sub, handleExpand, index, contest_state }) {
 
 
     useEffect(() => {
-        
+
         fetch(sub._url).then(res => {
             res.json().then(json => {
                 set_tldr_img(json.tldr_image)

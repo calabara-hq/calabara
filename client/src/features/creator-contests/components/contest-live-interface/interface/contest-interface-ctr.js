@@ -19,13 +19,17 @@ const FallbackInterface = styled.div`
 
 
 export default function ContestInterfaceController() {
+    console.log('HERE')
     const { ens, contest_hash } = useParams();
-    let fetch_data = fetchContest(ens, contest_hash);
-
-
+    const [contest_data, set_contest_data] = useState(null)
+    //let fetch_data = fetchContest(ens, contest_hash);
 
     useEffect(() => {
         console.log('trying to connect to socket')
+
+        fetch(`/creator_contests/fetch_contest/${ens}/${contest_hash}`)
+            .then(data => data.json())
+            .then(data => set_contest_data(data))
 
         socket.emit('subscribe', contest_hash, error => {
             if (error) {
@@ -54,18 +58,18 @@ export default function ContestInterfaceController() {
     }, [])
 
 
-
     return (
-        <Suspense fallback={<FallbackInterface />}>
-            <RenderInterface fetch_data={fetch_data} />
-        </Suspense>
+        <RenderInterface contest_data={contest_data} />
     )
 }
 
-function RenderInterface({ fetch_data }) {
-    let contest_data = fetch_data.read();
+function RenderInterface({ contest_data }) {
+    //let contest_data = fetch_data.read();
+    console.log(contest_data)
 
     return (
-        <ContestInterface contest_settings={contest_data.settings} prompt_data={contest_data.prompt_data} />
+        <>
+            {contest_data && <ContestInterface contest_settings={contest_data.settings} prompt_data={contest_data.prompt_data} />}
+        </>
     )
 }

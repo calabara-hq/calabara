@@ -20,6 +20,7 @@ import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { selectContestState } from "../interface/contest-interface-reducer";
 import { Placeholder } from '../../common/common_components';
 import DisplayWinners from '../winners/contest-winners';
+import { socket } from '../../service/socket';
 
 const SubmissionDisplay = React.lazy(() => import('../submissions/test-submission-display'))
 
@@ -60,13 +61,19 @@ const OrgCard = styled.div`
 
 
 export default function ContestInterface({ contest_settings, prompt_data }) {
+    console.log('HERE')
     const { ens, contest_hash } = useParams();
     const [isSubmissionBuilder, setIsSubmissionBuilder] = useState(false);
     const [createSubmissionIndex, setCreateSubmissionIndex] = useState(-1);
     const info = useSelector(selectDashboardInfo)
     const { batchFetchDashboardData } = useCommon();
     const builderScroll = useRef(null);
-    const contest_state = useSelector(selectContestState)
+
+    const stateManager = useContestState(
+        contest_settings.date_times.start_date,
+        contest_settings.date_times.voting_begin,
+        contest_settings.date_times.end_date
+    )
 
 
     useEffect(() => {
@@ -94,9 +101,9 @@ export default function ContestInterface({ contest_settings, prompt_data }) {
                 </InterfaceTopSplit>
                 {contest_settings && <ContestInfo contest_settings={contest_settings} />}
                 <RenderCheckpoint />
-                <DisplayWinners contest_state={contest_state} />
+                {/*<DisplayWinners />*/}
                 <Suspense fallback={<Placeholder />}>
-                    <SubmissionDisplay contest_state={contest_state} />
+                    <SubmissionDisplay />
                 </Suspense>
             </ContestInterfaceWrap>
         </>
