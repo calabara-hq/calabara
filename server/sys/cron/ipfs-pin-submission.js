@@ -36,8 +36,18 @@ const getFileUrls = async () => {
 const updateFileUrl = async (id, new_url) => {
     try {
         let result = await db.query('update contest_submissions set locked = false, pinned = true, _url = $1 where id = $2', [new_url, id])
+        return
     } catch (e) { console.log(e) }
 }
+
+
+const deleteFromFs = (url) => {
+    fs.unlink(fs_path.normalize(fs_path.join(serverBasePath, url)), (err) => {
+        if (err) return console.log(err)
+        return console.log(`delete stale submission from fs`)
+    })
+}
+
 
 
 const parseBody = async (chunk) => {
@@ -101,7 +111,10 @@ const mainLoop = async (unpinned_files) => {
             const stream_end = await end;
             console.log(stream_end)
             console.log('FINAL ASSET URL --> ', asset_url);
-            await updateFileUrl(unpinned_body.id, asset_url)
+            await Promise.all([
+                updateFileUrl(unpinned_body.id, asset_url),
+                deleteFromFs(unpinned_body._url)
+            ])
 
         } catch (err) { console.log(err) }
     }

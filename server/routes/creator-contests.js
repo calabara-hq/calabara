@@ -50,7 +50,6 @@ contests.get('/fetch_submissions/*', async function (req, res, next) {
     let subs = await db.query('select id, _url from contest_submissions where ens=$1 and contest_hash=$2', [ens, contest_hash])
         .then(clean)
         .then(asArray)
-    console.log(subs)
     res.send(subs).status(200)
 })
 
@@ -82,11 +81,9 @@ contests.get('/fetch_submissions/*', async function (req, res, next) {
 
 contests.get('/fetch_contest_winners', verifyContestOver, async function (req, res, next) {
     const { ens, contest_hash } = req.query
-    console.log(ens, contest_hash)
     let subs_full_details = await db.query('select contest_submissions.id, _url, author, sum(votes_spent) as votes from contest_submissions left join contest_votes on contest_submissions.id = contest_votes.submission_id where contest_submissions.ens=$1 and contest_submissions.contest_hash=$2 group by contest_submissions.id order by votes desc', [ens, contest_hash])
         .then(clean)
         .then(asArray)
-    console.log(subs_full_details)
     res.send(subs_full_details).status(200);
 
 })
@@ -122,8 +119,9 @@ contests.get('/fetch_submission_votes', async function (req, res, next) {
 contests.post('/create_submission', authenticateToken, checkSubmissionRestrictions, checkUserSubmissions, createSubmission, async function (req, res, next) {
     const { ens } = req.body;
     let result = await db.query('insert into contest_submissions (ens, contest_hash, author, created, locked, pinned, _url) values ($1, $2, $3, $4, $5, $6, $7) returning id ', [ens, req.contest_hash, req.user.address, req.created, false, false, req.url]).then(clean)
-    sendSocketMessage(req.contest_hash, 'new_submission', { id: result.id, _url: req.url })
     res.sendStatus(200)
+    sendSocketMessage(req.contest_hash, 'new_submission', { id: result.id, _url: req.url })
+
 })
 
 const getUserSubmissions = async (walletAddress, contest_hash) => {
