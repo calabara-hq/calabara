@@ -56,7 +56,7 @@ async function checkSubmitterEligibility(req, res, next) {
     }
 
 
-    req.has_already_submitted = user_submissions.length > 0
+    req.has_already_submitted = false//user_submissions.length > 0
     req.restrictions_with_results = restrictions;
     next();
 }
@@ -75,11 +75,10 @@ async function checkUserSubmissions(req, res, next) {
 
 
     // TURTLES COME BACK AND UNCOMMENT THIS LINE
-    if (submissions.length < 1) {
-        next();
-    }
+   // if (submissions.length > 0) return res.sendStatus(420)
 
-    res.status(420)
+    next();
+
 
 }
 
