@@ -3,8 +3,6 @@ import axios from 'axios';
 import { selectConnectedBool, selectConnectedAddress } from "../wallet/wallet-reducer";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import useContract from './useContract';
-import useGatekeeper from './useGatekeeper';
 import useCommon from './useCommon';
 import { selectContestState } from '../creator-contests/components/contest-live-interface/interface/contest-interface-reducer';
 
@@ -14,24 +12,22 @@ import { selectContestState } from '../creator-contests/components/contest-live-
 export default function useSubmissionEngine(submitter_restrictions) {
     const walletAddress = useSelector(selectConnectedAddress);
     const isConnected = useSelector(selectConnectedBool);
-    const contestState = useSelector(selectContestState)
     const [alreadySubmittedError, setAlreadySubmittedError] = useState(false)
     const { ens, contest_hash } = useParams();
-    const { contestQueryGatekeeper } = useGatekeeper();
     const [restrictionResults, setRestrictionResults] = useState(Object.values(submitter_restrictions))
     const [isUserEligible, setIsUserEligible] = useState(false);
     const { authenticated_post } = useCommon();
+    const contest_state = useSelector(selectContestState)
 
     useEffect(() => {
         if (isConnected) {
             // check if wallet already submitted in this contest
             (async () => {
-                if (contestState !== 0)return setIsUserEligible(false)
                 let eligibility = await axios.post('/creator_contests/check_user_eligibility', { contest_hash: contest_hash, ens: ens, walletAddress: walletAddress }).then(result => { return result.data })
-                console.log(eligibility)
                 setAlreadySubmittedError(eligibility.has_already_submitted);
 
                 setRestrictionResults(eligibility.restrictions);
+                if (contest_state !== 0) return setIsUserEligible(false)
                 if (eligibility.restrictions.length === 0) {
                     if (!eligibility.has_already_submitted) {
                         return setIsUserEligible(true)
@@ -58,14 +54,6 @@ export default function useSubmissionEngine(submitter_restrictions) {
         isWalletConnected: isConnected,
         restrictionResults: restrictionResults,
         isUserEligible: isUserEligible,
-        /*
-        castVote: async (numVotes) => {
-            return await castVote(numVotes);
-        },
-        retractVotes: async () => {
-            return await retractVotes();
-        }
-        */
     }
 
 }

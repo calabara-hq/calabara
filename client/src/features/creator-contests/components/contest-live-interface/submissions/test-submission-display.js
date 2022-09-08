@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { contest_data } from '../temp-data';
 import styled, { keyframes, css } from 'styled-components'
 import { ParseBlocks } from '../block-parser';
@@ -13,11 +13,13 @@ import { useSelector, useDispatch } from 'react-redux';
 import { selectLogoCache } from "../../../../org-cards/org-cards-reducer";
 import LazyLoad from 'react-lazyload';
 import { CSSTransitionGroup } from 'react-transition-group';
-import './spinner.css'
 import { LazyLoadImage } from 'react-lazy-load-image-component';
-import { Placeholder } from '../../common/common_components';
+import Placeholder from '../../common/spinner';
 import { socket } from '../../service/socket';
 import { selectContestState } from '../interface/contest-interface-reducer';
+import fetchSubmission from './submission-data-fetch';
+import DisplayWinners from '../winners/contest-winners';
+
 
 const SubmissionWrap = styled.div`
     display: flex;
@@ -47,6 +49,16 @@ const uniqueRankStyles =
     ]
 
 
+const SubmissionsHeading = styled.div`
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        > div {
+            text-align: center;
+            flex: 1;
+        }
+    `
 
 
 const SubmissionPreviewContainer = styled.div`
@@ -55,7 +67,7 @@ const SubmissionPreviewContainer = styled.div`
     flex: 0 1 30%;
     flex-direction: column;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: space-around;
     font-size: 16px;
     color: #d3d3d3;
     background-color: #262626;
@@ -66,11 +78,13 @@ const SubmissionPreviewContainer = styled.div`
     transition: width 0.6s ease-in-out;
     height: 24em;
     margin: 10px;
+    max-width: 30%;
     cursor: pointer;
-    //overflow: hidden;
     ${props => (props.contest_rank && props.contest_rank < 2) ? css`${uniqueRankStyles[props.contest_rank - 1]}` : ''}
 
-    &::after{
+
+    &::before{
+        display: inline-block;
         content: '${props => props.contest_rank === 1 ? "\f521" : ""}';
         color: #DAA520;
         position: absolute;
@@ -81,27 +95,22 @@ const SubmissionPreviewContainer = styled.div`
         top: 0;
         right: 0;
         transform: translate(50%, -50%);
+        
 
     }
 
 
-    // TURTLES need to set this up to wrap submission containers properly
-    @media(max-width: 1720px){
-        flex: 1 1 28%;
-    }
-    
-    
 
     > div {
-        height: 100%;
         display: flex;
         flex-direction: column;
+        word-wrap: break-word;
     }
     
     > div > span {
-        height: 100%;
         display: flex;
         flex-direction: column;
+
 
     }
 
@@ -117,7 +126,10 @@ const LazyStyledImage = styled.div`
     justify-content: center;
     align-items: center;
     height: 100%;
+    text-align: center;
+    overflow: hidden;
 `
+
 
 
 export default function SubmissionDisplay({ }) {
@@ -127,11 +139,9 @@ export default function SubmissionDisplay({ }) {
     const [idToExpand, setIdToExpand] = useState(null);
     const [expandData, setExpandData] = useState(null);
     const [author, setAuthor] = useState(null);
-    const [sub_content, set_sub_content] = useState([]);
     const [subs, set_subs] = useState([]);
     const { ens, contest_hash } = useParams();
-    const contest_state = useSelector(selectContestState)
-
+    const contest_state = useSelector(selectContestState);
 
 
     const handleClose = () => {
@@ -158,9 +168,6 @@ export default function SubmissionDisplay({ }) {
 
 
 
-
-
-
     useEffect(() => {
         if (contest_state < 2) {
             fetch(`/creator_contests/fetch_submissions/${ens}/${contest_hash}`)
@@ -179,9 +186,10 @@ export default function SubmissionDisplay({ }) {
     }, [])
 
     useEffect(() => {
+        console.log('socket update!!!')
 
         const submissionListener = (submission) => {
-
+            console.log(submission)
             set_subs((prev_subs) => {
                 const new_subs = [...prev_subs]
                 new_subs.push(submission);
@@ -192,17 +200,22 @@ export default function SubmissionDisplay({ }) {
         socket.on('new_submission', submissionListener)
     }, [socket])
 
-
     return (
         <div>
             {subs.length > 0 &&
                 <>
-                    <h2 style={{ textAlign: 'center', color: '#d3d3d3', marginBottom: '30px' }}>Submissions</h2>
+                    <SubmissionsHeading>
+                        <div>
+                            <h2 style={{ color: '#d3d3d3', marginBottom: '30px' }}>Submissions</h2>
+                        </div>
+                        <DisplayWinners />
+                    </SubmissionsHeading>
                     <SubmissionWrap>
 
                         {subs.map((sub, index) => {
+                            let fetched_submission = fetchSubmission(sub._url)
                             return (
-                                <Submission sub={sub} index={index} handleExpand={handleExpand} contest_state={contest_state} />
+                                <Submission sub={sub} index={index} handleExpand={handleExpand} />
                             )
                         })}
 
@@ -283,19 +296,20 @@ const AuthorVotes = styled.span`
 
 `
 
-function Submission({ sub, handleExpand, index, contest_state }) {
+function Submission({ sub, handleExpand, index, fetched_submission }) {
     const [tldr_img, set_tldr_img] = useState(null);
     const [tldr_text, set_tldr_text] = useState(null);
     const [submission_body, set_submission_body] = useState(null);
     const [rank, setRank] = useState(null);
-    const { ens, contest_hash } = useParams();
+    const contest_state = useSelector(selectContestState)
+
 
 
 
     useEffect(() => {
-
         fetch(sub._url).then(res => {
             res.json().then(json => {
+                console.log(json)
                 set_tldr_img(json.tldr_image)
                 set_tldr_text(json.tldr_text)
                 set_submission_body(json.submission_body)
@@ -306,17 +320,14 @@ function Submission({ sub, handleExpand, index, contest_state }) {
             })
         })
 
-
-
-        /*
-        TURTLES come back and implement vote streaming
-        fetch(`/creator_contests/fetch_submission_votes?ens=${ens}&contest_hash=${contest_hash}&sub_id=${sub.id}`)
-        .then(res => res.json())
-        .then(json => {
-        */
     }, [])
 
+
+
+
+
     return (
+
         <SubmissionPreviewContainer onClick={() => handleExpand(sub.id, tldr_img, tldr_text, submission_body, sub.author)} contest_rank={rank}>
             <LazyLoad key={sub.id} throttle={200} height={500}
                 placeholder={<Placeholder />} debounce={500}>
@@ -335,15 +346,8 @@ function Submission({ sub, handleExpand, index, contest_state }) {
                 </CSSTransitionGroup>
             </LazyLoad>
             <SubmissionTop>
-                {/*
-                <SpanDiv>
-                    {sub.votes && <VoteTotals><p>{sub.votes} votes</p></VoteTotals>}
-                </SpanDiv>
-        */}
             </SubmissionTop>
         </SubmissionPreviewContainer >
-
-
     )
 }
 

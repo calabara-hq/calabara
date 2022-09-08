@@ -9,6 +9,7 @@ import BackButton from "../../../back-button/back-button";
 import { Label, labelColorOptions, Contest_h2_alt, Contest_h3_alt, TagType, fade_in } from "../common/common_styles";
 import { label_status } from "../contest-live-interface/contest_info/contest-info-style";
 import CreatorContestLogo from "../../../../img/cc.png"
+import CC_Logo from "../../../../img/contest-mockup.png"
 import moment from "moment";
 import useCommon from "../../../hooks/useCommon";
 import { selectDashboardInfo } from "../../../dashboard/dashboard-info-reducer";
@@ -54,7 +55,7 @@ const HomeLeft = styled.div`
 
 `
 
-const OrgImgTo = styled.img`
+const OrgImg = styled.img`
     max-width: 10em;
     border: none;
     border-radius: 100px;
@@ -64,14 +65,19 @@ const OrgImgTo = styled.img`
 const HomeRight = styled.div`
     display: flex;
     flex: 0 0 70%;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
     justify-content: center;   
     background-color: #1e1e1e;
     border-radius: 10px;
     margin-left: 20px;
     padding: 20px;
-
+    > img {
+        max-width: 25em;
+    }
+    > h3 {
+        color: #bfbfbf;
+    }
 
 `
 
@@ -113,8 +119,8 @@ const TopRight = styled.div`
     }
 
     > img {
-        max-width: 80%;
-        max-height: 90%;
+        max-width: 25em;
+       // max-height: 90%;
 
     }
 
@@ -284,17 +290,12 @@ export default function ContestHomepage({ }) {
             <ContestHomeWrap>
                 <ContestHomeSplit>
                     <HomeLeft>
-                        <OrgImgTo data-src={info.logo}></OrgImgTo>
+                        <OrgImg data-src={info.logo}></OrgImg>
                         <Contest_h2_alt>{info.name}</Contest_h2_alt>
                         <a href={'//' + info.website} target="_blank">{info.website}</a>
                     </HomeLeft>
                     <HomeRight>
-                        <TopText>
-                        <h3>Get Creative, Earn Rewards, & Contribute to your DAO</h3>
-                        </TopText>
-                        <TopRight>
-                            <img src={CreatorContestLogo} />
-                        </TopRight>
+                        <img src={CC_Logo} />
                     </HomeRight>
                 </ContestHomeSplit>
                 <SplitBottom>

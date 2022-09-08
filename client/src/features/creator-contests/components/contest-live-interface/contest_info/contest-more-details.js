@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
+import { useSelector } from 'react-redux'
 import styled from 'styled-components'
 import { fade_in, Label, TagType } from '../../common/common_styles'
+import { selectContestSettings } from '../interface/contest-interface-reducer'
 
 
 const DetailWrap = styled.div`
@@ -105,9 +107,8 @@ const OptionType = styled.p`
 // if mode = 0, order the rewards first
 // else, order x first
 
-export default function ContestMoreDetails({ mode, contest_settings }) {
-
-
+export default function ContestMoreDetails({ mode }) {
+    const contest_settings = useSelector(selectContestSettings)
 
     return (
         <>
@@ -136,9 +137,7 @@ const nth = {
 
 
 function ContestRewardDetails({ contest_settings }) {
-    Object.values(contest_settings.voter_rewards).map(reward => {
-        
-    })
+
 
     return (
         <RewardDetailWrap>
@@ -192,7 +191,7 @@ function ContestRewardDetails({ contest_settings }) {
 }
 
 function VotingPowerDetails({ contest_settings }) {
-    console.log(contest_settings)
+    //console.log(contest_settings)
     return (
         <VotingDetailWrap>
             <h3>Voting Power Calulation</h3>
@@ -216,14 +215,14 @@ function TokenComponent({ voting_strategy }) {
 
     return (
         <VoterRow>
-            <p>This contest uses <b>{voting_strategy.strategy_type}</b> strategy:</p>
+            <p>This contest uses a <b>{voting_strategy.strategy_type}</b> strategy:</p>
             <li>Type: <b>{voting_strategy.symbol}</b> <TagType type={voting_strategy.type}>{voting_strategy.type}</TagType></li>
             <li>1 <b>{voting_strategy.symbol}</b> equals 1 <b>voting credit</b></li>
             {voting_strategy.hard_cap > 0 &&
-                <li>Contest Hard Cap: <b>{voting_strategy.hard_cap}</b></li>
+                <li>Contest hard cap: <b>{voting_strategy.hard_cap}</b></li>
             }
             {voting_strategy.sub_cap > 0 &&
-                <li>Max votes per submission: <b>{voting_strategy.sub_cap}</b></li>
+                <li>Submission hard cap: <b>{voting_strategy.sub_cap}</b></li>
             }
 
         </VoterRow>
@@ -239,10 +238,10 @@ function ArcadeComponent({ voting_strategy }) {
 
     return (
         <VoterRow>
-            <p>This contest uses <b>{voting_strategy.strategy_type} strategy:</b></p>
+            <p>This contest uses an <b>{voting_strategy.strategy_type} strategy:</b></p>
             <li>Total Votes: <b>{voting_strategy.hard_cap}</b></li>
             {voting_strategy.sub_cap > 0 &&
-                <li>Max votes per submission: <b>{voting_strategy.sub_cap}</b></li>
+                <li>Submission hard cap: <b>{voting_strategy.sub_cap}</b></li>
             }
         </VoterRow>
 
