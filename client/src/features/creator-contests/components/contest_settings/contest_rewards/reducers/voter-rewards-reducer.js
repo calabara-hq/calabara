@@ -9,7 +9,9 @@ export const voterRewards = createSlice({
     initialState,
     reducers: {
         updatevoterRewards: (state, data) => {
-            state.voter_rewards[data.payload.index] = data.payload.value
+            console.log(data.payload.value)
+            //if(state.voter_rewards[data.payload.index].)
+            //state.voter_rewards[data.payload.index] = data.payload.value
         },
         incrementWinners: (state, data) => {
             state.voter_rewards.push({})

@@ -137,7 +137,7 @@ const nth = {
 
 
 function ContestRewardDetails({ contest_settings }) {
-
+console.log(contest_settings)
 
     return (
         <RewardDetailWrap>
@@ -177,7 +177,7 @@ function ContestRewardDetails({ contest_settings }) {
                             return (
                                 <RewardRow>
                                     {reward.eth ? <p>Voters that accurately choose the {nth[reward.rank]} place submission will <b>split </b>{reward.eth.amount} ETH</p> : null}
-                                    {reward.erc20 ? <p>Voters that accurately choose the {nth[reward.rank]} place submission will <b>split </b>{reward.erc20.amount} {reward.erc20.amount}</p> : null}
+                                    {reward.erc20 ? <p>Voters that accurately choose the {nth[reward.rank]} place submission will <b>split </b>{reward.erc20.amount} {reward.erc20.symbol}</p> : null}
                                 </RewardRow>
                             )
                         })}
