@@ -18,11 +18,7 @@ import { WalletProvider } from '../../app/WalletContext'
 
 
 export default function Container() {
-
-
-
   const location = useLocation();
-
   const homepage = location.pathname === '/'
 
   return (
@@ -52,6 +48,10 @@ function Application({ }) {
 
 
       <ApplicationNav />
+
+      <Route exact path="/">
+        <Homepage />
+      </Route>
 
       <Route path="/:ens/dashboard">
         <Dashboard />

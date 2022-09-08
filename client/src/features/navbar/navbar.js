@@ -9,8 +9,6 @@ function HomepageNav() {
   // button will be different depending on if this is the homepage '/' or not
   const history = useHistory();
 
-
-
   return (
     <nav className="navbar homepage">
       <div className="parent-container">
