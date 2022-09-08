@@ -125,7 +125,7 @@ describe('new gatekeeper queries', () => {
     const myComp = setup();
     it('check nicks wallet for a non-zero $SHARK balance', async () => {
         let res = await myComp.queryGatekeeper(walletAddress, dashboardRules, {"64": ""})
-        expect(res).eqls({"64": 9})
+        expect(res).eqls({"64": 4})
     })
     it('check sharkdao wallet for a non-zero NOUNS balance', async () => {
         let res = await myComp.queryGatekeeper('0xAe7f458667f1B30746354aBC3157907d9F6FD15E', dashboardRules, {"72": ""})

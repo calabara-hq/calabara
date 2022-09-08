@@ -48,8 +48,6 @@ const calculateProgressRatio = (cc_state, t0, t1, t2) => {
 
 
 
-const ContestStateContext = React.createContext({});
-
 
 export default function ContestInterfaceController() {
     const { ens, contest_hash } = useParams();
