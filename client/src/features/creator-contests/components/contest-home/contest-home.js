@@ -1,0 +1,400 @@
+import { Suspense, useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import axios from 'axios'
+import { useParams, useHistory } from "react-router-dom";
+import styled from 'styled-components'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import BackButton from "../../../back-button/back-button";
+import { Label, labelColorOptions, Contest_h2_alt, Contest_h3_alt, TagType, fade_in } from "../common/common_styles";
+import { label_status } from "../contest-live-interface/contest_info/contest-info-style";
+import CreatorContestLogo from "../../../../img/cc.png"
+import moment from "moment";
+import useCommon from "../../../hooks/useCommon";
+import { selectDashboardInfo } from "../../../dashboard/dashboard-info-reducer";
+import { selectLogoCache } from "../../../org-cards/org-cards-reducer";
+import * as WebWorker from '../../../../app/worker-client.js'
+import fetchHomepageData from "./homepage-data-fetch";
+const homepage_data = fetchHomepageData();
+
+const ContestTag = styled.p`
+    color: #d9d9d9;
+    font-size: 20px;
+    cursor: pointer;
+    margin: 0;
+    padding: 5px;
+`
+
+const ContestHomeWrap = styled.div`
+    display: flex;
+    flex-direction: column;
+    width: 70vw;
+    margin: 0 auto;
+
+`
+
+const ContestHomeSplit = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    height: 250px;
+    margin-bottom: 20px;
+    
+    
+ `
+
+const HomeLeft = styled.div`
+    display: flex;
+    flex-direction: column;
+    flex: 0 1 25%;
+    justify-content: space-evenly;
+    align-items: center;
+    background-color: #1e1e1e;
+    border-radius: 10px;
+
+`
+
+const OrgImgTo = styled.img`
+    max-width: 10em;
+    border: none;
+    border-radius: 100px;
+    //margin-bottom: 10px;
+`
+
+const HomeRight = styled.div`
+    display: flex;
+    flex: 0 0 70%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;   
+    background-color: #1e1e1e;
+    border-radius: 10px;
+    margin-left: 20px;
+    padding: 20px;
+
+
+`
+
+const TopText = styled.div` 
+    display: flex;
+    flex-direction: column;
+
+
+    > h3 {
+        font-size: 25px;
+        color: #d9d9d9;
+        text-align: left;
+        margin: 0px 0px 10px 0px;
+    }
+    > li{
+        font-size: 15px;
+        color: pink;
+        text-align: left;
+
+    }
+
+
+
+
+`
+
+const TopRight = styled.div`
+    display: flex;
+    flex-direction: column;
+    flex: 1 0 40%;
+    align-items: center;
+    justify-content: center;
+
+    > h1 {
+        color: #d9d9d9;
+        font-size: 35px;
+        
+        
+    }
+
+    > img {
+        max-width: 80%;
+        max-height: 90%;
+
+    }
+
+`
+
+const SplitBottom = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin-bottom: 70px;
+
+
+
+`
+
+const RoundContainer = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: flex-start;
+    flex: 0 0 70%;
+    height: fit-content;
+    background-color: #1e1e1e;
+    border-radius: 10px;
+    margin-right: 20px;
+    animation: ${fade_in} 0.4s ease-in-out;
+
+`
+
+const RoundWrap = styled.div`
+    display: flex;
+    align-items: center;
+    width: 95%;
+    color: #d3d3d3;
+    background-color: #262626;
+    border: 2px solid #4d4d4d;
+    border-radius: 4px;
+    padding: 5px;
+    margin: 10px;
+    grid-gap: 20px;
+    cursor: pointer;
+    transition: visibility 0.2s, max-height 0.3s ease-in-out;
+
+    &:hover{
+        background-color: #1e1e1e;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
+        transform: scale(1.01);
+        transition-duration: 0.5s;
+
+    }
+
+`
+
+const SplitBottomRight = styled.div`
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    flex: 0 0 25%;
+
+`
+
+const NewContest = styled.button`
+    font-size: 16px;
+    font-weight: 550;
+    color: #f2f2f2;
+    background-image: linear-gradient(#262626, #262626),linear-gradient(90deg,#e00f8e,#2d66dc);
+    background-origin: border-box;
+    background-clip: padding-box,border-box;
+    border: 2px double transparent;
+    border-radius: 10px;
+    padding: 5px 10px;
+    transition: background-color 0.2s ease-in-out;
+    transition: color 0.3s ease-in-out;
+    transition: visibility 0.2s, max-height 0.3s ease-in-out;
+
+    &:hover{
+        background-color: #1e1e1e;
+        background-image: linear-gradient(#141416, #141416),
+        linear-gradient(to right, #e00f8e, #2d66dc);
+    }
+
+`
+
+const StatContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    height: 250px;
+    justify-content: space-evenly;
+    align-items: center;
+    background-color: #1e1e1e;
+    border-radius: 10px;
+    margin-top: 20px;
+    animation: ${fade_in} 0.4s ease-in-out;
+
+
+    > p {
+        color: #d9d9d9;
+        font-weight: 550;
+
+    }
+
+    > *{
+        text-align: center;
+    }
+
+`
+
+const OptionType = styled.p`
+    color: lightgrey;
+    margin: 10px 0;
+
+    & > span{
+        padding: 3px 3px;
+        border-radius: 4px;
+        font-size: 15px;
+        font-weight: 550;
+    }
+`
+
+
+
+export default function ContestHomepage({ }) {
+    const [all_contests, set_all_contests] = useState(null);
+    const [contest_hash, set_contest_hash] = useState(null);
+    const [total_rewards, set_total_rewards] = useState([0, 0, 0])
+    const { ens } = useParams();
+    const history = useHistory();
+    const { batchFetchDashboardData } = useCommon()
+    const info = useSelector(selectDashboardInfo)
+    const logoCache = useSelector(selectLogoCache);
+    const dispatch = useDispatch()
+
+
+
+
+
+    // on page load, fetch all the contests for this org and display.
+    // if one is clicked, set the contest_hash in the url and fetch the settings
+
+    useEffect(() => {
+
+        batchFetchDashboardData(ens, info)
+        /*
+        let res = await axios.get(`/creator_contests/fetch_org_contests/${ens}`);
+        set_all_contests(res.data)
+        let stats = await axios.get(`/creator_contests/org_contest_stats/${ens}`);
+        set_total_rewards([stats.data.eth, stats.data.erc20, stats.data.erc721])
+        */
+    }, [])
+
+    useEffect(() => {
+        if (info.ens == ens) {
+            WebWorker.processImages(dispatch, logoCache);
+
+        }
+    }, [info])
+
+
+    const handleSettings = () => {
+        history.push(`contest_settings`)
+    }
+
+
+    return (
+        <>
+            <BackButton customWidth={'68%'} link={'/' + ens + '/dashboard'} text={"dashboard"} />
+            <ContestHomeWrap>
+                <ContestHomeSplit>
+                    <HomeLeft>
+                        <OrgImgTo data-src={info.logo}></OrgImgTo>
+                        <Contest_h2_alt>{info.name}</Contest_h2_alt>
+                        <a href={'//' + info.website} target="_blank">{info.website}</a>
+                    </HomeLeft>
+                    <HomeRight>
+                        <TopText>
+                        <h3>Get Creative, Earn Rewards, & Contribute to your DAO</h3>
+                        </TopText>
+                        <TopRight>
+                            <img src={CreatorContestLogo} />
+                        </TopRight>
+                    </HomeRight>
+                </ContestHomeSplit>
+                <SplitBottom>
+                    <Suspense fallback={<RoundContainer style={{ height: '500px' }} />}>
+                        <ListContests />
+                    </Suspense>
+
+                    <SplitBottomRight>
+                        <NewContest onClick={handleSettings}><FontAwesomeIcon icon={faPlus} /> New Contest </NewContest>
+                        <Suspense fallback={<StatContainer style={{ height: '230px' }} />}>
+                            <ListStats />
+                        </Suspense>
+                    </SplitBottomRight>
+
+                </SplitBottom>
+            </ContestHomeWrap>
+        </>
+    )
+}
+
+function ListContests() {
+    const history = useHistory();
+    const all_contests = homepage_data.contests.read();
+
+
+    const handleInterface = (_hash) => {
+        history.push(`creator_contests/${_hash}`)
+    }
+
+
+    return (
+        <RoundContainer>
+            {all_contests.map(el => {
+                return (
+                    <RoundWrap onClick={() => handleInterface(el._hash)}>
+                        <ContestTag>{el._title}</ContestTag>
+                        <Label color={labelColorOptions[el._prompt_label_color]}>{el._prompt_label}</Label>
+                        <CalculateState contest_info={el} />
+                    </RoundWrap>
+                )
+            })}
+        </RoundContainer>
+    )
+}
+
+function ListStats() {
+    const total_rewards = homepage_data.stats.read();
+    return (
+        <StatContainer>
+
+            <Contest_h3_alt>Total Rewards Distributed: </Contest_h3_alt>
+            <OptionType><TagType>ETH:</TagType> {total_rewards.eth ? total_rewards.eth : '--'}</OptionType>
+            <OptionType><TagType type='erc20'>ERC-20:</TagType> {total_rewards.erc20 ? total_rewards.erc20.symbol : '--'}</OptionType>
+            <OptionType><TagType type='erc721'>ERC-721:</TagType>  {total_rewards.erc721 ? total_rewards.erc721.symbol : '--'}</OptionType>
+
+        </StatContainer>
+    )
+}
+
+const calculateDuration = (t0, t1, t2) => {
+    let submit_time = moment.duration(moment(t0).diff(moment()));
+    let vote_time = moment.duration(moment(t1).diff(moment()))
+    let end_time = moment.duration(moment(t2).diff(moment()))
+    submit_time = vote_time.milliseconds() > 0 ? 'active' : 'complete';
+    vote_time = submit_time === 'complete' ? (end_time.milliseconds() > 0 ? 'active' : 'complete') : `${vote_time.days()}:${vote_time.hours()}:${vote_time.minutes()}:${vote_time.seconds()}`
+    end_time = end_time.milliseconds() > 0 ? `${end_time.days()}:${end_time.hours()}:${end_time.minutes()}:${end_time.seconds()}` : 'complete'
+
+    return [
+        submit_time,
+        vote_time,
+        end_time
+    ]
+}
+
+function CalculateState({ contest_info }) {
+    const [contestState, setContestState] = useState(0)
+
+
+
+    useEffect(() => {
+
+        let results = calculateDuration(contest_info._start, contest_info._voting, contest_info._end)
+
+        let index = results.indexOf('active');
+        let cc_state = index = index > -1 ? index : 2;
+        setContestState(cc_state)
+    }, [])
+
+
+    return (
+
+
+
+        <Label style={{ marginLeft: 'auto' }} color={label_status[contestState]}>{label_status[contestState].status}</Label>
+
+
+
+    )
+
+
+
+
+}

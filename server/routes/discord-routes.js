@@ -7,7 +7,6 @@ const discordApp = express();
 discordApp.use(express.json())
 
 const { getServerRoles, getGuildUserRoles } = require('../discord-bot/discord-bot.js')
-require('../discord-bot/deploy-commands.js')
 const { authenticateToken } = require('../middlewares/jwt-middleware')
 const { isAdmin } = require('../middlewares/admin-middleware');
 

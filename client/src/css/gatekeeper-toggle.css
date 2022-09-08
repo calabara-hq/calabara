@@ -31,9 +31,9 @@
     grid-gap: 20px;
     justify-content: flex-start;
     align-items: flex-start;
-    border: none;
+    border: 2px solid #4d4d4d;
     border-radius: 4px;
-    background-color: #1c2128;
+    background-color: #262626;
     padding: 10px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
     min-height: 150px;
@@ -121,16 +121,22 @@
   }
   
   .gk-rule > p > span.erc721{
-    background-color: rgba(155, 89, 182, 0.3);
-    color: rgb(155, 89, 182);
+    font-size: 15px;
+    font-weight: 550;
+    background-color: #ab6afb;
+    color: #f2f2f2;
   }
   
   .gk-rule > p > span.discord{
-    background-color: rgba(26, 188, 156, 0.3);
-    color: rgb(26, 188, 156);
+    font-size: 15px;
+    font-weight: 550;
+    background-color: #5865f2;
+    color: #f2f2f2;
   }
   
   .gk-rule > p > span.erc20{
-    background: rgb(44, 192, 255, 0.3);
-    color: rgb(44, 192, 255);
+    font-size: 15px;
+    font-weight: 550;
+    background: #03b09f;
+    color: #f2f2f2;
   }

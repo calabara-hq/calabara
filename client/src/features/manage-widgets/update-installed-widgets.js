@@ -314,7 +314,7 @@ function GatekeeperSettings({ selected, setSettingsStep, setTabHeader }) {
       <div className="tab-message neutral">
         <p>Toggle the switches to apply gatekeeper rules to this app. If multiple rules are applied, the gatekeeper will pass if the connected wallet passes any of the rules. <u onClick={() => { window.open('https://docs.calabara.com/gatekeeper') }}>Learn more</u></p>
       </div>
-      <RuleSelect ruleError={ruleError} setRuleError={setRuleError} appliedRules={appliedRules} setAppliedRules={setAppliedRules} />
+      <RuleSelect ruleError={ruleError} setRuleError={setRuleError} appliedRules={appliedRules} setAppliedRules={setAppliedRules} toggle_identifier={"update-installed"}/>
       <div className="manage-widgets-next-previous-ctr">
         <button className="previous-btn" onClick={handlePrevious}><i class="fas fa-long-arrow-alt-left"></i></button>
         <button className="save-btn" onClick={handleSave}>Save</button>

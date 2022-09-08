@@ -6,6 +6,7 @@ authentication.use(express.json())
 const { verifySignature } = require('../helpers/edcsa-auth.js');
 const jwt = require('jsonwebtoken');
 
+
 dotenv.config();
 
 
@@ -34,8 +35,6 @@ const generate_access_token = (address) => {
 
 authentication.post('/generate_nonce', async function (req, res, next) {
     const { address } = req.body;
-    console.log('here')
-    console.log(address)
     let nonce = randomNonce(25)
     await db.query('insert into users (address, nonce) values ($1, $2) on conflict (address) do update set nonce = $2', [address, nonce]);
 
@@ -47,14 +46,11 @@ authentication.post('/generate_nonce', async function (req, res, next) {
 authentication.post('/generate_jwt', async function (req, res, next) {
     const { sig, address } = req.body;
     const nonce_result = await db.query('select nonce from users where address = $1', [address]).then(clean)
-    console.log(nonce_result)
     const msg = `Signing one time message with nonce: ${nonce_result.nonce}`
 
     // verify the signature
     try {
-        console.log(sig, msg, address)
         let signatureResult = await verifySignature(sig, msg, address)
-        console.log(signatureResult)
         // update the nonce
 
         const new_nonce = randomNonce(25);

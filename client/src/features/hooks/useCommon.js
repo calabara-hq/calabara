@@ -7,11 +7,10 @@ import { setInstallableWidgets, setInstalledWidgets } from '../dashboard/dashboa
 import { populateOrganizations } from '../org-cards/org-cards-reducer';
 import { setIsTokenExpired } from '../wallet/wallet-reducer';
 import { showNotification } from '../notifications/notifications';
-import useWallet from './useWallet';
-
+import { useWalletContext } from '../../app/WalletContext';
 export default function useCommon() {
     const dispatch = useDispatch();
-    const { secure_sign, walletConnect } = useWallet();
+    const { secure_sign, walletConnect } = useWalletContext();
 
     const batchFetchDashboardData = async (ens, info) => {
         if (info.ens !== ens) {
@@ -52,6 +51,30 @@ export default function useCommon() {
                 case 403:
                     showNotification('error', 'error', 'this wallet is not an organization admin')
                     break;
+                case 419:
+                    showNotification('error', 'error', 'this wallet does not meet submission requirements')
+                    break;
+                case 432:
+                    showNotification('error', 'error', 'this contest is not accepting submissions at this time')
+                    break;
+                case 433:
+                    showNotification('error', 'error', 'this contest is not accepting votes at this time')
+                    break;
+                case 434:
+                    showNotification('error', 'error', 'this wallet does not meet voting requirements')
+                    break;
+                case 435:
+                    showNotification('error', 'error', 'you cannot vote on your own submission')
+                    break
+                case 436:
+                    showNotification('error', 'error', 'amount exceeds available voting power')
+                    break
+                case 437:
+                    showNotification('error', 'error', 'only select addresses are able to create contests at this time')
+                    break
+                case 438:
+                    showNotification('error', 'error', 'the contest is not over yet!')
+                    break
             }
             return null
         }

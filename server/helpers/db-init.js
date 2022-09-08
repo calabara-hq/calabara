@@ -23,7 +23,7 @@ const db_init = () => {
 
     }
 
-    if (process.env.NODE_ENV == 'development') {
+    if (process.env.NODE_ENV == 'development' || process.env.NODE_ENV == 'test') {
         console.log('development run')
 
         config = {

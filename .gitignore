@@ -4,5 +4,7 @@ node_modules/
 .env
 *.pem
 server/org-repository/*
+server/creator-contests/*
 server/img/logos/*
+server/contest-assets/staging/*
 build/

@@ -5,6 +5,7 @@ import * as WebWorker from '../../app/worker-client.js'
 import Glyphicon from '@strongdm/glyphicon'
 import calendarLogo from '../../img/calendar.svg'
 import snapshotLogo from '../../img/snapshot.svg'
+import creatorContestsLogo from '../../img/creator-contest.png'
 import wikiLogo from '../../img/wiki.svg'
 import { showNotification } from '../notifications/notifications'
 import useDiscordAuth from '../hooks/useDiscordAuth'
@@ -204,7 +205,7 @@ function InfoCard({ info, ens, discordIntegrationProps }) {
     let promptDiscord = false
     if (isConnected) {
       Object.keys(dashboardRules).map((key) => {
-        if (dashboardRules[key].gatekeeperType === 'discord') {
+        if (dashboardRules[key].type === 'discord') {
           if (!discord_id) {
             promptDiscord = true;
           }
@@ -318,6 +319,10 @@ export function WidgetCard({ gatekeeperPass, orgInfo, widget, btnState, setBtnSt
         history.push('/' + ens + '/docs')
       }
 
+      else if (name === 'creator contests') {
+        history.push('/' + ens + '/contest_settings')
+      }
+
     }
   }
 
@@ -331,6 +336,8 @@ export function WidgetCard({ gatekeeperPass, orgInfo, widget, btnState, setBtnSt
   if (name === 'snapshot') { logoImg = snapshotLogo }
   if (name === 'calendar') { logoImg = calendarLogo }
   if (name === 'wiki') { logoImg = wikiLogo }
+  if (name === 'creator contests') { logoImg = creatorContestsLogo }
+
 
 
   return (

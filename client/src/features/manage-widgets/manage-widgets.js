@@ -7,6 +7,8 @@ import '../../css/status-messages.css'
 import snapshotLogo from '../../img/snapshot.svg'
 import wikiLogo from '../../img/wiki.svg'
 import calendarLogo from '../../img/calendar.svg'
+import creatorContestLogo from '../../img/creator-contest.png'
+
 import ManageInstalledWidgetsTab from './update-installed-widgets.js'
 import CalendarConfiguration from './calendar-configuration'
 import SnapshotConfiguration from './snapshot-configuration'
@@ -153,7 +155,7 @@ function SelectNewWidget({ setProgress, setSelected, selected, setFunctionality,
 
   useEffect(() => {
 
-    if (selected.name == 'wiki') {
+    if (selected.name == 'wiki' || selected.name == 'creator contests') {
       // no additional setup. Go straight to finalize.
       setProgress(3);
     }
@@ -229,7 +231,7 @@ function ConfigureGatekeeper({ setProgress, selected, appliedRules, setAppliedRu
           <div className="tab-message neutral">
             <p>Toggle the switches to apply gatekeeper rules to this app. If multiple rules are applied, the gatekeeper will pass if the connected wallet passes 1 or more rules.</p>
           </div>
-          <RuleSelect ruleError={ruleError} setRuleError={setRuleError} appliedRules={appliedRules} setAppliedRules={setAppliedRules} />
+          <RuleSelect ruleError={ruleError} setRuleError={setRuleError} appliedRules={appliedRules} setAppliedRules={setAppliedRules} toggle_identifier={"manage-widgets"}/>
         </>
       }
 
@@ -272,7 +274,7 @@ function FinalMessage({ setProgress, selected, appliedRules, metadata, setSelect
 
   const handlePrevious = () => {
 
-    if (selected.name == 'wiki') {
+    if (selected.name == 'wiki' || selected.name == 'creator contests') {
       setSelected('')
       setProgress(0);
     }
@@ -320,6 +322,11 @@ function InstallableWidget({ el, selected, setSelected }) {
     imgSource = calendarLogo
     description = 'Integrate a google calendar'
     link = 'https://docs.calabara.com/v1/widgets/calendar-description'
+  }
+  if (el.name == 'creator contests') {
+    imgSource = creatorContestLogo
+    description = 'Run contests for community creatives'
+    link = 'https://docs.calabara.com/coming-soon/creator-contests'
   }
 
 
