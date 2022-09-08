@@ -123,7 +123,9 @@ export default function RewardSelector({ }) {
 
 
     const handleRewardsModalClose = (payload) => {
-        dispatch(rewardOptionsActions.addReward({ type: payload.type, symbol: payload.symbol, address: payload.address, selected: false, decimal: payload.decimal }))
+        if (payload.type === 'save') {
+            dispatch(rewardOptionsActions.addReward({ type: payload.data.type, symbol: payload.data.symbol, address: payload.data.address, selected: false, decimal: payload.data.decimal }))
+        }
         setEditRewardsModalOpen(false)
 
     }
@@ -134,13 +136,13 @@ export default function RewardSelector({ }) {
             <Contest_h3_alt>Select Rewards</Contest_h3_alt>
             <AvailableRewards>
                 {Object.values(rewardOptions).map((el, idx) => {
-                    
+
                     return (
                         <>
 
                             <RewardOption key={idx}>
                                 <>
-                                    {el.type != 'ETH' && <RewardOptionEditBtn onClick={() => handleEditRewardOption(el.type)}><FontAwesomeIcon icon={faPencil}></FontAwesomeIcon></RewardOptionEditBtn>}
+                                    {el.type != 'eth' && <RewardOptionEditBtn onClick={() => handleEditRewardOption(el.type)}><FontAwesomeIcon icon={faPencil}></FontAwesomeIcon></RewardOptionEditBtn>}
                                     <p><b>Type:</b> <TagType type={el.type}>{el.type}</TagType></p>
                                     {el.symbol != 'ETH' && <p><b>Symbol:</b> {el.symbol}</p>}
                                     {el.address && <EtherScanLinkButton onClick={() => { window.open('https://etherscan.io/address/' + el.address) }} className="gatekeeper-config">{el.address.substring(0, 6)}...{el.address.substring(38, 42)} <i className="fas fa-external-link-alt"></i></EtherScanLinkButton>}

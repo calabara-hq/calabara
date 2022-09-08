@@ -6,5 +6,6 @@ node_modules/
 server/org-repository/*
 server/creator-contests/*
 server/img/logos/*
-server/contest-assets/staging/*
+server/contest-assets/staging/media/*
+server/contest-assets/staging/submissions/*
 build/

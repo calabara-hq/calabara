@@ -598,7 +598,7 @@ function TokenGatekeeper({ type, fields, setFields, setGatekeeperInnerProgress }
 
 
 
-    async function handleSave(result) {        
+    async function handleSave(result) {
 
         // add the rule
         var gatekeeperCopy = JSON.parse(JSON.stringify(fields.gatekeeper.rules));
@@ -930,6 +930,7 @@ function SaveComponent({ standardProps, infoErrorController, adminErrorControlle
     const { updateDashboardInfo } = useDashboard();
     const { authenticated_post } = useCommon();
     const { validAddress } = useWalletContext();
+    console.log(validAddress)
 
 
     const errorCheckInfo = async () => {

@@ -6,12 +6,13 @@ const WalletContext = createContext({});
 
 const WalletProvider = ({ children }) => {
 
-    const { walletDisconnect, walletConnect, walletAddress, isConnected, connectBtnTxt, isMoreExpanded, setIsMoreExpanded } = useWallet();
+    const { walletDisconnect, walletConnect, walletAddress, validAddress, isConnected, connectBtnTxt, isMoreExpanded, setIsMoreExpanded } = useWallet();
 
     let walletProviderValues = {
         walletDisconnect,
         walletConnect,
         walletAddress,
+        validAddress,
         isConnected,
         connectBtnTxt,
         isMoreExpanded,

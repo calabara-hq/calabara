@@ -53,6 +53,8 @@ export default function useCommon() {
                     break;
                 case 419:
                     showNotification('error', 'error', 'this wallet does not meet submission requirements')
+                case 420:
+                    showNotification('error', 'error', 'you have already made a submission for this contest')
                     break;
                 case 432:
                     showNotification('error', 'error', 'this contest is not accepting submissions at this time')

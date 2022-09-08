@@ -9,17 +9,21 @@ const htmlToReactParser = new HtmlToReactParser();
 
 
 export const ParseBlocks = ({ data }) => {
-    
+    let elements = []
 
     if (data.blocks.length > 0) {
-        let html = edjsParser.parse(data)
-        
-        let reactElement = htmlToReactParser.parse(html[0])
-        
-        if (Array.isArray(reactElement)) {
-            reactElement = reactElement.filter(el => el != ',')
-        }
-        return reactElement
+        let htmls = edjsParser.parse(data)
+
+        htmls.map(html => {
+            let reactElement = htmlToReactParser.parse(html)
+
+            if (Array.isArray(reactElement)) {
+                reactElement = reactElement.filter(el => el != ',')
+            }
+            elements.push(reactElement)
+        })
+
+        return elements
     }
 
     return null

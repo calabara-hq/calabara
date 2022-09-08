@@ -44,30 +44,50 @@ const DrawerWrapper = styled.div`
     > * {
         margin-bottom: 30px;
     }
+
+    &::after{
+        content: '${props => props.author ? `${props.author.substring(0, 6)}...${props.author.substring(38, 42)}` : null}';
+        visibility: ${props => props.author ? 'visible' : 'hidden'};
+        position: absolute;
+        right: 0;
+        top: 0;
+        border: double 2px transparent;
+        border-radius: 10px;
+        background-image: linear-gradient(#24262e, #24262e), linear-gradient(to right, #e00f8e, #2d66dc);
+        background-origin: border-box;
+        background-clip: padding-box, border-box;
+        padding: 5px;
+        transform: translate(0%, -110%)
+    }
 `
 const SubmissionWrap = styled.div`
-    display: flex;
-    flex-direction: column;
     align-items: flex-start;
     background-color: #262626;
     border-radius: 10px;
     padding: 10px;
+    word-wrap: break-word;
+    text-align: center;
+
     > h2 {
         color: #d9d9d9;
+        text-align: left;
     }
     
     > p {
         font-size: 15px;
         color: #d3d3d3;
+        text-align: left;
+
     }
 
     > img {
         max-width: 35em;
-        //max-height: 20em;
         align-self: center;
+        justify-self: center;
         border-radius: 10px;
         margin-top: 20px;
         margin-bottom: 20px;
+        text-align: center;
     }
 
     > * {
@@ -75,15 +95,26 @@ const SubmissionWrap = styled.div`
         margin-bottom: 20px;
         margin-right: 30px;
 
+
     }
     
 `
 
-
+const AuthorSpan = styled.span`
+    position: absolute;
+    right: 0;
+    top: 0;
+    border: double 2px transparent;
+    border-radius: 40px;
+    background-image: linear-gradient(#24262e, #24262e), linear-gradient(to right, #e00f8e, #2d66dc);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+    box-shadow: 0 10px 30px rgb(0 0 0 / 30%), 0 15px 12px rgb(0 0 0 / 22%);
+    padding: 5px;
+`
 
 export default function ExpandSubmissionDrawer({ drawerOpen, handleClose, id, TLDRImage, TLDRText, expandData, author }) {
     const contest_state = useSelector(selectContestState)
-    useEffect(() => { }, [contest_state])
 
     return (
 
@@ -96,10 +127,9 @@ export default function ExpandSubmissionDrawer({ drawerOpen, handleClose, id, TL
             style={{ backgroundColor: '#1e1e1e', overflowY: 'scroll' }}
         >
             {drawerOpen &&
-                <DrawerWrapper>
-                    {contest_state === 1 && <SubmissionVotingBox sub_id={id}/>}
+                <DrawerWrapper author={author}>
+                    {contest_state === 1 && <SubmissionVotingBox sub_id={id} />}
                     <SubmissionWrap>
-                        {author && <p>{author}</p>}
                         <p>{TLDRText}</p>
                         <img src={TLDRImage}></img>
                         {expandData && <ParseBlocks data={expandData} />}

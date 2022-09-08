@@ -15,6 +15,7 @@ import { rewardOptionsActions, rewardOptionsState } from "./contest_rewards/redu
 import { voterRewardsState } from "./contest_rewards/reducers/voter-rewards-reducer";
 import { submitterRewardsState } from "./contest_rewards/reducers/submitter-rewards-reducer";
 import { useSelector } from "react-redux";
+import { fade_in } from "../common/common_styles";
 
 
 const theme = {
@@ -54,6 +55,7 @@ const ContestSettingsWrap = styled.div`
     padding: 10px;
     display: flex;
     flex-direction: column;
+    animation: ${fade_in} 0.4s ease-in-out;
     
     > *  {
         margin: 50px auto;

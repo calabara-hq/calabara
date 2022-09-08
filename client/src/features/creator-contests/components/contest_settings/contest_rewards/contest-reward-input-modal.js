@@ -39,15 +39,15 @@ const ModalHeading = styled.p`
 
 
 export default function EditRewardsModal({ modalOpen, handleClose, existingRewardData, tokenType }) {
-    
+
     const handleSave = (data) => {
-        handleClose(data)
+        handleClose({ type: 'save', data: data })
     }
     return (
         <div>
             <Modal
                 open={modalOpen}
-                onClose={() => { handleClose({ type: 'standard' }) }}
+                onClose={() => { handleClose({ type: 'standard', data: null }) }}
             >
                 <Box sx={style}>
                     <ModalWrapper>
