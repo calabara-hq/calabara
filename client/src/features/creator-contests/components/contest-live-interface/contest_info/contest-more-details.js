@@ -107,7 +107,7 @@ const OptionType = styled.p`
 // if mode = 0, order the rewards first
 // else, order x first
 
-export default function ContestMoreDetails({ mode }) {
+export default function ContestMoreDetails() {
     const contest_settings = useSelector(selectContestSettings)
 
     return (
@@ -138,7 +138,6 @@ const nth = {
 
 function ContestRewardDetails({ contest_settings }) {
 
-
     return (
         <RewardDetailWrap>
             <div>
@@ -152,9 +151,9 @@ function ContestRewardDetails({ contest_settings }) {
                 {Object.values(contest_settings.submitter_rewards).length > 0 &&
                     <RewardContainer>
                         <p><b>Here's the breakdown for this contest:</b></p>
-                        {Object.values(contest_settings.submitter_rewards).map(reward => {
+                        {Object.values(contest_settings.submitter_rewards).map((reward, idx) => {
                             return (
-                                <RewardRow>
+                                <RewardRow key={idx}>
                                     <p><b>{nth[reward.rank]} place:</b></p>
                                     {reward.eth ? <p>{reward.eth.amount} ETH</p> : null}
                                     {reward.erc20 ? <p style={{ marginLeft: '30px' }}>{reward.erc20.amount} {reward.erc20.symbol}</p> : null}
@@ -173,11 +172,11 @@ function ContestRewardDetails({ contest_settings }) {
                 {Object.values(contest_settings.voter_rewards).length > 0 &&
                     <RewardContainer>
                         <p><b>Here's the breakdown for this contest:</b></p>
-                        {Object.values(contest_settings.voter_rewards).map(reward => {
+                        {Object.values(contest_settings.voter_rewards).map((reward, idx) => {
                             return (
-                                <RewardRow>
+                                <RewardRow key={idx}>
                                     {reward.eth ? <p>Voters that accurately choose the {nth[reward.rank]} place submission will <b>split </b>{reward.eth.amount} ETH</p> : null}
-                                    {reward.erc20 ? <p>Voters that accurately choose the {nth[reward.rank]} place submission will <b>split </b>{reward.erc20.amount} {reward.erc20.amount}</p> : null}
+                                    {reward.erc20 ? <p>Voters that accurately choose the {nth[reward.rank]} place submission will <b>split </b>{reward.erc20.amount} {reward.erc20.symbol}</p> : null}
                                 </RewardRow>
                             )
                         })}

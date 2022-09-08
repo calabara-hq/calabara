@@ -14,7 +14,7 @@ export default function SubmitterRewardsBlock({ errorMatrix, setErrorMatrix, the
     const dispatch = useDispatch();
 
     useEffect(() => {
-        
+
     }, [numWinners])
 
     const handleWinnersIncrement = () => {
@@ -74,7 +74,7 @@ function RewardGridRow({ theme, idx, selectedRewards, errorMatrix, setErrorMatri
     const dispatch = useDispatch();
     const rewardOptions = useSelector(rewardOptionsState.getRewardOptions)
     const submitterRewards = useSelector(submitterRewardsState.getSubmitterRewards)
-
+    console.log(errorMatrix[idx][0])
     const updateRewards = (e) => {
 
         const { name, value } = e.target;
@@ -110,7 +110,7 @@ function RewardGridRow({ theme, idx, selectedRewards, errorMatrix, setErrorMatri
 
             <GridInputContainer>
                 <RewardsGridInput name='0' theme={theme} type="number" onChange={updateRewards} onWheel={(e) => e.target.blur()}></RewardsGridInput>
-                {errorMatrix[idx][0] && <HelpText variant="error" title="error" text={<p style={{ fontSize: '16px' }}>{errorMatrix[idx][0]}</p>} />}
+                {/*errorMatrix[idx][0] && <HelpText variant="error" title="error" text={<p style={{ fontSize: '16px' }}>{errorMatrix[idx][0]}</p>} />*/}
 
             </GridInputContainer>
 

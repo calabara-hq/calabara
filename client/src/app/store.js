@@ -1,6 +1,6 @@
-import {configureStore} from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
 import storage from 'redux-persist/lib/storage';
-import {combineReducers, createStore, applyMiddleware} from "redux";
+import { combineReducers, applyMiddleware } from "redux";
 import { persistReducer } from 'redux-persist';
 import thunk from 'redux-thunk';
 import axios from 'axios'
@@ -21,7 +21,7 @@ import submitterRewardsReducer from '../features/creator-contests/components/con
 import voterRewardsReducer from '../features/creator-contests/components/contest_settings/contest_rewards/reducers/voter-rewards-reducer';
 
 
-const reducer = combineReducers({
+const rootReducer = combineReducers({
   notifications: notificationReducer,
   organizations: organizationsReducer,
   connectivity: connectedReducer,
@@ -37,8 +37,8 @@ const reducer = combineReducers({
 });
 
 const persistConfig = {
-    key: 'root',
-    storage,
+  key: 'root',
+  storage,
   //  whitelist: ['notifications']
   whitelist: []
 };
@@ -52,10 +52,9 @@ const store = configureStore({
 });
 */
 
-const middleware=[thunk.withExtraArgument(axios)]
 
-const store = createStore(reducer, composeWithDevTools(
-  applyMiddleware(thunk.withExtraArgument(axios))
-))
+const store = configureStore({
+  reducer: rootReducer,
+})
 
 export default store;

@@ -264,7 +264,16 @@ function SaveSettings(props) {
             },
             reward_options: rewardOptions,
             submitter_rewards: submitterRewards,
-            voter_rewards: voterRewards,
+            voter_rewards: [{
+                'erc20': {
+                    type: 'erc20',
+                    symbol: 'SHARK',
+                    address: "0x232AFcE9f1b3AAE7cb408e482E847250843DB931",
+                    decimal: "18",
+                    amount: 1000
+                },
+                rank: 1,
+            }],
             submitter_restrictions: submitterAppliedRules,
             voter_restrictions: voterAppliedRules,
             voting_strategy: strategy,
@@ -281,7 +290,9 @@ function SaveSettings(props) {
             promptLabelColor: promptBuilderData.prompt_label_color
         }
 
-        
+        console.log(contest_data)
+
+
 
         if (window.confirm('are you sure you want to continue?')) {
             authenticated_post('/creator_contests/create_contest', { ens: ens, contest_settings: contest_data, prompt_data: prompt_data })

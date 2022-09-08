@@ -74,7 +74,7 @@ export default function VoterRewardsBlock({ voterRewards, setVoterRewards }) {
                 </NumberWinnersContainer>
                 <VotingRewardSelectorWrap>
                     {Array.from(Array(numVoterRewards)).map((el, idx) => {
-                        return <VotingRewardsRow rewardOptions={rewardOptions} index={idx} possible_ranks={possible_ranks} possible_rewards={possible_rewards} voterRewards={voterRewards} setVoterRewards={setVoterRewards} />
+                        {return <VotingRewardsRow selectedRewards={selectedRewards} index={idx} possible_ranks={possible_ranks} possible_rewards={possible_rewards} voterRewards={voterRewards} setVoterRewards={setVoterRewards} />}
                     })}
                 </VotingRewardSelectorWrap>
             </RewardsMainContent>}
@@ -84,24 +84,29 @@ export default function VoterRewardsBlock({ voterRewards, setVoterRewards }) {
 
 
 
-function VotingRewardsRow({ rewardOptions, possible_ranks, possible_rewards, index }) {
+function VotingRewardsRow({ selectedRewards, possible_ranks, possible_rewards, index }) {
+    console.log(selectedRewards)
     const [rank, setRank] = useState(1);
-    const [reward_type, setRewardType] = useState('eth')
+    const [reward_type, setRewardType] = useState(null)
     const [reward, setReward] = useState(0)
     const dispatch = useDispatch();
     const voterRewards = useSelector(voterRewardsState.getvoterRewards)
+
+
 
     useEffect(() => {
         dispatch(voterRewardsActions.updatevoterRewards(
             {
                 index: index,
                 value: {
-                    [reward_type]: { ...rewardOptions[reward_type], amount: Number(reward) },
+                    [reward_type]: { ...selectedRewards[reward_type], amount: Number(reward) },
                     rank: rank
                 }
             }))
 
     }, [rank, reward_type, reward])
+
+
 
 
     return (
