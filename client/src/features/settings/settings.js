@@ -486,7 +486,6 @@ function OrganizationGatekeeperComponent({ standardProps }) {
         // we only want to push values to rulesToDelete if the rule in question is an existing gk rule (from prior settings state). Otherwise we'll just pretend like we never added it.
         // use existing rules to get a rule_id. If rule_id == undefined, then we'll just splice it from the rules field.
         // if rule_id is defined, we'll add it to our ruleToDelete array
-
         var gatekeeperCopy = JSON.parse(JSON.stringify(fields.gatekeeper.rules));
 
         if (gatekeeperCopy[array_index].type === 'discord') setDoesDiscordExist(false)
@@ -596,6 +595,8 @@ function GatekeeperOptions({ setGatekeeperInnerProgress, standardProps, addGatek
 }
 
 function TokenGatekeeper({ type, fields, setFields, setGatekeeperInnerProgress }) {
+
+
 
     async function handleSave(result) {
 
@@ -929,6 +930,7 @@ function SaveComponent({ standardProps, infoErrorController, adminErrorControlle
     const { updateDashboardInfo } = useDashboard();
     const { authenticated_post } = useCommon();
     const { validAddress } = useWalletContext();
+    console.log(validAddress)
 
 
     const errorCheckInfo = async () => {

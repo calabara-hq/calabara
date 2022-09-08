@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import moment from 'moment';
 
+
 function ToggleButton({ identifier, isToggleOn, handleToggle }) {
 
     return (
@@ -84,18 +85,5 @@ function Countdown({ setBarProgress, time_0, time_1, time_2, interval }) {
     )
 }
 
-function Placeholder() {
-    return (
-        <div className="placeholder">
-            <div className="spinner">
-                <div className="rect1"></div>
-                <div className="rect2"></div>
-                <div className="rect3"></div>
-                <div className="rect4"></div>
-                <div className="rect5"></div>
-            </div>
-        </div>
-    );
-}
 
-export { ToggleButton, Countdown, Placeholder }
+export { ToggleButton, Countdown }

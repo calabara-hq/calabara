@@ -5,14 +5,13 @@ import * as WebWorker from '../../../../../app/worker-client.js'
 import moment from "moment";
 import { Label, labelColorOptions, fade_in } from "../../common/common_styles";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheckCircle, faTimesCircle, faTimes, faQuestionCircle} from "@fortawesome/free-solid-svg-icons";
+import { faCheckCircle, faTimesCircle, faTimes, faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
 import { InterfaceHeading, ContestDetails, DetailRow, DetailRowHover, CheckpointWrap, CheckpointBottomTag, CheckpointBottom, label_status, DetailBox, DetailItem, ContestDetailWrapper } from './contest-info-style'
-import { selectContestState } from "../interface/contest-interface-reducer";
+import { selectContestSettings, selectContestState } from "../interface/contest-interface-reducer";
 import Drawer from 'react-modern-drawer';
 import 'react-modern-drawer/dist/index.css';
 import styled from 'styled-components';
 import { Placeholder } from '../../common/common_components';
-import '../submissions/spinner.css';
 import ContestMoreDetails from "./contest-more-details.js";
 
 
@@ -41,14 +40,11 @@ const processSubmitterRewards = (contest_settings) => {
 }
 
 
-export default function ContestInfo({ contest_settings }) {
-    console.log(contest_settings)
+export default function ContestInfo() {
     const [drawerOpen, setDrawerOpen] = useState(false)
     const { ens } = useParams();
-    const contest_state = useSelector(selectContestState);
-
-
-
+    const contest_settings = useSelector(selectContestSettings)
+    const contest_state = useSelector(selectContestState)
 
     let start_date = moment.utc(contest_settings.date_times.start_date).local().format('M/D hh:mm A').toString()
     let end_date = moment.utc(contest_settings.date_times.end_date).local().format('M/D hh:mm A').toString()
@@ -112,7 +108,7 @@ export default function ContestInfo({ contest_settings }) {
                                 <p>More Details</p>
                             </DetailItem>
                             <DetailItem shouldHover={true}>
-                                <button onClick={handleDrawerOpen}><FontAwesomeIcon icon={faQuestionCircle}/></button>
+                                <button onClick={handleDrawerOpen}><FontAwesomeIcon icon={faQuestionCircle} /></button>
                             </DetailItem>
                         </DetailRow>
                         <DetailRow>
@@ -120,7 +116,7 @@ export default function ContestInfo({ contest_settings }) {
                                 <p>Status:</p>
                             </DetailItem>
                             <DetailItem>
-                                {contest_state !== null && <Label color={label_status[contest_state]}>{label_status[contest_state].status}</Label>}
+                                <Label color={label_status[contest_state]}>{label_status[contest_state].status}</Label>
                             </DetailItem>
                         </DetailRow>
                     </DetailBox>

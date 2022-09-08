@@ -9,7 +9,7 @@ import 'react-modern-drawer/dist/index.css'
 import { fade_in, Contest_h2_alt } from "../../common/common_styles";
 import useSubmissionEngine from "../../../../hooks/useSubmissionEngine";
 import { useWalletContext } from "../../../../../app/WalletContext";
-import { contestState, selectContestState } from "../interface/contest-interface-reducer";
+import { contestState, selectContestSettings, selectContestState, selectPromptData } from "../interface/contest-interface-reducer";
 import { useSelector } from "react-redux";
 
 
@@ -21,102 +21,31 @@ const DefaultContainerWrap = styled.div`
     border-radius: 10px;
     padding: 10px;
     position: relative;
+    align-self: flex-start;
+    max-height: 280px;
+    min-height: 280px;
+    animation: ${fade_in} 0.2s ease-in-out;
+    cursor: pointer;
 
 `
 
 const PromptContainer = styled.div`
-    display: flex;
     flex-direction: column;
-    align-items: center;
     height: 100%;
     border-radius: 4px;
-
     transition: visibility 0.2s, max-height 0.3s ease-in-out;
-
-
-    &:hover {
-        cursor: pointer;
-        
-    }
-
+    color: #d3d3d3;
 
 `
 
-const PromptContainerTop = styled.div`
-    display: flex;
-    width: 100%;
-`
-
-
-const PromptHeading = styled.div`
-    display: flex;
-    flex-direction: row;
-    align-self: flex-start;
-    align-items: center;
-
-    > h2{
-        color: #d9d9d9;
-        margin:0;
-        
-    }
-
-    & ${Label}{
-        height:fit-content;
-        margin-left: 20px;    
-    }
-
-`
-
-const PromptDataSplit = styled.div`
-    display: flex;
-    width: 100%;
-    margin-top: 15px;
-    height: 100%;
-
-`
-
-const PromptLeft = styled.div`
-    flex: 1 1 70%;
-    height: 100%;
-    overflow: hidden;
-
-`
-
-
-const PromptBody = styled.div`
-    align-self: flex-start;
-    margin-top: 10px;
-    
-
-    > p {
-        font-size: 16px;
-        color: #d3d3d3;
-        text-align: left;
-    }
-`
-
-
-
-const PromptRight = styled.div`
-    flex: 1 0 30%;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-
-`
-
-
-const PromptCoverImage = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    max-height: 100%;
-    > img {
-        align-self: center;
-        justify-self: center;
-        max-width: 12em;
-        border-radius: 10px;
-    }
+const PromptCoverImage = styled.img`
+    float: right;
+    max-width: 12em;
+    border-radius: 10px;
+    margin-left: 10px;
+    margin-bottom: 10px;
+    margin-right: 20px;
+    margin-top: 40px;
 `
 
 const DrawerWrapper = styled.div`
@@ -157,11 +86,20 @@ const PromptTop = styled.div`
     display: flex;
     align-items: center;
     justify-content: flex-start;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    color: #bfbfbf;
     
     & ${Label}{
         margin-left: 50px;
         margin-right: 5px;
     }
+
+    > h3 {
+        margin-top: 0px;
+        margin-bottom: 0px;
+    }
+
 
 `
 
@@ -203,22 +141,20 @@ const AltSubmissionButton = styled.button`
 `
 
 const CreateSubmissionButtonContainer = styled.div`
-    display: flex;
-    justify-content: center;
     position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin: 0 auto;
+    bottom: 10px;
+    right: 25px;
+
 
 `
 
 
 
-export default function PromptDisplay({ contest_settings, prompt_data }) {
+export default function PromptDisplay({ }) {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
-    const contestState = useSelector(selectContestState);
+    const contest_state = useSelector(selectContestState)
+    const prompt_data = useSelector(selectPromptData)
 
 
     const handlePromptClick = () => {
@@ -236,32 +172,24 @@ export default function PromptDisplay({ contest_settings, prompt_data }) {
 
 
     return (
-        <DefaultContainerWrap>
-            <PromptContainer onClick={handlePromptClick}>
+        <>
+            <DefaultContainerWrap onClick={handlePromptClick}>
+                <PromptContainer >
+                    <PromptCoverImage src={prompt_data.coverImage} />
+                    <PromptTop>
+                        <h3>{prompt_data.title}</h3>
+                        <Label color={labelColorOptions[prompt_data.promptLabelColor]}>{prompt_data.promptLabel}</Label>
+                    </PromptTop>
+                    <ParseBlocks data={prompt_data.editorData} />
 
-                <PromptDataSplit>
-                    <PromptLeft>
-                        <PromptHeading>
-                            <h2>{prompt_data.title}</h2>
-                            <Label color={labelColorOptions[prompt_data.promptLabelColor]}>{prompt_data.promptLabel}</Label>
-                        </PromptHeading>
-                        <PromptBody>
-                            <ParseBlocks data={prompt_data.editorData} />
-                        </PromptBody>
-                    </PromptLeft>
-                    <PromptRight>
-                        <PromptCoverImage>
-                            <img src={prompt_data.coverImage} />
-                        </PromptCoverImage>
-                        {contestState === 0 &&
-                            <CreateSubmissionButtonContainer>
-                                <AltSubmissionButton>Create Submission</AltSubmissionButton>
-                            </CreateSubmissionButtonContainer>
-                        }
-                    </PromptRight>
-                </PromptDataSplit>
+                    {contest_state === 0 &&
+                        <CreateSubmissionButtonContainer>
+                            <AltSubmissionButton>Create Submission</AltSubmissionButton>
+                        </CreateSubmissionButtonContainer>
+                    }
 
-            </PromptContainer>
+                </PromptContainer>
+            </DefaultContainerWrap>
             <Drawer
                 open={isDrawerOpen}
                 onClose={handlePromptClick}
@@ -272,24 +200,14 @@ export default function PromptDisplay({ contest_settings, prompt_data }) {
             >
                 {isDrawerOpen &&
                     <DrawerWrapper>
-                        {<ExpandedPromptSidebar contest_settings={contest_settings} prompt_data={prompt_data} isCreating={isCreating} setIsCreating={setIsCreating} toggleDrawer={handlePromptClick} />}
+                        {<ExpandedPromptSidebar isCreating={isCreating} setIsCreating={setIsCreating} toggleDrawer={handlePromptClick} />}
                     </DrawerWrapper>
                 }
             </Drawer>
-        </DefaultContainerWrap>
+        </>
     )
 }
 
-
-
-
-const ImgDrawer = styled.img` 
-    float: right;
-    max-width: 12em;
-    border-radius: 10px;
-    margin-left: 10px;
-    margin-bottom: 10px;
-`
 
 
 const SubmissionRequirements = styled.div`
@@ -311,7 +229,7 @@ const SubmissionRequirements = styled.div`
     }
 
     > p {
-        font-size: 14px;
+        font-size: 16px;
     }
 `
 
@@ -393,6 +311,7 @@ const SubButton = styled.div`
     margin-top: 2em;
     margin-right: 10px;
     margin-bottom: 10px;
+    margin-left: auto;
     grid-gap: 10px;
 `
 
@@ -419,8 +338,10 @@ const ConnectWalletButton = styled.button`
     
 `
 
-function ExpandedPromptSidebar({ contest_settings, prompt_data, isCreating, setIsCreating, toggleDrawer }) {
+function ExpandedPromptSidebar({ isCreating, setIsCreating, toggleDrawer }) {
     const { walletConnect } = useWalletContext();
+    const prompt_data = useSelector(selectPromptData)
+    const contest_settings = useSelector(selectContestSettings)
     const { isWalletConnected, alreadySubmittedError, restrictionResults, isUserEligible } = useSubmissionEngine(contest_settings.submitter_restrictions);
 
     const handleCreateSubmission = () => {
@@ -437,19 +358,19 @@ function ExpandedPromptSidebar({ contest_settings, prompt_data, isCreating, setI
             {!isCreating &&
                 <>
                     <PromptWrap>
-                    <ImgDrawer src={prompt_data.coverImage} />
+                        <PromptCoverImage src={prompt_data.coverImage} />
                         <PromptTop>
                             <h3>{prompt_data.title}</h3>
                             <Label color={labelColorOptions[prompt_data.promptLabelColor]}>{prompt_data.promptLabel}</Label>
                         </PromptTop>
-                            <ParseBlocks data={prompt_data.editorData} />
+                        <ParseBlocks data={prompt_data.editorData} />
                     </PromptWrap>
 
                     <SubmissionRequirements>
                         {Object.values(restrictionResults).length > 0 &&
                             <>
                                 <h2 style={{ marginBottom: '30px', marginTop: '20px' }}>Submission Requirements</h2>
-                                {alreadySubmittedError && <p style={{ fontSize: '18px' }}>Limit 1 submission <RestrictionStatus isConnected={isWalletConnected} status={!alreadySubmittedError} key={`${isWalletConnected}-already-submitted`} /></p>}
+                                {alreadySubmittedError && <p >Limit 1 submission <RestrictionStatus isConnected={isWalletConnected} status={!alreadySubmittedError} key={`${isWalletConnected}-already-submitted`} /></p>}
                                 {Object.values(restrictionResults).map((restriction, index) => {
                                     if (restriction.type === 'erc20' || restriction.type === 'erc721') {
                                         return (

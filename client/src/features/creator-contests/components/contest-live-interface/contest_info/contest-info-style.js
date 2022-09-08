@@ -23,11 +23,14 @@ const OrgImg = styled.img`
 const ContestDetailWrapper = styled.div`
     color: #bfbfbf;
     width: 100%;
+    animation: ${fade_in} 0.2s ease-in-out;
+
 `
 const ContestDetails = styled.div`
     display: flex;
     flex-wrap: wrap;
     margin: -10px;
+
 
     > div:nth-child(2){
         &:hover{
@@ -46,6 +49,7 @@ const DetailBox = styled.div`
     background-color: #1e1e1e;
     border-radius: 10px;
     margin: 10px;
+
 
 `
 const DetailItem = styled.div`
@@ -171,6 +175,7 @@ const CheckpointTop = styled.div`
     width: 70%;
     color: #d3d3d3;
     margin-bottom: 1em;
+    animation: ${fade_in} 0.8s ease-in-out;
 
     .RSPBprogressBar > .RSPBstep:nth-child(1)::after {
       text-align: center;

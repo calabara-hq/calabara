@@ -29,7 +29,7 @@ const DateTimePickers = styled.div`
 
 export default function ContestDateTimeBlock(props) {
     return (
-        <TimeBlockWrapper title='Contest Deadline'>
+        <TimeBlockWrapper title='Contest Deadlines'>
             <DateTimePickers style={{ alignSelf: 'center' }}>
                 <DateTimeSelector id="0" label={'start date'} date={props.date_0} setDate={props.setDate_0} />
                 <DateTimeSelector id="1" label={'submission period end / voting period begin'} date={props.date_1} setDate={props.setDate_1} minDate={props.date_1} />
