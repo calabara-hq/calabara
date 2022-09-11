@@ -256,7 +256,7 @@ function ToggleSwitch({ addRule, setRuleError, deleteRule, ruleError, option_id,
     return (
         <div>
             <input checked={isGatekeeperOn} onChange={handleToggle} className="react-switch-checkbox" id={`react-switch-toggle-${toggle_identifier}-${option_id}`} type="checkbox" />
-            <label style={{ background: isGatekeeperOn && '#06D6A0' }} className="react-switch-label" htmlFor={`react-switch-toggle-${toggle_identifier}-${option_id}`}>
+            <label style={{ background: isGatekeeperOn && '#539bf5' }} className="react-switch-label" htmlFor={`react-switch-toggle-${toggle_identifier}-${option_id}`}>
                 <span className={`react-switch-button`} />
             </label>
         </div>

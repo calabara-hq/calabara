@@ -4,7 +4,7 @@ import RewardSelector from "./choose-rewards";
 import { Contest_h2, Contest_h2_alt, Contest_h3, fade_in } from '../../common/common_styles'
 import SubmitterRewardsBlock from "./submitter-rewards/submitter-rewards";
 import VoterRewardsBlock from "./voter-rewards/voter-rewards";
-import { rewardOptionsState } from "./reducers/reward-options-reducer";
+import { rewardOptionState } from "./reducers/rewards-reducer";
 import { useSelector } from "react-redux";
 
 const Rewards = styled.div`
@@ -16,11 +16,6 @@ const Rewards = styled.div`
         transform: translate(0%, -150%);
         color: #f2f2f2;
         font-size: 30px;
-    }
-
-    > * {
-        //margin: 10px 0;
-        //margin-bottom: 30px;
     }
 
 `
@@ -48,31 +43,8 @@ const ParticipantRewardsWrap = styled.div`
 
 
 
-export default function ContestRewardsBlock({ theme, voterRewards, setVoterRewards, errorMatrix, setErrorMatrix }) {
-    const selectedRewards = useSelector(rewardOptionsState.getSelectedRewards)
-
-    /*
-    const handleErrors = () => {
-        let err_matrix_copy = JSON.parse(JSON.stringify(errorMatrix))
-        let submitter_rewards_arr = Object.values(submitterRewards)
-        let voter_rewards_arr = Object.entries(voterRewards)
-
-        // check for non whole number nft allocations
-        submitter_rewards_arr.map((row, index) => {
-            if (row.erc721 % 1 > 0) {
-                err_matrix_copy[index][3] = 'must be a whole number'
-                setErrorMatrix(err_matrix_copy)
-            }
-        })
-
-        voter_rewards_arr.map(([key, val], index) => {
-            if (val.reward == 0) {
-                voter_rewards_arr.splice(key, 1)
-            }
-        })
-        setVoterRewards({ type: 'update_all', payload: Object.fromEntries(voter_rewards_arr) })
-    }
-    */
+export default function ContestRewardsBlock({ theme, voterRewards, setVoterRewards, SubmitterRewardsRef, VoterRewardsRef }) {
+    const selectedRewards = useSelector(rewardOptionState.getSelectedRewards)
 
 
     const isVoterBlockVisible = () => {
@@ -90,8 +62,8 @@ export default function ContestRewardsBlock({ theme, voterRewards, setVoterRewar
 
             {Object.keys(selectedRewards).length > 0 &&
                 <ParticipantRewardsWrap>
-                    <SubmitterRewardsBlock errorMatrix={errorMatrix} setErrorMatrix={setErrorMatrix} theme={theme} />
-                    {isVoterBlockVisible() && <VoterRewardsBlock voterRewards={voterRewards} setVoterRewards={setVoterRewards} />}
+                    <SubmitterRewardsBlock theme={theme} SubmitterRewardsRef={SubmitterRewardsRef} />
+                    {isVoterBlockVisible() && <VoterRewardsBlock theme={theme} VoterRewardsRef={VoterRewardsRef} />}
                 </ParticipantRewardsWrap>
             }
             {/*<button onClick={handleErrors}>submit</button>*/}

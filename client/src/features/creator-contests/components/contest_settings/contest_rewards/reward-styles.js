@@ -1,17 +1,17 @@
 import styled from 'styled-components'
 import { fade_in } from '../../common/common_styles'
 
-const RewardTypeWrap = styled.div`
+export const RewardTypeWrap = styled.div`
     display: flex;
     flex-direction: column;
 `
-const NumberWinnersContainer = styled.div`
+export const NumberWinnersContainer = styled.div`
     display: flex;
     align-items: center;
     width: 90%;
     margin: 0 auto;
 `
-const RewardsMainContent = styled.div`
+export const RewardsMainContent = styled.div`
     background-color: #262626;
     margin: 20px 0;
     border-radius: 10px;
@@ -25,9 +25,24 @@ const RewardsMainContent = styled.div`
 
 `
 
+export const DeleteRewardButton = styled.button`
+    background-color: transparent;
+    border: none;
+    border-radius: 10px;
+    color: #4d4d4d;
+    padding: 5px 10px;
+    &:hover{
+        background-color: rgba(244, 33, 46, 0.1);
+        color: rgb(244, 33, 46);
+    }
 
-export {
-    RewardTypeWrap,
-    NumberWinnersContainer,
-    RewardsMainContent
-}
+`
+
+export const AddRewardButton = styled.button`
+    width: fit-content;
+    padding: 2px 20px;
+    border-radius: 10px;
+    border: none;
+    background-color: #539bf5;
+    color: black;
+`

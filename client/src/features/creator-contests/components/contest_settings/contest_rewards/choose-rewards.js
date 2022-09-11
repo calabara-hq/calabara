@@ -7,9 +7,8 @@ import ethLogo from '../../../../../img/eth.png'
 import EditRewardsModal from './contest-reward-input-modal';
 import { Contest_h3_alt, ERC20Button_alt, TagType } from '../../common/common_styles';
 import { ERC20Button, ERC721Button_alt } from '../../common/common_styles';
-import { rewardOptionsActions, rewardOptionsState } from './reducers/reward-options-reducer';
+import { rewardOptionActions, rewardOptionState } from './reducers/rewards-reducer';
 import { useDispatch, useSelector } from 'react-redux';
-import { submitterRewardActions } from './reducers/submitter-rewards-reducer';
 
 const Wrap = styled.div`
     display: flex;
@@ -107,12 +106,11 @@ const EtherScanLinkButton = styled.button`
 `
 
 export default function RewardSelector({ }) {
-    // need to raise this higher in the tree later on. just for testing now
     const [tokenType, setTokenType] = useState(null);
     const [editRewardsModalOpen, setEditRewardsModalOpen] = useState(false);
+    const rewardOptions = useSelector(rewardOptionState.getRewardOptions)
+    const selectedRewards = useSelector(rewardOptionState.getSelectedRewards)
     const dispatch = useDispatch();
-    const rewardOptions = useSelector(rewardOptionsState.getRewardOptions)
-    const selectedRewards = useSelector(rewardOptionsState.getSelectedRewards)
 
 
     const handleEditRewardOption = (tokenType) => {
@@ -123,12 +121,12 @@ export default function RewardSelector({ }) {
 
 
     const handleRewardsModalClose = (payload) => {
-        if (payload.type === 'save') {
-            dispatch(rewardOptionsActions.addReward({ type: payload.data.type, symbol: payload.data.symbol, address: payload.data.address, selected: false, decimal: payload.data.decimal }))
-        }
+        if (payload.type === 'save') dispatch(rewardOptionActions.addReward({ type: payload.data.type, symbol: payload.data.symbol, address: payload.data.address, selected: false, decimal: payload.data.decimal }))
         setEditRewardsModalOpen(false)
 
     }
+
+
 
 
     return (
@@ -168,30 +166,17 @@ function ToggleSwitch({ selectedRewards, id, value }) {
     const [isRewardSelected, setIsRewardSelected] = useState(false)
     const dispatch = useDispatch();
 
-    // clear submitter rewards if selected rewards gets flipped off
-    useEffect(() => {
-        if (Object.values(selectedRewards).length === 0) {
-            dispatch(submitterRewardActions.clearRewardOptions())
-        }
-    }, [selectedRewards])
-
 
     const handleToggle = () => {
-        // if this is the first reward toggled, push {} to the initial rewards state
-        if (!isRewardSelected && Object.values(selectedRewards.length === 0)) {
-            dispatch(submitterRewardActions.incrementWinners())
-        }
         setIsRewardSelected(!isRewardSelected)
-        dispatch(rewardOptionsActions.toggleSelectedReward({ type: value.type }))
+        dispatch(rewardOptionActions.toggleSelectReward({ type: value.type }))
     }
-
-
 
 
     return (
         <div className="gatekeeper-toggle">
             <input checked={isRewardSelected} onChange={handleToggle} className="react-switch-checkbox" id={`react-switch-toggle${id}`} type="checkbox" />
-            <label style={{ background: isRewardSelected && '#06D6A0' }} className="react-switch-label" htmlFor={`react-switch-toggle${id}`}>
+            <label style={{ background: isRewardSelected && '#539bf5' }} className="react-switch-label" htmlFor={`react-switch-toggle${id}`}>
                 <span className={`react-switch-button`} />
             </label>
         </div>

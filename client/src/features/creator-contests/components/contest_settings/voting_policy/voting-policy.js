@@ -5,7 +5,7 @@ import AddPolicyModal from './add-policy-modal';
 import '../../../../../css/status-messages.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTicket, faWallet } from '@fortawesome/free-solid-svg-icons';
-import { rewardOptionsState } from '../contest_rewards/reducers/reward-options-reducer';
+import { rewardOptionState } from '../contest_rewards/reducers/rewards-reducer';
 import { useSelector } from 'react-redux';
 
 const VotingPolicyWrap = styled.div`
@@ -38,7 +38,7 @@ const CreditStrategyWrap = styled.div`
 export default function VotingPolicy({ votingStrategy, setVotingStrategy }) {
     const [addPolicyModalOpen, setAddPolicyModalOpen] = useState(false);
     const [selectedStrategy, setSelectedStratgey] = useState(null);
-    const rewardOptions = useSelector(rewardOptionsState.getRewardOptions)
+    const rewardOptions = useSelector(rewardOptionState.getRewardOptions)
 
     const handlePolicyModalOpen = (strategy_name) => {
         setSelectedStratgey(strategy_name)

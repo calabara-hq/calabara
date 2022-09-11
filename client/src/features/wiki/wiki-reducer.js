@@ -4,26 +4,6 @@ export const wiki_data = createSlice({
   name: 'wiki_data',
   initialState: {
     wikiList: {
-      /*
-      ens: ens,
-      groupings: {}
-      public: {
-        gk_rules: {},
-        list: [{id: "85", name: 'test', prefix: 'public'}]
-      },
-      erc20pass: {
-        gk_rules: {
-          632: 70,
-        },
-        list: [{id: "88", name: "test666", prefix: 'erc20pass'}]
-      },
-      erc721pass: {
-        gk_rules: {
-          630: 90,
-        },
-        list: [{id: "87", name: "untitled", prefix: 'erc721pass'}]
-      },
-      */
     },
     organization: {
 

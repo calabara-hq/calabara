@@ -1,6 +1,6 @@
 import React, { useEffect, useReducer, useRef, useState } from "react"
 import ContestDateTimeBlock from "./datepicker/start-end-date"
-import ContestRewardsBlock from "./contest_rewards/contest-rewards"
+import ContestRewardsBlock from "./contest_rewards/contest-rewards-block"
 import ContestParticipantRestrictions from "./contest_gatekeeper/particpant_restrictions";
 import PromptBuilder from "./prompt_builder/prompt-builder-2";
 import { RainbowThemeContainer } from 'react-rainbow-components';
@@ -11,11 +11,14 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import useDashboardRules from "../../../hooks/useDashboardRules";
 import useCommon from "../../../hooks/useCommon";
-import { rewardOptionsActions, rewardOptionsState } from "./contest_rewards/reducers/reward-options-reducer";
-import { voterRewardsState } from "./contest_rewards/reducers/voter-rewards-reducer";
-import { submitterRewardsState } from "./contest_rewards/reducers/submitter-rewards-reducer";
+import { rewardOptionState, voterRewardState, submitterRewardState } from "./contest_rewards/reducers/rewards-reducer";
 import { useSelector } from "react-redux";
 import { fade_in } from "../common/common_styles";
+
+// error handling
+import useErrorHandler from "./handle-errors";
+
+
 
 
 const theme = {
@@ -101,7 +104,6 @@ export default function ContestSettings() {
     const [date_0, setDate_0] = useState(new Date())
     const [date_1, setDate_1] = useState(new Date())
     const [date_2, setDate_2] = useState(new Date())
-    const [errorMatrix, setErrorMatrix] = useState([[null, null, null, null]]);
     const [votingStrategy, setVotingStrategy] = useReducer(reducer, { strategy_id: 0x0 });
     const [submitterAppliedRules, setSubmitterAppliedRules] = useReducer(reducer, {});
     const [voterAppliedRules, setVoterAppliedRules] = useReducer(reducer, {});
@@ -114,7 +116,17 @@ export default function ContestSettings() {
     const [promptBuilderData, setPromptBuilderData] = useReducer(reducer, initialPromptData)
     const [simpleInputData, setSimpleInputData] = useReducer(reducer, { anonSubmissions: false, visibleVotes: false, selfVoting: false })
 
+
+
+    const TimeBlockRef = useRef(null);
+    const SubmitterRewardsRef = useRef(null);
+    const VoterRewardsRef = useRef(null);
+    const RestrictionsBlockRef = useRef(null)
+    const StrategyBlockRef = useRef(null)
+    const PromptBlockRef = useRef(null)
     const promptEditorCore = useRef(null);
+
+
 
 
 
@@ -123,26 +135,6 @@ export default function ContestSettings() {
     }, [])
 
 
-    /*
-
-        participant restriction error handling
-    
-        const handleNext = () => {
-            // check if selected gatekeepers have a threshold value set
-            for (const [key, value] of Object.entries(appliedRules)) {
-              if (value == '') {
-                setRuleError({ id: key })
-                return;
-              }
-            }
-            setProgress(3)
-        
-          }
-    
-          */
-
-
-    // don't run time difference checks on initial render
     const firstUpdate = useRef(true)
 
 
@@ -172,9 +164,9 @@ export default function ContestSettings() {
                     setDate_2={setDate_2}
                 />
                 <ContestRewardsBlock
-                    errorMatrix={errorMatrix}
-                    setErrorMatrix={setErrorMatrix}
                     theme={theme.rainbow}
+                    SubmitterRewardsRef={SubmitterRewardsRef}
+                    VoterRewardsRef={VoterRewardsRef}
                 />
 
 
@@ -202,6 +194,8 @@ export default function ContestSettings() {
                     voterAppliedRules={voterAppliedRules}
                     simpleInputData={simpleInputData}
                     promptBuilderData={promptBuilderData}
+                    SubmitterRewardsRef={SubmitterRewardsRef}
+                    VoterRewardsRef={VoterRewardsRef}
 
                 />
             </ContestSettingsWrap >
@@ -212,10 +206,11 @@ export default function ContestSettings() {
 
 
 function SaveSettings(props) {
-    const rewardOptions = useSelector(rewardOptionsState.getRewardOptions)
-    const submitterRewards = useSelector(submitterRewardsState.getSubmitterRewards)
-    const voterRewards = useSelector(voterRewardsState.getvoterRewards)
+    const rewardOptions = useSelector(rewardOptionState.getRewardOptions)
+    const submitterRewards = useSelector(submitterRewardState.getSubmitterRewards)
+    const voterRewards = useSelector(voterRewardState.getVoterRewards)
     const { authenticated_post } = useCommon();
+    const { handleErrors, isSubmitterError } = useErrorHandler();
     const { ens } = useParams();
 
     const {
@@ -227,11 +222,19 @@ function SaveSettings(props) {
         submitterAppliedRules,
         voterAppliedRules,
         simpleInputData,
-        promptBuilderData
+        promptBuilderData,
+        SubmitterRewardsRef,
+        VoterRewardsRef
     } = props
 
 
     const handleSave = async () => {
+
+        let [isSubmitterError, isVoterError] = handleErrors();
+        if (isSubmitterError) return SubmitterRewardsRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        if (isVoterError) return VoterRewardsRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+
+        /*
         let strategy
         if (votingStrategy.strategy_type === 'arcade') {
             strategy = {
@@ -297,7 +300,7 @@ function SaveSettings(props) {
         if (window.confirm('are you sure you want to continue?')) {
             authenticated_post('/creator_contests/create_contest', { ens: ens, contest_settings: contest_data, prompt_data: prompt_data })
         }
-
+        */
     }
 
     return (
