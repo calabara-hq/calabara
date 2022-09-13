@@ -179,12 +179,6 @@ export default function PromptDisplay({ }) {
                     </PromptTop>
                     <ParseBlocks data={prompt_data.editorData} />
 
-                    {contest_state === 0 &&
-                        <CreateSubmissionButtonContainer>
-                            <AltSubmissionButton>Create Submission</AltSubmissionButton>
-                        </CreateSubmissionButtonContainer>
-                    }
-
                 </PromptContainer>
                 <ContestPromptDrawer isDrawerOpen={isDrawerOpen} handleDrawerClose={handleDrawerClose} isCreating={isCreating} setIsCreating={setIsCreating} />
             </DefaultContainerWrap>
@@ -369,32 +363,31 @@ function ExpandedPromptSidebar({ isCreating, setIsCreating, toggleDrawer }) {
                     </PromptWrap>
 
                     <SubmissionRequirements>
-                        {Object.values(restrictionResults).length > 0 &&
-                            <>
-                                <h2 style={{ marginBottom: '30px', marginTop: '20px' }}>Submission Requirements</h2>
-                                {alreadySubmittedError && <p >Limit 1 submission <RestrictionStatus isConnected={isWalletConnected} status={!alreadySubmittedError} key={`${isWalletConnected}-already-submitted`} /></p>}
-                                {Object.values(restrictionResults).map((restriction, index) => {
-                                    if (restriction.type === 'erc20' || restriction.type === 'erc721') {
-                                        return (
-                                            <>
-                                                <p>
-                                                    {restriction.threshold} {restriction.symbol}
-                                                    {isWalletConnected && <RestrictionStatus index={index + 1} isConnected={isWalletConnected} status={restriction.user_result} key={`${isWalletConnected}-${restriction.user_result}`} />}
-                                                    {!isWalletConnected && <RestrictionStatusNotConnected />}
-                                                </p>
-                                                {index !== Object.entries(restrictionResults).length - 1 && <p>or</p>}
-                                            </>
-                                        )
-                                    }
-                                })}
+                        <>
+                            <h2 style={{ marginBottom: '30px', marginTop: '20px' }}>Submission Requirements</h2>
+                            <p >Limit 1 submission <RestrictionStatus isConnected={isWalletConnected} status={!alreadySubmittedError} key={`${isWalletConnected}-already-submitted`} /></p>
+                            {Object.values(restrictionResults).map((restriction, index) => {
+                                if (restriction.type === 'erc20' || restriction.type === 'erc721') {
+                                    return (
+                                        <>
+                                            <p>
+                                                {restriction.threshold} {restriction.symbol}
+                                                {isWalletConnected && <RestrictionStatus index={index + 1} isConnected={isWalletConnected} status={restriction.user_result} key={`${isWalletConnected}-${restriction.user_result}`} />}
+                                                {!isWalletConnected && <RestrictionStatusNotConnected />}
+                                            </p>
+                                            {index !== Object.entries(restrictionResults).length - 1 && <p>or</p>}
+                                        </>
+                                    )
+                                }
+                            })}
 
 
-                                <SubButton>
-                                    {!isWalletConnected && <ConnectWalletButton onClick={walletConnect}>Connect Wallet</ConnectWalletButton>}
-                                    <AltSubmissionButton disabled={!isUserEligible} onClick={handleCreateSubmission}>Create Submission</AltSubmissionButton>
-                                </SubButton>
-                            </>
-                        }
+                            <SubButton>
+                                {!isWalletConnected && <ConnectWalletButton onClick={walletConnect}>Connect Wallet</ConnectWalletButton>}
+                                <AltSubmissionButton disabled={!isUserEligible} onClick={handleCreateSubmission}>Create Submission</AltSubmissionButton>
+                            </SubButton>
+                        </>
+
                     </SubmissionRequirements>
                 </>
             }

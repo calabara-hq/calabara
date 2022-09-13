@@ -50,48 +50,6 @@ const uniqueRankStyles =
 
 
 
-/*
-const SubmissionPreviewContainer = styled.div`
-    display: flex;
-    position: relative;
-    flex: 1 1 30%;
-    flex-direction: column;
-    //justify-content: center;
-    font-size: 16px;
-    color: #d3d3d3;
-    background-color: #262626;
-    border: 2px solid #4d4d4d;
-    border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
-    padding: 20px;
-    transition: width 0.6s ease-in-out;
-    height: 24em;
-    margin: 10px;
-    max-width: 30%;
-    cursor: pointer;
-    ${props => (props.contest_rank && props.contest_rank < 2) ? css`${uniqueRankStyles[props.contest_rank - 1]}` : ''}
-
-    &::before{
-        display: inline-block;
-        content: '${props => props.contest_rank === 1 ? "\f521" : ""}';
-        color: #DAA520;
-        position: absolute;
-        font-family: 'Font Awesome 5 Free';
-        font-weight: 900;
-        font-size: 30px;
-        top: 0;
-        right: 0;
-        transform: translate(50%, -50%);
-    }
-
-    &:hover {
-        transform: scale(1.01);
-        transition-duration: 0.5s;
-        background-color: #1e1e1e;
-    }
-`
-*/
-
 const SubmissionPreviewContainer = styled.div`
     margin: 10px;
     display: flex;
@@ -123,7 +81,6 @@ const SubmissionPreviewContainer = styled.div`
     }
     &:hover {
         transform: scale(1.01);
-        transition-duration: 0.5s;
         background-color: #1e1e1e;
     }
 `
@@ -170,19 +127,7 @@ export default function SubmissionDisplay({ }) {
             console.log('we are here')
             fetch(`/creator_contests/fetch_contest_winners/?ens=${ens}&contest_hash=${contest_hash}`)
                 .then(res => res.json())
-                .then(data => {
-                    let arr = data
-                    arr.push(data[0])
-                    arr.push(data[0])
-                    arr.push(data[0])
-                    arr.push(data[0])
-                    arr.push(data[0])
-                    arr.push(data[0])
-                    arr.push(data[0])
-                    arr.push(data[0])
-                    arr.push(data[0])
-                    set_subs(arr)
-                })
+                .then(data => set_subs(data))
         }
 
     }, [])
@@ -288,7 +233,7 @@ function MapSubmissions({ subs }) {
     const [idToExpand, setIdToExpand] = useState(null);
     const [expandData, setExpandData] = useState(null);
     const [author, setAuthor] = useState(null);
-    const [votes, setVotes] = useState(null)
+    const [votes, setVotes] = useState(null);
 
 
 
@@ -312,6 +257,7 @@ function MapSubmissions({ subs }) {
         setAuthor(author);
         setDrawerOpen(true);
         document.body.style.overflow = 'hidden';
+
     }
 
 

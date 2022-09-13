@@ -8,7 +8,6 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import BackButton from "../../../back-button/back-button";
 import { Label, labelColorOptions, Contest_h2_alt, Contest_h3_alt, TagType, fade_in } from "../common/common_styles";
 import { label_status } from "../contest-live-interface/contest_info/contest-info-style";
-import CreatorContestLogo from "../../../../img/cc.png"
 import CC_Logo from "../../../../img/contest-mockup.png"
 import moment from "moment";
 import useCommon from "../../../hooks/useCommon";
@@ -16,7 +15,9 @@ import { selectDashboardInfo } from "../../../dashboard/dashboard-info-reducer";
 import { selectLogoCache } from "../../../org-cards/org-cards-reducer";
 import * as WebWorker from '../../../../app/worker-client.js'
 import fetchHomepageData from "./homepage-data-fetch";
-const homepage_data = fetchHomepageData();
+import { faDiscord } from "@fortawesome/free-brands-svg-icons";
+let compact_formatter = Intl.NumberFormat('en', { notation: 'compact' })
+
 
 const ContestTag = styled.p`
     color: #d9d9d9;
@@ -220,13 +221,23 @@ const StatContainer = styled.div`
 const Stats = styled.div`
     display: flex;
     flex-direction: column;
+    margin: -10px;
+    width: 200px;
 
 `
 
-const OptionType = styled.p`
+const OptionType = styled.div`
+    display: flex;
     color: lightgrey;
-    margin: 10px 30px;
-    align-self: flex-start;
+    margin: 10px;
+    align-items: center;
+
+
+    > p {
+        margin: 0;
+        margin-left: auto;
+        font-weight: bold;
+    }
 
     & > span{
         padding: 3px 3px;
@@ -248,6 +259,7 @@ export default function ContestHomepage({ }) {
     const info = useSelector(selectDashboardInfo)
     const logoCache = useSelector(selectLogoCache);
     const dispatch = useDispatch()
+    const homepage_data = fetchHomepageData(ens);
 
 
 
@@ -280,6 +292,40 @@ export default function ContestHomepage({ }) {
     }
 
 
+    if (ens === 'sharkdao.eth') {
+        return (
+            <>
+                <BackButton customWidth={'68%'} link={'/' + ens + '/dashboard'} text={"dashboard"} />
+                <ContestHomeWrap>
+                    <ContestHomeSplit>
+                        <HomeLeft>
+                            <OrgImg data-src={info.logo}></OrgImg>
+                            <Contest_h2_alt>{info.name}</Contest_h2_alt>
+                            <a href={'//' + info.website} target="_blank">{info.website}</a>
+                        </HomeLeft>
+                        <HomeRight>
+                            <img src={CC_Logo} />
+                        </HomeRight>
+                    </ContestHomeSplit>
+                    <SplitBottom>
+                        <Suspense fallback={<RoundContainer style={{ height: '500px' }} />}>
+                            <ListContests homepage_data={homepage_data} />
+                        </Suspense>
+
+                        <SplitBottomRight>
+                            <NewContest onClick={handleSettings}><FontAwesomeIcon icon={faPlus} /> New Contest </NewContest>
+                            <Suspense fallback={<StatContainer style={{ height: '230px' }} />}>
+                                <ListStats homepage_data={homepage_data} />
+                            </Suspense>
+                        </SplitBottomRight>
+
+                    </SplitBottom>
+                </ContestHomeWrap>
+            </>
+        )
+    }
+
+    // else
     return (
         <>
             <BackButton customWidth={'68%'} link={'/' + ens + '/dashboard'} text={"dashboard"} />
@@ -291,31 +337,18 @@ export default function ContestHomepage({ }) {
                         <a href={'//' + info.website} target="_blank">{info.website}</a>
                     </HomeLeft>
                     <HomeRight>
-                        <img src={CC_Logo} />
+                        <h3>Interested in creator contests? Hit us up in our Discord.</h3>
+                        <a href="https://discord.gg/dBBzHe9k3E" target={"_blank"} style={{ textAlign: 'center', fontSize: '35px' }}><FontAwesomeIcon icon={faDiscord}></FontAwesomeIcon></a>
                     </HomeRight>
                 </ContestHomeSplit>
-                <SplitBottom>
-                    <Suspense fallback={<RoundContainer style={{ height: '500px' }} />}>
-                        <ListContests />
-                    </Suspense>
-
-                    <SplitBottomRight>
-                        <NewContest onClick={handleSettings}><FontAwesomeIcon icon={faPlus} /> New Contest </NewContest>
-                        <Suspense fallback={<StatContainer style={{ height: '230px' }} />}>
-                            <ListStats />
-                        </Suspense>
-                    </SplitBottomRight>
-
-                </SplitBottom>
             </ContestHomeWrap>
         </>
     )
 }
 
-function ListContests() {
+function ListContests({ homepage_data }) {
     const history = useHistory();
     const all_contests = homepage_data.contests.read();
-
 
     const handleInterface = (_hash) => {
         history.push(`creator_contests/${_hash}`)
@@ -337,16 +370,16 @@ function ListContests() {
     )
 }
 
-function ListStats() {
+function ListStats({ homepage_data }) {
     const total_rewards = homepage_data.stats.read();
+    console.log(total_rewards)
     return (
         <StatContainer>
-
-            <Contest_h3_alt>Total Rewards Distributed</Contest_h3_alt>
+            <Contest_h3_alt style={{textAlign: 'center'}}>Total Rewards Distributed</Contest_h3_alt>
             <Stats>
-                <OptionType><TagType>ETH:</TagType> {total_rewards.eth ? total_rewards.eth : '--'}</OptionType>
-                <OptionType><TagType type='erc20'>ERC-20:</TagType> {total_rewards.erc20 ? total_rewards.erc20.symbol : '--'}</OptionType>
-                <OptionType><TagType type='erc721'>ERC-721:</TagType>  {total_rewards.erc721 ? total_rewards.erc721.symbol : '--'}</OptionType>
+                <OptionType><TagType>ETH</TagType> <p>{total_rewards.eth ? compact_formatter.format(total_rewards.eth) : '--'}</p></OptionType>
+                <OptionType><TagType type='erc20'>ERC-20</TagType> <p>{total_rewards.erc20 ? compact_formatter.format(total_rewards.erc20) : '--'}</p></OptionType>
+                <OptionType><TagType type='erc721'>ERC-721</TagType><p>{total_rewards.erc721 ? compact_formatter.format(total_rewards.erc721) : '--'}</p></OptionType>
             </Stats>
         </StatContainer>
     )

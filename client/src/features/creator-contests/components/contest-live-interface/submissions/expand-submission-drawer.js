@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import styled from 'styled-components'
 import { ParseBlocks, parse_base_js } from "../block-parser";
 import { SubmissionVotingBox } from "../vote/voting-components";
@@ -41,7 +41,7 @@ const DrawerWrapper = styled.div`
     margin-top: 50px;
     height: 100%;
     color: #d3d3d3;
-    animation: ${fade_in} 0.5s ease-in-out;
+    animation: ${fade_in} 0.4s ease-in-out;
 
     > * {
         margin-bottom: 30px;
@@ -89,8 +89,6 @@ const SubmissionWrap = styled.div`
     
 `
 
-
-
 const AuthorSpan = styled.span`
     position: absolute;
     right: 0;
@@ -103,13 +101,14 @@ const AuthorSpan = styled.span`
     box-shadow: 0 10px 30px rgb(0 0 0 / 30%), 0 15px 12px rgb(0 0 0 / 22%);
     padding: 5px;
 `
+
+
+
+
 export default function ExpandSubmissionDrawer({ drawerOpen, handleClose, id, TLDRImage, TLDRText, expandData, author, votes }) {
     const contest_state = useSelector(selectContestState)
-    const [first_render, set_first_render] = useState(true);
+    const [loaded, setLoaded] = useState(false);
 
-    useEffect(() => {
-        set_first_render(false);
-    }, [])
 
     return (
 
@@ -119,10 +118,10 @@ export default function ExpandSubmissionDrawer({ drawerOpen, handleClose, id, TL
             direction='right'
             className='expand_sub'
             size='60vw'
+
             style={{ backgroundColor: '#1e1e1e', overflowY: 'scroll' }}
         >
-            {first_render && <div>loading</div>}
-            {!first_render &&
+            {drawerOpen &&
                 <DrawerWrapper>
                     {contest_state === 1 && <SubmissionVotingBox sub_id={id} />}
                     <SubmissionWrap>
@@ -135,8 +134,10 @@ export default function ExpandSubmissionDrawer({ drawerOpen, handleClose, id, TL
                             }
                         </>
                         <p>{TLDRText}</p>
-                        {/*<LazyLoadImage style={{ maxWidth: '35em', margin: '0 auto', borderRadius: '10px' }} src={TLDRImage} effect="blur"/>*/}
-                        <LazyLoadImage src={TLDRImage} effect="blur" style={{maxWidth: '35em', borderRadius: '10px'}}/>
+
+                        <LazyLoadImage src={TLDRImage} style={{ maxWidth: '35em', borderRadius: '10px' }} effect="opacity" />
+                        {/*<img src={TLDRImage}></img>*/}
+
                         {expandData && <ParseBlocks data={expandData} />}
                     </SubmissionWrap>
                 </DrawerWrapper>

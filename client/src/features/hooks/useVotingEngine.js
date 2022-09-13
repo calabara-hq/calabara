@@ -17,11 +17,6 @@ const calculateVotingPower = async (ens, sub_id, walletAddress, contest_hash) =>
 }
 
 
-const retract = async (sub_id, walletAddress) => {
-    await axios.post('/creator_contests/retract_sub_votes/', { sub_id: sub_id, walletAddress: walletAddress })
-    return
-}
-
 
 export default function useVotingEngine(sub_id) {
     const [remaining_vp, set_remaining_vp] = useState(0);
@@ -32,7 +27,7 @@ export default function useVotingEngine(sub_id) {
     const isConnected = useSelector(selectConnectedBool);
     const [is_self_voting_error, set_is_self_voting_error] = useState(true);
     const { authenticated_post } = useCommon();
-
+    console.log(sub_id)
     const { ens, contest_hash } = useParams();
 
     useEffect(() => {

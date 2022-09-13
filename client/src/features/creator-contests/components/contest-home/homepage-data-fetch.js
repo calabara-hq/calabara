@@ -14,8 +14,8 @@ const fetchStats = (ens) => {
 }
 
 
-const fetchHomePageData = () => {
-    let ens = window.location.pathname.split('/')[1]
+const fetchHomePageData = (ens) => {
+  //  let ens = window.location.pathname.split('/')[1]
     return {
         contests: fetchContests(ens),
         stats: fetchStats(ens)
