@@ -14,10 +14,13 @@ const initialState = {
     loading: true
 }
 
+
+
 describe('contest details render test', () => {
-    renderWithProviders(<ContestMoreDetails />, { preloadedState: { contestState: initialState } })
     it('should render contest details', () => {
+        renderWithProviders(<ContestMoreDetails />, { preloadedState: { contestState: initialState } })
         expect(screen.getByText(/Voters that accurately choose/i)).toHaveTextContent(/Voters that accurately choose the 1st place submission will split 1000 SHARK/)
+        expect(screen.getByText(/This contest uses a/i)).toHaveTextContent(/This contest uses a token strategy/)
     })
 
 })

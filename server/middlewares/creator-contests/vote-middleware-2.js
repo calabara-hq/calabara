@@ -11,6 +11,7 @@ const { checkWalletTokenBalance } = require('../../web3/web3')
 
 // return restrictions and voting_strategy
 const pre_process = async (ens, contest_hash, sub_id, walletAddress) => {
+    console.log(sub_id, contest_hash)
     let query1 = 'select settings->\'voter_restrictions\' as restrictions,\
                     settings-> \'self_voting\' as self_voting,\
                     settings->\'voting_strategy\' as strategy,\
@@ -28,6 +29,7 @@ const pre_process = async (ens, contest_hash, sub_id, walletAddress) => {
 
 
     let curr_time = new Date().toISOString()
+    console.log(sub_author)
     return {
         restrictions: Object.values(contest_meta.restrictions),
         strategy: contest_meta.strategy,
@@ -74,6 +76,7 @@ const compute_restrictions = async (mode, walletAddress, restrictions) => {
 // calculate vp for a single submission
 async function calc_sub_vp__unprotected(req, res, next) {
     const { ens, sub_id, walletAddress, contest_hash } = req.body;
+    console.log(req.body)
 
     const mode = { protected: false };
 

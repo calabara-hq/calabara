@@ -1,6 +1,6 @@
 import React, { useEffect, useReducer, useRef, useState } from "react"
 import ContestDateTimeBlock from "./datepicker/start-end-date"
-import ContestRewardsBlock from "./contest_rewards/contest-rewards"
+import ContestRewardsBlock from "./contest_rewards/contest-rewards-block"
 import ContestParticipantRestrictions from "./contest_gatekeeper/particpant_restrictions";
 import PromptBuilder from "./prompt_builder/prompt-builder-2";
 import { RainbowThemeContainer } from 'react-rainbow-components';
@@ -11,19 +11,27 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import useDashboardRules from "../../../hooks/useDashboardRules";
 import useCommon from "../../../hooks/useCommon";
-import { rewardOptionsActions, rewardOptionsState } from "./contest_rewards/reducers/reward-options-reducer";
-import { voterRewardsState } from "./contest_rewards/reducers/voter-rewards-reducer";
-import { submitterRewardsState } from "./contest_rewards/reducers/submitter-rewards-reducer";
+import { rewardOptionState, voterRewardState, submitterRewardState } from "./contest_rewards/reducers/rewards-reducer";
 import { useSelector } from "react-redux";
 import { fade_in } from "../common/common_styles";
+import '../../../../css/manage-widgets.css'
+import '../../../../css/gatekeeper-toggle.css'
+
+
+
+// error handling
+import useErrorHandler from "./handle-errors";
+
+
 
 
 const theme = {
     rainbow: {
         palette: {
-            brand: '#80deea',
+            brand: '#539bf5',
             brand_alt: '#f2f2f2',
             mainBackground: '#303030',
+            fontSize: '20px',
             rewards_text: [
                 '#80deea',
                 'rgb(173, 156, 220)',
@@ -101,7 +109,6 @@ export default function ContestSettings() {
     const [date_0, setDate_0] = useState(new Date())
     const [date_1, setDate_1] = useState(new Date())
     const [date_2, setDate_2] = useState(new Date())
-    const [errorMatrix, setErrorMatrix] = useState([[null, null, null, null]]);
     const [votingStrategy, setVotingStrategy] = useReducer(reducer, { strategy_id: 0x0 });
     const [submitterAppliedRules, setSubmitterAppliedRules] = useReducer(reducer, {});
     const [voterAppliedRules, setVoterAppliedRules] = useReducer(reducer, {});
@@ -114,7 +121,17 @@ export default function ContestSettings() {
     const [promptBuilderData, setPromptBuilderData] = useReducer(reducer, initialPromptData)
     const [simpleInputData, setSimpleInputData] = useReducer(reducer, { anonSubmissions: false, visibleVotes: false, selfVoting: false })
 
+
+
+    const TimeBlockRef = useRef(null);
+    const SubmitterRewardsRef = useRef(null);
+    const VoterRewardsRef = useRef(null);
+    const RestrictionsBlockRef = useRef(null)
+    const StrategyBlockRef = useRef(null)
+    const PromptBlockRef = useRef(null)
     const promptEditorCore = useRef(null);
+
+
 
 
 
@@ -123,26 +140,6 @@ export default function ContestSettings() {
     }, [])
 
 
-    /*
-
-        participant restriction error handling
-    
-        const handleNext = () => {
-            // check if selected gatekeepers have a threshold value set
-            for (const [key, value] of Object.entries(appliedRules)) {
-              if (value == '') {
-                setRuleError({ id: key })
-                return;
-              }
-            }
-            setProgress(3)
-        
-          }
-    
-          */
-
-
-    // don't run time difference checks on initial render
     const firstUpdate = useRef(true)
 
 
@@ -156,66 +153,64 @@ export default function ContestSettings() {
 
 
     return (
-        <RainbowThemeContainer
-            className="rainbow-align-content_center rainbow-m-vertical_large rainbow-p-horizontal_small rainbow-m_auto"
-            style={containerStyles}
-            theme={theme}
-
-        >
-            <ContestSettingsWrap theme={theme}>
-                <ContestDateTimeBlock
-                    date_0={date_0}
-                    date_1={date_1}
-                    date_2={date_2}
-                    setDate_0={setDate_0}
-                    setDate_1={setDate_1}
-                    setDate_2={setDate_2}
-                />
-                <ContestRewardsBlock
-                    errorMatrix={errorMatrix}
-                    setErrorMatrix={setErrorMatrix}
-                    theme={theme.rainbow}
-                />
+        <ContestSettingsWrap>
+            <ContestDateTimeBlock
+                TimeBlockRef={TimeBlockRef}
+                date_0={date_0}
+                date_1={date_1}
+                date_2={date_2}
+                setDate_0={setDate_0}
+                setDate_1={setDate_1}
+                setDate_2={setDate_2}
+            />
+            <ContestRewardsBlock
+                theme={theme.rainbow}
+                SubmitterRewardsRef={SubmitterRewardsRef}
+                VoterRewardsRef={VoterRewardsRef}
+            />
 
 
-                <ContestParticipantRestrictions
-                    submitterAppliedRules={submitterAppliedRules}
-                    setSubmitterAppliedRules={setSubmitterAppliedRules}
-                    voterAppliedRules={voterAppliedRules}
-                    setVoterAppliedRules={setVoterAppliedRules}
-                    submitterRuleError={submitterRuleError}
-                    setSubmitterRuleError={setSubmitterRuleError}
-                    voterRuleError={voterRuleError}
-                    setVoterRuleError={setVoterRuleError}
-                />
+            <ContestParticipantRestrictions
+                submitterAppliedRules={submitterAppliedRules}
+                setSubmitterAppliedRules={setSubmitterAppliedRules}
+                voterAppliedRules={voterAppliedRules}
+                setVoterAppliedRules={setVoterAppliedRules}
+                submitterRuleError={submitterRuleError}
+                setSubmitterRuleError={setSubmitterRuleError}
+                voterRuleError={voterRuleError}
+                setVoterRuleError={setVoterRuleError}
+            />
 
-                <VotingPolicy votingStrategy={votingStrategy} setVotingStrategy={setVotingStrategy} />
-                <PromptBuilder promptBuilderData={promptBuilderData} setPromptBuilderData={setPromptBuilderData} promptEditorCore={promptEditorCore} />
-                <SimpleInputs simpleInputData={simpleInputData} setSimpleInputData={setSimpleInputData} />
-                <SaveSettings
-                    date_0={date_0}
-                    date_1={date_1}
-                    date_2={date_2}
-                    promptEditorCore={promptEditorCore}
-                    votingStrategy={votingStrategy}
-                    submitterAppliedRules={submitterAppliedRules}
-                    voterAppliedRules={voterAppliedRules}
-                    simpleInputData={simpleInputData}
-                    promptBuilderData={promptBuilderData}
+            <VotingPolicy votingStrategy={votingStrategy} setVotingStrategy={setVotingStrategy} />
+            <PromptBuilder promptBuilderData={promptBuilderData} setPromptBuilderData={setPromptBuilderData} promptEditorCore={promptEditorCore} />
+            <SimpleInputs simpleInputData={simpleInputData} setSimpleInputData={setSimpleInputData} />
+            <SaveSettings
+                date_0={date_0}
+                date_1={date_1}
+                date_2={date_2}
+                promptEditorCore={promptEditorCore}
+                votingStrategy={votingStrategy}
+                submitterAppliedRules={submitterAppliedRules}
+                voterAppliedRules={voterAppliedRules}
+                simpleInputData={simpleInputData}
+                promptBuilderData={promptBuilderData}
+                TimeBlockRef={TimeBlockRef}
+                SubmitterRewardsRef={SubmitterRewardsRef}
+                VoterRewardsRef={VoterRewardsRef}
 
-                />
-            </ContestSettingsWrap >
-        </RainbowThemeContainer>
+            />
+        </ContestSettingsWrap >
     )
 }
 
 
 
 function SaveSettings(props) {
-    const rewardOptions = useSelector(rewardOptionsState.getRewardOptions)
-    const submitterRewards = useSelector(submitterRewardsState.getSubmitterRewards)
-    const voterRewards = useSelector(voterRewardsState.getvoterRewards)
+    const rewardOptions = useSelector(rewardOptionState.getRewardOptions)
+    const submitterRewards = useSelector(submitterRewardState.getSubmitterRewards)
+    const voterRewards = useSelector(voterRewardState.getVoterRewards)
     const { authenticated_post } = useCommon();
+    const { handleErrors, isSubmitterError } = useErrorHandler();
     const { ens } = useParams();
 
     const {
@@ -227,11 +222,21 @@ function SaveSettings(props) {
         submitterAppliedRules,
         voterAppliedRules,
         simpleInputData,
-        promptBuilderData
+        promptBuilderData,
+        TimeBlockRef,
+        SubmitterRewardsRef,
+        VoterRewardsRef
     } = props
 
 
     const handleSave = async () => {
+
+        let [isSubmitterError, isVoterError, isTimeError] = handleErrors([date_0, date_1, date_2]);
+        if(isTimeError) return TimeBlockRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        if (isSubmitterError) return SubmitterRewardsRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        if (isVoterError) return VoterRewardsRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+
+        
         let strategy
         if (votingStrategy.strategy_type === 'arcade') {
             strategy = {
@@ -264,16 +269,7 @@ function SaveSettings(props) {
             },
             reward_options: rewardOptions,
             submitter_rewards: submitterRewards,
-            voter_rewards: [{
-                'erc20': {
-                    type: 'erc20',
-                    symbol: 'SHARK',
-                    address: "0x232AFcE9f1b3AAE7cb408e482E847250843DB931",
-                    decimal: "18",
-                    amount: 1000
-                },
-                rank: 1,
-            }],
+            voter_rewards: voterRewards,
             submitter_restrictions: submitterAppliedRules,
             voter_restrictions: voterAppliedRules,
             voting_strategy: strategy,
@@ -297,7 +293,7 @@ function SaveSettings(props) {
         if (window.confirm('are you sure you want to continue?')) {
             authenticated_post('/creator_contests/create_contest', { ens: ens, contest_settings: contest_data, prompt_data: prompt_data })
         }
-
+        
     }
 
     return (

@@ -1,5 +1,5 @@
 .date-time-picker {
-    max-width: 400px;
+    max-width: 600px;
 }
 
 .date-time-picker label {
@@ -11,30 +11,20 @@
 
 
 
-.date-time-picker input_alt {
-    font-size: 2rem;
-    color: #d3d3d3;
-    padding: 20px 10px;
-    cursor: pointer;
-    border: 2px solid #d95169;
-    border-radius: 10px;
-    background-color: #121212;    
-}
-
 .date-time-picker input {
     font-size: 2rem;
     color: #d3d3d3;
+    border: 2px solid #539bf5;
     padding: 20px 10px;
     cursor: pointer;
-    border: 2px double transparent;
-    border-radius: 10px;
-    background-image: linear-gradient(#121212,#121212),linear-gradient(90deg,#e00f8e,#2d66dc);
-    background-origin: border-box;
-    background-clip: padding-box,border-box;
 }
 
-.date-time-picker input:focus {
+.date-time-picker input .error {
+    color: red;
+}
 
+
+.date-time-picker input:focus {
     padding: 20px 10px;
 }
 

@@ -81,7 +81,7 @@ contests.get('/fetch_submissions/*', async function (req, res, next) {
 
 contests.get('/fetch_contest_winners', verifyContestOver, async function (req, res, next) {
     const { ens, contest_hash } = req.query
-    let subs_full_details = await db.query('select contest_submissions.id, _url, author, sum(votes_spent) as votes from contest_submissions left join contest_votes on contest_submissions.id = contest_votes.submission_id where contest_submissions.ens=$1 and contest_submissions.contest_hash=$2 group by contest_submissions.id order by votes desc', [ens, contest_hash])
+    let subs_full_details = await db.query('select contest_submissions.id, _url, author, coalesce(sum(votes_spent), 0) as votes from contest_submissions left join contest_votes on contest_submissions.id = contest_votes.submission_id where contest_submissions.ens=$1 and contest_submissions.contest_hash=$2 group by contest_submissions.id order by votes desc', [ens, contest_hash])
         .then(clean)
         .then(asArray)
     res.send(subs_full_details).status(200);
@@ -203,29 +203,39 @@ contests.post('/retract_sub_votes', authenticateToken, async function (req, res,
 ///////////////////////////// begin stats ////////////////////////////////////
 
 contests.get('/org_contest_stats/*', async function (req, res, next) {
+
     let ens = req.url.split('/')[2];
-    await db.query('select settings ->> \'submitter_rewards\' as rewards from contests where ens=$1', [ens/*, new Date().toISOString()*/])
+    await db.query('select settings ->> \'submitter_rewards\' as rewards from contests where ens=$1', [ens])
         .then(clean)
         .then(asArray)
         .then(data => {
             let obj = { eth: 0, erc20: 0, erc721: 0 }
+            console.log('begin case')
+
             if (data.length === 1) {
+                console.log('first case')
+
                 let parsed = Object.values(JSON.parse(data[0].rewards))
                 parsed.map(inner => {
                     obj[Object.keys(inner)[0]] += inner[Object.keys(inner)[0]].amount
                 })
             }
             else {
+                console.log('this case')
                 data.map(el => {
                     let parsed = Object.values(JSON.parse(el.rewards))
                     parsed.map(inner => {
-                        obj[Object.keys(inner)[0]] += inner[Object.keys(inner)[0]].amount
+                        let {rank, ...reward} = inner
+                        let vals = Object.values(reward)[0]
+                        //obj[Object.keys(inner)[0]] += inner[Object.keys(inner)[0]].amount
+                        obj[vals.type] += vals.amount
                     })
                 })
             }
             return obj
         })
         .then(data => res.send(data).status(200))
+
 })
 
 

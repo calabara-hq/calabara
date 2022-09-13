@@ -105,7 +105,7 @@ export default function ContestInfo() {
                     <DetailBox >
                         <DetailRow>
                             <DetailItem>
-                                <p>More Details</p>
+                                <p>Contest Details:</p>
                             </DetailItem>
                             <DetailItem shouldHover={true}>
                                 <button onClick={handleDrawerOpen}><FontAwesomeIcon icon={faQuestionCircle} /></button>
@@ -154,7 +154,7 @@ function ContestInfoDrawer({ contest_settings, drawerOpen, handleClose }) {
             open={drawerOpen}
             onClose={handleClose}
             direction='right'
-            className='bla bla bla2'
+            className='prompt-expand'
             size='50vw'
             style={{ backgroundColor: '#1e1e1e', overflowY: 'scroll' }}
         >

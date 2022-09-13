@@ -7,14 +7,14 @@ import styled from 'styled-components'
 const Winners = styled.button`
     position: absolute;
     right: 0;
-    border: 2px solid rgb(138,128,234);
-    background-color: #24262e;
+    border: 2px solid #539bf5;
+    background-color: #1a1a1a;
     border-radius: 10px;
     padding: 5px 10px;
     color: #bfbfbf;
     font-weight: bold;
     &:hover{
-        background-color: #1a1a1a;
+        background-color: #24262e;
     }
 
 `

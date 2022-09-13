@@ -1,31 +1,28 @@
 import edjsHTML from 'editorjs-html'
-const ReactDOMServer = require('react-dom/server');
-const HtmlToReactParser = require('html-to-react').Parser;
-
-
+import ReactHtmlParse from 'react-html-parser'
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 const edjsParser = edjsHTML();
-const htmlToReactParser = new HtmlToReactParser();
+
 
 
 
 export const ParseBlocks = ({ data }) => {
+
+
     let elements = []
 
     if (data.blocks.length > 0) {
         let htmls = edjsParser.parse(data)
-
         htmls.map(html => {
-            let reactElement = htmlToReactParser.parse(html)
 
-            if (Array.isArray(reactElement)) {
-                reactElement = reactElement.filter(el => el != ',')
+            let reactElement = ReactHtmlParse(html)
+            if (reactElement[0].type === 'img') {
+                return elements.push(<LazyLoadImage src={reactElement[0].props.src} effect="blur" style={{ maxWidth: '35em', borderRadius: '10px' }} />)
             }
             elements.push(reactElement)
         })
-
         return elements
     }
-
     return null
 
 }

@@ -15,14 +15,14 @@ import { Contest_h2_alt, fade_in } from '../../common/common_styles';
 import BackButton from '../../../../back-button/back-button';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import SubmissionDisplay from '../submissions/test-submission-display';
-import { selectDurations, selectProgressRatio } from './contest-interface-reducer';
+import { selectDurations, selectProgressRatio, selectContestState } from './contest-interface-reducer';
+import Placeholder from '../../common/spinner';
 
 const ContestInterfaceWrap = styled.div`
     display: flex;
     flex-direction: column;
     width: 70vw;
     margin: 0 auto;
-    
 
 `
 const InterfaceTopSplit = styled.div`
@@ -41,7 +41,6 @@ const InterfaceTopSplit = styled.div`
 const OrgCard = styled.div`
     display: flex;
     flex-direction: column;
-    align-items: center;
     flex: 1 0 25%;
     justify-content: space-evenly;
     align-items: center;
@@ -57,7 +56,8 @@ const OrgCard = styled.div`
 `
 
 
-export default function ContestInterface({ contest_settings }) {
+export default function ContestInterface() {
+    console.log('re rendering interface')
     const { ens, contest_hash } = useParams();
     const info = useSelector(selectDashboardInfo)
     const { batchFetchDashboardData } = useCommon();

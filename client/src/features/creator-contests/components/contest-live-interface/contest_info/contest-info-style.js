@@ -8,7 +8,6 @@ const InterfaceHeading = styled.div`
     align-content: center;
     color: #d3d3d3;
     margin-bottom: 70px;
-    background-color: blue;
     //margin-top: 50px;
 `
 
@@ -172,7 +171,7 @@ const CheckpointTop = styled.div`
     margin: 0 auto;
     background-color: pink;
     height: fit-content;
-    width: 70%;
+    width: 95%;
     color: #d3d3d3;
     margin-bottom: 1em;
     animation: ${fade_in} 0.8s ease-in-out;
@@ -212,7 +211,7 @@ const CheckpointTop = styled.div`
 `
 
 const CheckpointBottomTag = styled.p`
-    color: ${props => props.status === 'active' ? '#384aff' : (props.status === 'complete' ? 'grey' : '')};
+    color: ${props => props.status === 'active' ? '#539bf5' : (props.status === 'complete' ? 'grey' : '')};
     animation: ${fade_in} 0.2s ease-in;
 
 
@@ -221,7 +220,7 @@ const CheckpointBottomTag = styled.p`
 const CheckpointBottom = styled.div`
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    width: 75%;
+    width: 100%;
     color: #d3d3d3;
     margin: 0 auto;
     //margin-bottom: 50px;
