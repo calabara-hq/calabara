@@ -1,9 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
-import storage from 'redux-persist/lib/storage';
-import { combineReducers, applyMiddleware } from "redux";
-import { persistReducer } from 'redux-persist';
-import thunk from 'redux-thunk';
-import axios from 'axios'
+import { combineReducers } from "redux";
 import { composeWithDevTools } from 'redux-devtools-extension/developmentOnly';
 
 
@@ -16,9 +12,7 @@ import wikiReducer from '../features/wiki/wiki-reducer';
 import rulesReducer from '../features/gatekeeper/gatekeeper-rules-reducer';
 import userReducer from '../features/user/user-reducer';
 import contestStateReducer from '../features/creator-contests/components/contest-live-interface/interface/contest-interface-reducer';
-import rewardOptionsReducer from '../features/creator-contests/components/contest_settings/contest_rewards/reducers/reward-options-reducer';
-import submitterRewardsReducer from '../features/creator-contests/components/contest_settings/contest_rewards/reducers/submitter-rewards-reducer';
-import voterRewardsReducer from '../features/creator-contests/components/contest_settings/contest_rewards/reducers/voter-rewards-reducer';
+import contestRewardsReducer from '../features/creator-contests/components/contest_settings/contest_rewards/reducers/rewards-reducer';
 
 
 const rootReducer = combineReducers({
@@ -31,26 +25,8 @@ const rootReducer = combineReducers({
   gatekeeperRules: rulesReducer,
   user: userReducer,
   contestState: contestStateReducer,
-  rewardOptions: rewardOptionsReducer,
-  submitterRewards: submitterRewardsReducer,
-  voterRewards: voterRewardsReducer
+  contestRewards: contestRewardsReducer
 });
-
-const persistConfig = {
-  key: 'root',
-  storage,
-  //  whitelist: ['notifications']
-  whitelist: []
-};
-/*
-const persistedReducer = persistReducer(persistConfig, reducers);
-
-const store = configureStore({
-    reducer: persistedReducer,
-    middleware: [thunk.withExtraArgument(axios)],
-    enhancers: devToolsEnhancer,
-});
-*/
 
 
 const store = configureStore({

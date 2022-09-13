@@ -95,7 +95,7 @@ async function get_winners_as_csv(req, res, next) {
             winner.voters.map(voter => {
                 if (voter.f1 != null) {
                     reward.eth ? csvContent += `native,,${voter.f1},${reward.eth.amount * (voter.f2 / winner.votes)},,\r\n` : null
-                    reward.erc20 ? csvContent += `erc20,${voter.f1},${reward.erc20.address}, ${reward.erc20.amount * (voter.f2 / winner.votes)},,\r\n` : null
+                    reward.erc20 ? csvContent += `erc20,${reward.erc20.address},${voter.f1}, ${reward.erc20.amount * (voter.f2 / winner.votes)},,\r\n` : null
                 }
             })
         })

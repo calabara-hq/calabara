@@ -3,35 +3,33 @@ import CounterButton from '../../../common/CounterButton';
 import Select from 'react-select'
 import { Contest_h2, Contest_h2_alt, Contest_h3, Contest_h3_alt, Contest_h3_alt_small, Contest_h4, SettingsSectionSubHeading } from '../../../common/common_styles';
 import { ToggleButton } from '../../../common/common_components';
-import { rewardOptionsActions, rewardOptionsState } from '../reducers/reward-options-reducer';
-import { voterRewardsActions, voterRewardsState } from '../reducers/voter-rewards-reducer';
+import { rewardOptionState, voterRewardActions, voterRewardState } from '../reducers/rewards-reducer';
 import { useSelector, useDispatch } from 'react-redux';
 import {
-    customSelectorStyles,
     VotingRewardSelectorWrap,
     RewardRowWrapper,
     VoterRewardInput,
     VoterRankWrapper,
     RewardsGridInput,
-    HeadingWithToggle
+    HeadingWithToggle,
+    RewardTypeButtons,
+    VoterRewardTypeButton,
 } from './voter-rewards-style';
+import { AddRewardButton, DeleteRewardButton } from '../reward-styles'
 import { NumberWinnersContainer, RewardsMainContent, RewardTypeWrap } from '../reward-styles';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
+import { HelpText } from 'react-rainbow-components';
 
 
-export default function VoterRewardsBlock({ voterRewards, setVoterRewards }) {
+export default function VoterRewardsBlock({ theme, VoterRewardsRef }) {
     const [isToggleOn, setIsToggleOn] = useState(false);
-    const rewardOptions = useSelector(rewardOptionsState.getRewardOptions)
-    const selectedRewards = useSelector(rewardOptionsState.getSelectedRewards)
-    const numVoterRewards = useSelector(voterRewardsState.getNumWinners)
+    const rewardOptions = useSelector(rewardOptionState.getRewardOptions)
+    const selectedRewards = useSelector(rewardOptionState.getSelectedRewards)
+    const numVoterRewards = useSelector(voterRewardState.getNumVoterWinners)
     const dispatch = useDispatch();
 
 
-    // clear voter rewards if selected rewards gets flipped off
-    useEffect(() => {
-        if (Object.values(selectedRewards).length === 0) {
-            dispatch(voterRewardsActions.clearRewardOptions())
-        }
-    }, [selectedRewards])
 
 
     // allow voting rewards for ranks 1 -> 10
@@ -42,25 +40,18 @@ export default function VoterRewardsBlock({ voterRewards, setVoterRewards }) {
     let possible_rewards = Object.values(valid_rewards).map((el) => { return { value: el.type, label: el.symbol } })
 
 
-    const handleVoterRewardsIncrement = () => {
-        if (numVoterRewards < 10) dispatch(voterRewardsActions.incrementWinners())
-    }
+    const handleVoterRewardsIncrement = () => dispatch(voterRewardActions.incrementVoterWinners());
 
-    const handleVoterRewardsDecrement = () => {
-        if (numVoterRewards > 1) dispatch(voterRewardsActions.decrementWinners())
-    }
 
     const handleToggle = () => {
-        if (isToggleOn) {
-            dispatch(voterRewardsActions.clearRewardOptions())
-        }
         setIsToggleOn(!isToggleOn)
+        dispatch(voterRewardActions.toggleVoterRewards())
     }
 
 
 
     return (
-        <RewardTypeWrap>
+        <RewardTypeWrap ref={VoterRewardsRef}>
             <SettingsSectionSubHeading>
                 <HeadingWithToggle>
                     <Contest_h3_alt style={{ marginRight: '4em' }} animated={true}>Voter Rewards</Contest_h3_alt>
@@ -68,14 +59,11 @@ export default function VoterRewardsBlock({ voterRewards, setVoterRewards }) {
                 </HeadingWithToggle>
             </SettingsSectionSubHeading>
             {isToggleOn && <RewardsMainContent>
-                <NumberWinnersContainer>
-                    <Contest_h3_alt_small animated={true}>Number of Winners</Contest_h3_alt_small>
-                    <CounterButton counter={numVoterRewards} handleIncrement={handleVoterRewardsIncrement} handleDecrement={handleVoterRewardsDecrement} />
-                </NumberWinnersContainer>
                 <VotingRewardSelectorWrap>
                     {Array.from(Array(numVoterRewards)).map((el, idx) => {
-                        {return <VotingRewardsRow selectedRewards={selectedRewards} index={idx} possible_ranks={possible_ranks} possible_rewards={possible_rewards} voterRewards={voterRewards} setVoterRewards={setVoterRewards} />}
+                        { return <VotingRewardsRow selectedRewards={selectedRewards} index={idx} possible_ranks={possible_ranks} possible_rewards={possible_rewards} theme={theme} handleToggle={handleToggle} /> }
                     })}
+                    <AddRewardButton onClick={handleVoterRewardsIncrement}>add</AddRewardButton>
                 </VotingRewardSelectorWrap>
             </RewardsMainContent>}
         </RewardTypeWrap>
@@ -84,18 +72,19 @@ export default function VoterRewardsBlock({ voterRewards, setVoterRewards }) {
 
 
 
-function VotingRewardsRow({ selectedRewards, possible_ranks, possible_rewards, index }) {
+function VotingRewardsRow({ selectedRewards, possible_ranks, possible_rewards, index, theme, handleToggle }) {
     console.log(selectedRewards)
-    const [rank, setRank] = useState(1);
-    const [reward_type, setRewardType] = useState(null)
+    const [rank, setRank] = useState(0);
+    const [reward_type, setRewardType] = useState(possible_rewards[0].value)
     const [reward, setReward] = useState(0)
     const dispatch = useDispatch();
-    const voterRewards = useSelector(voterRewardsState.getvoterRewards)
+    const numVoterRewards = useSelector(voterRewardState.getNumVoterWinners)
+    const errorMatrix = useSelector(voterRewardState.getVoterErrors)
 
-
+    console.log(errorMatrix)
 
     useEffect(() => {
-        dispatch(voterRewardsActions.updatevoterRewards(
+        dispatch(voterRewardActions.updateVoterRewards(
             {
                 index: index,
                 value: {
@@ -107,33 +96,40 @@ function VotingRewardsRow({ selectedRewards, possible_ranks, possible_rewards, i
     }, [rank, reward_type, reward])
 
 
+    const updateRank = (e) => {
+        const rank = Math.floor(e.target.value)
+        setRank(rank)
+    }
 
+    const updateReward = (e) => {
+        setReward(e.target.value)
+    }
+
+    const handleRemoveReward = () => {
+        // if this is the only row, flip voter rewards off
+        if ((index === 0) && (numVoterRewards === 1)) return handleToggle();
+        // otherwise handle like normal
+        dispatch(voterRewardActions.removeVoterReward(index))
+    }
 
     return (
 
         <RewardRowWrapper>
             <Contest_h4>voters that accurately choose rank </Contest_h4>
-            <VoterRankWrapper>
-                <Select
-                    styles={customSelectorStyles}
-                    components={{ IndicatorSeparator: () => null }}
-                    selectType={'rank'}
-                    options={possible_ranks}
-                    onChange={(e) => { setRank(e.value) }}
-                    defaultValue={{ value: 1, label: 1 }} />
-            </VoterRankWrapper>
+            <RewardsGridInput error={errorMatrix[index][0]} theme={theme} name='1' placeholder='rank' type="number" onChange={updateRank} value={rank || ''} onWheel={(e) => e.target.blur()}></RewardsGridInput>
             <Contest_h4>will split </Contest_h4>
-            <VoterRewardInput>
-                <RewardsGridInput type="number" onChange={(e) => { setReward(e.target.value) }} onWheel={(e) => e.target.blur()} />
-                <Select
-                    styles={customSelectorStyles}
-                    components={{ IndicatorSeparator: () => null }}
-                    selectType={'reward'}
-                    options={possible_rewards}
-                    onChange={(e) => { setRewardType(e.value) }}
-                    defaultValue={{ value: possible_rewards[0].value, label: possible_rewards[0].label }} />
-            </VoterRewardInput>
-
+            <RewardsGridInput error={errorMatrix[index][1]} theme={theme} name='1' placeholder='amount' type="number" onChange={updateReward} value={reward || ''} onWheel={(e) => e.target.blur()}></RewardsGridInput>
+            <RewardTypeButtons>
+                {possible_rewards.map(reward => {
+                    return <VoterRewardTypeButton selected={reward_type === reward.value} onClick={() => setRewardType(reward.value)}>{reward.label}</VoterRewardTypeButton>
+                })}
+            </RewardTypeButtons>
+            {(errorMatrix[index][0] || errorMatrix[index][1]) && <HelpText variant="error" title="error" text={<p style={{ fontSize: '16px' }}>
+                {errorMatrix[index][0] && errorMatrix[index][0]}
+                {errorMatrix[index][1] && errorMatrix[index][1]}
+            </p>} />
+            }
+            <DeleteRewardButton onClick={handleRemoveReward}><FontAwesomeIcon icon={faTimesCircle} /></DeleteRewardButton>
         </RewardRowWrapper>
     )
 }

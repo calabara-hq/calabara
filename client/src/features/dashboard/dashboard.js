@@ -320,7 +320,7 @@ export function WidgetCard({ gatekeeperPass, orgInfo, widget, btnState, setBtnSt
       }
 
       else if (name === 'creator contests') {
-        history.push('/' + ens + '/contest_settings')
+        history.push('/' + ens + '/creator_contests')
       }
 
     }

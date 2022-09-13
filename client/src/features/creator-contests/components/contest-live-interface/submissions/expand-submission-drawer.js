@@ -1,13 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import styled from 'styled-components'
-import { ParseBlocks } from "../block-parser";
+import { ParseBlocks, parse_base_js } from "../block-parser";
 import { SubmissionVotingBox } from "../vote/voting-components";
 import Drawer from 'react-modern-drawer'
 import 'react-modern-drawer/dist/index.css'
 import { selectContestState } from "../interface/contest-interface-reducer";
 import { useSelector } from "react-redux";
 import { fade_in } from "../../common/common_styles";
-
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import { Author, SubmissionMeta, VoteTotals } from "./submission-styles";
+import Placeholder from "../../common/spinner";
 
 const ToolbarTop = styled.div`
     display: flex;
@@ -39,26 +41,12 @@ const DrawerWrapper = styled.div`
     margin-top: 50px;
     height: 100%;
     color: #d3d3d3;
-    animation: ${fade_in} 0.5s ease-in-out;
+    animation: ${fade_in} 0.4s ease-in-out;
 
     > * {
         margin-bottom: 30px;
     }
 
-    &::after{
-        content: '${props => props.author ? `${props.author.substring(0, 6)}...${props.author.substring(38, 42)}` : null}';
-        visibility: ${props => props.author ? 'visible' : 'hidden'};
-        position: absolute;
-        right: 0;
-        top: 0;
-        border: double 2px transparent;
-        border-radius: 10px;
-        background-image: linear-gradient(#24262e, #24262e), linear-gradient(to right, #e00f8e, #2d66dc);
-        background-origin: border-box;
-        background-clip: padding-box, border-box;
-        padding: 5px;
-        transform: translate(0%, -110%)
-    }
 `
 const SubmissionWrap = styled.div`
     align-items: flex-start;
@@ -67,6 +55,7 @@ const SubmissionWrap = styled.div`
     padding: 10px;
     word-wrap: break-word;
     text-align: center;
+    animation: ${fade_in} 0.5s ease-in;
 
     > h2 {
         color: #d9d9d9;
@@ -113,8 +102,13 @@ const AuthorSpan = styled.span`
     padding: 5px;
 `
 
-export default function ExpandSubmissionDrawer({ drawerOpen, handleClose, id, TLDRImage, TLDRText, expandData, author }) {
+
+
+
+export default function ExpandSubmissionDrawer({ drawerOpen, handleClose, id, TLDRImage, TLDRText, expandData, author, votes }) {
     const contest_state = useSelector(selectContestState)
+    const [loaded, setLoaded] = useState(false);
+
 
     return (
 
@@ -122,16 +116,28 @@ export default function ExpandSubmissionDrawer({ drawerOpen, handleClose, id, TL
             open={drawerOpen}
             onClose={handleClose}
             direction='right'
-            className='bla bla bla'
+            className='expand_sub'
             size='60vw'
+
             style={{ backgroundColor: '#1e1e1e', overflowY: 'scroll' }}
         >
             {drawerOpen &&
-                <DrawerWrapper author={author}>
+                <DrawerWrapper>
                     {contest_state === 1 && <SubmissionVotingBox sub_id={id} />}
                     <SubmissionWrap>
+                        <>
+                            {contest_state === 2 &&
+                                <SubmissionMeta>
+                                    {author && <Author>{author.substring(0, 6)}...{author.substring(38, 42)}</Author>}
+                                    {votes !== null && <VoteTotals>{votes} votes</VoteTotals>}
+                                </SubmissionMeta>
+                            }
+                        </>
                         <p>{TLDRText}</p>
-                        <img src={TLDRImage}></img>
+
+                        <LazyLoadImage src={TLDRImage} style={{ maxWidth: '35em', borderRadius: '10px' }} effect="opacity" />
+                        {/*<img src={TLDRImage}></img>*/}
+
                         {expandData && <ParseBlocks data={expandData} />}
                     </SubmissionWrap>
                 </DrawerWrapper>

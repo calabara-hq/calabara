@@ -30,3 +30,8 @@ body{
   background: grey;
   cursor: pointer;
 }
+
+
+aside{
+  z-index: 102;
+}

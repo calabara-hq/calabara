@@ -6,6 +6,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheckToSlot, faCircleCheck, faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
 import { ErrorMessage, fade_in } from "../../common/common_styles";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import '../../../../../css/manage-widgets.css'
+import '../../../../../css/gatekeeper-toggle.css'
 let compact_formatter = Intl.NumberFormat('en', { notation: 'compact' })
 let round_formatter = Intl.NumberFormat('en', { maximumFractionDigits: 0 })
 
@@ -70,7 +72,6 @@ const InitialVoteButton = styled.button`
     cursor: not-allowed;
     color: rgb(211,151,39, .3);
     background-color: #262626;
-
     }
 
 `
@@ -108,10 +109,18 @@ const CastVotesButton = styled.button`
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
     padding: 5px 20px;
     margin-right: 30px;
+    transition: background-color 0.3s ease-in-out;
+    transition: color 0.3s ease-in-out;
 
     &:hover{
         background-color: rgb(6, 214, 160);
         color: #fff;
+    }
+
+    &:disabled{
+        cursor: not-allowed;
+        color: rgba(6, 214, 160, 0.3);
+        background-color: #262626;
     }
 
 `
@@ -213,7 +222,7 @@ function SubmissionVotingBox({ sub_id }) {
 
 
 
-    
+
     useEffect(() => {
         setVotesToSpend(votes_spent || '')
     }, [votes_spent])
@@ -221,7 +230,7 @@ function SubmissionVotingBox({ sub_id }) {
 
     const updateInput = (e) => {
         if (exceedVotingPowerError) setExceedVotingPowerError(false);
-        setVotesToSpend(Math.round(e.target.value) || '')
+        setVotesToSpend(Math.abs(Math.round(e.target.value)) || '')
     }
 
     const handleVote = async (num_votes) => {
@@ -271,7 +280,7 @@ function SubmissionVotingBox({ sub_id }) {
                     <>
                         <InputCast>
                             <VoteInput onWheel={(e) => e.target.blur()} error={exceedVotingPowerError} type="number" value={votesToSpend} onChange={updateInput} placeholder="votes"></VoteInput>
-                            <CastVotesButton onClick={() => { handleVote(votesToSpend) }} disabled={!votesToSpend}>cast votes <FontAwesomeIcon icon={faCircleCheck} /></CastVotesButton>
+                            <CastVotesButton disabled={!votesToSpend} onClick={() => { handleVote(votesToSpend) }}>cast votes <FontAwesomeIcon icon={faCircleCheck} /></CastVotesButton>
                             <VotingStats>
                                 <LightP>votes spent: {compact_formatter.format(votes_spent)}</LightP>
                                 <LightP>voting power: {compact_formatter.format(total_available_vp)}</LightP>

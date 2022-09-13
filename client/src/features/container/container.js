@@ -1,20 +1,21 @@
-import React from 'react'
+import { Suspense, lazy } from 'react'
 import { BrowserRouter as Router, Switch, Route, Link, useLocation } from 'react-router-dom'
 import '../../css/container.css'
 import { HomepageNav, ApplicationNav } from '../navbar/navbar'
-import Cards from '../org-cards/org-cards'
-import Dashboard from '../dashboard/dashboard'
-import Analytics from '../snapshot-analytics/snapshot-analytics'
-import WikiDisplay from '../wiki/wiki-display'
-import Events from '../calendar/calendar'
-import ReactEditor from '../wiki/wiki-edit'
-import SettingsManager from '../settings/settings'
-import ManageWidgets from '../manage-widgets/manage-widgets'
-import ContestSettings from '../creator-contests/components/contest_settings/contest-settings'
 import Homepage from '../homepage/homepage'
-import ContestInterfaceController from '../creator-contests/components/contest-live-interface/interface/contest-interface-ctr'
-import ContestHomepage from '../creator-contests/components/contest-home/contest-home'
 import { WalletProvider } from '../../app/WalletContext'
+import LazyLoader from '../lazy-loader/lazy-loader'
+const Cards = lazy(() => import('../org-cards/org-cards'))
+const Dashboard = lazy(() => import('../dashboard/dashboard'))
+const Analytics = lazy(() => import('../snapshot-analytics/snapshot-analytics'))
+const WikiDisplay = lazy(() => import('../wiki/wiki-display'))
+const Events = lazy(() => import('../calendar/calendar'))
+const ReactEditor = lazy(() => import('../wiki/wiki-edit'))
+const SettingsManager = lazy(() => import('../settings/settings'))
+const ManageWidgets = lazy(() => import('../manage-widgets/manage-widgets'))
+const ContestSettings = lazy(() => import('../creator-contests/components/contest_settings/contest-settings'))
+const ContestHomepage = lazy(() => import('../creator-contests/components/contest-home/contest-home'))
+const ContestInterfaceController = lazy(() => import('../creator-contests/components/contest-live-interface/interface/contest-interface-ctr'))
 
 
 export default function Container() {
@@ -34,7 +35,9 @@ export default function Container() {
         </Route>
 
         <Route path="/*">
-          <Application />
+          <Suspense fallback={<LazyLoader />}>
+            <Application />
+          </Suspense>
         </Route>
       </Switch>
     </div>
@@ -49,12 +52,12 @@ export default function Container() {
 function Application({ }) {
   return (
     <WalletProvider>
-
-
       <ApplicationNav />
 
       <Route path="/:ens/dashboard">
-        <Dashboard />
+        <Suspense>
+          <Dashboard />
+        </Suspense>
       </Route>
 
       <Route path="/explore">

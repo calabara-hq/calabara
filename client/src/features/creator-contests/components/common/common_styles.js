@@ -84,9 +84,14 @@ const submission_fade = keyframes`
         opacity: 1;
         }
 `
+//    background-color: ${props => props.type === 'erc721' ? '#ab6afb' : props.type === 'erc20' ? '#03b09f' : '#ecf0f1'};
+
+//background-color: ${props => props.type === 'erc721' ? '#1e1e1e' : props.type === 'erc20' ? '#1e1e1e' : '#1e1e1e'};
+
 const TagType = styled.span`
-    background-color: ${props => props.type === 'erc721' ? '#ab6afb' : props.type === 'erc20' ? '#03b09f' : '#ecf0f1'};
-    color: ${props => props.type === 'erc721' ? '#f2f2f2' : props.type === 'erc20' ? '#f2f2f2' : '#3c3c3d'};
+    background-color: ${props => props.type === 'erc721' ? '#1e1e1e' : props.type === 'erc20' ? '#1e1e1e' : '#1e1e1e'};
+    color: ${props => props.type === 'erc721' ? '#ab6afb' : props.type === 'erc20' ? '#03b09f' : '#f2f2f2'};
+    border: 1px solid ${props => props.type === 'erc721' ? '#ab6afb' : props.type === 'erc20' ? '#03b09f' : '#f2f2f2'};
 
 `
 
