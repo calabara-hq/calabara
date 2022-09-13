@@ -21,9 +21,8 @@ const DefaultContainerWrap = styled.div`
     border-radius: 10px;
     padding: 10px;
     position: relative;
-    align-self: flex-start;
-    max-height: 280px;
-    min-height: 280px;
+    min-height: 150px;
+    max-height: 290px;
     animation: ${fade_in} 0.2s ease-in-out;
     cursor: pointer;
 
@@ -36,11 +35,19 @@ const PromptContainer = styled.div`
     transition: visibility 0.2s, max-height 0.3s ease-in-out;
     color: #d3d3d3;
 
+    > p {
+        font-size: 16px;
+    }
+
+    > img {
+        max-width: 15em;
+    }
+
 `
 
 const PromptCoverImage = styled.img`
     float: right;
-    max-width: 12em;
+    max-width: 15em;
     border-radius: 10px;
     margin-left: 10px;
     margin-bottom: 10px;
@@ -103,13 +110,6 @@ const PromptTop = styled.div`
 
 `
 
-const PromptContent = styled.div`
-    display: flex;
-    flex-direction: column;
-    margin-top: 10px;
-    width: 100%;
-`
-
 
 const AltSubmissionButton = styled.button`
     height: 40px;
@@ -128,8 +128,6 @@ const AltSubmissionButton = styled.button`
     &:hover{
         background-color: rgb(138,128,234);
         color: #fff;
-
-    
     }
 
     &:disabled{
@@ -156,24 +154,23 @@ export default function PromptDisplay({ }) {
     const contest_state = useSelector(selectContestState)
     const prompt_data = useSelector(selectPromptData)
 
+    const handleDrawerOpen = () => {
+        setIsDrawerOpen(true);
+        document.body.style.overflow = 'hidden';
 
-    const handlePromptClick = () => {
-        if (!isDrawerOpen) {
-            setIsDrawerOpen(true);
-            document.body.style.overflow = 'hidden';
-        }
-        else {
-            setIsDrawerOpen(false);
-            setIsCreating(false);
-            document.body.style.overflow = 'unset';
+    }
 
-        }
+    const handleDrawerClose = () => {
+        setIsDrawerOpen(false);
+        setIsCreating(false);
+        document.body.style.overflow = 'unset';
+
     }
 
 
     return (
         <>
-            <DefaultContainerWrap onClick={handlePromptClick}>
+            <DefaultContainerWrap onClick={handleDrawerOpen}>
                 <PromptContainer >
                     <PromptCoverImage src={prompt_data.coverImage} />
                     <PromptTop>
@@ -189,25 +186,30 @@ export default function PromptDisplay({ }) {
                     }
 
                 </PromptContainer>
+                <ContestPromptDrawer isDrawerOpen={isDrawerOpen} handleDrawerClose={handleDrawerClose} isCreating={isCreating} setIsCreating={setIsCreating} />
             </DefaultContainerWrap>
-            <Drawer
-                open={isDrawerOpen}
-                onClose={handlePromptClick}
-                direction='right'
-                className='bla bla bla'
-                size={isCreating ? '70vw' : '40vw'}
-                style={{ backgroundColor: '#1e1e1e', overflowY: 'scroll' }}
-            >
-                {isDrawerOpen &&
-                    <DrawerWrapper>
-                        {<ExpandedPromptSidebar isCreating={isCreating} setIsCreating={setIsCreating} toggleDrawer={handlePromptClick} />}
-                    </DrawerWrapper>
-                }
-            </Drawer>
         </>
     )
 }
 
+
+
+export function ContestPromptDrawer({ isDrawerOpen, handleDrawerClose, isCreating, setIsCreating }) {
+    return (
+        <Drawer
+            open={isDrawerOpen}
+            onClose={handleDrawerClose}
+            direction='right'
+            className='expand prompt'
+            size={isCreating ? '70vw' : '40vw'}
+            style={{ backgroundColor: '#1e1e1e', overflowY: 'scroll' }}
+        >
+            <DrawerWrapper>
+                {<ExpandedPromptSidebar isCreating={isCreating} setIsCreating={setIsCreating} toggleDrawer={handleDrawerClose} />}
+            </DrawerWrapper>
+        </Drawer>
+    )
+}
 
 
 const SubmissionRequirements = styled.div`

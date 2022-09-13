@@ -215,22 +215,18 @@ const StatContainer = styled.div`
     margin-top: 20px;
     animation: ${fade_in} 0.4s ease-in-out;
 
+`
 
-    > p {
-        color: #d9d9d9;
-        font-weight: 550;
-
-    }
-
-    > *{
-        text-align: center;
-    }
+const Stats = styled.div`
+    display: flex;
+    flex-direction: column;
 
 `
 
 const OptionType = styled.p`
     color: lightgrey;
-    margin: 10px 0;
+    margin: 10px 30px;
+    align-self: flex-start;
 
     & > span{
         padding: 3px 3px;
@@ -346,11 +342,12 @@ function ListStats() {
     return (
         <StatContainer>
 
-            <Contest_h3_alt>Total Rewards Distributed: </Contest_h3_alt>
-            <OptionType><TagType>ETH:</TagType> {total_rewards.eth ? total_rewards.eth : '--'}</OptionType>
-            <OptionType><TagType type='erc20'>ERC-20:</TagType> {total_rewards.erc20 ? total_rewards.erc20.symbol : '--'}</OptionType>
-            <OptionType><TagType type='erc721'>ERC-721:</TagType>  {total_rewards.erc721 ? total_rewards.erc721.symbol : '--'}</OptionType>
-
+            <Contest_h3_alt>Total Rewards Distributed</Contest_h3_alt>
+            <Stats>
+                <OptionType><TagType>ETH:</TagType> {total_rewards.eth ? total_rewards.eth : '--'}</OptionType>
+                <OptionType><TagType type='erc20'>ERC-20:</TagType> {total_rewards.erc20 ? total_rewards.erc20.symbol : '--'}</OptionType>
+                <OptionType><TagType type='erc721'>ERC-721:</TagType>  {total_rewards.erc721 ? total_rewards.erc721.symbol : '--'}</OptionType>
+            </Stats>
         </StatContainer>
     )
 }

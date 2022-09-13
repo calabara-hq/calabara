@@ -81,7 +81,7 @@ contests.get('/fetch_submissions/*', async function (req, res, next) {
 
 contests.get('/fetch_contest_winners', verifyContestOver, async function (req, res, next) {
     const { ens, contest_hash } = req.query
-    let subs_full_details = await db.query('select contest_submissions.id, _url, author, sum(votes_spent) as votes from contest_submissions left join contest_votes on contest_submissions.id = contest_votes.submission_id where contest_submissions.ens=$1 and contest_submissions.contest_hash=$2 group by contest_submissions.id order by votes desc', [ens, contest_hash])
+    let subs_full_details = await db.query('select contest_submissions.id, _url, author, coalesce(sum(votes_spent), 0) as votes from contest_submissions left join contest_votes on contest_submissions.id = contest_votes.submission_id where contest_submissions.ens=$1 and contest_submissions.contest_hash=$2 group by contest_submissions.id order by votes desc', [ens, contest_hash])
         .then(clean)
         .then(asArray)
     res.send(subs_full_details).status(200);

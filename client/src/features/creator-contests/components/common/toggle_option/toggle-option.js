@@ -6,6 +6,8 @@ import {
     selectDashboardRules,
 } from '../../../../../features/gatekeeper/gatekeeper-rules-reducer';
 
+
+
 const GkRule = styled.div`
 
     display: flex;
@@ -97,13 +99,11 @@ display: flex;
 `
 
 const TokenLink = styled.span`
-cursor: pointer;
+    cursor: pointer;
 
-> i {color: grey};
-
+    > i {color: grey};
 
 `
-
 
 
 

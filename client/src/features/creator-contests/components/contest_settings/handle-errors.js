@@ -35,7 +35,7 @@ const check_erc721_error = (erc721) => {
 
 
 
-export default function useErrorHandler() {
+export default function useErrorHandler(date_times) {
     const submitterRewards = useSelector(submitterRewardState.getSubmitterRewards)
     const voterRewards = useSelector(voterRewardState.getVoterRewards)
     const submitterErrors = useSelector(submitterRewardState.getSubmitterErrors);
@@ -44,8 +44,16 @@ export default function useErrorHandler() {
 
 
 
-    const handleTimeBlockErrors = () => {
-        
+    const handleTimeBlockErrors = (date_times) => {
+        console.log(date_times)
+        let date_error = false;
+        let date_0 = date_times[0].toISOString();
+        let date_1 = date_times[1].toISOString();
+        let date_2 = date_times[2].toISOString();
+        console.log(date_0)
+        if (date_1 < date_0) date_error = true;
+        if (date_2 < date_1) date_error = true;
+        return date_error
     }
 
 
@@ -86,13 +94,13 @@ export default function useErrorHandler() {
 
 
 
-    const handleErrors = () => {
-        return [handleSubmitterErrors(), handleVoterErrors()]
+    const handleErrors = (args) => {
+        return [handleSubmitterErrors(), handleVoterErrors(), handleTimeBlockErrors(args)]
     }
 
 
     return {
-        handleErrors
-    }
+        handleErrors: (args) => handleErrors(args)
+}
 
 }

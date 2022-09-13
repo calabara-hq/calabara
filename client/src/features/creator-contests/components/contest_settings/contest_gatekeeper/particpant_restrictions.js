@@ -2,7 +2,6 @@ import React, { useState, useReducer } from 'react'
 import styled from 'styled-components'
 import { Contest_h2, Contest_h2_alt, Contest_h3, Contest_h3_alt } from '../../common/common_styles'
 import ToggleOption from '../../common/toggle_option/toggle-option'
-
 const RestrictionsWrap = styled.div`
     display: flex;
     flex-direction: column;
