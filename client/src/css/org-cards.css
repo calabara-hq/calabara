@@ -13,6 +13,23 @@
   gap: 20px;
 }
 
+.subscribe-btn{
+  border: none;
+  background-color: #d2d2d2;
+  border-radius: 20px;
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  font-size: 15px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.subscribe-btn:hover{
+  background-color: white;
+}
+
 @media screen and (min-width: 650px){
   .cards{
     grid-template-columns: repeat(2, minmax(0, 1fr));
