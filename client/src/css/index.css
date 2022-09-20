@@ -35,3 +35,7 @@ body{
 aside{
   z-index: 102;
 }
+
+.cdx-notifies{
+  display: none;
+}
