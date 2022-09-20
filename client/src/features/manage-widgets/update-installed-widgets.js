@@ -2,6 +2,7 @@ import React, { useEffect, useState, useReducer, useRef } from 'react'
 import { useSelector } from 'react-redux';
 import calendarLogo from '../../img/calendar.svg'
 import snapshotLogo from '../../img/snapshot.svg'
+import creatorContestsLogo from '../../img/creator-contest.png'
 import wikiLogo from '../../img/wiki.svg'
 import { useParams } from 'react-router-dom';
 import '../../css/manage-widgets.css'
@@ -111,6 +112,11 @@ function InstalledWidget({ el, selected, setSelected }) {
     imgSource = calendarLogo
     description = 'Integrate a google calendar'
     link = 'https://docs.calabara.com/v1/widgets/calendar-description'
+  }
+  if (el.name == 'creator contests') {
+    imgSource = creatorContestsLogo
+    description = 'Run contests for community creatives'
+    link = 'https://docs.calabara.com/coming-soon/creator-contests'
   }
 
 
