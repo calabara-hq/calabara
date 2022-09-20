@@ -37,7 +37,6 @@ export const EDITOR_JS_TOOLS = {
                 byFile: 'https://localhost:3000/creator_contests/upload_img',
             }
 
-
         }
     },
     header: Header,

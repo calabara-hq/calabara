@@ -163,7 +163,7 @@ function TokenStrategy({ rewardOptions, availableRules, votingStrategy, setVotin
     const [tokenData, setTokenData] = useState(null);
     const [progress, setProgress] = useState(votingStrategy.strategy_id === 0x1 ? 0 : 1);
 
-    
+
 
     let options = {};
     // squirrel; add reward options to the mix & remove duplicates
@@ -245,7 +245,7 @@ function ArcadeStrategy({ votingStrategy, setVotingStrategy, handleClose }) {
     const [progress, setProgress] = useState(votingStrategy.strategy_id === 0x2 ? 0 : 1);
 
     const handleSave = (additional_configs) => {
-        let {credit_allowance, ...rest} = additional_configs;
+        let { credit_allowance, ...rest } = additional_configs;
         let obj = {
             strategy_type: 'arcade',
             strategy_id: 0x2,
@@ -380,7 +380,7 @@ const SettingDescription = styled.div`
 const CaptureInput = styled.input`
     flex: 1 0 10%;
     color: #f2f2f2;
-    border: 2px solid #d95169;
+    border: 2px solid rgb(83, 155, 245);
     border-radius: 10px;
     background-color: #121212;
     outline: none;
@@ -408,7 +408,7 @@ function AdditionalConfig({ tokenData, setProgress, handleSave, handlePrevious }
     const tokenDisplay = () => {
         return (
             <TopLevelWrap>
-                <h4><b>1</b> {tokenData.symbol} equals <b>1</b> voting credit</h4>
+                {/*<h4><b>1</b> {tokenData.symbol} equals <b>1</b> voting credit</h4>*/}
             </TopLevelWrap>
         )
     }
@@ -442,16 +442,17 @@ function AdditionalConfig({ tokenData, setProgress, handleSave, handlePrevious }
         }
     }
 
-    
+
 
     return (
         <AdditionalConfigWrap>
             {tokenData &&
                 <>
-                    <TopLevelWrap>            
-                        <div style={{ width: 'fit-content' }} className='tab-message neutral'>
-                            <h4><b>1</b> {tokenData.symbol} equals <b>1</b> voting credit</h4>            
+                    <TopLevelWrap>
+                        {/*<div style={{ width: 'fit-content' }} className='tab-message neutral'>
+                            <h4><b>1</b> {tokenData.symbol} equals <b>1</b> voting credit</h4>
                         </div>
+            */}
                     </TopLevelWrap>
                     <MaxPerSub>
                         <SettingDescription>
@@ -477,13 +478,13 @@ function AdditionalConfig({ tokenData, setProgress, handleSave, handlePrevious }
 
             {!tokenData &&
                 <>
-                <TopLevelWrap>            
+                    <TopLevelWrap>
 
-                    <ArcadeVotes>
-                        <Contest_h3_alt_small>Voting credits per qualifying participant</Contest_h3_alt_small>
-                        <CaptureInput onWheel={(e) => e.target.blur()} type={"number"} onChange={(e) => setArcadeCredits(Number(e.target.value))}></CaptureInput>
-                    </ArcadeVotes>
-                </TopLevelWrap>
+                        <ArcadeVotes>
+                            <Contest_h3_alt_small>Voting credits per qualifying participant</Contest_h3_alt_small>
+                            <CaptureInput onWheel={(e) => e.target.blur()} type={"number"} onChange={(e) => setArcadeCredits(Number(e.target.value))}></CaptureInput>
+                        </ArcadeVotes>
+                    </TopLevelWrap>
                     <MaxPerSub>
                         <SettingDescription>
                             <Contest_h3_alt_small >Max per Submission</Contest_h3_alt_small>

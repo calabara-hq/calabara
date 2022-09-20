@@ -12,7 +12,7 @@ const ContractAddressInput = styled.input`
     width: 80%;
     color: #d3d3d3;
     background-color: #121212;
-    border: 2px solid #d95169;
+    border: 2px solid rgb(83, 155, 245);
     border-radius: 10px;
     outline: none;
     padding: 10px 15px;

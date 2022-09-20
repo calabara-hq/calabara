@@ -110,9 +110,9 @@ const labelColorOptions = [
 
 
 const ERC20Button = styled.button`
-    background-color: rgba(26,188,156,0.3);
-    color: rgb(26,188,156);
-    border: none;
+    background-color: #1e1e1e;
+    color: #03b09f;
+    border: 2px solid #03b09f;
     border-radius: 4px;
     font-weight: 550;
     padding: 5px 10px;
@@ -124,9 +124,9 @@ const ERC20Button = styled.button`
 `
 
 const ERC721Button = styled.button`
-    background-color: rgba(155, 89, 182, 0.3);
-    color: rgb(155, 89, 182);
-    border: none;
+    background-color: #1e1e1e;
+    color: #ab6afb;
+    border: 2px solid #ab6afb;
     border-radius: 4px;
     font-weight: 550;
     padding: 5px 10px;
@@ -138,25 +138,25 @@ const ERC721Button = styled.button`
 `
 const ERC20Button_alt = styled.button`
     font-weight: 550;
+    background-color: #1e1e1e;
     color: #03b09f;
-    background-color: rgb(3 176 159 / 40%);
-    border: none;
+    border: 2px solid #03b09f;
     border-radius: 4px;
     box-shadow: 0 6px 20px rgb(0 0 0 / 30%), 0 15px 12px rgb(0 0 0 / 22%);
     padding: 5px 10px;
 
     &:hover{
         background-color: rgb(3 176 159);
-        color: #f2f2f2;
+        color: #1e1e1e;
     }
 
 `
 
 const ERC721Button_alt = styled.button`
     font-weight: 550;
+    background-color: #1e1e1e;
     color: #ab6afb;
-    background-color: rgb(171 106 251 / 40%);
-    border: none;
+    border: 2px solid #ab6afb;
     border-radius: 4px;
     box-shadow: 0 6px 20px rgb(0 0 0 / 30%), 0 15px 12px rgb(0 0 0 / 22%);
     padding: 5px 10px;
@@ -164,7 +164,7 @@ const ERC721Button_alt = styled.button`
 
     &:hover{
         background-color: #ab6afb;
-        color: #f2f2f2;
+        color: #1e1e1e;
     }
 `
 

@@ -50,7 +50,7 @@ const PromptInput = styled.input`
     font-weight: 550;
     color: #d3d3d3;
     background-color: #121212;
-    border: 2px solid ${props => props.error ? "red" : '#d95169'};
+    border: 2px solid ${props => props.error ? "red" : 'rgb(83, 155, 245)'};
     border-radius: 4px;
     outline: none;
     padding: 5px 10px;
@@ -295,8 +295,8 @@ export default function PromptBuilder({ promptBuilderData, setPromptBuilderData,
             <PromptBuilderWrap>
                 <PromptTop>
                     <PromptHeadingInput>
-                        <PromptInput error={prompt_heading_error} value={prompt_heading} onChange={handleHeadingChange} placeholder='Prompt Heading'></PromptInput>
-                        {prompt_heading_error && <PromptInputError>Please provide a prompt heading</PromptInputError>}
+                        <PromptInput error={prompt_heading_error} value={prompt_heading} onChange={handleHeadingChange} placeholder='Title'></PromptInput>
+                        {prompt_heading_error && <PromptInputError>Please provide a prompt title</PromptInputError>}
                     </PromptHeadingInput>
                 </PromptTop>
                 {prompt_content_error && <PromptInputError>Prompt body cannot be empty</PromptInputError>}

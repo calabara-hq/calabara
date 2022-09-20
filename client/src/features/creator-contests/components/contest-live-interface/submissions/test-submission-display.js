@@ -314,7 +314,7 @@ function LazyLoadedSubmission({ sub, handleExpand, index }) {
         <SubmissionPreviewContainer onClick={() => handleExpand(sub.id, tldr_img, tldr_text, submission_body, sub.author, sub.votes)} contest_rank={rank}>
             <p>{tldr_text}</p>
             <LazyStyledImage>
-                <LazyLoadImage style={{ maxWidth: '12em', margin: '0 auto', borderRadius: '10px' }} src={tldr_img} effect="blur" />
+                <LazyLoadImage style={{ maxWidth: '15em', maxHeight: '15em', margin: '0 auto', borderRadius: '10px' }} src={tldr_img} effect="blur" />
             </LazyStyledImage>
             <SubmissionMetadata contest_state={contest_state} sub={sub} />
         </SubmissionPreviewContainer >

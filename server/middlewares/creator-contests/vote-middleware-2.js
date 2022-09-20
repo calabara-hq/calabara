@@ -29,7 +29,6 @@ const pre_process = async (ens, contest_hash, sub_id, walletAddress) => {
 
 
     let curr_time = new Date().toISOString()
-    console.log(sub_author)
     return {
         restrictions: Object.values(contest_meta.restrictions),
         strategy: contest_meta.strategy,
@@ -50,12 +49,11 @@ const compute_restrictions = async (mode, walletAddress, restrictions) => {
     for (const restriction of restrictions) {
         if (restriction.type === 'erc20' || restriction.type === 'erc721') {
             let result = await checkWalletTokenBalance(walletAddress, restriction.address, restriction.decimal)
-            let did_user_pass = result > restriction.threshold
+            let did_user_pass = result >= restriction.threshold
 
             // return straight away in protected mode. We don't care what the other results are
-            if (mode.protected && did_user_pass) {
-                return true
-            }
+            if (mode.protected && did_user_pass) return true
+            
             // keep accumulating results in unprotected mode
             else if (!mode.protected) {
                 restriction.user_result = did_user_pass

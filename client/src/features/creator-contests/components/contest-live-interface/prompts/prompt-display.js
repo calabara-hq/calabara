@@ -199,7 +199,7 @@ export function ContestPromptDrawer({ isDrawerOpen, handleDrawerClose, isCreatin
             style={{ backgroundColor: '#1e1e1e', overflowY: 'scroll' }}
         >
             <DrawerWrapper>
-                {<ExpandedPromptSidebar isCreating={isCreating} setIsCreating={setIsCreating} toggleDrawer={handleDrawerClose} />}
+                {isDrawerOpen && <ExpandedPromptSidebar isCreating={isCreating} setIsCreating={setIsCreating} toggleDrawer={handleDrawerClose} />}
             </DrawerWrapper>
         </Drawer>
     )
