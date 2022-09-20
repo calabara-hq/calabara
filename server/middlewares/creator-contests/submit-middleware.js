@@ -23,9 +23,6 @@ const pre_process = async (ens, walletAddress, contest_hash) => {
     )
 
     let curr_time = new Date().toISOString();
-    console.log(contest_meta._start)
-    console.log(curr_time)
-    console.log(contest_meta._voting)
 
     return {
         restrictions: Object.values(contest_meta.restrictions),
@@ -75,8 +72,6 @@ async function check_submitter_eligibility_unprotected(req, res, next) {
     let restriction_results = await compute_restrictions(mode, walletAddress, contest_meta.restrictions);
 
 
-    console.log(contest_meta)
-    console.log(restriction_results)
     req.restrictions_with_results = restriction_results;
     req.has_already_submitted = contest_meta.has_already_submitted;
     req.is_submit_window = contest_meta.is_submit_window;

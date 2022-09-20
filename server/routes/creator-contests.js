@@ -257,6 +257,7 @@ contests.post('/upload_img', imageUpload.single('image'), async (req, res) => {
     }
     res.status(200).send(img_data)
 }, (error, req, res, next) => {
+    console.log(error)
     res.status(400).send({ error: error.message })
 })
 
