@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faCheck, faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 import { fade_in, fade_out, WarningMessage } from '../../common/common_styles'
 import useCommon from '../../../../hooks/useCommon'
-import { EDITOR_JS_TOOLS } from '../../contest_settings/prompt_builder/editor_tools'
+import { EDITOR_JS_TOOLS } from '../../common/editor_tools'
 import Placeholder from '../../common/spinner'
 import { showNotification } from '../../../../notifications/notifications'
 

@@ -348,7 +348,7 @@ export function WidgetCard({ gatekeeperPass, orgInfo, widget, btnState, setBtnSt
       <div className="card-image">
         <img src={logoImg} />
       </div>
-      <h2> {name == 'wiki' ? 'docs' : name}</h2>
+      {/*<h2> {name == 'wiki' ? 'docs' : name}</h2>*/}
     </article>
 
 

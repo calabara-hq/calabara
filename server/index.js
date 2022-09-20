@@ -49,6 +49,7 @@ else if (process.env.NODE_ENV === 'production') {
     server.listen(80)
     socketConnection(secureServer)
     secureServer.listen(443, () => {
+        initialize_cron();
         initialize_discord_bot()
             .then(res => console.log(res))
             .then(console.log('Running at Port 3001'))
@@ -57,6 +58,5 @@ else if (process.env.NODE_ENV === 'production') {
 }
 
 
-initialize_cron();
 
 
