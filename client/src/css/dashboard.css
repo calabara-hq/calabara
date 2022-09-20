@@ -123,6 +123,7 @@
 }
 
 .card-image img {
+  min-width: 10rem;
   max-width: 18rem;
   max-height: 12rem;
 }
