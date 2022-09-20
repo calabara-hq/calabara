@@ -1,11 +1,13 @@
-@keyframes cardseq{
-  100% {opacity: 1;}
+@keyframes cardseq {
+  100% {
+    opacity: 1;
+  }
 }
 
 
 
-.dashboard-wrapper{
-  animation: cardseq 1.3s forwards;
+.dashboard-wrapper {
+  animation: cardseq 0.5s forwards;
   opacity: 0;
   width: 100%;
   display: flex;
@@ -13,77 +15,79 @@
   flex-wrap: wrap;
   align-items: flex-start;
   grid-gap: 10px;
+  margin: 0 auto;
 }
 
 
-.widget-cards{
-  width: auto;
+.widget-cards {
   margin: 5rem auto;
   display: grid;
   gap: 2rem;
-
 }
 
 
-@media screen and (max-width: 800px){
-  .info-container{
-    margin: 5rem auto !important; 
+@media screen and (max-width: 800px) {
+  .info-container {
+    margin: 5rem auto !important;
   }
 }
 
-@media screen and (min-width: 1101px){
-  .widget-cards{
+@media screen and (min-width: 1101px) {
+  .widget-cards {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@media screen and (min-width: 1450px){
-  .widget-cards{
+@media screen and (min-width: 1450px) {
+  .widget-cards {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
-.widget-card{
+.widget-card {
   text-align: center;
   border: none;
   border-radius: 30px;
-  padding: 2rem 6rem;
+  padding: 2rem 2rem;
   cursor: pointer;
-  background-color: #1d1d1d;
+  background-color: rgb(36, 38, 46);
   position: relative;
-  display: grid;
-  grid-template-rows: 70% 30%;
-  grid-gap: 1em;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+  display: flex;
+  min-width: 250px;
+  min-height: 200px;
+  flex: 1 0 0%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
 }
 
-.widget-card:hover{
-  background-color: rgba(29, 29, 29, 0.3);
+.widget-card:hover {
+  background-color: rgba(36, 38, 46, 0.3);
+;
 
 }
 
 
-.widget-card h2{
+.widget-card h2 {
   text-align: center;
   margin: 0 auto;
   color: #efefef;
 }
-.widget-card button{
+
+.widget-card button {
   position: absolute;
-     right: -20px;
-     top: -10px;
-     background: #ff3333;
-     text-align: center;
-     border: 3px solid black;
-     border-radius: 100%;
-     color: black;
-     padding: 5px 10px;
-     font-size: 20px;
+  right: -20px;
+  top: -10px;
+  background: #ff3333;
+  text-align: center;
+  border: 3px solid black;
+  border-radius: 100%;
+  color: black;
+  padding: 5px 10px;
+  font-size: 20px;
 }
 
 
 
-.new-widget-card{
+.new-widget-card {
   text-align: center;
   border: 2px solid black;
   border-radius: 8px;
@@ -93,35 +97,37 @@
 }
 
 
-.new-widget-card h2{
+.new-widget-card h2 {
   text-align: center;
   margin: 2 auto;
 }
 
-.configureWidgetBtn{
+.configureWidgetBtn {
   position: absolute;
-     right: -20px;
-     top: -10px;
-     background: seagreen;
-     text-align: center;
-     border: 3px solid black;
-     border-radius: 100%;
-     color: white;
-     padding: 5px 10px;
-     font-size: 20px;
+  right: -20px;
+  top: -10px;
+  background: seagreen;
+  text-align: center;
+  border: 3px solid black;
+  border-radius: 100%;
+  color: white;
+  padding: 5px 10px;
+  font-size: 20px;
 }
 
-.card-image{
+.card-image {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex: 1 1 100%;
 }
 
-.card-image img{
-  width: 10rem;
+.card-image img {
+  max-width: 18rem;
+  max-height: 12rem;
 }
 
-.info-container{
+.info-container {
   margin: 5rem;
   display: flex;
   flex-direction: column;
@@ -130,7 +136,7 @@
 
 }
 
-.info{
+.info {
   display: flex;
   flex-direction: column;
   border: none;
@@ -138,11 +144,11 @@
   background: #24262e;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
 
 }
 
-.dashboard-notify-container{
+.dashboard-notify-container {
   animation: cardseq 1.3s forwards;
   display: flex;
   flex-direction: column;
@@ -153,7 +159,8 @@
   justify-content: center;
   margin-top: 10px;
 }
-.dashboard-notify-container > span{
+
+.dashboard-notify-container>span {
   margin-left: auto;
   margin-right: 10px;
   margin-top: 5px;
@@ -161,7 +168,7 @@
   color: #7c3aed;
 }
 
-.dashboard-notify-content{
+.dashboard-notify-content {
   width: 95%;
   height: 95%;
   margin: 10px auto;
@@ -174,7 +181,7 @@
   text-align: center;
 }
 
-.dashboard-notify-content > button{
+.dashboard-notify-content>button {
   border-radius: 8px;
   border: none;
   background-color: rgb(56, 74, 255);
@@ -182,7 +189,7 @@
 }
 
 
-.edit-settings-btn{
+.edit-settings-btn {
   margin-left: auto;
   margin-right: 10px;
   margin-top: 10px;
@@ -194,51 +201,51 @@
   color: #999;
 }
 
-.edit-settings-btn:hover{
+.edit-settings-btn:hover {
   color: white;
 }
 
 
-.info-content{
+.info-content {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 }
 
-.info-content > * {
+.info-content>* {
   margin-bottom: 5px;
 }
 
-.info-content > h1{
+.info-content>h1 {
   color: #efefef;
   padding: 0px 3rem;
   text-align: center;
 }
 
-.info-content > p{
+.info-content>p {
   color: #888;
 }
 
-.info-content > a{
+.info-content>a {
   cursor: pointer;
   color: #efefef;
 }
 
 
-.info-content > span{
+.info-content>span {
   background-color: #1d1d1d;
   padding: 5px 30px;
   border-radius: 10px;
   cursor: pointer;
 }
 
-.info-content > span > img {
+.info-content>span>img {
   width: 3rem;
   background-color: #1d1d1d;
 }
 
-.info-content > img{
+.info-content>img {
   max-width: 10rem;
   max-height: 10rem;
   border-radius: 100px;
@@ -246,7 +253,7 @@
 
 
 
-.subscribe-btn{
+.subscribe-btn {
   border: none;
   background-color: #d2d2d2;
   border-radius: 20px;
@@ -259,27 +266,30 @@
   margin-bottom: 10px;
 }
 
-.subscribe-btn:hover{
+.subscribe-btn:hover {
   background-color: white;
 }
 
 
 
-.pencil-logo{
+.pencil-logo {
   font-size: 8rem;
 
 }
-.manage-widgets{
+
+.manage-widgets {
+  display: flex;
+  justify-content: center;
   background-color: #2d2e35;
   border: none;
   color: lightgrey;
 }
 
-.manage-widgets:hover{
+.manage-widgets:hover {
   background-color: rgba(45, 46, 53, 0.3);
 }
 
-.manage-widgets h2{
+.manage-widgets h2 {
   color: lightgrey;
   margin-top: 1em;
 }

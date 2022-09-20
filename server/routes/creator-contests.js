@@ -242,10 +242,9 @@ contests.get('/org_contest_stats/*', async function (req, res, next) {
 
 ///////////////////////////// end stats ////////////////////////////////////
 
-// used for lazy uploading assets in contest submissions
-
 contests.post('/upload_img', imageUpload.single('image'), async (req, res) => {
 
+    console.log('IM HERE')
 
     console.log(req.file)
 

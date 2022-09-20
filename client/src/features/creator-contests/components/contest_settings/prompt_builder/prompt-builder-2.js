@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { EDITOR_JS_TOOLS } from './editor_tools';
+import { EDITOR_JS_TOOLS } from '../../common/editor_tools';
 import { createReactEditorJS } from 'react-editor-js';
 import React, { useEffect, useRef, useCallback, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

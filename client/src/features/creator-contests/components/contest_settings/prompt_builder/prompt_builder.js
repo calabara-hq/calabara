@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useReducer, useRef, useCallback } from 'react';
 import Editor from 'react-medium-editor';
-import { EDITOR_JS_TOOLS } from './editor_tools';
+import { EDITOR_JS_TOOLS } from '../../common/editor_tools';
 import { createReactEditorJS } from 'react-editor-js';
 import styled from 'styled-components';
 import { Contest_h2, Contest_h3 } from '../../common/common_styles';
