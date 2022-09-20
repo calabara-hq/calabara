@@ -156,7 +156,7 @@ describe('protected routes voting tests', async () => {
     for (const [index, value] of voting_strategies.entries()) {
 
         it(`running suite for strategy-${index}`, async () => {
-
+/*
             let test_setup = 0;
 
             const mock_settings = JSON.parse(JSON.stringify(settings));
@@ -189,7 +189,7 @@ describe('protected routes voting tests', async () => {
             // cast a vote
             // check the metrics again
 
-/*
+
 
             // cast a dummy vote
             let num_votes = 1

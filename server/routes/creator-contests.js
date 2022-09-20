@@ -8,7 +8,7 @@ const { authenticateToken } = require('../middlewares/jwt-middleware.js');
 const { isAdmin } = require('../middlewares/admin-middleware')
 const { clean, asArray } = require('../helpers/common')
 const { createContest, isNick } = require('../middlewares/creator-contests/create-contest-middleware');
-const { createSubmission, checkSubmissionRestrictions, checkUserSubmissions, checkSubmitterEligibility } = require('../middlewares/creator-contests/submit-middleware.js');
+const { check_submitter_eligibility_unprotected, check_submitter_eligibility_PROTECTED, createSubmission } = require('../middlewares/creator-contests/submit-middleware');
 const { imageUpload } = require('../middlewares/image-upload-middleware.js');
 const { calc_sub_vp__unprotected, calc_sub_vp__PROTECTED } = require('../middlewares/creator-contests/vote-middleware-2.js');
 const logger = require('../logger').child({ component: 'creator-contests' })
@@ -116,7 +116,7 @@ contests.get('/fetch_submission_votes', async function (req, res, next) {
 ///////////////////////////// begin submissions ////////////////////////////////////
 
 
-contests.post('/create_submission', authenticateToken, checkSubmissionRestrictions, checkUserSubmissions, createSubmission, async function (req, res, next) {
+contests.post('/create_submission', authenticateToken, check_submitter_eligibility_PROTECTED, /*checkSubmissionRestrictions, checkUserSubmissions,*/ createSubmission, async function (req, res, next) {
     const { ens } = req.body;
     let result = await db.query('insert into contest_submissions (ens, contest_hash, author, created, locked, pinned, _url) values ($1, $2, $3, $4, $5, $6, $7) returning id ', [ens, req.contest_hash, req.user.address, req.created, false, false, req.url]).then(clean)
     res.sendStatus(200)
@@ -140,11 +140,12 @@ contests.post('/get_user_submissions', authenticateToken, async function (req, r
 })
 
 
-contests.post('/check_user_eligibility', checkSubmitterEligibility, async function (req, res, next) {
+contests.post('/check_user_eligibility', check_submitter_eligibility_unprotected, async function (req, res, next) {
 
     const data = {
         restrictions: req.restrictions_with_results,
-        has_already_submitted: req.has_already_submitted
+        has_already_submitted: req.has_already_submitted,
+        is_submit_window: req.is_submit_window
     }
 
 
@@ -225,7 +226,7 @@ contests.get('/org_contest_stats/*', async function (req, res, next) {
                 data.map(el => {
                     let parsed = Object.values(JSON.parse(el.rewards))
                     parsed.map(inner => {
-                        let {rank, ...reward} = inner
+                        let { rank, ...reward } = inner
                         let vals = Object.values(reward)[0]
                         //obj[Object.keys(inner)[0]] += inner[Object.keys(inner)[0]].amount
                         obj[vals.type] += vals.amount
