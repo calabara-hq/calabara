@@ -17,7 +17,6 @@ export default function useSubmissionEngine(submitter_restrictions) {
     const [restrictionResults, setRestrictionResults] = useState(Object.values(submitter_restrictions))
     const [isUserEligible, setIsUserEligible] = useState(false);
     const { authenticated_post } = useCommon();
-    const contest_state = useSelector(selectContestState)
 
     useEffect(() => {
         if (isConnected) {
@@ -25,17 +24,25 @@ export default function useSubmissionEngine(submitter_restrictions) {
             (async () => {
                 let eligibility = await axios.post('/creator_contests/check_user_eligibility', { contest_hash: contest_hash, ens: ens, walletAddress: walletAddress }).then(result => { return result.data })
                 setAlreadySubmittedError(eligibility.has_already_submitted);
-
                 setRestrictionResults(eligibility.restrictions);
-                if (contest_state !== 0) return setIsUserEligible(false)
-                if (eligibility.restrictions.length === 0) {
+
+                // error if not in submit window
+                console.log(eligibility)
+                if (!eligibility.is_submit_window) return setIsUserEligible(false);
+
+                // submitter restrictions are either true or an array
+                // if restriction results are true (no restrictions)
+                if (eligibility.restrictions === true) {
                     if (!eligibility.has_already_submitted) {
                         return setIsUserEligible(true)
                     }
                 }
-                for (const el of eligibility.restrictions) {
-                    if (el.user_result && !eligibility.has_already_submitted) {
-                        return setIsUserEligible(true)
+                // restriction results are an array
+                else {
+                    for (const el of eligibility.restrictions) {
+                        if (el.user_result && !eligibility.has_already_submitted) {
+                            return setIsUserEligible(true)
+                        }
                     }
                 }
             })();

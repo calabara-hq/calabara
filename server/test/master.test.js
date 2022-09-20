@@ -2,12 +2,12 @@ const { expect } = require('chai');
 const request = require('supertest')
 const https = require('https');
 let settings = require('./dummy-settings.test')
-const app = require('../server');
+const app = require('../server.js')
 const fs = require('fs');
 const { checkWalletTokenBalance } = require('../web3/web3')
 
 let walletAddress = '0xedcC867bc8B5FEBd0459af17a6f134F41f422f0C'
-let jwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZGRyZXNzIjoiMHhlZGNDODY3YmM4QjVGRUJkMDQ1OWFmMTdhNmYxMzRGNDFmNDIyZjBDIiwiaWF0IjoxNjYyMDY0MDU2LCJleHAiOjE2NjIwNjYyMTZ9.v1TPIT6xHV7PBxQA4x6IWGySYiuVxp2Wi8biD3WRyOw'
+let jwt = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZGRyZXNzIjoiMHhlZGNDODY3YmM4QjVGRUJkMDQ1OWFmMTdhNmYxMzRGNDFmNDIyZjBDIiwiaWF0IjoxNjYzNjMyNzAwLCJleHAiOjE2NjM2MzQ4NjB9.jPhVj1TikqE2c6ArnfIU_z3TycCZzmw35eWwS5mDFfE'
 
 
 
@@ -23,22 +23,23 @@ const initializeServer = () => {
 }
 
 
-const createDummyContest = async (index, mock_settings) => {
+const createDummyContest = async (mock_settings) => {
     let response = await request(secureServer)
         .post('/creator_contests/create_contest')
+        .set('Authorization', `Bearer ${jwt}`)
         .send({ ens: 'dev_testing.eth', contest_settings: mock_settings })
         .trustLocalhost()
     return response
 }
 
-const fetchDummyContest = async (index) => {
+const fetchDummyContest = async () => {
     let response = await request(secureServer)
         .get('/creator_contests/fetch_org_contests/dev_testing.eth')
         .trustLocalhost()
     return response
 }
 
-const createDummySubmission = async (index, contest_hash) => {
+const createDummySubmission = async (contest_hash) => {
     let response = await request(secureServer)
         .post('/creator_contests/test_create_submission')
         .send({ ens: 'dev_testing.eth', contest_hash: contest_hash })
@@ -46,7 +47,7 @@ const createDummySubmission = async (index, contest_hash) => {
     return response
 }
 
-const fetchVotingMetrics = async (index, contest_hash, submission_id) => {
+const fetchVotingMetrics = async (contest_hash, submission_id) => {
     let response = await request(secureServer)
         .post('/creator_contests/user_voting_metrics')
         .send({ ens: 'dev_testing.eth', contest_hash: contest_hash, sub_id: submission_id, walletAddress: walletAddress })
@@ -54,7 +55,7 @@ const fetchVotingMetrics = async (index, contest_hash, submission_id) => {
     return response
 }
 
-const castDummyVote = async (index, contest_hash, submission_id, num_votes) => {
+const castDummyVote = async (contest_hash, submission_id, num_votes) => {
     let response = await request(secureServer)
         .post('/creator_contests/cast_vote')
         .set('Authorization', `Bearer ${jwt}`)

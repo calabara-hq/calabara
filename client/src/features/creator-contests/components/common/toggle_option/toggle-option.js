@@ -36,12 +36,13 @@ const GkRule = styled.div`
 
 const Tag = styled.span`
 
-            color: #f2f2f2;
-            background-color: ${props => props.tagtype === 'erc20' ? '#03b09f' : (props.tagtype == 'erc721' ? '#ab6afb' : '#5865f2')};
-            padding: 3px 3px;
-            border-radius: 5px;
-            font-size: 15px;
-            font-weight: 550;
+    background-color: ${props => props.tagtype === 'erc721' ? '#1e1e1e' : props.tagtype === 'erc20' ? '#1e1e1e' : '#1e1e1e'};
+    color: ${props => props.tagtype === 'erc721' ? '#ab6afb' : props.tagtype === 'erc20' ? '#03b09f' : '#f2f2f2'};
+    border: 1px solid ${props => props.tagtype === 'erc721' ? '#ab6afb' : props.tagtype === 'erc20' ? '#03b09f' : '#f2f2f2'};
+    padding: 3px 3px;
+    border-radius: 5px;
+    font-size: 15px;
+    font-weight: 550;
 
 
 
