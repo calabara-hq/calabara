@@ -1,6 +1,4 @@
-import DateTimeSelector from "./datepicker";
-import DateTimePickerComponent from "../../../../date-time-picker/date-time-picker";
-import '../../../../../css/datepicker.css';
+import DateTimeSelector from "../../../../date-time-picker/datepicker";
 import styled from 'styled-components';
 import { useEffect, useState } from "react";
 
@@ -36,11 +34,6 @@ const PickerWrap = styled.div`
     min-width: 300px;
     width: 60%;
 `
-
-const PickerLabel = styled.p`
-    font-size: 16px;
-`
-
 const PickerError = styled.div`
     margin: 10px 0;
 `
@@ -51,53 +44,15 @@ export default function ContestDateTimeBlock(props) {
     const [date1_error, set_date1_error] = useState(null)
     const [date2_error, set_date2_error] = useState(null)
 
-    useEffect(() => {
-        // clear all errors
-        set_date0_error(null)
-        set_date1_error(null)
-        set_date2_error(null)
-        let now = new Date().toISOString();
-
-        if(props.date_1.toISOString() < props.date_0.toISOString()){
-            set_date1_error('submission end date cannot fall before start date')
-        }
-
-        if(props.date_2.toISOString() < props.date_1.toISOString()){
-            set_date2_error('end date cannot fall before submission end date')
-        }
-    },[props.date_0, props.date_1, props.date_2])
+    console.log('re rendering')
 
 
-
-
-    
     return (
         <TimeBlockWrapper title='Contest Deadlines' ref={props.TimeBlockRef}>
-
             <DateTimePickers style={{ alignSelf: 'center' }}>
-                <PickerWrap>
-                    <PickerLabel>start date</PickerLabel>
-                    <DateTimePickerComponent value={props.date_0} onChange={props.setDate_0} />
-                    {date0_error && <PickerError>{date0_error}</PickerError>}
-                </PickerWrap>
-                <PickerWrap>
-                    <PickerLabel>submission period end / voting period begin</PickerLabel>
-                    <DateTimePickerComponent value={props.date_1} onChange={props.setDate_1} />
-                    {date1_error && <PickerError>{date1_error}</PickerError>}
-                </PickerWrap>
-                <PickerWrap>
-                    <PickerLabel>end date</PickerLabel>
-                    <DateTimePickerComponent value={props.date_2} onChange={props.setDate_2} />
-                    {date2_error && <PickerError>{date2_error}</PickerError>}
-
-                </PickerWrap>
-
-                {/*<DateTimeSelector id="0" label={'start date'} date={props.date_0} setDate={props.setDate_0} />
-                <DateTimeSelector id="1" label={'submission period end / voting period begin'} date={props.date_1} setDate={props.setDate_1} minDate={props.date_1} />
-                <DateTimeSelector id="2" label={'end date'} date={props.date_2} setDate={props.setDate_2} minDate={props.date_1} />
-                */}
+                <DateTimeSelector id="1" label={'voting begin'} date={props.date_1} setDate={props.setDate_1} minDate={props.currentDate} errorMsg={'date/time cannot fall before current date/time'} />
+                <DateTimeSelector id="2" label={'contest end'} date={props.date_2} setDate={props.setDate_2} minDate={props.date_1} errorMsg={'date/time cannot fall before voting date/time'} />
             </DateTimePickers>
-
         </TimeBlockWrapper>
     )
 }

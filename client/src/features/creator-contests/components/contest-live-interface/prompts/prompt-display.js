@@ -5,7 +5,7 @@ import { Label } from "../../common/common_styles";
 import { labelColorOptions } from "../../common/common_styles";
 import SubmissionBuilder from "../submissions/submission-builder";
 import Drawer from 'react-modern-drawer'
-import 'react-modern-drawer/dist/index.css'
+//import 'react-modern-drawer/dist/index.css'
 import { fade_in, Contest_h2_alt } from "../../common/common_styles";
 import useSubmissionEngine from "../../../../hooks/useSubmissionEngine";
 import { useWalletContext } from "../../../../../app/WalletContext";
@@ -21,19 +21,21 @@ const DefaultContainerWrap = styled.div`
     border-radius: 10px;
     padding: 10px;
     position: relative;
-    min-height: 150px;
-    max-height: 290px;
+    height: 290px;
     animation: ${fade_in} 0.2s ease-in-out;
     cursor: pointer;
 
 `
 
 const PromptContainer = styled.div`
+    display: flex;
     flex-direction: column;
+    position: relative;
     height: 100%;
     border-radius: 4px;
     transition: visibility 0.2s, max-height 0.3s ease-in-out;
     color: #d3d3d3;
+    overflow: hidden;
 
     > p {
         font-size: 16px;
@@ -45,15 +47,6 @@ const PromptContainer = styled.div`
 
 `
 
-const PromptCoverImage = styled.img`
-    float: right;
-    max-width: 15em;
-    border-radius: 10px;
-    margin-left: 10px;
-    margin-bottom: 10px;
-    margin-right: 20px;
-    margin-top: 40px;
-`
 
 const DrawerWrapper = styled.div`
     display: flex;
@@ -90,23 +83,81 @@ const FadeDiv = styled.div`
 `
 
 const PromptTop = styled.div`
+    width: 100%;
     display: flex;
+    flex-direction: row;
     align-items: center;
     justify-content: flex-start;
     margin-top: 10px;
     margin-bottom: 20px;
     color: #bfbfbf;
-    
-    & ${Label}{
-        margin-left: 50px;
-        margin-right: 5px;
+
+    > ${Label}{
+        margin-left: 10px;
+        margin-right: 10px;
     }
+
 
     > h3 {
         margin-top: 0px;
         margin-bottom: 0px;
+        font-size: 2em;
     }
 
+    @media screen and (max-width: 600px){
+        > h3{
+            font-size: 1.5em;
+        }
+    }
+`
+const PromptContent = styled.div`
+    @media screen and (max-width: 700px){
+        > img{
+            max-width: 8em;
+            justify-self: center;
+            align-self: center;
+        }
+    }
+
+    @media screen and (max-width: 500px){
+        > img{
+            max-width: 6em;
+            justify-self: center;
+            align-self: center;
+        }
+    }
+
+`
+
+const PromptReadMore = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    bottom: 0;
+    background-image: linear-gradient(to bottom, rgba(30, 30, 30, 0), rgba(30, 30, 30, 1) );
+    height: 40px;
+    width: 100%;
+
+`
+
+const ReadMoreButton = styled.button`
+    border-radius: 100px;
+    border: 2px solid rgba(191, 191, 191, 0.5);
+    background-color: #1e1e1e;
+    padding: 5px 10px;
+    &:hover{
+        border-color: rgba(191, 191, 191, 0.9);
+        transition: border-color 0.2s ease-in-out;
+    }
+    
+`
+
+const PromptCoverImage = styled.img`
+    float: right;
+    max-width: 12em;
+    max-height: 12em;
+    border-radius: 10px;
 
 `
 
@@ -151,7 +202,6 @@ const CreateSubmissionButtonContainer = styled.div`
 export default function PromptDisplay({ }) {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
-    const contest_state = useSelector(selectContestState)
     const prompt_data = useSelector(selectPromptData)
 
     const handleDrawerOpen = () => {
@@ -172,13 +222,17 @@ export default function PromptDisplay({ }) {
         <>
             <DefaultContainerWrap onClick={handleDrawerOpen}>
                 <PromptContainer >
-                    <PromptCoverImage src={prompt_data.coverImage} />
                     <PromptTop>
                         <h3>{prompt_data.title}</h3>
                         <Label color={labelColorOptions[prompt_data.promptLabelColor]}>{prompt_data.promptLabel}</Label>
                     </PromptTop>
-                    <ParseBlocks data={prompt_data.editorData} />
-
+                    <PromptContent>
+                        <PromptCoverImage src={prompt_data.coverImage} />
+                        <ParseBlocks data={prompt_data.editorData} />
+                    </PromptContent>
+                    <PromptReadMore>
+                        <ReadMoreButton>Show more</ReadMoreButton>
+                    </PromptReadMore>
                 </PromptContainer>
                 <ContestPromptDrawer isDrawerOpen={isDrawerOpen} handleDrawerClose={handleDrawerClose} isCreating={isCreating} setIsCreating={setIsCreating} />
             </DefaultContainerWrap>
@@ -354,12 +408,14 @@ function ExpandedPromptSidebar({ isCreating, setIsCreating, toggleDrawer }) {
             {!isCreating &&
                 <>
                     <PromptWrap>
-                        <PromptCoverImage src={prompt_data.coverImage} />
                         <PromptTop>
                             <h3>{prompt_data.title}</h3>
                             <Label color={labelColorOptions[prompt_data.promptLabelColor]}>{prompt_data.promptLabel}</Label>
                         </PromptTop>
-                        <ParseBlocks data={prompt_data.editorData} />
+                        <PromptContent>
+                            <PromptCoverImage src={prompt_data.coverImage} />
+                            <ParseBlocks data={prompt_data.editorData} />
+                        </PromptContent>
                     </PromptWrap>
 
                     <SubmissionRequirements>

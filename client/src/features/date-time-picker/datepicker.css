@@ -1,0 +1,52 @@
+.date-time-picker {
+    max-width: 400px;
+}
+
+.date-time-picker label {
+    font-size: 1.8rem;
+    color: #b3b3b3;
+    align-self: flex-start;
+    margin-left: 10px;
+}
+
+
+
+.date-time-picker input {
+    font-size: 2rem;
+    color: #d3d3d3;
+    padding: 20px 10px !important;
+    cursor: pointer;
+}
+
+
+
+.date-time-picker input:focus {
+    border: 2px solid #539bf5;
+
+}
+
+.date-time-picker div[id^='error-message'] {
+    color: rgba(254, 72, 73, 1);
+    font-size: 1.5rem;
+}
+
+
+#datepicker_modal h2 {
+    font-size: 2.5rem;
+}
+
+#datepicker_modal th {
+    font-size: 1.5rem;
+}
+
+#datepicker_modal button {
+    font-size: 1.5rem;
+}
+
+#datepicker_modal td {
+    font-size: 2rem;
+}
+
+#datepicker_modal select {
+    font-size: 1.5rem;
+}

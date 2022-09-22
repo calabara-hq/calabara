@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { ParseBlocks, parse_base_js } from "../block-parser";
 import { SubmissionVotingBox } from "../vote/voting-components";
 import Drawer from 'react-modern-drawer'
-import 'react-modern-drawer/dist/index.css'
+//import 'react-modern-drawer/dist/index.css'
 import { selectContestState } from "../interface/contest-interface-reducer";
 import { useSelector } from "react-redux";
 import { fade_in } from "../../common/common_styles";
