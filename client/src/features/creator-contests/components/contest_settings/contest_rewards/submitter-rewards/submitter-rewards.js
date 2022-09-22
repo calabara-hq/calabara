@@ -48,7 +48,7 @@ function SubmitterRewardsGrid({ numWinners, selectedRewards, errorMatrix, theme 
             <GridContainer><b></b></GridContainer>
             {Array.from(Array(numWinners)).map((val, idx) => {
                 return (
-                    <RewardGridRow idx={idx} theme={theme} val={val} selectedRewards={selectedRewards} errorMatrix={errorMatrix} />
+                    <RewardGridRow key={idx} idx={idx} theme={theme} val={val} selectedRewards={selectedRewards} errorMatrix={errorMatrix} />
                 )
             })}
             <GridContainer style={{ justifySelf: 'flex-start' }}><AddRewardButton onClick={handleWinnersIncrement}>add</AddRewardButton></GridContainer>

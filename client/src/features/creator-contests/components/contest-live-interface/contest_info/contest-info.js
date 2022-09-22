@@ -8,8 +8,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheckCircle, faTimesCircle, faTimes, faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
 import { InterfaceHeading, ContestDetails, DetailRow, DetailRowHover, CheckpointWrap, CheckpointBottomTag, CheckpointBottom, label_status, DetailBox, DetailItem, ContestDetailWrapper } from './contest-info-style'
 import { selectContestSettings, selectContestState } from "../interface/contest-interface-reducer";
-import Drawer from 'react-modern-drawer';
-import 'react-modern-drawer/dist/index.css';
+
+import DrawerComponent from "../../../../drawer/drawer.js";
 import styled from 'styled-components';
 import { Placeholder } from '../../common/common_components';
 import ContestMoreDetails from "./contest-more-details.js";
@@ -122,13 +122,15 @@ export default function ContestInfo() {
                     </DetailBox>
                 </ContestDetails>
             </ContestDetailWrapper>
-            <ContestInfoDrawer contest_settings={contest_settings} handleClose={handleDrawerClose} drawerOpen={drawerOpen} />
-
+            {/*<ContestInfoDrawer contest_settings={contest_settings} handleClose={handleDrawerClose} drawerOpen={drawerOpen} />*/}
+            <DrawerComponent drawerOpen={drawerOpen} handleClose={handleDrawerClose} showExit={true}>
+                <ContestMoreDetails contest_settings={contest_settings} mode={0} />
+            </DrawerComponent>
         </>
     )
 }
 
-
+/*
 const DrawerWrapper = styled.div`
     display: flex;
     flex-direction: column;
@@ -147,6 +149,14 @@ const DrawerWrapper = styled.div`
 `
 
 
+const DrawerStyle = styled.div`
+    background-color: #1e1e1e;
+    overflow-y: scroll;
+    width: 50vw;
+`
+
+
+
 function ContestInfoDrawer({ contest_settings, drawerOpen, handleClose }) {
 
     return (
@@ -155,8 +165,6 @@ function ContestInfoDrawer({ contest_settings, drawerOpen, handleClose }) {
             onClose={handleClose}
             direction='right'
             className='prompt-expand'
-            size='50vw'
-            style={{ backgroundColor: '#1e1e1e', overflowY: 'scroll' }}
         >
             {drawerOpen &&
                 <DrawerWrapper>
@@ -166,3 +174,4 @@ function ContestInfoDrawer({ contest_settings, drawerOpen, handleClose }) {
         </Drawer>
     )
 }
+*/

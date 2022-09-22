@@ -280,7 +280,7 @@ function SaveSettings(props) {
             promptLabelColor: promptBuilderData.prompt_label_color
         }
 
-        console.log(contest_data)
+        console.log(contest_data.submitter_rewards)
 
 
 
