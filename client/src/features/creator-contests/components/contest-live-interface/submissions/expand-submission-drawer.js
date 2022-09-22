@@ -2,33 +2,13 @@ import { useEffect, useRef, useState, useMemo } from "react";
 import styled from 'styled-components'
 import { ParseBlocks, parse_base_js } from "../block-parser";
 import { SubmissionVotingBox } from "../vote/voting-components";
-import Drawer from 'react-modern-drawer'
-//import 'react-modern-drawer/dist/index.css'
+import DrawerComponent from "../../../../drawer/drawer";
 import { selectContestState } from "../interface/contest-interface-reducer";
 import { useSelector } from "react-redux";
 import { fade_in } from "../../common/common_styles";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Author, SubmissionMeta, VoteTotals } from "./submission-styles";
-import Placeholder from "../../common/spinner";
 
-const ToolbarTop = styled.div`
-    display: flex;
-    width: 100%;
-    align-items: center;
-    justify-content: center;
-    
-`
-
-const ExitButton = styled.button`
-    font-weight: bold;
-    background-color: #2d2e35;
-    color: lightcoral;
-    border: none;
-    border-radius: 4px;
-    padding: 10px 20px;
-    margin-left: auto;
-
-`
 
 
 const DrawerWrapper = styled.div`
@@ -69,8 +49,9 @@ const SubmissionWrap = styled.div`
 
     }
 
-    > img {
+    img {
         max-width: 35em;
+        border-radius: 10px;
         align-self: center;
         justify-self: center;
         border-radius: 10px;
@@ -79,39 +60,55 @@ const SubmissionWrap = styled.div`
         text-align: center;
     }
 
+    @media screen and (max-width: 500px){
+        img{
+            max-width: 20em !important;
+        }
+    }
+
     > * {
         margin-top: 20px;
         margin-bottom: 20px;
-        margin-right: 30px;
 
 
     }
     
 `
+const LazyLoadImageContainer = styled.div`
+    img {
+        max-width: 35em;
+        border-radius: 10px;
+    }
 
-const AuthorSpan = styled.span`
-    position: absolute;
-    right: 0;
-    top: 0;
-    border: double 2px transparent;
-    border-radius: 40px;
-    background-image: linear-gradient(#24262e, #24262e), linear-gradient(to right, #e00f8e, #2d66dc);
-    background-origin: border-box;
-    background-clip: padding-box, border-box;
-    box-shadow: 0 10px 30px rgb(0 0 0 / 30%), 0 15px 12px rgb(0 0 0 / 22%);
-    padding: 5px;
+    
+
 `
-
-
-
 
 export default function ExpandSubmissionDrawer({ drawerOpen, handleClose, id, TLDRImage, TLDRText, expandData, author, votes }) {
     const contest_state = useSelector(selectContestState)
-    const [loaded, setLoaded] = useState(false);
-
 
     return (
+        <DrawerComponent drawerOpen={drawerOpen} handleClose={handleClose} showExit={true}>
+            {contest_state === 1 && <SubmissionVotingBox sub_id={id} />}
+            <SubmissionWrap>
+                <>
+                    {contest_state === 2 &&
+                        <SubmissionMeta>
+                            {author && <Author>{author.substring(0, 6)}...{author.substring(38, 42)}</Author>}
+                            {votes !== null && <VoteTotals>{votes} votes</VoteTotals>}
+                        </SubmissionMeta>
+                    }
+                </>
+                <p>{TLDRText}</p>
+                <LazyLoadImage src={TLDRImage} effect="opacity" />
+                {expandData && <ParseBlocks data={expandData} />}
+            </SubmissionWrap>
+        </DrawerComponent>
 
+    )
+}
+
+/*
         <Drawer
             open={drawerOpen}
             onClose={handleClose}
@@ -136,13 +133,9 @@ export default function ExpandSubmissionDrawer({ drawerOpen, handleClose, id, TL
                         <p>{TLDRText}</p>
 
                         <LazyLoadImage src={TLDRImage} style={{ maxWidth: '35em', borderRadius: '10px' }} effect="opacity" />
-                        {/*<img src={TLDRImage}></img>*/}
-
                         {expandData && <ParseBlocks data={expandData} />}
                     </SubmissionWrap>
                 </DrawerWrapper>
             }
         </Drawer>
-    )
-}
-
+        */

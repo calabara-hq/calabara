@@ -9,7 +9,7 @@ const DrawerContentWrapper = styled.div`
     display: flex;
     flex-direction: column;
     position: relative;
-    //width: 92%;
+    width: 95%;
     margin: 0 auto;
     margin-left: 20px;
     margin-top: 20px;
@@ -21,14 +21,19 @@ const DrawerContentWrapper = styled.div`
         margin-bottom: 30px;
     }
 `
-const ExitButton = styled.div`
-    position: absolute;
+
+const ExitButtonContainer = styled.div`
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+`
+
+
+const ExitButton = styled.button`
     display: flex;
     justify-content: center;
     align-items: center;
     width: 3em;
-    right: 10px;
-    top: 20px;
     border: 2px solid #4d4d4d;
     color: grey;
     border-radius: 100%;
@@ -41,21 +46,25 @@ const ExitButton = styled.div`
         background-color: rgba(34, 34, 46, 0.8);
         border: 2px solid #d3d3d3;
     }
+
+    @media screen and (max-width: 550px){
+        margin-right: 10px;
+    }
 `
 
-export default function DrawerComponent({ drawerOpen, handleClose, showExit, children }) {
-
-
+export default function DrawerComponent({ drawerOpen, handleClose, showExit, customWidth, children }) {
     return (
         <Drawer
             open={drawerOpen}
             onClose={handleClose}
             direction='right'
-            style={null}
+            size={customWidth ? customWidth : null}
         >
             {drawerOpen &&
                 <DrawerContentWrapper>
-                    {showExit && <ExitButton onClick={handleClose}>X</ExitButton>}
+                    <ExitButtonContainer>
+                        {showExit && <ExitButton onClick={handleClose}>X</ExitButton>}
+                    </ExitButtonContainer>
                     {children}
                 </DrawerContentWrapper>
             }

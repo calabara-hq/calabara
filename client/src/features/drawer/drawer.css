@@ -25,7 +25,7 @@
     position: fixed;
     visibility: hidden;
     background: #1e1e1e;
-    width: 60vw !important;
+    width: 60vw;
     transition: all;
     box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.1);
     overflow-y: scroll;

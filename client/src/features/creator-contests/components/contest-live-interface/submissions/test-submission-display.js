@@ -8,7 +8,7 @@ import { socket } from '../../service/socket';
 import { selectContestState } from '../interface/contest-interface-reducer';
 import { fetchSubmission } from './submission-data-fetch';
 import DisplayWinners from '../winners/contest-winners';
-import { ContestPromptDrawer } from '../prompts/prompt-display';
+import { ExpandedPromptComponent } from '../prompts/prompt-display';
 import { VoteTotals, SubmissionMeta, Author } from './submission-styles';
 
 
@@ -173,7 +173,6 @@ export default function SubmissionDisplay({ }) {
             </SubmissionHeading>
             <SubmissionWrap>
                 < MapSubmissions subs={subs} />
-                {/*<ExpandSubmissionDrawer drawerOpen={drawerOpen} handleClose={handleClose} id={idToExpand} TLDRImage={TLDRImage} TLDRText={TLDRText} expandData={expandData} author={author} votes={votes} />*/}
             </SubmissionWrap>
         </div>
     )
@@ -216,7 +215,7 @@ function CreateSubmission({ }) {
     if (contest_state === 0) return (
         <>
             <CreateSubmissionButton onClick={handleDrawerOpen}>create submission</CreateSubmissionButton>
-            <ContestPromptDrawer isDrawerOpen={isDrawerOpen} handleDrawerClose={handleDrawerClose} isCreating={isCreating} setIsCreating={setIsCreating} />
+            <ExpandedPromptComponent isDrawerOpen={isDrawerOpen} handleDrawerClose={handleDrawerClose} isCreating={isCreating} setIsCreating={setIsCreating} />
         </>
     )
 
