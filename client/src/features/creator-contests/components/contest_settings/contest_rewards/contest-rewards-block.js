@@ -43,7 +43,7 @@ const ParticipantRewardsWrap = styled.div`
 
 
 
-export default function ContestRewardsBlock({ theme, voterRewards, setVoterRewards, SubmitterRewardsRef, VoterRewardsRef }) {
+export default function ContestRewardsBlock({ theme, voterRewards, setVoterRewards }) {
     const selectedRewards = useSelector(rewardOptionState.getSelectedRewards)
 
 
@@ -62,8 +62,8 @@ export default function ContestRewardsBlock({ theme, voterRewards, setVoterRewar
 
             {Object.keys(selectedRewards).length > 0 &&
                 <ParticipantRewardsWrap>
-                    <SubmitterRewardsBlock theme={theme} SubmitterRewardsRef={SubmitterRewardsRef} />
-                    {isVoterBlockVisible() && <VoterRewardsBlock theme={theme} VoterRewardsRef={VoterRewardsRef} />}
+                    <SubmitterRewardsBlock theme={theme} />
+                    {isVoterBlockVisible() && <VoterRewardsBlock theme={theme} />}
                 </ParticipantRewardsWrap>
             }
             {/*<button onClick={handleErrors}>submit</button>*/}

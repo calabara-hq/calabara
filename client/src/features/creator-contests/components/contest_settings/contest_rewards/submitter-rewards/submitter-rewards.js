@@ -10,7 +10,7 @@ import { blue } from '@mui/material/colors';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 
-export default function SubmitterRewardsBlock({ setErrorMatrix, theme, SubmitterRewardsRef }) {
+export default function SubmitterRewardsBlock({ setErrorMatrix, theme }) {
     const selectedRewards = useSelector(rewardOptionState.getSelectedRewards)
     const numWinners = useSelector(submitterRewardState.getNumSubmissionWinners)
     const errorMatrix = useSelector(submitterRewardState.getSubmitterErrors)
@@ -19,7 +19,7 @@ export default function SubmitterRewardsBlock({ setErrorMatrix, theme, Submitter
 
 
     return (
-        <RewardTypeWrap ref={SubmitterRewardsRef}>
+        <RewardTypeWrap>
 
             <SettingsSectionSubHeading>
                 <Contest_h3_alt grid_area={'section_title'}>Submitter Rewards</Contest_h3_alt>

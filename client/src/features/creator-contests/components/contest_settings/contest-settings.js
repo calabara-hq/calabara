@@ -2,12 +2,10 @@ import React, { useEffect, useReducer, useRef, useState } from "react"
 import ContestDateTimeBlock from "./datepicker/start-end-date"
 import ContestRewardsBlock from "./contest_rewards/contest-rewards-block"
 import ContestParticipantRestrictions from "./contest_gatekeeper/particpant_restrictions";
-import PromptBuilder from "./prompt_builder/prompt-builder-2";
-import { RainbowThemeContainer } from 'react-rainbow-components';
+import PromptBuilder from "./prompt_builder/prompt-builder";
 import SimpleInputs from "./contest_simple_inputs/contest_simple_inputs";
 import styled from 'styled-components'
 import VotingPolicy from "./voting_policy/voting-policy";
-import axios from "axios";
 import { useParams } from "react-router-dom";
 import useDashboardRules from "../../../hooks/useDashboardRules";
 import useCommon from "../../../hooks/useCommon";
@@ -64,22 +62,17 @@ const ContestSettingsWrap = styled.div`
     display: flex;
     flex-direction: column;
     animation: ${fade_in} 0.4s ease-in-out;
-    
-    > *  {
+
+`
+
+const SettingsBlockElement = styled.div`
         margin: 50px auto;
         border-radius: 10px;
         width: 60%;
         padding: 10px;
         background-color: #1e1e1e;
-        //border: 2px solid #444c56;
         color: #d9d9d9;
-    }
 `
-
-const containerStyles = {
-    maxWidth: 300,
-    width: '5rem',
-};
 
 function reducer(state, action) {
     switch (action.type) {
@@ -106,7 +99,7 @@ const initialPromptData = {
 
 export default function ContestSettings() {
 
-    const [date_0, setDate_0] = useState(new Date())
+    const [currentDate, setCurrentDate] = useState(new Date())
     const [date_1, setDate_1] = useState(new Date())
     const [date_2, setDate_2] = useState(new Date())
     const [votingStrategy, setVotingStrategy] = useReducer(reducer, { strategy_id: 0x0 });
@@ -124,8 +117,7 @@ export default function ContestSettings() {
 
 
     const TimeBlockRef = useRef(null);
-    const SubmitterRewardsRef = useRef(null);
-    const VoterRewardsRef = useRef(null);
+    const RewardsRef = useRef(null);
     const RestrictionsBlockRef = useRef(null)
     const StrategyBlockRef = useRef(null)
     const PromptBlockRef = useRef(null)
@@ -140,65 +132,68 @@ export default function ContestSettings() {
     }, [])
 
 
-    const firstUpdate = useRef(true)
-
-
-    useEffect(() => {
-        if (firstUpdate.current) {
-
-            firstUpdate.current = false;
-            return;
-        }
-    }, [date_0])
-
 
     return (
         <ContestSettingsWrap>
-            <ContestDateTimeBlock
-                TimeBlockRef={TimeBlockRef}
-                date_0={date_0}
-                date_1={date_1}
-                date_2={date_2}
-                setDate_0={setDate_0}
-                setDate_1={setDate_1}
-                setDate_2={setDate_2}
-            />
-            <ContestRewardsBlock
-                theme={theme.rainbow}
-                SubmitterRewardsRef={SubmitterRewardsRef}
-                VoterRewardsRef={VoterRewardsRef}
-            />
 
+            <SettingsBlockElement ref={TimeBlockRef}>
+                <ContestDateTimeBlock
+                    currentDate={currentDate}
+                    date_1={date_1}
+                    date_2={date_2}
+                    setCurrentDate={setCurrentDate}
+                    setDate_1={setDate_1}
+                    setDate_2={setDate_2}
+                />
+            </SettingsBlockElement>
 
-            <ContestParticipantRestrictions
-                submitterAppliedRules={submitterAppliedRules}
-                setSubmitterAppliedRules={setSubmitterAppliedRules}
-                voterAppliedRules={voterAppliedRules}
-                setVoterAppliedRules={setVoterAppliedRules}
-                submitterRuleError={submitterRuleError}
-                setSubmitterRuleError={setSubmitterRuleError}
-                voterRuleError={voterRuleError}
-                setVoterRuleError={setVoterRuleError}
-            />
+            <SettingsBlockElement ref={RewardsRef}>
+                <ContestRewardsBlock
+                    theme={theme.rainbow}
+                />
+            </SettingsBlockElement>
 
-            <VotingPolicy votingStrategy={votingStrategy} setVotingStrategy={setVotingStrategy} />
-            <PromptBuilder promptBuilderData={promptBuilderData} setPromptBuilderData={setPromptBuilderData} promptEditorCore={promptEditorCore} />
-            <SimpleInputs simpleInputData={simpleInputData} setSimpleInputData={setSimpleInputData} />
-            <SaveSettings
-                date_0={date_0}
-                date_1={date_1}
-                date_2={date_2}
-                promptEditorCore={promptEditorCore}
-                votingStrategy={votingStrategy}
-                submitterAppliedRules={submitterAppliedRules}
-                voterAppliedRules={voterAppliedRules}
-                simpleInputData={simpleInputData}
-                promptBuilderData={promptBuilderData}
-                TimeBlockRef={TimeBlockRef}
-                SubmitterRewardsRef={SubmitterRewardsRef}
-                VoterRewardsRef={VoterRewardsRef}
+            <SettingsBlockElement>
+                <ContestParticipantRestrictions
+                    submitterAppliedRules={submitterAppliedRules}
+                    setSubmitterAppliedRules={setSubmitterAppliedRules}
+                    voterAppliedRules={voterAppliedRules}
+                    setVoterAppliedRules={setVoterAppliedRules}
+                    submitterRuleError={submitterRuleError}
+                    setSubmitterRuleError={setSubmitterRuleError}
+                    voterRuleError={voterRuleError}
+                    setVoterRuleError={setVoterRuleError}
+                />
+            </SettingsBlockElement>
 
-            />
+            <SettingsBlockElement>
+                <VotingPolicy votingStrategy={votingStrategy} setVotingStrategy={setVotingStrategy} />
+            </SettingsBlockElement>
+
+            <SettingsBlockElement>
+                <PromptBuilder promptBuilderData={promptBuilderData} setPromptBuilderData={setPromptBuilderData} promptEditorCore={promptEditorCore} />
+            </SettingsBlockElement>
+
+            <SettingsBlockElement>
+                <SimpleInputs simpleInputData={simpleInputData} setSimpleInputData={setSimpleInputData} />
+            </SettingsBlockElement>
+
+            <SettingsBlockElement>
+                <SaveSettings
+                    setCurrentDate={setCurrentDate}
+                    date_1={date_1}
+                    date_2={date_2}
+                    promptEditorCore={promptEditorCore}
+                    votingStrategy={votingStrategy}
+                    submitterAppliedRules={submitterAppliedRules}
+                    voterAppliedRules={voterAppliedRules}
+                    simpleInputData={simpleInputData}
+                    promptBuilderData={promptBuilderData}
+                    TimeBlockRef={TimeBlockRef}
+                    RewardsRef={RewardsRef}
+                />
+            </SettingsBlockElement>
+
         </ContestSettingsWrap >
     )
 }
@@ -210,11 +205,11 @@ function SaveSettings(props) {
     const submitterRewards = useSelector(submitterRewardState.getSubmitterRewards)
     const voterRewards = useSelector(voterRewardState.getVoterRewards)
     const { authenticated_post } = useCommon();
-    const { handleErrors, isSubmitterError } = useErrorHandler();
+    const { handleErrors } = useErrorHandler();
     const { ens } = useParams();
 
     const {
-        date_0,
+        setCurrentDate,
         date_1,
         date_2,
         promptEditorCore,
@@ -224,19 +219,18 @@ function SaveSettings(props) {
         simpleInputData,
         promptBuilderData,
         TimeBlockRef,
-        SubmitterRewardsRef,
-        VoterRewardsRef
+        RewardsRef
     } = props
 
 
     const handleSave = async () => {
 
-        let [isSubmitterError, isVoterError, isTimeError] = handleErrors([date_0, date_1, date_2]);
-        if(isTimeError) return TimeBlockRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
-        if (isSubmitterError) return SubmitterRewardsRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
-        if (isVoterError) return VoterRewardsRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        let [isSubmitterError, isVoterError, isTimeError] = handleErrors([setCurrentDate, date_1, date_2]);
+        if (isTimeError) return TimeBlockRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        if (isSubmitterError) return RewardsRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        if (isVoterError) return RewardsRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
 
-        
+
         let strategy
         if (votingStrategy.strategy_type === 'arcade') {
             strategy = {
@@ -263,7 +257,7 @@ function SaveSettings(props) {
 
         let contest_data = {
             date_times: {
-                start_date: date_0.toISOString(),
+                start_date: new Date().toISOString(),
                 voting_begin: date_1.toISOString(),
                 end_date: date_2.toISOString()
             },
@@ -293,10 +287,10 @@ function SaveSettings(props) {
         if (window.confirm('are you sure you want to continue?')) {
             authenticated_post('/creator_contests/create_contest', { ens: ens, contest_settings: contest_data, prompt_data: prompt_data })
         }
-        
+
     }
 
     return (
-        <button onClick={handleSave}>save</button>
+        <button style={{ color: 'black' }} onClick={handleSave}>save</button>
     )
 }

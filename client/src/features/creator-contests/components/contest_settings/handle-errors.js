@@ -43,17 +43,20 @@ export default function useErrorHandler(date_times) {
     const dispatch = useDispatch();
 
 
+    // compare the first date to the current date, in case user has been idle for a while.
+    // if date_1 is less than the new date, update the state of current date to force a re-render of the timeblock to throw a visible error
 
     const handleTimeBlockErrors = (date_times) => {
-        console.log(date_times)
-        let date_error = false;
-        let date_0 = date_times[0].toISOString();
+        let setCurrentDate = date_times[0]
         let date_1 = date_times[1].toISOString();
         let date_2 = date_times[2].toISOString();
-        console.log(date_0)
-        if (date_1 < date_0) date_error = true;
-        if (date_2 < date_1) date_error = true;
-        return date_error
+        let now = new Date();
+        if (date_1 < now.toISOString()) {
+            setCurrentDate(now)
+            return true
+        }
+        if (date_2 < date_1) return true
+        return false
     }
 
 
@@ -101,6 +104,6 @@ export default function useErrorHandler(date_times) {
 
     return {
         handleErrors: (args) => handleErrors(args)
-}
+    }
 
 }
