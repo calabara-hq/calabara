@@ -25,12 +25,20 @@
     position: fixed;
     visibility: hidden;
     background: #1e1e1e;
-    width: 60vw;
+    width: 40vw;
     transition: all;
     box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.1);
     overflow-y: scroll;
     overflow-x: hidden;
 }
+
+@media screen and (max-width: 1400px) {
+    .EZDrawer .EZDrawer__container {
+        width: 60vw !important;
+    }
+}
+
+
 
 @media screen and (max-width: 800px) {
     .EZDrawer .EZDrawer__container {

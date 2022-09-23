@@ -22,10 +22,18 @@ let compact_formatter = Intl.NumberFormat('en', { notation: 'compact' })
 
 const ContestTag = styled.p`
     color: #d9d9d9;
-    font-size: 20px;
+    font-size: 1.5em;
     cursor: pointer;
     margin: 0;
     padding: 5px;
+
+    @media screen and (max-width: 600px){
+        font-size: 1.2em;
+    }
+
+    @media screen and (max-width: 500px){
+        font-size: 1em;
+    }
 `
 
 const ContestHomeWrap = styled.div`
@@ -92,7 +100,8 @@ const HomeRight = styled.div`
 
 const RoundContainer = styled.div`
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column-reverse;
+    width: 100%;
     justify-content: center;
     align-content: flex-start;
     height: fit-content;
@@ -102,7 +111,7 @@ const RoundContainer = styled.div`
 
 `
 
-const RoundWrap = styled.div`
+const Contest = styled.div`
     display: flex;
     align-items: center;
     width: 95%;
@@ -162,6 +171,7 @@ const NewContest = styled.button`
     background-color: #1e1e1e;
     color: #d3d3d3;
     padding: 10px 15px;
+    font-weight: bold;
     &:hover{
         transform: scale(1.01);
     }
@@ -410,11 +420,11 @@ function ListContests({ homepage_data }) {
         <RoundContainer>
             {all_contests.map(el => {
                 return (
-                    <RoundWrap onClick={() => handleInterface(el._hash)}>
+                    <Contest onClick={() => handleInterface(el._hash)}>
                         <ContestTag>{el._title}</ContestTag>
                         <Label color={labelColorOptions[el._prompt_label_color]}>{el._prompt_label}</Label>
                         <CalculateState contest_info={el} />
-                    </RoundWrap>
+                    </Contest>
                 )
             })}
         </RoundContainer>

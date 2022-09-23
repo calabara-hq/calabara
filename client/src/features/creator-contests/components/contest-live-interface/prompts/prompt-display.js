@@ -60,7 +60,7 @@ export default function PromptDisplay({ }) {
 
 export function ExpandedPromptComponent({ isDrawerOpen, handleDrawerClose, isCreating, setIsCreating }) {
     return (
-        <DrawerComponent drawerOpen={isDrawerOpen} handleClose={handleDrawerClose} showExit={!isCreating} customWidth={isCreating ? '70vw' : '60vw'}>
+        <DrawerComponent drawerOpen={isDrawerOpen} handleClose={handleDrawerClose} showExit={!isCreating} customWidth={isCreating ? '70vw' : '40vw'}>
             <ExpandedPrompt isCreating={isCreating} setIsCreating={setIsCreating} handleClose={handleDrawerClose} />
         </DrawerComponent>
     )
