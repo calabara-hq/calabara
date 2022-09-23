@@ -9,7 +9,7 @@ import { selectContestState } from '../interface/contest-interface-reducer';
 import { fetchSubmission } from './submission-data-fetch';
 import DisplayWinners from '../winners/contest-winners';
 import { ExpandedPromptComponent } from '../prompts/prompt-display';
-import { VoteTotals, SubmissionMeta, Author } from './submission-styles';
+import { VoteTotals, SubmissionMeta, Author, SubmissionBottomBlur } from './submission-styles';
 
 
 const SubmissionWrap = styled.div`
@@ -92,20 +92,39 @@ const LazyStyledImage = styled.div`
     margin-top: auto;
     margin-bottom: auto;
 `
+
 const SubmissionHeading = styled.div`
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
         justify-content: flex-start;
-        position: relative;
-        flex-wrap: wrap;
-        > div {
-            text-align: left;
-            flex: 1;
+        width: 100%;
+        margin-bottom: 20px;
+        > h2 {
+            text-align: center;
+        }
+        @media screen and (max-width: 408px){
+            justify-content: center;
         }
     `
 
 
+const CreateSubmissionButton = styled.button`
+    margin-left: auto;
+    font-size: 15px;
+    border: 2px solid #539bf5;
+    border-radius: 10px;
+    background-color: #1e1e1e;
+    color: #d3d3d3;
+    padding: 10px 15px;
+    &:active{
+        transform: scale(0.9);
+    }
+    @media screen and (max-width: 408px){
+        margin-left: 0;
+    }
 
+`
 
 export default function SubmissionDisplay({ }) {
     const { ens, contest_hash } = useParams();
@@ -148,52 +167,22 @@ export default function SubmissionDisplay({ }) {
     }, [socket])
     console.log(subs)
 
-    if (subs.length === 0) {
-        return (
-            <div>
-                <SubmissionHeading>
-                    <div>
-                        <h2 style={{ color: '#d3d3d3', marginBottom: '30px' }}>Submissions</h2>
-                    </div>
-                    <DisplayWinners />
-                    <CreateSubmission />
-                </SubmissionHeading >
-            </div >
-        )
-    }
-
     return (
         <div>
             <SubmissionHeading>
-                <div>
-                    <h2 style={{ color: '#d3d3d3', marginBottom: '30px' }}>Submissions</h2>
-                </div>
+                <h2 style={{ color: '#d3d3d3', marginBottom: '30px' }}>Submissions</h2>
                 <DisplayWinners />
                 <CreateSubmission />
-            </SubmissionHeading>
-            <SubmissionWrap>
-                < MapSubmissions subs={subs} />
-            </SubmissionWrap>
-        </div>
+            </SubmissionHeading >
+            {subs.length > 0 &&
+                <SubmissionWrap>
+                    < MapSubmissions subs={subs} />
+                </SubmissionWrap>
+            }
+        </div >
     )
 }
 
-
-const CreateSubmissionButton = styled.button`
-    font-size: 15px;
-    position: absolute;
-    right: 0;
-    border: 2px solid #539bf5;
-    background-color: #1a1a1a;
-    border-radius: 4px;
-    padding: 5px 10px;
-    color: #bfbfbf;
-    font-weight: bold;
-    &:hover{
-        background-color: #24262e;
-    }
-
-`
 
 function CreateSubmission({ }) {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -315,7 +304,9 @@ function LazyLoadedSubmission({ sub, handleExpand, index }) {
             <LazyStyledImage>
                 <LazyLoadImage style={{ maxWidth: '15em', maxHeight: '15em', margin: '0 auto', borderRadius: '10px' }} src={tldr_img} effect="blur" />
             </LazyStyledImage>
-            <SubmissionMetadata contest_state={contest_state} sub={sub} />
+            <SubmissionBottomBlur>
+                <SubmissionMetadata contest_state={contest_state} sub={sub} />
+            </SubmissionBottomBlur>
         </SubmissionPreviewContainer >
 
     )

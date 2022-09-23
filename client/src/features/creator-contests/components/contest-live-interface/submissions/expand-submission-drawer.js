@@ -107,35 +107,3 @@ export default function ExpandSubmissionDrawer({ drawerOpen, handleClose, id, TL
 
     )
 }
-
-/*
-        <Drawer
-            open={drawerOpen}
-            onClose={handleClose}
-            direction='right'
-            className='expand_sub'
-            size='60vw'
-
-            style={{ backgroundColor: '#1e1e1e', overflowY: 'scroll' }}
-        >
-            {drawerOpen &&
-                <DrawerWrapper>
-                    {contest_state === 1 && <SubmissionVotingBox sub_id={id} />}
-                    <SubmissionWrap>
-                        <>
-                            {contest_state === 2 &&
-                                <SubmissionMeta>
-                                    {author && <Author>{author.substring(0, 6)}...{author.substring(38, 42)}</Author>}
-                                    {votes !== null && <VoteTotals>{votes} votes</VoteTotals>}
-                                </SubmissionMeta>
-                            }
-                        </>
-                        <p>{TLDRText}</p>
-
-                        <LazyLoadImage src={TLDRImage} style={{ maxWidth: '35em', borderRadius: '10px' }} effect="opacity" />
-                        {expandData && <ParseBlocks data={expandData} />}
-                    </SubmissionWrap>
-                </DrawerWrapper>
-            }
-        </Drawer>
-        */

@@ -68,7 +68,7 @@ export const PromptWrap = styled.div`
     background-color: #262626;
     border-radius: 10px;
     padding: 10px;
-    margin-bottom: 30px;
+    padding-bottom: 100px;
 
     > p {
         font-size: 15px;

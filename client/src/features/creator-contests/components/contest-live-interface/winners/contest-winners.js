@@ -5,16 +5,18 @@ import { selectContestState } from '../interface/contest-interface-reducer';
 import styled from 'styled-components'
 
 const Winners = styled.button`
-    position: absolute;
-    right: 0;
+    margin-left: auto;
+    font-size: 15px;
     border: 2px solid #539bf5;
-    background-color: #1a1a1a;
     border-radius: 10px;
-    padding: 5px 10px;
-    color: #bfbfbf;
-    font-weight: bold;
-    &:hover{
-        background-color: #24262e;
+    background-color: #1e1e1e;
+    color: #d3d3d3;
+    padding: 10px 15px;
+    &:active{
+        transform: scale(0.9);
+    }
+    @media screen and (max-width: 408px){
+        margin-left: 0;
     }
 
 `

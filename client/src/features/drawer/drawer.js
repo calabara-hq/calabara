@@ -63,7 +63,7 @@ export default function DrawerComponent({ drawerOpen, handleClose, showExit, cus
             {drawerOpen &&
                 <DrawerContentWrapper>
                     <ExitButtonContainer>
-                        {showExit && <ExitButton onClick={handleClose}>X</ExitButton>}
+                        {showExit && <ExitButton onClick={handleClose}><FontAwesomeIcon icon={faTimes}/></ExitButton>}
                     </ExitButtonContainer>
                     {children}
                 </DrawerContentWrapper>
