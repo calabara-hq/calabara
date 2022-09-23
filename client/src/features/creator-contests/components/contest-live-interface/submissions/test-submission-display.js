@@ -92,6 +92,7 @@ const LazyStyledImage = styled.div`
     margin-top: auto;
     margin-bottom: auto;
 `
+/*
 const SubmissionHeading = styled.div`
         display: flex;
         align-items: center;
@@ -103,9 +104,75 @@ const SubmissionHeading = styled.div`
             flex: 1;
         }
     `
+*/
 
 
+/*
+const SubmissionHeading = styled.div`
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        > h2 {
+            flex: 1 1 80%;
+        }
+    `
 
+const CreateSubmissionButton = styled.button`
+    flex: 1 1 10%;
+    font-size: 15px;
+    border: 2px solid #539bf5;
+    background-color: #1a1a1a;
+    border-radius: 4px;
+    padding: 5px 10px;
+    color: #bfbfbf;
+    font-weight: bold;
+    &:hover{
+        background-color: #24262e;
+    }
+
+`
+*/
+
+const SubmissionHeading = styled.div`
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: flex-start;
+        width: 100%;
+        margin-bottom: 20px;
+        > h2 {
+            text-align: center;
+        }
+        @media screen and (max-width: 408px){
+            justify-content: center;
+        }
+    `
+
+const DummyFlexItem = styled.div`
+    flex: 1;
+    background-color: green;
+    width: 10px;
+    height: 10px;
+`
+
+
+const CreateSubmissionButton = styled.button`
+    margin-left: auto;
+    font-size: 15px;
+    border: 2px solid #539bf5;
+    border-radius: 10px;
+    background-color: #1e1e1e;
+    color: #d3d3d3;
+    padding: 10px 15px;
+    &:active{
+        transform: scale(0.9);
+    }
+    @media screen and (max-width: 408px){
+        margin-left: 0;
+    }
+
+`
 
 export default function SubmissionDisplay({ }) {
     const { ens, contest_hash } = useParams();
@@ -148,37 +215,24 @@ export default function SubmissionDisplay({ }) {
     }, [socket])
     console.log(subs)
 
-    if (subs.length === 0) {
-        return (
-            <div>
-                <SubmissionHeading>
-                    <div>
-                        <h2 style={{ color: '#d3d3d3', marginBottom: '30px' }}>Submissions</h2>
-                    </div>
-                    <DisplayWinners />
-                    <CreateSubmission />
-                </SubmissionHeading >
-            </div >
-        )
-    }
-
     return (
         <div>
             <SubmissionHeading>
-                <div>
-                    <h2 style={{ color: '#d3d3d3', marginBottom: '30px' }}>Submissions</h2>
-                </div>
+                <h2 style={{ color: '#d3d3d3', marginBottom: '30px' }}>Submissions</h2>
+                {/*<DummyFlexItem/>*/}
                 <DisplayWinners />
                 <CreateSubmission />
-            </SubmissionHeading>
-            <SubmissionWrap>
-                < MapSubmissions subs={subs} />
-            </SubmissionWrap>
-        </div>
+            </SubmissionHeading >
+            {subs.length > 0 &&
+                <SubmissionWrap>
+                    < MapSubmissions subs={subs} />
+                </SubmissionWrap>
+            }
+        </div >
     )
 }
 
-
+/*
 const CreateSubmissionButton = styled.button`
     font-size: 15px;
     position: absolute;
@@ -194,6 +248,9 @@ const CreateSubmissionButton = styled.button`
     }
 
 `
+*/
+
+
 
 function CreateSubmission({ }) {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);

@@ -23,6 +23,7 @@ const ContestInterfaceWrap = styled.div`
     flex-direction: column;
     width: 70vw;
     margin: 0 auto;
+    padding-bottom: 100px;
 
     @media screen and (max-width: 700px){
         width: 80vw;
