@@ -364,7 +364,7 @@ export default function ContestHomepage({ }) {
                         {/**/}
                         <AboutCC>
                             <div>
-                                <h4>Participate in weekly contests to recieve retroactive funding for your most creative artwork, ideas, memes, and everything else.</h4>
+                                <h4>Participate in weekly contests to receive retroactive funding for your most creative artwork, ideas, memes, and everything else.</h4>
                                 <img src={CC_Logo} />
                             </div>
                             <NewContest onClick={handleSettings}><FontAwesomeIcon icon={faPlus} /> New Contest </NewContest>
