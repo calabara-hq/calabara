@@ -9,7 +9,7 @@ import { selectContestState } from '../interface/contest-interface-reducer';
 import { fetchSubmission } from './submission-data-fetch';
 import DisplayWinners from '../winners/contest-winners';
 import { ExpandedPromptComponent } from '../prompts/prompt-display';
-import { VoteTotals, SubmissionMeta, Author } from './submission-styles';
+import { VoteTotals, SubmissionMeta, Author, SubmissionBottomBlur } from './submission-styles';
 
 
 const SubmissionWrap = styled.div`
@@ -92,47 +92,6 @@ const LazyStyledImage = styled.div`
     margin-top: auto;
     margin-bottom: auto;
 `
-/*
-const SubmissionHeading = styled.div`
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-        position: relative;
-        flex-wrap: wrap;
-        > div {
-            text-align: left;
-            flex: 1;
-        }
-    `
-*/
-
-
-/*
-const SubmissionHeading = styled.div`
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        > h2 {
-            flex: 1 1 80%;
-        }
-    `
-
-const CreateSubmissionButton = styled.button`
-    flex: 1 1 10%;
-    font-size: 15px;
-    border: 2px solid #539bf5;
-    background-color: #1a1a1a;
-    border-radius: 4px;
-    padding: 5px 10px;
-    color: #bfbfbf;
-    font-weight: bold;
-    &:hover{
-        background-color: #24262e;
-    }
-
-`
-*/
 
 const SubmissionHeading = styled.div`
         display: flex;
@@ -148,13 +107,6 @@ const SubmissionHeading = styled.div`
             justify-content: center;
         }
     `
-
-const DummyFlexItem = styled.div`
-    flex: 1;
-    background-color: green;
-    width: 10px;
-    height: 10px;
-`
 
 
 const CreateSubmissionButton = styled.button`
@@ -219,7 +171,6 @@ export default function SubmissionDisplay({ }) {
         <div>
             <SubmissionHeading>
                 <h2 style={{ color: '#d3d3d3', marginBottom: '30px' }}>Submissions</h2>
-                {/*<DummyFlexItem/>*/}
                 <DisplayWinners />
                 <CreateSubmission />
             </SubmissionHeading >
@@ -231,25 +182,6 @@ export default function SubmissionDisplay({ }) {
         </div >
     )
 }
-
-/*
-const CreateSubmissionButton = styled.button`
-    font-size: 15px;
-    position: absolute;
-    right: 0;
-    border: 2px solid #539bf5;
-    background-color: #1a1a1a;
-    border-radius: 4px;
-    padding: 5px 10px;
-    color: #bfbfbf;
-    font-weight: bold;
-    &:hover{
-        background-color: #24262e;
-    }
-
-`
-*/
-
 
 
 function CreateSubmission({ }) {
@@ -372,7 +304,9 @@ function LazyLoadedSubmission({ sub, handleExpand, index }) {
             <LazyStyledImage>
                 <LazyLoadImage style={{ maxWidth: '15em', maxHeight: '15em', margin: '0 auto', borderRadius: '10px' }} src={tldr_img} effect="blur" />
             </LazyStyledImage>
-            <SubmissionMetadata contest_state={contest_state} sub={sub} />
+            <SubmissionBottomBlur>
+                <SubmissionMetadata contest_state={contest_state} sub={sub} />
+            </SubmissionBottomBlur>
         </SubmissionPreviewContainer >
 
     )
