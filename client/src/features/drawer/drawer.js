@@ -46,6 +46,9 @@ const ExitButton = styled.button`
         background-color: rgba(34, 34, 46, 0.8);
         border: 2px solid #d3d3d3;
     }
+    &:active{
+        transform: scale(0.9);
+    }
 
     @media screen and (max-width: 550px){
         margin-right: 10px;

@@ -18,12 +18,6 @@ const highlight = (props) => keyframes`
 
 `;
 
-const highlightAnimation = css`
-    animation: ${highlight} 1s ease;
-`;
-
-
-
 
 export const DefaultContainerWrap = styled.div`
     display: flex;
@@ -129,13 +123,15 @@ export const PromptReadMore = styled.div`
 export const ReadMoreButton = styled.button`
     border-radius: 10px;
     font-weight: bold;
-    border: 2px solid #2682f2;
+    border: 2px solid #4d4d4d;
     background-color: #1e1e1e;
     padding: 5px 10px;
     &:hover{
         background-color: #1a1a1a;
         transition: border-color 0.2s ease-in-out;
-
+    }
+    &:active{
+        transform: scale(0.9);
     }
     
 `
