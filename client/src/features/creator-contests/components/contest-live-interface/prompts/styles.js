@@ -150,7 +150,7 @@ export const PromptCoverImage = styled.img`
     }
 
     @media screen and (max-width: 400px){
-            display: none;
+            //display: none;
     }
 `
 

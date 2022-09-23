@@ -11,7 +11,6 @@ const DrawerContentWrapper = styled.div`
     position: relative;
     width: 95%;
     margin: 0 auto;
-    margin-left: 20px;
     margin-top: 20px;
     height: 100%;
     color: #d3d3d3;
