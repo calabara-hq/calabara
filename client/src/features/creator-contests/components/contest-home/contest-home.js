@@ -172,15 +172,18 @@ const NewContest = styled.button`
     color: #d3d3d3;
     padding: 10px 15px;
     font-weight: bold;
+    width: 25em;
     &:hover{
         transform: scale(1.01);
     }
     &:active{
         transform: scale(0.9);
     }
-    @media screen and (max-width: 500px){
-        width: 100%;
-        right: 0px;
+    @media screen and (max-width: 800px){
+        width: 98%;
+        right: 0;
+        left: 0;
+        margin: 0 auto;
         bottom: 0px;
     }
 
@@ -261,11 +264,15 @@ const AboutCC = styled.div`
     > div{
         display: flex;
         flex-direction: row;
-        justify-content: flex-start;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        height: 90%;
         img{
             
             max-width: 25em;
             margin-left: auto;
+            margin-right: 10px;
         }
         h2{
             justify-self: flex-start;
@@ -287,15 +294,15 @@ const AboutCC = styled.div`
             img{
                 max-width: 20em;
             }
-        }        
+        } 
     }
 
     @media screen and (max-width: 800px){
+        
         height: 350px;
         text-align: center;
         > div{
-            display: flex;
-            flex-direction: column;
+            flex-direction: column-reverse;
             align-items: center;
             h2{
                 font-size: 1.5em;
@@ -360,10 +367,9 @@ export default function ContestHomepage({ }) {
                         {/**/}
                         <AboutCC>
                             <div>
-                                <h2>Earn rewards for getting creative</h2>
+                                <h4>Participate in weekly contests to recieve retroactive funding for your most creative artwork, ideas, memes, and everything else.</h4>
                                 <img src={CC_Logo} />
                             </div>
-                            <h4>Participate in weekly contests to recieve retroactive funding for your most creative artwork, ideas, memes, and everything else.</h4>
                             <NewContest onClick={handleSettings}><FontAwesomeIcon icon={faPlus} /> New Contest </NewContest>
                         </AboutCC>
                     </SplitTop>
