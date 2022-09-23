@@ -360,7 +360,7 @@ export default function ContestHomepage({ }) {
                         {/**/}
                         <AboutCC>
                             <div>
-                                <h2>Earn rewards for flexing your creativity</h2>
+                                <h2>Earn rewards for getting creative</h2>
                                 <img src={CC_Logo} />
                             </div>
                             <h4>Participate in weekly contests to recieve retroactive funding for your most creative artwork, ideas, memes, and everything else.</h4>
