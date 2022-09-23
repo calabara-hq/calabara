@@ -102,8 +102,8 @@ const RoundContainer = styled.div`
     display: flex;
     flex-direction: column-reverse;
     width: 100%;
-    justify-content: center;
-    align-content: flex-start;
+    //justify-content: center;
+    //align-content: flex-start;
     height: fit-content;
     background-color: #1e1e1e;
     border-radius: 10px;
@@ -115,12 +115,12 @@ const Contest = styled.div`
     display: flex;
     align-items: center;
     width: 95%;
+    margin: 10px auto;
     color: #d3d3d3;
     background-color: #262626;
     border: 2px solid #4d4d4d;
-    border-radius: 4px;
+    border-radius: 10px;
     padding: 5px;
-    margin: 10px;
     grid-gap: 20px;
     cursor: pointer;
     transition: visibility 0.2s, max-height 0.3s ease-in-out;
@@ -140,7 +140,7 @@ const SplitBottom = styled.div`
     flex-direction: row;
     justify-content: center;
     margin: -10px;
-    flex-wrap: wrap-reverse;
+    flex-wrap: wrap;
     margin-bottom: 70px;
     > * {
         margin: 10px;
@@ -299,16 +299,17 @@ const AboutCC = styled.div`
 
     @media screen and (max-width: 800px){
         
-        height: 350px;
+        /* /height: 350px; */
         text-align: center;
         > div{
             flex-direction: column-reverse;
+            gap: 10px;
             align-items: center;
             h2{
                 font-size: 1.5em;
             }
             img{
-                max-width: 20em;
+                max-width: 15em;
                 margin: 0 auto;
             }
         }
@@ -316,10 +317,6 @@ const AboutCC = styled.div`
         h4{
             font-size: 1.2em;
         }
-    }
-
-    @media screen and (max-width: 800px){
-        height: 350px;
     }
 `
 
