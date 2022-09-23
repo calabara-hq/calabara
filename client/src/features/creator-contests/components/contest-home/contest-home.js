@@ -8,23 +8,32 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import BackButton from "../../../back-button/back-button";
 import { Label, labelColorOptions, Contest_h2_alt, Contest_h3_alt, TagType, fade_in } from "../common/common_styles";
 import { label_status } from "../contest-live-interface/contest_info/contest-info-style";
-import CC_Logo from "../../../../img/contest-mockup.png"
+import CC_Logo from "../../../../img/logo-cc-shark.png"
 import moment from "moment";
 import useCommon from "../../../hooks/useCommon";
 import { selectDashboardInfo } from "../../../dashboard/dashboard-info-reducer";
 import { selectLogoCache } from "../../../org-cards/org-cards-reducer";
 import * as WebWorker from '../../../../app/worker-client.js'
 import fetchHomepageData from "./homepage-data-fetch";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 import { faDiscord } from "@fortawesome/free-brands-svg-icons";
 let compact_formatter = Intl.NumberFormat('en', { notation: 'compact' })
 
 
 const ContestTag = styled.p`
     color: #d9d9d9;
-    font-size: 20px;
+    font-size: 1.5em;
     cursor: pointer;
     margin: 0;
     padding: 5px;
+
+    @media screen and (max-width: 600px){
+        font-size: 1.2em;
+    }
+
+    @media screen and (max-width: 500px){
+        font-size: 1em;
+    }
 `
 
 const ContestHomeWrap = styled.div`
@@ -32,15 +41,22 @@ const ContestHomeWrap = styled.div`
     flex-direction: column;
     width: 70vw;
     margin: 0 auto;
+    @media screen and (max-width: 700px){
+        width: 80vw;
+    }
 
 `
 
-const ContestHomeSplit = styled.div`
+const SplitTop = styled.div`
     display: flex;
     flex-direction: row;
     justify-content: center;
-    height: 250px;
-    margin-bottom: 20px;
+    margin: -10px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+    > * {
+        margin: 10px;
+    }
     
     
  `
@@ -82,76 +98,20 @@ const HomeRight = styled.div`
 
 `
 
-const TopText = styled.div` 
-    display: flex;
-    flex-direction: column;
-
-
-    > h3 {
-        font-size: 25px;
-        color: #d9d9d9;
-        text-align: left;
-        margin: 0px 0px 10px 0px;
-    }
-    > li{
-        font-size: 15px;
-        color: pink;
-        text-align: left;
-
-    }
-
-
-
-
-`
-
-const TopRight = styled.div`
-    display: flex;
-    flex-direction: column;
-    flex: 1 0 40%;
-    align-items: center;
-    justify-content: center;
-
-    > h1 {
-        color: #d9d9d9;
-        font-size: 35px;
-        
-        
-    }
-
-    > img {
-        max-width: 25em;
-       // max-height: 90%;
-
-    }
-
-`
-
-const SplitBottom = styled.div`
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    margin-bottom: 70px;
-
-
-
-`
-
 const RoundContainer = styled.div`
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column-reverse;
+    width: 100%;
     justify-content: center;
     align-content: flex-start;
-    flex: 0 0 70%;
     height: fit-content;
     background-color: #1e1e1e;
     border-radius: 10px;
-    margin-right: 20px;
     animation: ${fade_in} 0.4s ease-in-out;
 
 `
 
-const RoundWrap = styled.div`
+const Contest = styled.div`
     display: flex;
     align-items: center;
     width: 95%;
@@ -175,32 +135,53 @@ const RoundWrap = styled.div`
 
 `
 
+const SplitBottom = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: -10px;
+    flex-wrap: wrap-reverse;
+    margin-bottom: 70px;
+    > * {
+        margin: 10px;
+    }
+    
+`
+
 const SplitBottomRight = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    flex: 0 0 25%;
+    flex: 1 1 25%;
+`
 
+const SplitBottomLeft = styled.div`
+    flex: 1 1 70%;
+    display: flex;
 `
 
 const NewContest = styled.button`
-    font-size: 16px;
-    font-weight: 550;
-    color: #f2f2f2;
-    background-image: linear-gradient(#262626, #262626),linear-gradient(90deg,#e00f8e,#2d66dc);
-    background-origin: border-box;
-    background-clip: padding-box,border-box;
-    border: 2px double transparent;
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    margin-left: auto;
+    font-size: 15px;
+    border: 2px solid #539bf5;
     border-radius: 10px;
-    padding: 5px 10px;
-    transition: background-color 0.2s ease-in-out;
-    transition: color 0.3s ease-in-out;
-    transition: visibility 0.2s, max-height 0.3s ease-in-out;
-
+    background-color: #1e1e1e;
+    color: #d3d3d3;
+    padding: 10px 15px;
+    font-weight: bold;
     &:hover{
-        background-color: #1e1e1e;
-        background-image: linear-gradient(#141416, #141416),
-        linear-gradient(to right, #e00f8e, #2d66dc);
+        transform: scale(1.01);
+    }
+    &:active{
+        transform: scale(0.9);
+    }
+    @media screen and (max-width: 500px){
+        width: 100%;
+        right: 0px;
+        bottom: 0px;
     }
 
 `
@@ -247,12 +228,95 @@ const OptionType = styled.div`
     }
 `
 
+const OrgCard = styled.div`
+    display: flex;
+    flex-direction: column;
+    flex: 1 0 25%;
+    justify-content: space-evenly;
+    align-items: center;
+    background-color: #1e1e1e;
+    border-radius: 10px;
+    min-height: 280px;
+    animation: ${fade_in} 0.2s ease-in-out;
+    > * {
+        margin: 10px;
+        animation: ${fade_in} 1s ease-in-out;
+    }
 
+`
+const AboutCC = styled.div`
+    position: relative;
+    flex: 1 0 70%;
+    height: 290px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background-color: #1e1e1e;
+    border-radius: 10px;
+    padding: 10px;
+    animation: ${fade_in} 0.2s ease-in-out;
+    color: #d3d3d3;
+    
+    > div{
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        img{
+            
+            max-width: 25em;
+            margin-left: auto;
+        }
+        h2{
+            justify-self: flex-start;
+            align-self: center;
+            text-align: left;
+        }
+    }
+
+    h4 {
+        color: #a3a3a3;
+        max-width: 600px;
+    }
+
+    @media screen and (max-width: 1400px){
+        > div{
+            h2{
+                font-size: 1.8em;
+            }
+            img{
+                max-width: 20em;
+            }
+        }        
+    }
+
+    @media screen and (max-width: 800px){
+        height: 350px;
+        text-align: center;
+        > div{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            h2{
+                font-size: 1.5em;
+            }
+            img{
+                max-width: 20em;
+                margin: 0 auto;
+            }
+        }
+        
+        h4{
+            font-size: 1.2em;
+        }
+    }
+
+    @media screen and (max-width: 800px){
+        height: 350px;
+    }
+`
 
 export default function ContestHomepage({ }) {
-    const [all_contests, set_all_contests] = useState(null);
-    const [contest_hash, set_contest_hash] = useState(null);
-    const [total_rewards, set_total_rewards] = useState([0, 0, 0])
     const { ens } = useParams();
     const history = useHistory();
     const { batchFetchDashboardData } = useCommon()
@@ -271,12 +335,6 @@ export default function ContestHomepage({ }) {
     useEffect(() => {
 
         batchFetchDashboardData(ens, info)
-        /*
-        let res = await axios.get(`/creator_contests/fetch_org_contests/${ens}`);
-        set_all_contests(res.data)
-        let stats = await axios.get(`/creator_contests/org_contest_stats/${ens}`);
-        set_total_rewards([stats.data.eth, stats.data.erc20, stats.data.erc721])
-        */
     }, [])
 
     useEffect(() => {
@@ -297,23 +355,26 @@ export default function ContestHomepage({ }) {
             <>
                 <BackButton customWidth={'68%'} link={'/' + ens + '/dashboard'} text={"dashboard"} />
                 <ContestHomeWrap>
-                    <ContestHomeSplit>
-                        <HomeLeft>
-                            <OrgImg data-src={info.logo}></OrgImg>
-                            <Contest_h2_alt>{info.name}</Contest_h2_alt>
-                            <a href={'//' + info.website} target="_blank">{info.website}</a>
-                        </HomeLeft>
-                        <HomeRight>
-                            <img src={CC_Logo} />
-                        </HomeRight>
-                    </ContestHomeSplit>
+                    <SplitTop>
+                        <RenderOrgCard info={info} />
+                        {/**/}
+                        <AboutCC>
+                            <div>
+                                <h2>Earn rewards for flexing your creativity</h2>
+                                <img src={CC_Logo} />
+                            </div>
+                            <h4>Participate in weekly contests to recieve retroactive funding for your most creative artwork, ideas, memes, and everything else.</h4>
+                            <NewContest onClick={handleSettings}><FontAwesomeIcon icon={faPlus} /> New Contest </NewContest>
+                        </AboutCC>
+                    </SplitTop>
                     <SplitBottom>
-                        <Suspense fallback={<RoundContainer style={{ height: '500px' }} />}>
-                            <ListContests homepage_data={homepage_data} />
-                        </Suspense>
+                        <SplitBottomLeft>
+                            <Suspense fallback={<RoundContainer style={{ height: '500px' }} />}>
+                                <ListContests homepage_data={homepage_data} />
+                            </Suspense>
+                        </SplitBottomLeft>
 
                         <SplitBottomRight>
-                            <NewContest onClick={handleSettings}><FontAwesomeIcon icon={faPlus} /> New Contest </NewContest>
                             <Suspense fallback={<StatContainer style={{ height: '230px' }} />}>
                                 <ListStats homepage_data={homepage_data} />
                             </Suspense>
@@ -330,7 +391,7 @@ export default function ContestHomepage({ }) {
         <>
             <BackButton customWidth={'68%'} link={'/' + ens + '/dashboard'} text={"dashboard"} />
             <ContestHomeWrap>
-                <ContestHomeSplit>
+                <SplitTop>
                     <HomeLeft>
                         <OrgImg data-src={info.logo}></OrgImg>
                         <Contest_h2_alt>{info.name}</Contest_h2_alt>
@@ -340,7 +401,7 @@ export default function ContestHomepage({ }) {
                         <h3>Interested in creator contests? Hit us up in our Discord.</h3>
                         <a href="https://discord.gg/dBBzHe9k3E" target={"_blank"} style={{ textAlign: 'center', fontSize: '35px' }}><FontAwesomeIcon icon={faDiscord}></FontAwesomeIcon></a>
                     </HomeRight>
-                </ContestHomeSplit>
+                </SplitTop>
             </ContestHomeWrap>
         </>
     )
@@ -359,11 +420,11 @@ function ListContests({ homepage_data }) {
         <RoundContainer>
             {all_contests.map(el => {
                 return (
-                    <RoundWrap onClick={() => handleInterface(el._hash)}>
+                    <Contest onClick={() => handleInterface(el._hash)}>
                         <ContestTag>{el._title}</ContestTag>
                         <Label color={labelColorOptions[el._prompt_label_color]}>{el._prompt_label}</Label>
                         <CalculateState contest_info={el} />
-                    </RoundWrap>
+                    </Contest>
                 )
             })}
         </RoundContainer>
@@ -375,7 +436,7 @@ function ListStats({ homepage_data }) {
     console.log(total_rewards)
     return (
         <StatContainer>
-            <Contest_h3_alt style={{textAlign: 'center'}}>Total Rewards Distributed</Contest_h3_alt>
+            <Contest_h3_alt style={{ textAlign: 'center' }}>Total Rewards Distributed</Contest_h3_alt>
             <Stats>
                 <OptionType><TagType>ETH</TagType> <p>{total_rewards.eth ? compact_formatter.format(total_rewards.eth) : '--'}</p></OptionType>
                 <OptionType><TagType type='erc20'>ERC-20</TagType> <p>{total_rewards.erc20 ? compact_formatter.format(total_rewards.erc20) : '--'}</p></OptionType>
@@ -416,16 +477,25 @@ function CalculateState({ contest_info }) {
 
 
     return (
-
-
-
         <Label style={{ marginLeft: 'auto' }} color={label_status[contestState]}>{label_status[contestState].status}</Label>
-
-
-
     )
+}
 
+function RenderOrgCard({ info }) {
 
+    if (!info) {
+        return (
+            <OrgCard >
+                <p>loading</p>
+            </OrgCard>
+        )
+    }
 
-
+    return (
+        <OrgCard>
+            <LazyLoadImage style={{ maxWidth: '12em', margin: '0 auto', borderRadius: '100px' }} src={`/${info.logo}`} effect="blur" />
+            <Contest_h2_alt>{info.name}</Contest_h2_alt>
+            <a href={'//' + info.website} target="_blank">{info.website}</a>
+        </OrgCard>
+    )
 }

@@ -8,6 +8,7 @@ import { ErrorMessage, fade_in } from "../../common/common_styles";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import '../../../../../css/manage-widgets.css'
 import '../../../../../css/gatekeeper-toggle.css'
+import { showNotification } from "../../../../notifications/notifications";
 let compact_formatter = Intl.NumberFormat('en', { notation: 'compact' })
 let round_formatter = Intl.NumberFormat('en', { maximumFractionDigits: 0 })
 
@@ -19,9 +20,13 @@ const VotingContainer = styled.div`
     padding: 10px;
     border: none;
     border-radius: 10px;
-    width: ${props => props.isVoting ? '40em' : '40em'};
+    width: 40em;
     position: relative;
     display: flex;
+    flex-wrap: wrap;
+    @media screen and (max-width: 1000px){
+        width: 100%;
+    }
 `
 
 
@@ -65,13 +70,15 @@ const InitialVoteButton = styled.button`
     &:hover{
         background-color: rgb(211,151,39);
         color: #fff;
-    
+    }
+    &:active{
+        transform: scale(0.9)
     }
 
     &:disabled{
-    cursor: not-allowed;
-    color: rgb(211,151,39, .3);
-    background-color: #262626;
+        cursor: not-allowed;
+        color: rgb(211,151,39, .3);
+        background-color: #262626;
     }
 
 `
@@ -116,6 +123,9 @@ const CastVotesButton = styled.button`
         background-color: rgb(6, 214, 160);
         color: #fff;
     }
+    &:active{
+        transform: scale(0.9)
+    }
 
     &:disabled{
         cursor: not-allowed;
@@ -141,21 +151,27 @@ const RetractVotesButton = styled.button`
         color: #fff;
     
     };
+    &:active{
+        transform: scale(0.9)
+    }
 
 `
 
 const CancelVoteButton = styled.button`
-
-    border: 2px solid #4d4d4d;
-    color: grey;
-    border-radius: 100px;
-    padding: 5px 15px 5px 15px;
-    background-color: transparent;
+    align-self: center;
+    font-size: 16px;
     margin-left: auto;
-    animation: ${fade_in} 0.4s ease-in-out;
+    background-color: transparent;
+    border: none;
+    border-radius: 10px;
+    color: rgba(244, 33, 46, 0.5);
+    padding: 5px 10px;
     &:hover{
-        color: #d3d3d3;
-        background-color: #1e1e1e;
+        background-color: rgba(244, 33, 46, 0.1);
+        color: rgb(244, 33, 46);
+    }
+    &:active{
+        transform: scale(0.9)
     }
 `
 
@@ -189,9 +205,10 @@ const LightP = styled.p`
 
 const InputCast = styled.div`
     display: flex;
-    flex: 1;
     flex-direction: row;
+    flex-wrap: wrap;
     align-items: flex-end;
+    gap: 20px;
     animation: ${fade_in} 0.4s ease-in-out;
 `
 
@@ -238,6 +255,8 @@ function SubmissionVotingBox({ sub_id }) {
             let didCast = await castVote(num_votes)
             if (!didCast) return setExceedVotingPowerError(true)
             setIsVoteButtonClicked(false)
+            showNotification('success', 'success', 'successfully casted votes')
+
         }
     }
 
@@ -255,6 +274,11 @@ function SubmissionVotingBox({ sub_id }) {
         setFormatVotingPower(!formatVotingPower)
     }
 
+    const handleRetractVotes = () => {
+        retractVotes();
+        showNotification('success', 'success', 'votes retracted')
+    }
+
 
     return (
         <>
@@ -264,7 +288,7 @@ function SubmissionVotingBox({ sub_id }) {
                         <InitialVoteButton disabled={!isWalletConnected || is_self_voting_error} onClick={() => setIsVoteButtonClicked(true)}>vote <FontAwesomeIcon icon={faCheckToSlot} /></InitialVoteButton>
                         {!isWalletConnected && <ConnectWalletButton onClick={walletConnect}>connect wallet</ConnectWalletButton>}
                         <>
-                            {votes_spent > 0 && <RetractVotesButton onClick={retractVotes}>retract votes</RetractVotesButton>}
+                            {votes_spent > 0 && <RetractVotesButton onClick={handleRetractVotes}>retract votes</RetractVotesButton>}
                             {(isWalletConnected && !is_self_voting_error) &&
                                 <>
                                     <VotingStats>
@@ -279,14 +303,16 @@ function SubmissionVotingBox({ sub_id }) {
                 {isVoteButtonClicked &&
                     <>
                         <InputCast>
-                            <VoteInput onWheel={(e) => e.target.blur()} error={exceedVotingPowerError} type="number" value={votesToSpend} onChange={updateInput} placeholder="votes"></VoteInput>
-                            <CastVotesButton disabled={!votesToSpend} onClick={() => { handleVote(votesToSpend) }}>cast votes <FontAwesomeIcon icon={faCircleCheck} /></CastVotesButton>
+                            <div>
+                                <VoteInput onWheel={(e) => e.target.blur()} error={exceedVotingPowerError} type="number" value={votesToSpend} onChange={updateInput} placeholder="votes"></VoteInput>
+                                <CastVotesButton disabled={!votesToSpend} onClick={() => { handleVote(votesToSpend) }}>cast votes <FontAwesomeIcon icon={faCircleCheck} /></CastVotesButton>
+                            </div>
                             <VotingStats>
                                 <LightP>votes spent: {compact_formatter.format(votes_spent)}</LightP>
                                 <LightP>voting power: {compact_formatter.format(total_available_vp)}</LightP>
                             </VotingStats>
                         </InputCast>
-                        <CancelVoteButton onClick={handleCancel}><FontAwesomeIcon icon={faTimes} /></CancelVoteButton>
+                        <CancelVoteButton onClick={handleCancel}>cancel</CancelVoteButton>
                     </>
                 }
             </VotingContainer>

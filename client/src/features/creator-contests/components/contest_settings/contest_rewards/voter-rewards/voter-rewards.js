@@ -22,7 +22,7 @@ import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { HelpText } from 'react-rainbow-components';
 
 
-export default function VoterRewardsBlock({ theme, VoterRewardsRef }) {
+export default function VoterRewardsBlock({ theme }) {
     const [isToggleOn, setIsToggleOn] = useState(false);
     const rewardOptions = useSelector(rewardOptionState.getRewardOptions)
     const selectedRewards = useSelector(rewardOptionState.getSelectedRewards)
@@ -51,7 +51,7 @@ export default function VoterRewardsBlock({ theme, VoterRewardsRef }) {
 
 
     return (
-        <RewardTypeWrap ref={VoterRewardsRef}>
+        <RewardTypeWrap>
             <SettingsSectionSubHeading>
                 <HeadingWithToggle>
                     <Contest_h3_alt style={{ marginRight: '4em' }} animated={true}>Voter Rewards</Contest_h3_alt>

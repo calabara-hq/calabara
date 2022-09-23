@@ -18,8 +18,6 @@ const CreateSubmissionContainer = styled.div`
     flex-wrap: wrap;
     align-content: center;
     align-items: stretch;
-    //justify-content: space-between;
-    background-color: #1e1e1e;
     padding: 10px;
     border: none;
     border-radius: 10px;
@@ -102,7 +100,7 @@ const CancelButton = styled.button`
     }
 `
 
-export default function SubmissionBuilder({ handleCloseDrawer, restrictionResults, isUserEligible, toggleDrawer }) {
+export default function SubmissionBuilder({ handleExitSubmission, isUserEligible, handleCloseDrawer }) {
     const [TLDRImage, setTLDRImage] = useState(null)
     const [TLDRText, setTLDRText] = useState('')
     const [longFormValue, setLongFormValue] = useState(null)
@@ -114,7 +112,6 @@ export default function SubmissionBuilder({ handleCloseDrawer, restrictionResult
     const errorCheck = async () => {
 
         if (!TLDRText && !TLDRImage) {
-            alert('at least one TLDR field required!')
             showNotification('error', 'error', 'Atleast one TLDR field is required')
             return true
         }
@@ -131,12 +128,12 @@ export default function SubmissionBuilder({ handleCloseDrawer, restrictionResult
     const handleClose = () => {
         if ((!isSaving) && (TLDRImage || TLDRText)) {
             if (window.confirm('you\'re changes will be lost. Do you want to proceed?')) {
-                handleCloseDrawer();
+                handleExitSubmission();
             }
             else return
         }
         else {
-            handleCloseDrawer();
+            handleExitSubmission();
         }
     }
 
@@ -153,7 +150,7 @@ export default function SubmissionBuilder({ handleCloseDrawer, restrictionResult
 
         let res = await authenticated_post('/creator_contests/create_submission', { ens: ens, contest_hash: contest_hash, submission: submission });
         setTimeout(() => {
-            toggleDrawer();
+            handleCloseDrawer();
         }, 500)
     }
 
