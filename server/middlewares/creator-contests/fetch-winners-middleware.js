@@ -56,7 +56,6 @@ async function get_winners(req, res, next) {
     // push object to vote_winners
     // console.log(sub_winners)
 
-    console.log(sub_winners)
     req.sub_winners = sub_winners
     req.vote_winners = vote_winners
     next()
@@ -64,7 +63,6 @@ async function get_winners(req, res, next) {
 }
 
 async function get_winners_as_csv(req, res, next) {
-    console.log('IM HERE')
     const { ens, contest_hash } = req.query
     let { submissions, rewards } = await pre_process(ens, contest_hash)
 
@@ -91,7 +89,6 @@ async function get_winners_as_csv(req, res, next) {
 
         Object.values(rewards.voter_rewards).map((reward, index) => {
             let winner = submissions[reward.rank - 1]
-            console.log(winner.voters)
             winner.voters.map(voter => {
                 if (voter.f1 != null) {
                     reward.eth ? csvContent += `native,,${voter.f1},${reward.eth.amount * (voter.f2 / winner.votes)},,\r\n` : null

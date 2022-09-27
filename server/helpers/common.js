@@ -1,3 +1,4 @@
+
 function clean(data) {
   if (data.rows.length == 0) { return null }
   else if (data.rows.length == 1) { return data.rows[0] }
@@ -34,6 +35,9 @@ function shuffleArray(array) {
 
   return array;
 }
+
+
+
 
 
 module.exports = {

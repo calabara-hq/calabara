@@ -113,7 +113,7 @@ export default function ContestSettings() {
 
 
     const [promptBuilderData, setPromptBuilderData] = useReducer(reducer, initialPromptData)
-    const [simpleInputData, setSimpleInputData] = useReducer(reducer, { anonSubmissions: false, visibleVotes: false, selfVoting: false })
+    const [simpleInputData, setSimpleInputData] = useReducer(reducer, { anonSubmissions: true, visibleVotes: false, selfVoting: false })
 
 
 

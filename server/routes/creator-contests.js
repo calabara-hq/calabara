@@ -10,10 +10,12 @@ const { clean, asArray, shuffleArray } = require('../helpers/common')
 const { createContest, isNick } = require('../middlewares/creator-contests/create-contest-middleware');
 const { check_submitter_eligibility_unprotected, check_submitter_eligibility_PROTECTED, createSubmission } = require('../middlewares/creator-contests/submit-middleware');
 const { imageUpload } = require('../middlewares/image-upload-middleware.js');
-const { calc_sub_vp__unprotected, calc_sub_vp__PROTECTED } = require('../middlewares/creator-contests/vote-middleware-2.js');
+const { calc_sub_vp__unprotected, calc_sub_vp__PROTECTED } = require('../middlewares/creator-contests/vote-middleware.js');
 const logger = require('../logger').child({ component: 'creator-contests' })
 const { sendSocketMessage } = require('../sys/socket/socket-io');
 const { get_winners, get_winners_as_csv, verifyContestOver } = require('../middlewares/creator-contests/fetch-winners-middleware.js');
+const { fetchSubmissions } = require('../middlewares/creator-contests/fetch-submissions-middleware.js');
+dotenv.config()
 
 const serverRoot = path.normalize(path.join(__dirname, '../'));
 
@@ -44,41 +46,10 @@ contests.get('/fetch_contest/*', async function (req, res, next) {
 
 // fetch submissions
 
-contests.get('/fetch_submissions/*', async function (req, res, next) {
-    let ens = req.url.split('/')[2];
-    let contest_hash = req.url.split('/')[3];
-    let subs = await db.query('select id, _url from contest_submissions where ens=$1 and contest_hash=$2', [ens, contest_hash])
-        .then(clean)
-        .then(asArray)
-        .then(shuffleArray)
-    res.send(subs).status(200)
+contests.get('/fetch_submissions', fetchSubmissions, async function (req, res, next) {
+   res.send(req.submissions).status(200)
 })
 
-/*
-contests.get('/fetch_submissions/*', async function (req, res, next) {
-    let ens = req.url.split('/')[2];
-    let contest_hash = req.url.split('/')[3];
-    let subs = await db.query('select contest_submissions.id,\
-                            contest_submissions._url,\
-                            case when (contests.settings->>\'visible_votes\')::boolean = false then null else contest_votes.votes_spent end as votes,\
-                            case when (contests.settings->>\'anon_subs\')::boolean = true then null else contest_submissions.author end as author\
-                            from contests\
-                            left join contest_submissions\
-                            on contests._hash = contest_submissions.contest_hash\
-                            left join contest_votes\
-                            on contests._hash = contest_votes.contest_hash\
-                            where contests.ens = $1 and contest_submissions.contest_hash = $2', [ens, contest_hash])
-        .then(clean)
-        .then(asArray)
-    console.log(subs)
-    res.send(subs).status(200)
-})
-*/
-
-// fetch all the winners for a contest
-// get the reward strategy
-// return the url, author, num votes, reward
-// check window last
 
 contests.get('/fetch_contest_winners', verifyContestOver, async function (req, res, next) {
     const { ens, contest_hash } = req.query
@@ -212,10 +183,8 @@ contests.get('/org_contest_stats/*', async function (req, res, next) {
         .then(asArray)
         .then(data => {
             let obj = { eth: 0, erc20: 0, erc721: 0 }
-            console.log('begin case')
 
             if (data.length === 1) {
-                console.log('first case')
 
                 let parsed = Object.values(JSON.parse(data[0].rewards))
                 parsed.map(inner => {
@@ -223,7 +192,6 @@ contests.get('/org_contest_stats/*', async function (req, res, next) {
                 })
             }
             else {
-                console.log('this case')
                 data.map(el => {
                     let parsed = Object.values(JSON.parse(el.rewards))
                     parsed.map(inner => {
@@ -245,9 +213,6 @@ contests.get('/org_contest_stats/*', async function (req, res, next) {
 
 contests.post('/upload_img', imageUpload.single('image'), async (req, res) => {
 
-    console.log('IM HERE')
-
-    console.log(req.file)
 
     let img_data = {
         success: 1,
@@ -263,7 +228,6 @@ contests.post('/upload_img', imageUpload.single('image'), async (req, res) => {
 
 
 ///////////////////////// begin dev / test routes ////////////////////////////////////
-dotenv.config()
 if (process.env.NODE_ENV === 'test') {
 
     contests.post('/test_delete_dummy', async (req, res) => {
@@ -277,8 +241,8 @@ if (process.env.NODE_ENV === 'test') {
 
 
     contests.post('/test_create_submission', async (req, res) => {
-        const { ens, contest_hash } = req.body
-        let id = await db.query('insert into contest_submissions (ens, contest_hash, created, locked, pinned, _url) values ($1, $2, $3, $4, $5, $6) returning id', [ens, contest_hash, new Date().toISOString(), true, true, 'dummy.json']).then(clean)
+        const { ens, contest_hash, author } = req.body
+        let id = await db.query('insert into contest_submissions (ens, contest_hash, author, created, locked, pinned, _url) values ($1, $2, $3, $4, $5, $6, $7) returning id', [ens, contest_hash, author, new Date().toISOString(), true, true, 'dummy.json']).then(clean)
         res.send(JSON.stringify(id)).status(200)
     })
 

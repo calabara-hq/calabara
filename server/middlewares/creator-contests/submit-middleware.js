@@ -65,7 +65,6 @@ const compute_restrictions = async (mode, walletAddress, restrictions) => {
 // unprotected eligibility check.
 async function check_submitter_eligibility_unprotected(req, res, next) {
     const { ens, walletAddress, contest_hash } = req.body;
-    console.log(ens, walletAddress, contest_hash)
     const mode = { protected: false };
 
     let contest_meta = await pre_process(ens, walletAddress, contest_hash);
@@ -141,7 +140,6 @@ async function checkSubmitterEligibility(req, res, next) {
 
     ])
 
-    console.log('restrictions here ', restrictions)
     for (const restriction of restrictions) {
         if (restriction.type === 'erc20' || restriction.type === 'erc721') {
             let result = await checkWalletTokenBalance(walletAddress, restriction.address, restriction.decimal)
@@ -165,7 +163,6 @@ async function checkUserSubmissions(req, res, next) {
         .then(clean)
         .then(asArray)
 
-    console.log(submissions.length)
 
 
     // TURTLES COME BACK AND UNCOMMENT THIS LINE

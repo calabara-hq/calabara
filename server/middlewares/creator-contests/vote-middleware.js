@@ -8,125 +8,144 @@ const db = require('../../helpers/db-init.js');
 const { clean, asArray } = require('../../helpers/common')
 const { checkWalletTokenBalance } = require('../../web3/web3')
 
-///////////////////////// begin protected /////////////////
-// protected route. return if any of the rules are passed
-async function checkVoterRestrictions(req, res, next) {
-    const { ens, contest_hash } = req.body;
-    const walletAddress = req.user.address;
-    let restrictions = await db.query('select settings->>\'voter_restrictions\' as restrictions from contests where ens = $1 and _hash = $2', [ens, contest_hash])
-        .then(clean)
-        .then(res => Object.values(JSON.parse(res.restrictions)))
 
-    // check the times
+// return restrictions and voting_strategy
+const pre_process = async (ens, contest_hash, sub_id, walletAddress) => {
+    let query1 = 'select settings->\'voter_restrictions\' as restrictions,\
+                    settings-> \'self_voting\' as self_voting,\
+                    settings->\'voting_strategy\' as strategy,\
+                    _voting, _end\
+                    from contests where ens = $1 and _hash = $2'
+
+    let query2 = 'select author from contest_submissions where id = $1 and contest_hash = $2'
+
+    let [contest_meta, sub_author] = await Promise.all(
+        [
+            db.query(query1, [ens, contest_hash]).then(clean),
+            db.query(query2, [sub_id, contest_hash]).then(clean)
+        ]
+    )
 
 
-    if (restrictions.length === 0) {
-        return next();
+    let curr_time = new Date().toISOString()
+    return {
+        restrictions: Object.values(contest_meta.restrictions),
+        strategy: contest_meta.strategy,
+        is_voting_window: ((contest_meta._voting < curr_time) && (curr_time < contest_meta._end)),
+        is_self_voting_error: (walletAddress === sub_author.author) && !JSON.parse(contest_meta.self_voting)
     }
+
+}
+
+
+// handle both protected and unprotected modes
+// mode = {protected: ?bool?}
+const compute_restrictions = async (mode, walletAddress, restrictions) => {
+
+    // regardless of mode, return true if there are no restrictions
+    if (restrictions.length === 0) return true
 
     for (const restriction of restrictions) {
         if (restriction.type === 'erc20' || restriction.type === 'erc721') {
             let result = await checkWalletTokenBalance(walletAddress, restriction.address, restriction.decimal)
-            restriction.user_result = result > restriction.threshold
-            if (result > restriction.threshold) {
-                return next();
+            let did_user_pass = result >= restriction.threshold
+
+            // return straight away in protected mode. We don't care what the other results are
+            if (mode.protected && did_user_pass) return true
+            
+            // keep accumulating results in unprotected mode
+            else if (!mode.protected) {
+                restriction.user_result = did_user_pass
             }
+
         }
     }
+    // return the restrictions in unprotected mode
+    if (!mode.protected) {
+        return restrictions
+    }
 
-    res.sendStatus(419)
-
+    // return false if we're in the protected mode and made it this far
+    return false
 }
 
 
 // calculate vp for a single submission
-async function verifyVotingPower(req, res, next) {
+async function calc_sub_vp__unprotected(req, res, next) {
+    const { ens, sub_id, walletAddress, contest_hash } = req.body;
+
+    const mode = { protected: false };
+
+    let contest_params = await pre_process(ens, contest_hash, sub_id, walletAddress);
+
+    let restriction_results = await compute_restrictions(mode, walletAddress, contest_params.restrictions);
+
+    // initialize vp to 0
+    req.sub_total_vp = 0;
+    req.sub_votes_spent = 0;
+    req.sub_remaining_vp = 0;
+    req.restrictions_with_results = restriction_results;
+
+    // if at least one of the requirements are met
+    if ((restriction_results === true) || (restriction_results.findIndex(e => e.user_result === true) > -1)) {
+        let [total_contest_spent, sub_spent, total_contest_vp] = await Promise.all([
+            getTotalSpentVotes(contest_hash, walletAddress),
+            getSubmissionSpentVotes(contest_hash, sub_id, walletAddress),
+            getTotalVotingPower(contest_params.strategy, walletAddress)
+        ])
+
+
+        let total_votes_available = total_contest_vp - (total_contest_spent - sub_spent);
+        let submission_votes_available = Math.min(total_votes_available, contest_params.strategy.sub_cap || total_votes_available);
+
+        req.sub_total_vp = submission_votes_available;
+        req.sub_votes_spent = sub_spent;
+        req.sub_remaining_vp = submission_votes_available - sub_spent;
+        req.is_self_voting_error = contest_params.is_self_voting_error;
+    }
+
+
+    next();
+
+}
+
+
+async function calc_sub_vp__PROTECTED(req, res, next) {
     const { ens, sub_id, contest_hash, num_votes } = req.body;
-    const walletAddress = req.user.address
+    const walletAddress = req.user.address;
+    const mode = { protected: true };
 
+    let contest_params = await pre_process(ens, contest_hash, sub_id, walletAddress);
 
-    let [is_voting_window, self_voting_error, total_contest_spent, sub_spent, total_contest_vp] = await Promise.all([
-        verifyVotingWindow(ens, contest_hash),
-        checkSelfVoting(ens, contest_hash, sub_id, walletAddress),
+    if (contest_params.is_self_voting_error) return res.sendStatus(435);
+    if (!contest_params.is_voting_window) return res.sendStatus(433);
+
+    let restriction_results = await compute_restrictions(mode, walletAddress, contest_params.restrictions);
+
+    if (!restriction_results) return res.sendStatus(434)
+
+    let [total_contest_spent, sub_spent, total_contest_vp] = await Promise.all([
         getTotalSpentVotes(contest_hash, walletAddress),
         getSubmissionSpentVotes(contest_hash, sub_id, walletAddress),
-        getTotalVotingPower(req.strategy, walletAddress)
+        getTotalVotingPower(contest_params.strategy, walletAddress)
     ])
 
 
-    if(self_voting_error){
-        return res.sendStatus(433)
-    }
-
     let total_votes_available = total_contest_vp - (total_contest_spent - sub_spent)
-    let submission_votes_available = Math.min(total_votes_available, req.strategy.sub_cap || total_votes_available)
+    let submission_votes_available = Math.min(total_votes_available, contest_params.strategy.sub_cap || total_votes_available)
+
+    if (num_votes > submission_votes_available) return res.sendStatus(436)
+
 
     req.sub_total_vp = submission_votes_available;
     req.sub_votes_spent = sub_spent;
     req.sub_remaining_vp = submission_votes_available - sub_spent;
-    req.verified = num_votes <= submission_votes_available;
-
 
     next();
-
 }
 
-/////////////////////////// end protected //////////////////
 
-
-// unprotected. return all rule results for UI purposes
-async function checkVoterEligibility(req, res, next) {
-    const { ens, walletAddress, contest_hash } = req.body;
-
-    let restrictions = await db.query('select settings->>\'voter_restrictions\' as restrictions from contests where ens = $1 and _hash = $2', [ens, contest_hash])
-        .then(clean)
-        .then(res => Object.values(JSON.parse(res.restrictions)))
-
-    for (const restriction of restrictions) {
-        if (restriction.type === 'erc20' || restriction.type === 'erc721') {
-            let result = await checkWalletTokenBalance(walletAddress, restriction.address, restriction.decimal)
-            restriction.user_result = result > restriction.threshold
-        }
-    }
-
-    req.restrictions_with_results = restrictions;
-    next();
-}
-
-/*
- * get strategy --> check tokens --> calculate vp --> return
- */
-
-
-async function getContestVotingStrategy(req, res, next) {
-    const { ens, contest_hash } = req.body
-    let strategy = await db.query('select settings ->> \'voting_strategy\' as strategy from contests where ens=$1 and _hash=$2', [ens, contest_hash])
-        .then(clean)
-        .then(data => JSON.parse(data.strategy))
-    req.strategy = strategy;
-    next();
-}
-
-async function verifyVotingWindow(ens, contest_hash) {
-    let window = await db.query('select _voting, _end from contests where ens=$1 and _hash=$2', [ens, contest_hash])
-        .then(clean)
-    let created = new Date().toISOString();
-    if (!(window._voting < created && created < window._end)) {
-        return res.sendStatus(433)
-    }
-    return true
-}
-
-async function checkSelfVoting(ens, contest_hash, sub_id, walletAddress) {
-
-    const result = await db.query('select settings->>\'self_voting\' as self_voting, author from contests inner join contest_submissions on contests._hash = contest_submissions.contest_hash where contests.ens=$1 and contests._hash=$2 and contest_submissions.id = $3', [ens, contest_hash, sub_id])
-        .then(clean)
-    if (!JSON.parse(result.self_voting) && walletAddress === result.author) {
-        return true
-    }
-    return false
-
-}
+/// helpers 
 
 const getSubmissionSpentVotes = async (contest_hash, sub_id, walletAddress) => {
     let spent = await db.query('select votes_spent from contest_votes where contest_hash = $1 and submission_id = $2 and voter = $3', [contest_hash, sub_id, walletAddress])
@@ -154,44 +173,9 @@ const getTotalVotingPower = async (strategy, walletAddress) => {
     }
 }
 
-// calculate vp for a single submission
-async function calculateSubmissionVotingPower(req, res, next) {
-    const { ens, sub_id, walletAddress, contest_hash } = req.body;
 
-    // if no restrictions or at least one of the restriction results are true, set the vp stats
-
-    let x = req.restrictions_with_results.findIndex(e => e.user_result === true);
-
-    if ((req.restrictions_with_results.length === 0) || (req.restrictions_with_results.findIndex(e => e.user_result === true) > -1)) {
-        let [total_contest_spent, sub_spent, total_contest_vp] = await Promise.all([
-            getTotalSpentVotes(contest_hash, walletAddress),
-            getSubmissionSpentVotes(contest_hash, sub_id, walletAddress),
-            getTotalVotingPower(req.strategy, walletAddress)
-        ])
-
-        let total_votes_available = total_contest_vp - (total_contest_spent - sub_spent)
-        let submission_votes_available = Math.min(total_votes_available, req.strategy.sub_cap || total_votes_available)
-
-        req.sub_total_vp = submission_votes_available;
-        req.sub_votes_spent = sub_spent;
-        req.sub_remaining_vp = submission_votes_available - sub_spent;
-        next();
-
-    }
-
-    else {
-        req.sub_total_vp = 0;
-        req.sub_votes_spent = 0;
-        req.sub_remaining_vp = 0;
-        next();
-    }
-
-}
 
 module.exports = {
-    checkVoterRestrictions,
-    verifyVotingPower,
-    checkVoterEligibility,
-    getContestVotingStrategy,
-    calculateSubmissionVotingPower,
+    calc_sub_vp__unprotected,
+    calc_sub_vp__PROTECTED
 };

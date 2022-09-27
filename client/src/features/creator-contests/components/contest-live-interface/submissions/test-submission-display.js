@@ -131,23 +131,20 @@ export default function SubmissionDisplay({ }) {
     const contest_state = useSelector(selectContestState);
     const [subs, set_subs] = useState([]);
 
-
-
     useEffect(() => {
-        if (contest_state < 2) {
-            fetch(`/creator_contests/fetch_submissions/${ens}/${contest_hash}`)
-                .then(res => res.json())
-                .then(data => set_subs(data))
+        fetch(`/creator_contests/fetch_submissions/?ens=${ens}&contest_hash=${contest_hash}`)
+            .then(res => res.json())
+            .then(data => set_subs(data))
 
-        }
-
-        else if (contest_state === 2) {
-            // get the winners
-            console.log('we are here')
-            fetch(`/creator_contests/fetch_contest_winners/?ens=${ens}&contest_hash=${contest_hash}`)
-                .then(res => res.json())
-                .then(data => set_subs(data))
-        }
+        /*
+                else if (contest_state === 2) {
+                    // get the winners
+                    console.log('we are here')
+                    fetch(`/creator_contests/fetch_contest_winners/?ens=${ens}&contest_hash=${contest_hash}`)
+                        .then(res => res.json())
+                        .then(data => set_subs(data))
+                }
+            */
 
     }, [])
 
@@ -165,7 +162,6 @@ export default function SubmissionDisplay({ }) {
 
         socket.on('new_submission', submissionListener)
     }, [socket])
-    console.log(subs)
 
     return (
         <div>
@@ -314,14 +310,12 @@ function LazyLoadedSubmission({ sub, handleExpand, index }) {
 
 
 function SubmissionMetadata({ contest_state, sub }) {
-    if (contest_state === 2) {
-        return (
-            <SubmissionMeta>
-                {sub.author && <Author>{sub.author.substring(0, 6)}...{sub.author.substring(38, 42)}</Author>}
-                <VoteTotals>{sub.votes} votes</VoteTotals>
-            </SubmissionMeta>
-        )
-    }
+    return (
+        <SubmissionMeta width={'98%'}>
+            {typeof sub.author != undefined ? <Author>{sub.author.substring(0, 6)}...{sub.author.substring(38, 42)}</Author> : null}
+            {typeof sub.votes != undefined ? <VoteTotals>{sub.votes} votes</VoteTotals> : null}
+        </SubmissionMeta>
+    )
     return null
 }
 
