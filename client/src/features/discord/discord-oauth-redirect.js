@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 
 // on successful authorization, grab the ens and guild_id from url and send a post to the server
 
-export default function SuccessfulDiscordRedirect() {
+export default function DiscordRedirect() {
     const [authError, setAuthError] = useState(false);
     const [didUserDenyBot, setDidUserDenyBot] = useState(false)
     const [didUserDenyIdentify, setDidUserDenyIdentify] = useState(false)
@@ -18,7 +18,7 @@ export default function SuccessfulDiscordRedirect() {
 
             // fragment is for the bot addition
             const target = `${window.location.origin}`
-
+            console.log(target)
             const urlParams = new URLSearchParams(window.location.search);
             const [guild_id, code, error, errorDescription] = [
                 urlParams.get('guild_id'),
@@ -27,9 +27,6 @@ export default function SuccessfulDiscordRedirect() {
                 urlParams.get('errorDescription'),
 
             ]
-
-            
-            
 
             if (error) {
                 window.opener.postMessage(

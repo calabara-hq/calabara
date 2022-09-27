@@ -19,6 +19,7 @@ import '../../../../css/gatekeeper-toggle.css'
 
 // error handling
 import useErrorHandler from "./handle-errors";
+import Twitter from "./twitter_automation/twitter";
 
 
 
@@ -173,7 +174,11 @@ export default function ContestSettings() {
             <SettingsBlockElement>
                 <PromptBuilder promptBuilderData={promptBuilderData} setPromptBuilderData={setPromptBuilderData} promptEditorCore={promptEditorCore} />
             </SettingsBlockElement>
-
+            {/*
+            <SettingsBlockElement>
+                <Twitter />
+            </SettingsBlockElement>
+            */}
             <SettingsBlockElement>
                 <SimpleInputs simpleInputData={simpleInputData} setSimpleInputData={setSimpleInputData} />
             </SettingsBlockElement>

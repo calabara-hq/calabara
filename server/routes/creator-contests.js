@@ -6,7 +6,7 @@ const contests = express();
 contests.use(express.json())
 const { authenticateToken } = require('../middlewares/jwt-middleware.js');
 const { isAdmin } = require('../middlewares/admin-middleware')
-const { clean, asArray } = require('../helpers/common')
+const { clean, asArray, shuffleArray } = require('../helpers/common')
 const { createContest, isNick } = require('../middlewares/creator-contests/create-contest-middleware');
 const { check_submitter_eligibility_unprotected, check_submitter_eligibility_PROTECTED, createSubmission } = require('../middlewares/creator-contests/submit-middleware');
 const { imageUpload } = require('../middlewares/image-upload-middleware.js');
@@ -50,6 +50,7 @@ contests.get('/fetch_submissions/*', async function (req, res, next) {
     let subs = await db.query('select id, _url from contest_submissions where ens=$1 and contest_hash=$2', [ens, contest_hash])
         .then(clean)
         .then(asArray)
+        .then(shuffleArray)
     res.send(subs).status(200)
 })
 
