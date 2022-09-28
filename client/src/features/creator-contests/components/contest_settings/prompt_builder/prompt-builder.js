@@ -68,9 +68,9 @@ const EditorWrap = styled.div`
     flex: 1 1 72%;
     border: 2px solid #4d4d4d;    
     border-radius: 4px;
-    height: 500px;
-    max-height: 600px;
-    overflow-y: scroll;
+    min-height: 500px;
+    //max-height: 600px;
+    //overflow-y: scroll;
     font-size: 20px;
     width: 100%;
     text-align: left;

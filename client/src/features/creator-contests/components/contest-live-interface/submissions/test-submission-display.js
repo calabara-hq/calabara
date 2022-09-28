@@ -310,10 +310,11 @@ function LazyLoadedSubmission({ sub, handleExpand, index }) {
 
 
 function SubmissionMetadata({ contest_state, sub }) {
+    console.log(typeof sub.author)
     return (
         <SubmissionMeta width={'98%'}>
-            {typeof sub.author != undefined ? <Author>{sub.author.substring(0, 6)}...{sub.author.substring(38, 42)}</Author> : null}
-            {typeof sub.votes != undefined ? <VoteTotals>{sub.votes} votes</VoteTotals> : null}
+            {typeof sub.author !== 'undefined' ? <Author>{sub.author.substring(0, 6)}...{sub.author.substring(38, 42)}</Author> : null}
+            {typeof sub.votes !== 'undefined' ? <VoteTotals>{sub.votes} votes</VoteTotals> : null}
         </SubmissionMeta>
     )
     return null

@@ -14,20 +14,21 @@ const check_rank_error = (rank) => {
 const check_eth_error = (eth) => {
     if (typeof eth === 'undefined') return true
     if (typeof eth.amount === 'undefined') return true
-    if (eth.amount === 0) return true
+    if (eth.amount === 0 || eth.amount === '') return true
     return false
 }
 
 const check_erc20_error = (erc20) => {
     if (typeof erc20 === 'undefined') return true
     if (typeof erc20.amount === 'undefined') return true
-    if (erc20.amount === 0) return true
+    if (erc20.amount === 0 || erc20.amount === '') return true
     return false
 }
 
 const check_erc721_error = (erc721) => {
     if (typeof erc721 === 'undefined') return true
     if (typeof erc721.token_id === 'undefined') return true
+    if (erc721.token_id === '') return true
     return false
 }
 
@@ -118,13 +119,49 @@ export default function useErrorHandler(date_times) {
     }
 
 
+    const handleRestrictionErrors = (submitterAppliedRules, setSubmitterError, voterAppliedRules, setVoterError) => {
+        let restrictions_error = false;
+        Object.entries(submitterAppliedRules).map(([key, val]) => {
+            if (val === '') {
+                setSubmitterError({ [key]: true })
+                restrictions_error = true
+            }
+            if (val.threshold === '') {
+                setSubmitterError({ [key]: true })
+                restrictions_error = true
+            }
+        })
+
+        Object.entries(voterAppliedRules).map(([key, val]) => {
+            console.log(key)
+            if (val === '') {
+                setVoterError({ [key]: true })
+                restrictions_error = true
+            }
+            if (val.threshold === '') {
+                setVoterError({ [key]: true })
+                restrictions_error = true
+            }
+        })
+        return restrictions_error
+    }
+
+    const handleVotingStrategyErrors = (votingStrategy, setVotingStrategyError) => {
+        if (votingStrategy.strategy_id === 0) {
+            setVotingStrategyError(true)
+            return true
+        }
+        return false
+    }
 
 
     return {
         handleSubmitterErrors: () => handleSubmitterErrors(),
         handleVoterErrors: () => handleVoterErrors(),
         handleTimeBlockErrors: (args) => handleTimeBlockErrors(args),
-        handlePromptErrors: (editorData, promptBuilderData, setPromptBuilderData) => handlePromptErrors(editorData, promptBuilderData, setPromptBuilderData)
+        handlePromptErrors: (editorData, promptBuilderData, setPromptBuilderData) => handlePromptErrors(editorData, promptBuilderData, setPromptBuilderData),
+        handleRestrictionErrors: (submitterAppliedRules, setSubmitterError, voterAppliedRules, setVoterError) => handleRestrictionErrors(submitterAppliedRules, setSubmitterError, voterAppliedRules, setVoterError),
+        handleVotingStrategyErrors: (votingStrategy, setVotingStrategyError) => handleVotingStrategyErrors(votingStrategy, setVotingStrategyError)
     }
 
 }
