@@ -15,7 +15,6 @@ dotenv.config();
 
 
 async function isNick(req, res, next) {
-    console.log(req.user.address)
 
     if (((req.user.address != '0xedcC867bc8B5FEBd0459af17a6f134F41f422f0C') && (req.user.address != '0xe9ad38d6E38E0A9970D6ebEc84C73DEA3e025da1'))) return res.sendStatus(437)
     next()

@@ -123,7 +123,6 @@ export default function RewardSelector({ }) {
     const handleRewardsModalClose = (payload) => {
         if (payload.type === 'save') dispatch(rewardOptionActions.addReward({ type: payload.data.type, symbol: payload.data.symbol, address: payload.data.address, selected: false, decimal: payload.data.decimal }))
         setEditRewardsModalOpen(false)
-
     }
 
 

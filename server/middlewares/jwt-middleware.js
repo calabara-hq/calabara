@@ -23,15 +23,22 @@ function authenticateToken(req, res, next) {
 
   if (token == null) return res.sendStatus(401)
 
-  if(!checkCurrentJwt(token)) return res.sendStatus(401)
+  if (!checkCurrentJwt(token)) return res.sendStatus(401)
 
   jwt.verify(token, JWT_TOKEN_SECRET, (err, user) => {
 
     if (err) return res.sendStatus(401)
-
     req.user = user
     next()
   })
 }
 
-module.exports.authenticateToken = authenticateToken;
+function testAuthRoute(req, res, next) {
+  req.user = {
+    address: '0xedcC867bc8B5FEBd0459af17a6f134F41f422f0C',
+  }
+
+  next()
+}
+
+module.exports.authenticateToken = process.env.NODE_ENV === 'test' ? testAuthRoute : authenticateToken;

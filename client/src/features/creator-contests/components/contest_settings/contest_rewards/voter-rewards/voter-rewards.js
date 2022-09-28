@@ -98,11 +98,11 @@ function VotingRewardsRow({ selectedRewards, possible_ranks, possible_rewards, i
 
     const updateRank = (e) => {
         const rank = Math.floor(e.target.value)
-        setRank(rank)
+        setRank(Math.round(Math.abs(rank)) || '')
     }
 
     const updateReward = (e) => {
-        setReward(e.target.value)
+        setReward(Math.abs(e.target.value) || '')
     }
 
     const handleRemoveReward = () => {

@@ -61,6 +61,7 @@ function RewardGridRow({ theme, idx, selectedRewards, errorMatrix }) {
     const dispatch = useDispatch();
     const rewardOptions = useSelector(rewardOptionState.getRewardOptions)
     const numWinners = useSelector(submitterRewardState.getNumSubmissionWinners)
+    const submitterRewards = useSelector(submitterRewardState.getSubmitterRewards)
 
     const handleRemoveReward = () => {
         if ((idx === 0) && (numWinners === 1)) return dispatch(rewardOptionActions.clearSelectedRewards())
@@ -73,16 +74,17 @@ function RewardGridRow({ theme, idx, selectedRewards, errorMatrix }) {
         const { name, value } = e.target;
         switch (name) {
             case 'rank':
-                dispatch(submitterRewardActions.updateSubmitterRewards({ index: idx, type: 'rank', value: Number(value) }))
+                console.log('here')
+                dispatch(submitterRewardActions.updateSubmitterRewards({ index: idx, type: 'rank', value: Math.round(Math.abs(value)) || '' }))
                 break;
             case 'eth':
-                dispatch(submitterRewardActions.updateSubmitterRewards({ index: idx, type: 'eth', value: { type: 'eth', symbol: 'ETH', address: null, amount: Number(value) } }))
+                dispatch(submitterRewardActions.updateSubmitterRewards({ index: idx, type: 'eth', value: { type: 'eth', symbol: 'ETH', address: null, amount: Math.abs(value) || '' } }))
                 break;
             case 'erc20':
-                dispatch(submitterRewardActions.updateSubmitterRewards({ index: idx, type: 'erc20', value: { type: 'erc20', symbol: rewardOptions.erc20.symbol, address: rewardOptions.erc20.address, decimal: rewardOptions.erc20.decimal, amount: Number(value) } }))
+                dispatch(submitterRewardActions.updateSubmitterRewards({ index: idx, type: 'erc20', value: { type: 'erc20', symbol: rewardOptions.erc20.symbol, address: rewardOptions.erc20.address, decimal: rewardOptions.erc20.decimal, amount: Math.abs(value) || '' } }))
                 break;
             case 'erc721':
-                dispatch(submitterRewardActions.updateSubmitterRewards({ index: idx, type: 'erc721', value: { type: 'erc721', symbol: rewardOptions.erc721.symbol, address: rewardOptions.erc721.address, decimal: rewardOptions.erc721.decimal, token_id: Number(value) } }))
+                dispatch(submitterRewardActions.updateSubmitterRewards({ index: idx, type: 'erc721', value: { type: 'erc721', symbol: rewardOptions.erc721.symbol, address: rewardOptions.erc721.address, decimal: rewardOptions.erc721.decimal, token_id: Math.round(Math.abs(value)) || '' } }))
                 break;
         }
 
@@ -93,7 +95,7 @@ function RewardGridRow({ theme, idx, selectedRewards, errorMatrix }) {
         <>
 
             <GridContainer style={{ width: '60%' }}>
-                <RewardsGridInput error={errorMatrix[idx][0]} name='rank'  placeholder='rank' theme={theme} type="number" onChange={updateRewards} onWheel={(e) => e.target.blur()}></RewardsGridInput>
+                <RewardsGridInput error={errorMatrix[idx][0]} name='rank' placeholder='rank' theme={theme} type="number" onChange={updateRewards} value={submitterRewards[idx].rank} onWheel={(e) => e.target.blur()}></RewardsGridInput>
 
             </GridContainer>
 

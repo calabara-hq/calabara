@@ -14,20 +14,21 @@ const check_rank_error = (rank) => {
 const check_eth_error = (eth) => {
     if (typeof eth === 'undefined') return true
     if (typeof eth.amount === 'undefined') return true
-    if (eth.amount === 0) return true
+    if (eth.amount === 0 || eth.amount === '') return true
     return false
 }
 
 const check_erc20_error = (erc20) => {
     if (typeof erc20 === 'undefined') return true
     if (typeof erc20.amount === 'undefined') return true
-    if (erc20.amount === 0) return true
+    if (erc20.amount === 0 || erc20.amount === '') return true
     return false
 }
 
 const check_erc721_error = (erc721) => {
     if (typeof erc721 === 'undefined') return true
     if (typeof erc721.token_id === 'undefined') return true
+    if (erc721.token_id === '') return true
     return false
 }
 
@@ -50,12 +51,17 @@ export default function useErrorHandler(date_times) {
         let setCurrentDate = date_times[0]
         let date_1 = date_times[1].toISOString();
         let date_2 = date_times[2].toISOString();
+        let snapshot_date = date_times[3].toISOString();
         let now = new Date();
         if (date_1 < now.toISOString()) {
             setCurrentDate(now)
             return true
         }
         if (date_2 < date_1) return true
+        if (snapshot_date > now.toISOString()) {
+            setCurrentDate(now)
+            return true
+        }
         return false
     }
 
@@ -93,17 +99,69 @@ export default function useErrorHandler(date_times) {
         return voter_error
     }
 
+    const handlePromptErrors = (editorData, promptBuilderData, setPromptBuilderData) => {
+        let prompt_error = false;
+        if (editorData.blocks.length === 0) {
+            setPromptBuilderData({ type: 'update_single', payload: { prompt_content_error: true } })
+            prompt_error = true
+        }
+
+        if (!promptBuilderData.prompt_heading) {
+            setPromptBuilderData({ type: 'update_single', payload: { prompt_heading_error: true } })
+            prompt_error = true
+        }
+        if (!promptBuilderData.prompt_label) {
+            setPromptBuilderData({ type: 'update_single', payload: { prompt_label_error: true } })
+            prompt_error = true
+        }
+
+        return prompt_error
+    }
 
 
+    const handleRestrictionErrors = (submitterAppliedRules, setSubmitterError, voterAppliedRules, setVoterError) => {
+        let restrictions_error = false;
+        Object.entries(submitterAppliedRules).map(([key, val]) => {
+            if (val === '') {
+                setSubmitterError({ [key]: true })
+                restrictions_error = true
+            }
+            if (val.threshold === '') {
+                setSubmitterError({ [key]: true })
+                restrictions_error = true
+            }
+        })
 
+        Object.entries(voterAppliedRules).map(([key, val]) => {
+            console.log(key)
+            if (val === '') {
+                setVoterError({ [key]: true })
+                restrictions_error = true
+            }
+            if (val.threshold === '') {
+                setVoterError({ [key]: true })
+                restrictions_error = true
+            }
+        })
+        return restrictions_error
+    }
 
-    const handleErrors = (args) => {
-        return [handleSubmitterErrors(), handleVoterErrors(), handleTimeBlockErrors(args)]
+    const handleVotingStrategyErrors = (votingStrategy, setVotingStrategyError) => {
+        if (votingStrategy.strategy_id === 0) {
+            setVotingStrategyError(true)
+            return true
+        }
+        return false
     }
 
 
     return {
-        handleErrors: (args) => handleErrors(args)
+        handleSubmitterErrors: () => handleSubmitterErrors(),
+        handleVoterErrors: () => handleVoterErrors(),
+        handleTimeBlockErrors: (args) => handleTimeBlockErrors(args),
+        handlePromptErrors: (editorData, promptBuilderData, setPromptBuilderData) => handlePromptErrors(editorData, promptBuilderData, setPromptBuilderData),
+        handleRestrictionErrors: (submitterAppliedRules, setSubmitterError, voterAppliedRules, setVoterError) => handleRestrictionErrors(submitterAppliedRules, setSubmitterError, voterAppliedRules, setVoterError),
+        handleVotingStrategyErrors: (votingStrategy, setVotingStrategyError) => handleVotingStrategyErrors(votingStrategy, setVotingStrategyError)
     }
 
 }

@@ -14,7 +14,7 @@ describe('test submit with no submitter / voter restrictions', async () => {
     // ends in 20 mins
     mock_settings.voting_begin = new Date(current_date.getTime() + 20 * 60000).toISOString();
 
-    // empty submitter / voter rewards
+    // empty submitter / voter restrictions
     mock_settings.submitter_restrictions = {};
     mock_settings.voter_restrictions = {};
 
@@ -28,7 +28,6 @@ describe('test submit with no submitter / voter restrictions', async () => {
         let fetch_dummy_contest_response = await fetchDummyContest()
         expect(fetch_dummy_contest_response.status).to.eql(200)
         let contest_hash = fetch_dummy_contest_response.body._hash
-        console.log(contest_hash)
 
         // try to create a submission
         let dummy_submission_response = await createDummySubmission(contest_hash)

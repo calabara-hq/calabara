@@ -25,15 +25,17 @@ export default function DateTimeSelector(props) {
     return (
         <RainbowThemeContainer
             theme={theme}
+            
         >
                 <DateTimePicker
                     id={'datepicker'}
                     label={props.label}
                     value={props.date}
                     onChange={value => props.setDate(value)}
-                    minDate={props.minDate || new Date()}
-                    maxDate={new Date(new Date().setFullYear(new Date().getFullYear() + 1))}
-                    error={props.date < props.minDate ? (!props.date ? null : props.errorMsg) : null}
+                    minDate={props.minDate || null}
+                    maxDate={props.maxDate || new Date(new Date().setFullYear(new Date().getFullYear() + 1))}
+                    //error={props.date < props.minDate ? (!props.date ? null : props.errorMsg) : null}
+                    error = {props.error ? props.errorMsg : null}
                     locale={locale.name}
                     okLabel='OK'
                     cancelLabel='Cancel'

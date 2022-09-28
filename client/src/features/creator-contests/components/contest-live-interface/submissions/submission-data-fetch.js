@@ -4,7 +4,7 @@ import wrapPromise from "../../../../../helpers/wrap-promise"
 
 const fetchSubmssionUrls = (contest_state, ens, contest_hash) => {
     if (contest_state < 2) {
-        const promise = fetch(`/creator_contests/fetch_submissions/${ens}/${contest_hash}`)
+        const promise = fetch(`/creator_contests/fetch_submissions/?ens=${ens}&contest_hash=${contest_hash}`)
             .then(data => data.json())
             .then(subs => {
                 return subs.map(sub => {

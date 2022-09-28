@@ -93,7 +93,7 @@ export default function ExpandSubmissionDrawer({ drawerOpen, handleClose, id, TL
             <SubmissionWrap>
                 <>
                     {contest_state === 2 &&
-                        <SubmissionMeta>
+                        <SubmissionMeta width={'100%'}>
                             {author && <Author>{author.substring(0, 6)}...{author.substring(38, 42)}</Author>}
                             {votes !== null && <VoteTotals>{votes} votes</VoteTotals>}
                         </SubmissionMeta>

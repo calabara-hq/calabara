@@ -56,26 +56,6 @@ display: flex;
     justify-content: flex-start;
     width: 100%;
     
-    > input  {
-        animation: fadein 1s forwards;
-        height: 40px;
-        width: 111px;
-        font-size: 15px;
-        font-weight: 550;
-        color: white;
-        background-image: linear-gradient(#141416, #141416), 
-                        linear-gradient(to right, #e00f8e, #2d66dc);
-        background-origin: border-box;
-        background-clip: padding-box, border-box;
-        border: double 2px transparent;
-        border-radius: 10px;
-        outline: none;
-        padding: 5px 10px;
-        align-self: center;
-        text-align: center;
-        margin-left: auto;
-
-    }
 
     > button  {
         height: 40px;
@@ -98,6 +78,23 @@ display: flex;
     }
 
 `
+const GKInput = styled.input`
+    animation: fadein 1s forwards;
+    height: 40px;
+    width: 111px;
+    font-size: 15px;
+    font-weight: 550;
+    color: white;
+    background-color: #121212;
+    border: 2px solid ${props => props.error ? 'rgba(254,72,73,1)' : 'rgb(83,155,245)'};
+    border-radius: 10px;
+    outline: none;
+    padding: 5px 10px;
+    align-self: center;
+    text-align: center;
+    margin-left: auto;
+`
+
 
 const TokenLink = styled.span`
     cursor: pointer;
@@ -172,14 +169,15 @@ function Option({ element, option_id, appliedRules, setAppliedRules, ruleError, 
     }
 
     const handleThresholdChange = (e) => {
+        console.log('here')
         let objCopy = { ...ruleOption }
-        objCopy['threshold'] = e.target.value
+        objCopy['threshold'] = Math.round(Math.abs(e.target.value)) || ''
         setAppliedRules({ type: 'update_single', payload: { [option_id]: objCopy } })
         setRuleError(false)
     }
 
     const handleAddDiscordRule = (val) => {
-        
+
         setAppliedRules({ type: 'update_single', payload: { [option_id]: { type: 'discord', roles: val } } })
     }
 
@@ -195,10 +193,7 @@ function Option({ element, option_id, appliedRules, setAppliedRules, ruleError, 
                         <ToggleFlex>
                             <ToggleSwitch setRuleError={setRuleError} ruleError={ruleError} addRule={addRule} deleteRule={deleteRule} option_id={option_id} isGatekeeperOn={isGatekeeperOn} setIsGatekeeperOn={setIsGatekeeperOn} appliedRules={appliedRules} setAppliedRules={setAppliedRules} toggle_identifier={toggle_identifier} />
                             {isGatekeeperOn &&
-                                <>
-                                    <input onWheel={(e) => e.target.blur()} type="number" value={appliedRules[option_id]['threshold']} placeholder="threshold" onChange={handleThresholdChange}></input>
-
-                                </>
+                                <GKInput onWheel={(e) => e.target.blur()} type="number" error={ruleError[option_id] === true} value={appliedRules[option_id]['threshold']} placeholder="threshold" onChange={handleThresholdChange}></GKInput>
                             }
                         </ToggleFlex>
                     </>
