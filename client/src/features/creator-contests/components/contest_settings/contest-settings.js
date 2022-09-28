@@ -99,23 +99,21 @@ const initialPromptData = {
 
 
 export default function ContestSettings() {
+    const { ens } = useParams();
+    const { populateDashboardRules } = useDashboardRules();
 
     const [currentDate, setCurrentDate] = useState(new Date())
     const [date_1, setDate_1] = useState(new Date())
     const [date_2, setDate_2] = useState(new Date())
+    const [snapshotDate, setSnapshotDate] = useState(new Date())
+
     const [votingStrategy, setVotingStrategy] = useReducer(reducer, { strategy_id: 0x0 });
     const [submitterAppliedRules, setSubmitterAppliedRules] = useReducer(reducer, {});
     const [voterAppliedRules, setVoterAppliedRules] = useReducer(reducer, {});
     const [submitterRuleError, setSubmitterRuleError] = useState(false);
     const [voterRuleError, setVoterRuleError] = useState(false);
-    const { ens } = useParams();
-    const { populateDashboardRules } = useDashboardRules();
-
-
     const [promptBuilderData, setPromptBuilderData] = useReducer(reducer, initialPromptData)
     const [simpleInputData, setSimpleInputData] = useReducer(reducer, { anonSubmissions: true, visibleVotes: false, selfVoting: false })
-
-
 
     const TimeBlockRef = useRef(null);
     const RewardsRef = useRef(null);
@@ -140,9 +138,11 @@ export default function ContestSettings() {
             <SettingsBlockElement ref={TimeBlockRef}>
                 <ContestDateTimeBlock
                     currentDate={currentDate}
+                    snapshotDate={snapshotDate}
                     date_1={date_1}
                     date_2={date_2}
                     setCurrentDate={setCurrentDate}
+                    setSnapshotDate={setSnapshotDate}
                     setDate_1={setDate_1}
                     setDate_2={setDate_2}
                 />
@@ -171,7 +171,7 @@ export default function ContestSettings() {
                 <VotingPolicy votingStrategy={votingStrategy} setVotingStrategy={setVotingStrategy} />
             </SettingsBlockElement>
 
-            <SettingsBlockElement>
+            <SettingsBlockElement ref={PromptBlockRef}>
                 <PromptBuilder promptBuilderData={promptBuilderData} setPromptBuilderData={setPromptBuilderData} promptEditorCore={promptEditorCore} />
             </SettingsBlockElement>
             {/*
@@ -188,14 +188,17 @@ export default function ContestSettings() {
                     setCurrentDate={setCurrentDate}
                     date_1={date_1}
                     date_2={date_2}
+                    snapshotDate={snapshotDate}
                     promptEditorCore={promptEditorCore}
                     votingStrategy={votingStrategy}
                     submitterAppliedRules={submitterAppliedRules}
                     voterAppliedRules={voterAppliedRules}
                     simpleInputData={simpleInputData}
                     promptBuilderData={promptBuilderData}
+                    setPromptBuilderData={setPromptBuilderData}
                     TimeBlockRef={TimeBlockRef}
                     RewardsRef={RewardsRef}
+                    PromptBlockRef={PromptBlockRef}
                 />
             </SettingsBlockElement>
 
@@ -210,31 +213,44 @@ function SaveSettings(props) {
     const submitterRewards = useSelector(submitterRewardState.getSubmitterRewards)
     const voterRewards = useSelector(voterRewardState.getVoterRewards)
     const { authenticated_post } = useCommon();
-    const { handleErrors } = useErrorHandler();
+    const {
+        handleSubmitterErrors,
+        handleTimeBlockErrors,
+        handleVoterErrors,
+        handlePromptErrors
+    } = useErrorHandler();
     const { ens } = useParams();
 
     const {
         setCurrentDate,
         date_1,
         date_2,
+        snapshotDate,
         promptEditorCore,
         votingStrategy,
         submitterAppliedRules,
         voterAppliedRules,
         simpleInputData,
         promptBuilderData,
+        setPromptBuilderData,
         TimeBlockRef,
-        RewardsRef
+        RewardsRef,
+        PromptBlockRef
     } = props
 
 
     const handleSave = async () => {
 
-        let [isSubmitterError, isVoterError, isTimeError] = handleErrors([setCurrentDate, date_1, date_2]);
+        const isTimeError = handleTimeBlockErrors([setCurrentDate, date_1, date_2, snapshotDate]);
+        const isSubmitterError = handleSubmitterErrors();
+        const isVoterError = handleVoterErrors();
         if (isTimeError) return TimeBlockRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
         if (isSubmitterError) return RewardsRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
         if (isVoterError) return RewardsRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
 
+        const promptEditorData = await promptEditorCore.current.save();
+        const isPromptError = handlePromptErrors(promptEditorData, promptBuilderData, setPromptBuilderData);
+        if(isPromptError) return PromptBlockRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
 
         let strategy
         if (votingStrategy.strategy_type === 'arcade') {
@@ -258,13 +274,13 @@ function SaveSettings(props) {
             }
         }
 
-        const promptEditorData = await promptEditorCore.current.save();
 
         let contest_data = {
             date_times: {
                 start_date: new Date().toISOString(),
                 voting_begin: date_1.toISOString(),
-                end_date: date_2.toISOString()
+                end_date: date_2.toISOString(),
+                snapshot_block: snapshotDate.toISOString()
             },
             reward_options: rewardOptions,
             submitter_rewards: submitterRewards,
@@ -285,13 +301,12 @@ function SaveSettings(props) {
             promptLabelColor: promptBuilderData.prompt_label_color
         }
 
-        console.log(contest_data.submitter_rewards)
 
-
-
+        /*
         if (window.confirm('are you sure you want to continue?')) {
             authenticated_post('/creator_contests/create_contest', { ens: ens, contest_settings: contest_data, prompt_data: prompt_data })
         }
+        */
 
     }
 

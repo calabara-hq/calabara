@@ -50,12 +50,17 @@ export default function useErrorHandler(date_times) {
         let setCurrentDate = date_times[0]
         let date_1 = date_times[1].toISOString();
         let date_2 = date_times[2].toISOString();
+        let snapshot_date = date_times[3].toISOString();
         let now = new Date();
         if (date_1 < now.toISOString()) {
             setCurrentDate(now)
             return true
         }
         if (date_2 < date_1) return true
+        if (snapshot_date > now.toISOString()) {
+            setCurrentDate(now)
+            return true
+        }
         return false
     }
 
@@ -93,17 +98,33 @@ export default function useErrorHandler(date_times) {
         return voter_error
     }
 
+    const handlePromptErrors = (editorData, promptBuilderData, setPromptBuilderData) => {
+        let prompt_error = false;
+        if (editorData.blocks.length === 0) {
+            setPromptBuilderData({ type: 'update_single', payload: { prompt_content_error: true } })
+            prompt_error = true
+        }
 
+        if (!promptBuilderData.prompt_heading) {
+            setPromptBuilderData({ type: 'update_single', payload: { prompt_heading_error: true } })
+            prompt_error = true
+        }
+        if (!promptBuilderData.prompt_label) {
+            setPromptBuilderData({ type: 'update_single', payload: { prompt_label_error: true } })
+            prompt_error = true
+        }
 
-
-
-    const handleErrors = (args) => {
-        return [handleSubmitterErrors(), handleVoterErrors(), handleTimeBlockErrors(args)]
+        return prompt_error
     }
 
 
+
+
     return {
-        handleErrors: (args) => handleErrors(args)
+        handleSubmitterErrors: () => handleSubmitterErrors(),
+        handleVoterErrors: () => handleVoterErrors(),
+        handleTimeBlockErrors: (args) => handleTimeBlockErrors(args),
+        handlePromptErrors: (editorData, promptBuilderData, setPromptBuilderData) => handlePromptErrors(editorData, promptBuilderData, setPromptBuilderData)
     }
 
 }
