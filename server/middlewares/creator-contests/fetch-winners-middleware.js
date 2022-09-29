@@ -5,7 +5,6 @@ const asyncfs = require('fs').promises;
 const fs = require('fs');
 const db = require('../../helpers/db-init.js');
 const { clean, asArray } = require('../../helpers/common')
-const { checkWalletTokenBalance } = require('../../web3/web3')
 
 
 

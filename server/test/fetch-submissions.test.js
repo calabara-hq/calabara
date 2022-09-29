@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-let settings = require('./dummy-settings.test')
+let { base_settings, test_token_strategies, test_arcade_strategies, test_voter_restrictions, test_submitter_restrictions } = require('./helpers/dummy-settings')
 
 const { createDummyContest, fetchDummyContest, createDummySubmission, fetchVotingMetrics, castDummyVote, fetchSubmissions, cleanup, } = require('./master.test');
 
@@ -16,9 +16,9 @@ const { createDummyContest, fetchDummyContest, createDummySubmission, fetchVotin
 
 describe('test fetch submissions', async (done) => {
     // scope our variables
-
+    /*
     it('no anon_subs / no visible votes', async () => {
-        const mock_settings = JSON.parse(JSON.stringify(settings));
+        const mock_settings = JSON.parse(JSON.stringify(base_settings));
         
         let current_date = new Date()
         mock_settings.date_times.start_date = current_date.toISOString();
@@ -60,7 +60,7 @@ describe('test fetch submissions', async (done) => {
 
     
     it('anon_subs / no visible votes', async () => {
-        const mock_settings = JSON.parse(JSON.stringify(settings));
+        const mock_settings = JSON.parse(JSON.stringify(base_settings));
         let current_date = new Date()
         mock_settings.date_times.start_date = current_date.toISOString();
         mock_settings.date_times.voting_begin = new Date(current_date.getTime() + 10 * 60000).toISOString();
@@ -100,7 +100,7 @@ describe('test fetch submissions', async (done) => {
     })
 
     it('no anon_subs / visible votes', async () => {
-        const mock_settings = JSON.parse(JSON.stringify(settings));
+        const mock_settings = JSON.parse(JSON.stringify(base_settings));
         let current_date = new Date()
         mock_settings.date_times.start_date = current_date.toISOString();
         mock_settings.date_times.voting_begin = new Date(current_date.getTime() + 10 * 60000).toISOString();
@@ -140,7 +140,7 @@ describe('test fetch submissions', async (done) => {
     })
 
     it('anon_subs / visible votes', async () => {
-        const mock_settings = JSON.parse(JSON.stringify(settings));
+        const mock_settings = JSON.parse(JSON.stringify(base_settings));
         let current_date = new Date()
         mock_settings.date_times.start_date = current_date.toISOString();
         mock_settings.date_times.voting_begin = new Date(current_date.getTime() + 10 * 60000).toISOString();
@@ -180,7 +180,7 @@ describe('test fetch submissions', async (done) => {
     })
 
     it('contest over / no anon subs / no visible votes', async () => {
-        const mock_settings = JSON.parse(JSON.stringify(settings));
+        const mock_settings = JSON.parse(JSON.stringify(base_settings));
         let current_date = new Date()
         mock_settings.date_times.start_date = current_date.toISOString();
         mock_settings.date_times.voting_begin = new Date(current_date.getTime() - 20 * 60000).toISOString();
@@ -220,7 +220,7 @@ describe('test fetch submissions', async (done) => {
     })
 
     it('contest over / anon subs / no visible votes', async () => {
-        const mock_settings = JSON.parse(JSON.stringify(settings));
+        const mock_settings = JSON.parse(JSON.stringify(base_settings));
         let current_date = new Date()
         mock_settings.date_times.start_date = current_date.toISOString();
         mock_settings.date_times.voting_begin = new Date(current_date.getTime() - 20 * 60000).toISOString();
@@ -260,7 +260,7 @@ describe('test fetch submissions', async (done) => {
     })
 
     it('contest over / no anon subs / visible votes', async () => {
-        const mock_settings = JSON.parse(JSON.stringify(settings));
+        const mock_settings = JSON.parse(JSON.stringify(base_settings));
         let current_date = new Date()
         mock_settings.date_times.start_date = current_date.toISOString();
         mock_settings.date_times.voting_begin = new Date(current_date.getTime() - 20 * 60000).toISOString();
@@ -300,7 +300,7 @@ describe('test fetch submissions', async (done) => {
     })
 
     it('contest over / anon subs / visible votes', async () => {
-        const mock_settings = JSON.parse(JSON.stringify(settings));
+        const mock_settings = JSON.parse(JSON.stringify(base_settings));
         let current_date = new Date()
         mock_settings.date_times.start_date = current_date.toISOString();
         mock_settings.date_times.voting_begin = new Date(current_date.getTime() - 20 * 60000).toISOString();
@@ -342,6 +342,7 @@ describe('test fetch submissions', async (done) => {
 
     done();
     
+    */
     
 })
 

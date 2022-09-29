@@ -1,12 +1,10 @@
 const { expect } = require('chai');
 const request = require('supertest')
 const https = require('https');
-let settings = require('./dummy-settings.test')
 const app = require('../server.js')
 const fs = require('fs');
-const { checkWalletTokenBalance } = require('../web3/web3')
 
-let walletAddress = '0xedcC867bc8B5FEBd0459af17a6f134F41f422f0C'
+let walletAddress = '0xe9ad38d6E38E0A9970D6ebEc84C73DEA3e025da1'
 
 
 

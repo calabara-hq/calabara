@@ -334,7 +334,6 @@ function SaveSettings(props) {
                 start_date: new Date().toISOString(),
                 voting_begin: date_1.toISOString(),
                 end_date: date_2.toISOString(),
-                snapshot_block: snapshotDate.toISOString()
             },
             reward_options: rewardOptions,
             submitter_rewards: submitterRewards,
@@ -344,7 +343,9 @@ function SaveSettings(props) {
             voting_strategy: strategy,
             anon_subs: simpleInputData.anonSubmissions,
             visible_votes: simpleInputData.visibleVotes,
-            self_voting: simpleInputData.selfVoting
+            self_voting: simpleInputData.selfVoting,
+            snapshot_block: snapshotDate.toISOString()
+
         })
 
         setPromptData({
@@ -442,9 +443,11 @@ function Summary({ contestData, promptData, warnings }) {
     const readableStart = new Date(contestData.date_times.start_date);
     const readableVote = new Date(contestData.date_times.voting_begin);
     const readableEnd = new Date(contestData.date_times.end_date);
-    const readableSnapshot = new Date(contestData.date_times.snapshot_block);
+    const readableSnapshot = new Date(contestData.snapshot_block);
 
+    console.log(contestData)
 
+    
     const handleConfirm = () => {
         authenticated_post('/creator_contests/create_contest', { ens: ens, contest_settings: contestData, prompt_data: promptData })
     }

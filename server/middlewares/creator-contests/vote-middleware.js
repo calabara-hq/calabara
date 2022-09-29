@@ -14,6 +14,7 @@ const pre_process = async (ens, contest_hash, sub_id, walletAddress) => {
     let query1 = 'select settings->\'voter_restrictions\' as restrictions,\
                     settings-> \'self_voting\' as self_voting,\
                     settings->\'voting_strategy\' as strategy,\
+                    settings->\'snapshot_block\' as snapshot_block,\
                     _voting, _end\
                     from contests where ens = $1 and _hash = $2'
 
@@ -32,7 +33,8 @@ const pre_process = async (ens, contest_hash, sub_id, walletAddress) => {
         restrictions: Object.values(contest_meta.restrictions),
         strategy: contest_meta.strategy,
         is_voting_window: ((contest_meta._voting < curr_time) && (curr_time < contest_meta._end)),
-        is_self_voting_error: (walletAddress === sub_author.author) && !JSON.parse(contest_meta.self_voting)
+        is_self_voting_error: (walletAddress === sub_author.author) && !JSON.parse(contest_meta.self_voting),
+        snapshot_block: contest_meta.snapshot_block
     }
 
 }
@@ -40,19 +42,19 @@ const pre_process = async (ens, contest_hash, sub_id, walletAddress) => {
 
 // handle both protected and unprotected modes
 // mode = {protected: ?bool?}
-const compute_restrictions = async (mode, walletAddress, restrictions) => {
+const compute_restrictions = async (mode, walletAddress, restrictions, snapshot_block) => {
 
     // regardless of mode, return true if there are no restrictions
     if (restrictions.length === 0) return true
 
     for (const restriction of restrictions) {
         if (restriction.type === 'erc20' || restriction.type === 'erc721') {
-            let result = await checkWalletTokenBalance(walletAddress, restriction.address, restriction.decimal)
+            let result = await checkWalletTokenBalance(walletAddress, restriction.address, restriction.decimal, snapshot_block)
             let did_user_pass = result >= restriction.threshold
 
             // return straight away in protected mode. We don't care what the other results are
             if (mode.protected && did_user_pass) return true
-            
+
             // keep accumulating results in unprotected mode
             else if (!mode.protected) {
                 restriction.user_result = did_user_pass
@@ -77,8 +79,7 @@ async function calc_sub_vp__unprotected(req, res, next) {
     const mode = { protected: false };
 
     let contest_params = await pre_process(ens, contest_hash, sub_id, walletAddress);
-
-    let restriction_results = await compute_restrictions(mode, walletAddress, contest_params.restrictions);
+    let restriction_results = await compute_restrictions(mode, walletAddress, contest_params.restrictions, contest_params.snapshot_block);
 
     // initialize vp to 0
     req.sub_total_vp = 0;
@@ -87,13 +88,14 @@ async function calc_sub_vp__unprotected(req, res, next) {
     req.restrictions_with_results = restriction_results;
 
     // if at least one of the requirements are met
+
+
     if ((restriction_results === true) || (restriction_results.findIndex(e => e.user_result === true) > -1)) {
         let [total_contest_spent, sub_spent, total_contest_vp] = await Promise.all([
             getTotalSpentVotes(contest_hash, walletAddress),
             getSubmissionSpentVotes(contest_hash, sub_id, walletAddress),
-            getTotalVotingPower(contest_params.strategy, walletAddress)
+            getTotalVotingPower(contest_params.strategy, walletAddress, contest_params.snapshot_block)
         ])
-
 
         let total_votes_available = total_contest_vp - (total_contest_spent - sub_spent);
         let submission_votes_available = Math.min(total_votes_available, contest_params.strategy.sub_cap || total_votes_available);
@@ -120,14 +122,14 @@ async function calc_sub_vp__PROTECTED(req, res, next) {
     if (contest_params.is_self_voting_error) return res.sendStatus(435);
     if (!contest_params.is_voting_window) return res.sendStatus(433);
 
-    let restriction_results = await compute_restrictions(mode, walletAddress, contest_params.restrictions);
+    let restriction_results = await compute_restrictions(mode, walletAddress, contest_params.restrictions, contest_params.snapshot_block);
 
     if (!restriction_results) return res.sendStatus(434)
 
     let [total_contest_spent, sub_spent, total_contest_vp] = await Promise.all([
         getTotalSpentVotes(contest_hash, walletAddress),
         getSubmissionSpentVotes(contest_hash, sub_id, walletAddress),
-        getTotalVotingPower(contest_params.strategy, walletAddress)
+        getTotalVotingPower(contest_params.strategy, walletAddress, contest_params.snapshot_block)
     ])
 
 
@@ -163,12 +165,12 @@ const getTotalSpentVotes = async (contest_hash, walletAddress) => {
     return spent.total
 }
 
-const getTotalVotingPower = async (strategy, walletAddress) => {
+const getTotalVotingPower = async (strategy, walletAddress, snapshot_block) => {
     if (strategy.strategy_type === 'arcade') {
         return strategy.hard_cap
     }
     else if (strategy.strategy_type === 'token') {
-        let user_tokens = await checkWalletTokenBalance(walletAddress, strategy.address, strategy.decimal)
+        let user_tokens = await checkWalletTokenBalance(walletAddress, strategy.address, strategy.decimal, snapshot_block)
         return strategy.hard_cap ? Math.min(user_tokens, strategy.hard_cap) : user_tokens
     }
 }

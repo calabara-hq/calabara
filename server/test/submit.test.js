@@ -1,11 +1,12 @@
 const { expect } = require('chai');
-let settings = require('./dummy-settings.test')
+let settings = require('./helpers/dummy-settings')
 
 const { createDummyContest, fetchDummyContest, createDummySubmission, fetchVotingMetrics, castDummyVote } = require('./master.test');
 
 
 
 describe('test submit with no submitter / voter restrictions', async () => {
+    /*
     const mock_settings = JSON.parse(JSON.stringify(settings));
     let current_date = new Date()
     mock_settings.date_times.start_date = current_date.toISOString();
@@ -35,7 +36,7 @@ describe('test submit with no submitter / voter restrictions', async () => {
         let submission_id = JSON.parse(dummy_submission_response.text).id
     })
 
-
+    */
 
     /*
         voting_strategies.forEach((strategy, index) => {

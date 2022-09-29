@@ -12,7 +12,7 @@ const { checkWalletTokenBalance } = require('../../web3/web3')
 
 // return restrictions, submit_window, and whether this user already submitted or not
 const pre_process = async (ens, walletAddress, contest_hash) => {
-    const query1 = 'select settings->\'submitter_restrictions\' as restrictions, _start, _voting from contests where ens = $1 and _hash = $2';
+    const query1 = 'select settings->\'submitter_restrictions\' as restrictions, settings->\'snapshot_block\' as snapshot_block, _start, _voting from contests where ens = $1 and _hash = $2';
     const query2 = 'select id from contest_submissions where ens = $1 and contest_hash=$2 and author=$3'
 
     let [contest_meta, user_subs] = await Promise.all(
@@ -27,19 +27,20 @@ const pre_process = async (ens, walletAddress, contest_hash) => {
     return {
         restrictions: Object.values(contest_meta.restrictions),
         is_submit_window: ((contest_meta._start < curr_time) && (curr_time < contest_meta._voting)),
-        has_already_submitted: user_subs.length > 0
+        has_already_submitted: user_subs.length > 0,
+        snapshot_block: contest_meta.snapshot_block
     }
 }
 
 
-const compute_restrictions = async (mode, walletAddress, restrictions) => {
+const compute_restrictions = async (mode, walletAddress, restrictions, snapshot_block) => {
 
     // regardless of mode, return true if there are no restrictions
     if (restrictions.length === 0) return true
 
     for (const restriction of restrictions) {
         if (restriction.type === 'erc20' || restriction.type === 'erc721') {
-            let result = await checkWalletTokenBalance(walletAddress, restriction.address, restriction.decimal)
+            let result = await checkWalletTokenBalance(walletAddress, restriction.address, restriction.decimal, snapshot_block)
             let did_user_pass = result >= restriction.threshold;
 
             // return straight away in protected mode. We don't care what the other results are (logical or)
@@ -68,7 +69,7 @@ async function check_submitter_eligibility_unprotected(req, res, next) {
     const mode = { protected: false };
 
     let contest_meta = await pre_process(ens, walletAddress, contest_hash);
-    let restriction_results = await compute_restrictions(mode, walletAddress, contest_meta.restrictions);
+    let restriction_results = await compute_restrictions(mode, walletAddress, contest_meta.restrictions, contest_meta.snapshot_block);
 
 
     req.restrictions_with_results = restriction_results;
@@ -86,7 +87,7 @@ async function check_submitter_eligibility_PROTECTED(req, res, next) {
     const mode = { protected: true };
 
     let contest_meta = await pre_process(ens, walletAddress, contest_hash);
-    let restriction_results = await compute_restrictions(mode, walletAddress, contest_meta.restrictions);
+    let restriction_results = await compute_restrictions(mode, walletAddress, contest_meta.restrictions, contest_meta.snapshot_block);
 
     // if we failed the requirements check, return an error
     if(!restriction_results) return res.sendStatus(419)
@@ -98,79 +99,6 @@ async function check_submitter_eligibility_PROTECTED(req, res, next) {
     if(!contest_meta.is_submit_window) return res.sendStatus(432)
 
     next();
-}
-
-async function checkSubmissionRestrictions(req, res, next) {
-    const walletAddress = req.user.address;
-    const { ens, submission, contest_hash } = req.body;
-
-    let restrictions = await db.query('select settings->>\'submitter_restrictions\' as restrictions from contests where ens = $1 and _hash = $2', [ens, contest_hash])
-        .then(clean)
-        .then(res => Object.values(JSON.parse(res.restrictions)))
-
-
-    for (const restriction of restrictions) {
-        if (restriction.type === 'erc20' || restriction.type === 'erc721') {
-            let result = await checkWalletTokenBalance(walletAddress, restriction.address, restriction.decimal)
-            if (result >= restriction.threshold) {
-                next();
-            }
-        }
-    }
-
-    res.status(419)
-}
-
-// same as above, but check and return results for all rules
-// also check if user submitted previously
-// this route is also unprotected
-
-async function checkSubmitterEligibility(req, res, next) {
-    const { ens, walletAddress, contest_hash } = req.body;
-
-
-    let [restrictions, user_submissions] = await Promise.all([
-        db.query('select settings->>\'submitter_restrictions\' as restrictions from contests where ens = $1 and _hash = $2', [ens, contest_hash])
-            .then(clean)
-            .then(res => Object.values(JSON.parse(res.restrictions))),
-
-        db.query('select id from contest_submissions where ens = $1 and contest_hash=$2 and author=$3', [ens, contest_hash, walletAddress])
-            .then(clean)
-            .then(asArray)
-
-    ])
-
-    for (const restriction of restrictions) {
-        if (restriction.type === 'erc20' || restriction.type === 'erc721') {
-            let result = await checkWalletTokenBalance(walletAddress, restriction.address, restriction.decimal)
-            restriction.user_result = result >= restriction.threshold
-        }
-    }
-
-
-    req.has_already_submitted = user_submissions.length > 0
-    req.restrictions_with_results = restrictions;
-    next();
-}
-
-
-
-async function checkUserSubmissions(req, res, next) {
-    const walletAddress = req.user.address;
-    const { ens, contest_hash } = req.body;
-
-    let submissions = await db.query('select id from contest_submissions where ens = $1 and contest_hash=$2 and author=$3', [ens, contest_hash, walletAddress])
-        .then(clean)
-        .then(asArray)
-
-
-
-    // TURTLES COME BACK AND UNCOMMENT THIS LINE
-    if (submissions.length > 0) return res.sendStatus(420)
-
-    next();
-
-
 }
 
 
