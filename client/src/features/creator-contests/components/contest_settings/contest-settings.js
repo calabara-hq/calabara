@@ -6,7 +6,7 @@ import PromptBuilder from "./prompt_builder/prompt-builder";
 import SimpleInputs from "./contest_simple_inputs/contest_simple_inputs";
 import styled from 'styled-components'
 import VotingPolicy from "./voting_policy/voting-policy";
-import { useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import useDashboardRules from "../../../hooks/useDashboardRules";
 import useCommon from "../../../hooks/useCommon";
 import { rewardOptionState, voterRewardState, submitterRewardState } from "./contest_rewards/reducers/rewards-reducer";
@@ -22,6 +22,9 @@ import { TagType } from "../common/common_styles";
 import useErrorHandler from "./handle-errors";
 import Twitter from "./twitter_automation/twitter";
 import DrawerComponent from "../../../drawer/drawer";
+import { selectConnectedBool } from "../../../wallet/wallet-reducer";
+import { useWalletContext } from "../../../../app/WalletContext";
+import Placeholder from "../common/spinner";
 
 
 
@@ -82,19 +85,44 @@ const SettingsBlockElement = styled.div`
 `
 
 const SaveButton = styled.button`
-    width: 60%;
-    margin: 50px auto;
-    border: 2px solid rgb(83,155,245);
-    background-color: rgb(83,155,245); 
+    border: 2px solid rgb(3, 176, 159);
+    background-color: rgb(3, 176, 159); 
+    color: black;
     padding: 10px 15px;
     border-radius: 10px;
     font-weight: bold;
     &:hover{
-        background-color: rgba(83,155,245, 0.9);
+        background-color: rgba(3, 176, 159, 0.9);
     }
     &:active{
         transform: scale(1.01);
     }
+    &:disabled{
+        background-color: #262626;
+        border-color: rgba(3, 176, 159, 0.2);
+        color: grey;
+        cursor: not-allowed;
+        transform: none;
+    }
+    
+`
+
+const ConnectWalletButton = styled.button`
+    border: 2px solid rgb(83,155,245);
+    border-radius: 10px;
+    width: 100%;
+    padding: 10px 15px;
+    background-color: rgb(83,155,245);
+    color: black;
+    font-weight: bold;
+
+
+`
+
+const SummaryButtons = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 `
 
 function reducer(state, action) {
@@ -229,7 +257,9 @@ function SaveSettings(props) {
     const [showSummary, setShowSummary] = useState(false);
     const [contestData, setContestData] = useState(null);
     const [promptData, setPromptData] = useState(null);
-    const [warnings, setWarnings] = useState([])
+    const [warnings, setWarnings] = useState([]);
+    const history = useHistory();
+
 
     const {
         handleSubmitterErrors,
@@ -268,9 +298,13 @@ function SaveSettings(props) {
         document.body.style.overflow = 'hidden';
     }
 
-    const handleCloseSummary = () => {
+    const handleCloseSummary = (type) => {
         setShowSummary(false);
         document.body.style.overflow = 'unset';
+        if (type === 'saved') {
+            window.scrollTo(0, 0)
+            history.push('creator_contests')
+        }
     }
 
     const handleWarnings = () => {
@@ -362,9 +396,9 @@ function SaveSettings(props) {
 
     return (
         <>
-            <SaveButton style={{ color: 'black' }} onClick={handleSave}>save</SaveButton>
+            <SaveButton style={{ width: '60%', margin: '30px auto' }} onClick={handleSave}>save</SaveButton>
             <DrawerComponent drawerOpen={showSummary} handleClose={handleCloseSummary} showExit={true}>
-                <Summary contestData={contestData} promptData={promptData} warnings={warnings} />
+                <Summary contestData={contestData} promptData={promptData} warnings={warnings} handleCloseDrawer={handleCloseSummary} />
             </DrawerComponent>
         </>
     )
@@ -437,21 +471,29 @@ const VoterRow = styled.div`
 
 `
 
-function Summary({ contestData, promptData, warnings }) {
+function Summary({ contestData, promptData, warnings, handleCloseDrawer }) {
     const { ens } = useParams();
     const { authenticated_post } = useCommon();
+    const { walletConnect } = useWalletContext();
+    const isWalletConnected = useSelector(selectConnectedBool);
     const readableStart = new Date(contestData.date_times.start_date);
     const readableVote = new Date(contestData.date_times.voting_begin);
     const readableEnd = new Date(contestData.date_times.end_date);
     const readableSnapshot = new Date(contestData.snapshot_block);
+    const [isSaving, setIsSaving] = useState(false);
 
-    console.log(contestData)
 
-    
-    const handleConfirm = () => {
-        authenticated_post('/creator_contests/create_contest', { ens: ens, contest_settings: contestData, prompt_data: promptData })
+    const handleConfirm = async () => {
+        setIsSaving(true)
+        await authenticated_post('/creator_contests/create_contest', { ens: ens, contest_settings: contestData, prompt_data: promptData })
+        setTimeout(() => {
+            handleCloseDrawer('saved')
+        }, 500)
     }
 
+    if (isSaving) {
+        return <Placeholder />
+    }
 
     return (
         <SummaryWrap>
@@ -550,11 +592,13 @@ function Summary({ contestData, promptData, warnings }) {
             </DetailWrap>
 
             {warnings.map(warning => {
-                return <div className="tab-message warning" style={{width: '100%'}}><p>{warning}</p></div>
+                return <div className="tab-message warning" style={{ width: '100%' }}><p>{warning}</p></div>
             })}
 
-            <SaveButton style={{ width: '100%', color: 'black' }} onClick={handleConfirm}>Confirm</SaveButton>
-
+            <SummaryButtons>
+                {!isWalletConnected ? <ConnectWalletButton onClick={walletConnect}>Connect</ConnectWalletButton> : null}
+                <SaveButton disabled={!isWalletConnected} style={{ width: '100%' }} onClick={handleConfirm}>Confirm + Initialize Contest</SaveButton>
+            </SummaryButtons>
         </SummaryWrap>
     )
 }
