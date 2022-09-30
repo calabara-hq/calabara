@@ -4,7 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "mocha --timeout 100000000",
+    "test": "mocha -b --timeout 100000000 --exit",
     "start": "node server.js"
   },
   "author": "",
@@ -25,6 +25,7 @@
     "cors": "^2.8.5",
     "discord.js": "^13.6.0",
     "dotenv": "^14.3.2",
+    "ethereum-block-by-date": "^1.4.5",
     "express-session": "^1.17.3",
     "fs": "0.0.1-security",
     "googleapis": "^89.0.0",

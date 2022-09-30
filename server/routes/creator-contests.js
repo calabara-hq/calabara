@@ -88,7 +88,7 @@ contests.get('/fetch_submission_votes', async function (req, res, next) {
 ///////////////////////////// begin submissions ////////////////////////////////////
 
 
-contests.post('/create_submission', authenticateToken, check_submitter_eligibility_PROTECTED, /*checkSubmissionRestrictions, checkUserSubmissions,*/ createSubmission, async function (req, res, next) {
+contests.post('/create_submission', authenticateToken, check_submitter_eligibility_PROTECTED, createSubmission, async function (req, res, next) {
     const { ens } = req.body;
     let result = await db.query('insert into contest_submissions (ens, contest_hash, author, created, locked, pinned, _url) values ($1, $2, $3, $4, $5, $6, $7) returning id ', [ens, req.contest_hash, req.user.address, req.created, false, false, req.url]).then(clean)
     res.sendStatus(200)
@@ -248,18 +248,6 @@ if (process.env.NODE_ENV === 'test') {
 
 }
 
-
-contests.post('/user_voting_metrics_alt', calc_sub_vp__unprotected, async function (req, res, next) {
-    let result = {
-        metrics: {
-            sub_total_vp: req.sub_total_vp,
-            sub_votes_spent: req.sub_votes_spent,
-            sub_remaining_vp: req.sub_remaining_vp,
-        },
-        restrictions_with_results: req.restrictions_with_results,
-    }
-    res.send(result).status(200)
-})
 
 ///////////////////////// end dev / test routes ////////////////////////////////////
 

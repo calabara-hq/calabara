@@ -1,12 +1,11 @@
 const { expect } = require('chai');
 const request = require('supertest')
 const https = require('https');
-let settings = require('./dummy-settings.test')
 const app = require('../server.js')
 const fs = require('fs');
-const { checkWalletTokenBalance } = require('../web3/web3')
 
-let walletAddress = '0xedcC867bc8B5FEBd0459af17a6f134F41f422f0C'
+let walletAddress_main = '0xe9ad38d6E38E0A9970D6ebEc84C73DEA3e025da1'
+let walletAddress_alt = '0xedcC867bc8B5FEBd0459af17a6f134F41f422f0C'
 
 
 
@@ -37,10 +36,22 @@ const fetchDummyContest = async () => {
     return response
 }
 
-const createDummySubmission = async (contest_hash) => {
+// used to populate contest with a sub
+// use alt address so we dont have to worry about self voting param when we don't want to test it
+const createDummySubmission = async (contest_hash, custom_auth) => {
     let response = await request(secureServer)
         .post('/creator_contests/test_create_submission')
-        .send({ ens: 'dev_testing.eth', contest_hash: contest_hash, author: walletAddress })
+        .send({ ens: 'dev_testing.eth', contest_hash: contest_hash, author: custom_auth ? custom_auth : walletAddress_alt })
+        .trustLocalhost()
+    return response
+}
+
+// used to actually test submitting
+const createRealSubmission = async (contest_hash) => {
+    let submission = { tldr_text: null, tldr_image: null, submission_body: null }
+    let response = await request(secureServer)
+        .post('/creator_contests/create_submission')
+        .send({ ens: 'dev_testing.eth', contest_hash: contest_hash, submission: submission })
         .trustLocalhost()
     return response
 }
@@ -55,7 +66,7 @@ const fetchSubmissions = async (contest_hash) => {
 const fetchVotingMetrics = async (contest_hash, submission_id) => {
     let response = await request(secureServer)
         .post('/creator_contests/user_voting_metrics')
-        .send({ ens: 'dev_testing.eth', contest_hash: contest_hash, sub_id: submission_id, walletAddress: walletAddress })
+        .send({ ens: 'dev_testing.eth', contest_hash: contest_hash, sub_id: submission_id, walletAddress: walletAddress_main })
         .trustLocalhost()
     return response
 }
@@ -95,4 +106,4 @@ after(done => {
 })
 
 
-module.exports = { createDummyContest, fetchDummyContest, createDummySubmission, fetchVotingMetrics, castDummyVote, fetchSubmissions, cleanup }
+module.exports = { createDummyContest, fetchDummyContest, createDummySubmission, createRealSubmission, fetchVotingMetrics, castDummyVote, fetchSubmissions, cleanup }
