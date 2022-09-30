@@ -1,69 +1,173 @@
 const { expect } = require('chai');
 let { base_settings, test_token_strategies, test_arcade_strategies, test_voter_restrictions, test_submitter_restrictions } = require('./helpers/dummy-settings')
 const { createDummyContest, fetchDummyContest, createDummySubmission, fetchVotingMetrics, castDummyVote, cleanup } = require('./master.test');
-const { create_voting_scenario } = require('./helpers/contest-test-setup')
+const { create_voting_scenario, create_dummy_submission } = require('./helpers/contest-test-setup')
 
-const get_voting_power = async (contest_hash, submission_id) => {
-    // run the voting metrics
-    let user_metrics_response = await fetchVotingMetrics(contest_hash, submission_id)
-    expect(user_metrics_response.status).to.eql(200)
-    user_metrics_response = JSON.stringify(JSON.parse(user_metrics_response.text).metrics)
 
-    return user_metrics_response
+
+
+
+
+const check_metrics = async (contest_hash, submission_id, exp) => {
+    let metrics = await fetchVotingMetrics(contest_hash, submission_id)
+    expect(metrics.status).to.eql(200)
+    metrics = JSON.stringify(JSON.parse(metrics.text).metrics)
+    expect(metrics).to.eql(exp)
 }
 
-const cast_votes = async (contest_hash, submission_id, num_votes) => {
-    let dummy_vote_response = await castDummyVote(contest_hash, submission_id, num_votes)
-
+const cast_vote = async (contest_hash, submission_id, num_votes, exp) => {
+    let response = await castDummyVote(contest_hash, submission_id, num_votes)
+    expect(response.status).to.eql(exp)
 }
 
-describe('token voting tests', async (done) => {
+
+describe('token voting math', async (done) => {
+
+    it('single sub hardcap off subcap off', async () => {
+        let voting_strategy = {
+            strategy_type: 'token',
+            type: 'erc20',
+            symbol: 'SHARK',
+            address: '0x232AFcE9f1b3AAE7cb408e482E847250843DB931',
+            decimal: 18,
+            sub_cap: 0,
+            hard_cap: 0,
+        }
+
+        let voter_restrictions = {
+            0: {
+                type: 'erc20',
+                symbol: 'SHARK',
+                address: '0x232AFcE9f1b3AAE7cb408e482E847250843DB931',
+                decimal: 18,
+                threshold: 1
+            }
+        }
+
+        let submitter_restrictions = {}
+
+        const contest_hash = await create_voting_scenario(voting_strategy, submitter_restrictions, voter_restrictions)
+        const submission_id = await create_dummy_submission(contest_hash)
+
+        await check_metrics(contest_hash, submission_id, '{"sub_total_vp":10004.6875,"sub_votes_spent":0,"sub_remaining_vp":10004.6875}')
+        await cast_vote(contest_hash, submission_id, 1, 200)
+        await check_metrics(contest_hash, submission_id, '{"sub_total_vp":10004.6875,"sub_votes_spent":1,"sub_remaining_vp":10003.6875}')
+
+        await cast_vote(contest_hash, submission_id, 1000, 200)
+        await check_metrics(contest_hash, submission_id, '{"sub_total_vp":10004.6875,"sub_votes_spent":1000,"sub_remaining_vp":9004.6875}')
 
 
-    /*
-    it(`unqualified voter erc721 strategy`, async () => {
 
-        let strategy_index = 0;
-        let restriction_index = 0;
-
-        let [contest_hash, submission_id] = await create_voting_scenario(strategy_index, restriction_index)
-
-        let original_metrics_response = await get_voting_power(contest_hash, submission_id)
-        expect(original_metrics_response).to.eql('{"sub_total_vp":0,"sub_votes_spent":0,"sub_remaining_vp":0}')
-
-
-        let dummy_vote_response = await castDummyVote(contest_hash, submission_id, 1)
-        expect(dummy_vote_response.status).to.eql(436)
-
-        let after_metrics_response = await get_voting_power(contest_hash, submission_id)
-        expect(after_metrics_response).to.eql(original_metrics_response)
 
         await cleanup();
+
     })
 
-    it(`unqualified voter erc20 strategy`, async () => {
+    it('multi sub hardcap off subcap off', async () => {
+        let voting_strategy = {
+            strategy_type: 'token',
+            type: 'erc20',
+            symbol: 'SHARK',
+            address: '0x232AFcE9f1b3AAE7cb408e482E847250843DB931',
+            decimal: 18,
+            sub_cap: 0,
+            hard_cap: 0,
+        }
 
-        let strategy_index = 1;
-        let restriction_index = 0;
+        let voter_restrictions = {
+            0: {
+                type: 'erc20',
+                symbol: 'SHARK',
+                address: '0x232AFcE9f1b3AAE7cb408e482E847250843DB931',
+                decimal: 18,
+                threshold: 1
+            }
+        }
 
-        let [contest_hash, submission_id] = await create_voting_scenario(strategy_index, restriction_index)
+        let submitter_restrictions = {}
 
-        let original_metrics_response = await get_voting_power(contest_hash, submission_id)
-        expect(original_metrics_response).to.eql('{"sub_total_vp":0,"sub_votes_spent":0,"sub_remaining_vp":0}')
+        const contest_hash = await create_voting_scenario(voting_strategy, submitter_restrictions, voter_restrictions)
+        const submission_id_1 = await create_dummy_submission(contest_hash)
+        const submission_id_2 = await create_dummy_submission(contest_hash)
+
+        await check_metrics(contest_hash, submission_id_1, '{"sub_total_vp":10004.6875,"sub_votes_spent":0,"sub_remaining_vp":10004.6875}')
+        await check_metrics(contest_hash, submission_id_2, '{"sub_total_vp":10004.6875,"sub_votes_spent":0,"sub_remaining_vp":10004.6875}')
 
 
-        let dummy_vote_response = await castDummyVote(contest_hash, submission_id, 1)
-        expect(dummy_vote_response.status).to.eql(436)
+        // spend 1000 votes on sub_1
+        await cast_vote(contest_hash, submission_id_1, 1000, 200)
+        await check_metrics(contest_hash, submission_id_1, '{"sub_total_vp":10004.6875,"sub_votes_spent":1000,"sub_remaining_vp":9004.6875}')
+        await check_metrics(contest_hash, submission_id_2, '{"sub_total_vp":9004.6875,"sub_votes_spent":0,"sub_remaining_vp":9004.6875}')
 
-        let after_metrics_response = await get_voting_power(contest_hash, submission_id)
-        expect(after_metrics_response).to.eql(original_metrics_response)
+
+        // spend 2000 votes on sub_1
+        await cast_vote(contest_hash, submission_id_1, 2000, 200)
+        await check_metrics(contest_hash, submission_id_1, '{"sub_total_vp":10004.6875,"sub_votes_spent":2000,"sub_remaining_vp":8004.6875}')
+        await check_metrics(contest_hash, submission_id_2, '{"sub_total_vp":8004.6875,"sub_votes_spent":0,"sub_remaining_vp":8004.6875}')
+
+
+        // spend 2000 votes on sub_2
+        await cast_vote(contest_hash, submission_id_2, 2000, 200)
+        await check_metrics(contest_hash, submission_id_1, '{"sub_total_vp":8004.6875,"sub_votes_spent":2000,"sub_remaining_vp":6004.6875}')
+        await check_metrics(contest_hash, submission_id_2, '{"sub_total_vp":8004.6875,"sub_votes_spent":2000,"sub_remaining_vp":6004.6875}')
 
         await cleanup();
+
+    })
+
+    it('multi sub hardcap on subcap off', async () => {
+        let voting_strategy = {
+            strategy_type: 'token',
+            type: 'erc20',
+            symbol: 'SHARK',
+            address: '0x232AFcE9f1b3AAE7cb408e482E847250843DB931',
+            decimal: 18,
+            sub_cap: 0,
+            hard_cap: 100,
+        }
+
+        let voter_restrictions = {
+            0: {
+                type: 'erc20',
+                symbol: 'SHARK',
+                address: '0x232AFcE9f1b3AAE7cb408e482E847250843DB931',
+                decimal: 18,
+                threshold: 1
+            }
+        }
+
+        let submitter_restrictions = {}
+
+        const contest_hash = await create_voting_scenario(voting_strategy, submitter_restrictions, voter_restrictions)
+        const submission_id_1 = await create_dummy_submission(contest_hash)
+        const submission_id_2 = await create_dummy_submission(contest_hash)
+
+        await check_metrics(contest_hash, submission_id_1, '{"sub_total_vp":100,"sub_votes_spent":0,"sub_remaining_vp":100}')
+        await check_metrics(contest_hash, submission_id_2, '{"sub_total_vp":100,"sub_votes_spent":0,"sub_remaining_vp":100}')
+
+
+        // spend 1000 votes on sub_1
+        await cast_vote(contest_hash, submission_id_1, 10, 200)
+        await check_metrics(contest_hash, submission_id_1, '{"sub_total_vp":100,"sub_votes_spent":10,"sub_remaining_vp":90}')
+        await check_metrics(contest_hash, submission_id_2, '{"sub_total_vp":90,"sub_votes_spent":0,"sub_remaining_vp":90}')
+
+
+        // spend 2000 votes on sub_1
+        await cast_vote(contest_hash, submission_id_1, 20, 200)
+        await check_metrics(contest_hash, submission_id_1, '{"sub_total_vp":100,"sub_votes_spent":20,"sub_remaining_vp":80}')
+        await check_metrics(contest_hash, submission_id_2, '{"sub_total_vp":80,"sub_votes_spent":0,"sub_remaining_vp":80}')
+
+
+        // spend 2000 votes on sub_2
+        await cast_vote(contest_hash, submission_id_2, 20, 200)
+        await check_metrics(contest_hash, submission_id_1, '{"sub_total_vp":80,"sub_votes_spent":20,"sub_remaining_vp":60}')
+        await check_metrics(contest_hash, submission_id_2, '{"sub_total_vp":80,"sub_votes_spent":20,"sub_remaining_vp":60}')
+
+        await cleanup();
+
     })
 
     done();
-    */
-
 })
 
 

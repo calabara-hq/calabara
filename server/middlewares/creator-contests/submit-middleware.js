@@ -34,13 +34,14 @@ const pre_process = async (ens, walletAddress, contest_hash) => {
 
 
 const compute_restrictions = async (mode, walletAddress, restrictions, snapshot_block) => {
-
     // regardless of mode, return true if there are no restrictions
     if (restrictions.length === 0) return true
 
     for (const restriction of restrictions) {
         if (restriction.type === 'erc20' || restriction.type === 'erc721') {
+
             let result = await checkWalletTokenBalance(walletAddress, restriction.address, restriction.decimal, snapshot_block)
+
             let did_user_pass = result >= restriction.threshold;
 
             // return straight away in protected mode. We don't care what the other results are (logical or)

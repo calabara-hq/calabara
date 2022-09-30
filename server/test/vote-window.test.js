@@ -1,7 +1,6 @@
 const { expect } = require('chai');
-let { base_settings, test_token_strategies, test_arcade_strategies, test_voter_restrictions, test_submitter_restrictions } = require('./helpers/dummy-settings')
-const { createDummyContest, fetchDummyContest, createDummySubmission, fetchVotingMetrics, castDummyVote, cleanup } = require('./master.test');
-const { create_voting_scenario, create_accepting_submissions_scenario, create_contest_end_scenario } = require('./helpers/contest-test-setup')
+const { castDummyVote, cleanup } = require('./master.test');
+const { create_voting_scenario, create_accepting_submissions_scenario, create_contest_end_scenario, create_dummy_submission } = require('./helpers/contest-test-setup')
 
 describe('voting window tests', async (done) => {
 
@@ -20,7 +19,10 @@ describe('voting window tests', async (done) => {
         let voter_restrictions = {}
         let submitter_restrictions = {}
 
-        let [contest_hash, submission_id] = await create_accepting_submissions_scenario(voting_strategy, submitter_restrictions, voter_restrictions)
+        let contest_hash = await create_accepting_submissions_scenario(voting_strategy, submitter_restrictions, voter_restrictions)
+
+        let submission_id = await create_dummy_submission(contest_hash)
+
         let dummy_vote_response = await castDummyVote(contest_hash, submission_id, 1)
         expect(dummy_vote_response.status).to.eql(433)
 
@@ -44,7 +46,10 @@ describe('voting window tests', async (done) => {
         let submitter_restrictions = {}
 
 
-        let [contest_hash, submission_id] = await create_voting_scenario(voting_strategy, submitter_restrictions, voter_restrictions)
+        let contest_hash = await create_voting_scenario(voting_strategy, submitter_restrictions, voter_restrictions)
+
+        let submission_id = await create_dummy_submission(contest_hash)
+
         let dummy_vote_response = await castDummyVote(contest_hash, submission_id, 1)
         expect(dummy_vote_response.status).to.eql(200)
 
@@ -67,7 +72,10 @@ describe('voting window tests', async (done) => {
         let submitter_restrictions = {}
 
 
-        let [contest_hash, submission_id] = await create_contest_end_scenario(voting_strategy, submitter_restrictions, voter_restrictions)
+        let contest_hash = await create_contest_end_scenario(voting_strategy, submitter_restrictions, voter_restrictions)
+
+        let submission_id = await create_dummy_submission(contest_hash)
+
         let dummy_vote_response = await castDummyVote(contest_hash, submission_id, 1)
         expect(dummy_vote_response.status).to.eql(433)
 
