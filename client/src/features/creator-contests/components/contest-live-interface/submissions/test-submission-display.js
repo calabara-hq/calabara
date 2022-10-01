@@ -6,7 +6,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { socket } from '../../service/socket';
 import { selectContestState } from '../interface/contest-interface-reducer';
-import { fetchSubmission } from './submission-data-fetch';
 import DisplayWinners from '../winners/contest-winners';
 import { ExpandedPromptComponent } from '../prompts/prompt-display';
 import { VoteTotals, SubmissionMeta, Author, SubmissionBottomBlur } from './submission-styles';
@@ -135,17 +134,6 @@ export default function SubmissionDisplay({ }) {
         fetch(`/creator_contests/fetch_submissions/?ens=${ens}&contest_hash=${contest_hash}`)
             .then(res => res.json())
             .then(data => set_subs(data))
-
-        /*
-                else if (contest_state === 2) {
-                    // get the winners
-                    console.log('we are here')
-                    fetch(`/creator_contests/fetch_contest_winners/?ens=${ens}&contest_hash=${contest_hash}`)
-                        .then(res => res.json())
-                        .then(data => set_subs(data))
-                }
-            */
-
     }, [])
 
     useEffect(() => {

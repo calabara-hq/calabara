@@ -26,7 +26,7 @@ const processSubmitterRewards = (contest_settings) => {
 
     Object.values(contest_settings.submitter_rewards).map((reward) => {
         if (reward['erc20']) erc20_sum += reward['erc20'].amount
-        if (reward['erc721']) erc721_sum += reward['erc721'].amount
+        if (reward['erc721']) erc721_sum += 1
         if (reward['eth']) eth_sum += reward['eth'].amount
     })
 

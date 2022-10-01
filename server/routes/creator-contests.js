@@ -13,8 +13,9 @@ const { imageUpload } = require('../middlewares/image-upload-middleware.js');
 const { calc_sub_vp__unprotected, calc_sub_vp__PROTECTED } = require('../middlewares/creator-contests/vote-middleware.js');
 const logger = require('../logger').child({ component: 'creator-contests' })
 const { sendSocketMessage } = require('../sys/socket/socket-io');
-const { get_winners, get_winners_as_csv, verifyContestOver } = require('../middlewares/creator-contests/fetch-winners-middleware.js');
+const { get_winners_as_csv, verifyContestOver } = require('../middlewares/creator-contests/fetch-winners-middleware.js');
 const { fetchSubmissions } = require('../middlewares/creator-contests/fetch-submissions-middleware.js');
+const socketSendNewSubmission = require('../helpers/socket-messages.js');
 dotenv.config()
 
 const serverRoot = path.normalize(path.join(__dirname, '../'));
@@ -31,15 +32,14 @@ contests.get('/fetch_org_contests/*', async function (req, res, next) {
 })
 
 // fetch the latest contest for an organization
-contests.get('/fetch_contest/*', async function (req, res, next) {
-    let ens = req.url.split('/')[2];
-    let contest_hash = req.url.split('/')[3];
-
+contests.get('/fetch_contest', async function (req, res, next) {
+    const { ens, contest_hash } = req.query
 
     // will there be conditions where latest is not the current active contest? need to handle that if so.
     let data = await db.query('select settings, prompt_data from contests where ens = $1 and _hash = $2', [ens, contest_hash])
         .then(clean)
 
+    if (data === null) return res.sendStatus(404)
     res.send(data).status(200)
 })
 
@@ -50,15 +50,6 @@ contests.get('/fetch_submissions', fetchSubmissions, async function (req, res, n
     res.send(req.submissions).status(200)
 })
 
-
-contests.get('/fetch_contest_winners', verifyContestOver, async function (req, res, next) {
-    const { ens, contest_hash } = req.query
-    let subs_full_details = await db.query('select contest_submissions.id, _url, author, coalesce(sum(votes_spent), 0) as votes from contest_submissions left join contest_votes on contest_submissions.id = contest_votes.submission_id where contest_submissions.ens=$1 and contest_submissions.contest_hash=$2 group by contest_submissions.id order by votes desc', [ens, contest_hash])
-        .then(clean)
-        .then(asArray)
-    res.send(subs_full_details).status(200);
-
-})
 
 contests.get('/fetch_contest_winners_as_csv', get_winners_as_csv, async function (req, res, next) {
     const { ens, contest_hash } = req.query
@@ -92,7 +83,8 @@ contests.post('/create_submission', authenticateToken, check_submitter_eligibili
     const { ens } = req.body;
     let result = await db.query('insert into contest_submissions (ens, contest_hash, author, created, locked, pinned, _url) values ($1, $2, $3, $4, $5, $6, $7) returning id ', [ens, req.contest_hash, req.user.address, req.created, false, false, req.url]).then(clean)
     res.sendStatus(200)
-    sendSocketMessage(req.contest_hash, 'new_submission', { id: result.id, _url: req.url })
+    //sendSocketMessage(req.contest_hash, 'new_submission', { id: result.id, _url: req.url })
+    socketSendNewSubmission(req.contest_hash, ens, { id: result.id, _url: req.url, author: req.user.address, votes: 0 })
 
 })
 
@@ -183,7 +175,7 @@ contests.get('/org_contest_stats', async function (req, res, next) {
         .then(asArray)
         .then(data => {
             let obj = { eth: 0, erc20: 0, erc721: 0 }
-            if(data.length === 0) return obj
+            if (data.length === 0) return obj
             data.map(el => {
                 let parsed = Object.values(JSON.parse(el.rewards))
                 parsed.map(inner => {

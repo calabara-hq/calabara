@@ -35,7 +35,7 @@ export const SubmitterRewardDetails = ({ submitter_rewards }) => {
                             <p><b>rank {reward.rank}:</b></p>
                             {reward.eth ? <p>{reward.eth.amount} ETH</p> : null}
                             {reward.erc20 ? <p style={{ marginLeft: '30px' }}>{reward.erc20.amount} {reward.erc20.symbol}</p> : null}
-                            {reward.erc721 ? <p style={{ marginLeft: '30px' }}>1 {reward.erc721.symbol} (token id {reward.erc721.token_id}) </p> : null}
+                            {reward.erc721 ? <p style={{ marginLeft: '30px' }}>1 {reward.erc721.symbol} </p> : null}
 
                         </RewardRow>
                     )
