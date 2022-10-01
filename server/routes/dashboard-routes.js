@@ -16,17 +16,6 @@ const { default: axios } = require('axios');
 const serverRoot = path.normalize(path.join(__dirname, '../'));
 
 
-// we need to change all occurances of gatekeeperType to type, and so on for other gatekeeper data.
-// additionally, we need to add a decimal of 0 for erc721 rules
-const apply_GK_DB_patch = async() => {
-    await db.query('update gatekeeper_rules set rule = rule - \'gatekeeperType\' || jsonb_build_object(\'type\', rule-> \'gatekeeperType\') where rule ? \'gatekeeperType\'');
-    await db.query('update gatekeeper_rules set rule = rule - \'gatekeeperSymbol\' || jsonb_build_object(\'symbol\', rule-> \'gatekeeperSymbol\') where rule ? \'gatekeeperSymbol\'');
-    await db.query('update gatekeeper_rules set rule = rule - \'gatekeeperAddress\' || jsonb_build_object(\'address\', rule-> \'gatekeeperAddress\') where rule ? \'gatekeeperAddress\'');
-    await db.query('update gatekeeper_rules set rule = rule - \'gatekeeperDecimal\' || jsonb_build_object(\'decimal\', rule-> \'gatekeeperDecimal\') where rule ? \'gatekeeperDecimal\'');
-    await db.query('update gatekeeper_rules set rule = rule || \'{"decimal":"0"}\' where rule->>\'type\' = \'erc721\';');
-
-
-}
 
 // remove key
 // update gatekeeper_rules set rule = rule #- '{hehe}' where rule_id = 74;
@@ -48,9 +37,6 @@ const refill_GK_DB = async() => {
     }
 }
 
-
-//refill_GK_DB();
-//apply_GK_DB_patch();
 
 
 const getDashboardInfo = async (ens) => {

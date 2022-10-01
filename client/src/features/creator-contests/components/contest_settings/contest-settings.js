@@ -25,6 +25,8 @@ import DrawerComponent from "../../../drawer/drawer";
 import { selectConnectedBool } from "../../../wallet/wallet-reducer";
 import { useWalletContext } from "../../../../app/WalletContext";
 import Placeholder from "../common/spinner";
+import ContestSummaryComponent, { AdditionalConfigDetails, ContestDateDetails, SubmitterRestrictionDetails, SubmitterRewardDetails, VoterRestrictionDetails, VoterRewardDetails, VotingPolicyDetails } from "../contest-details/detail-components";
+import { DetailWrap, SummaryWrap } from "../contest-details/detail-style";
 
 
 
@@ -396,7 +398,7 @@ function SaveSettings(props) {
 
     return (
         <>
-            <SaveButton style={{ width: '60%', margin: '30px auto' }} onClick={handleSave}>save</SaveButton>
+            <SaveButton disabled={showSummary} style={{ width: '60%', margin: '30px auto' }} onClick={handleSave}>save</SaveButton>
             <DrawerComponent drawerOpen={showSummary} handleClose={handleCloseSummary} showExit={true}>
                 <Summary contestData={contestData} promptData={promptData} warnings={warnings} handleCloseDrawer={handleCloseSummary} />
             </DrawerComponent>
@@ -405,81 +407,13 @@ function SaveSettings(props) {
 }
 
 
-const SummaryWrap = styled.div`
-    display: flex;
-    flex-direction: column;
-    padding: 10px;
-    gap: 20px;
-    div {
-        background-color: #141416;
-        border-radius: 10px;
-    }
-    padding-bottom: 100px;
-`
-const ContestDatesWrap = styled.div`
-    display: flex;
-    flex-direction: column;
-    padding: 10px;
-    > div {
-        display: flex;
-        flex-direction: row;
-        gap: 10px;
-    }
-`
 
-const RewardRow = styled.div`
-    display: flex;
-    border: 1px dotted grey;
-    border-radius: 4px;
-
-    > * {
-        margin: 10px;
-    }
-    > p {
-        //text-align: left;
-    }
-
-`
-
-const RewardContainer = styled.div`
-    margin-top: 20px;
-    margin-bottom: 20px;
-`
-
-const DetailWrap = styled.div`
-    padding: 10px;
-    span{
-        margin-left: 10px;
-        padding: 3px 3px;
-        border-radius: 4px;
-        font-size: 15px;
-        font-weight: 550;
-    }
-`
-
-const VoterRow = styled.div`
-    display: flex;
-    flex-direction: column;
-    border-radius: 4px;
-
-    > * {
-        margin: 10px;
-    }
-    > p {
-        //text-align: left;
-    }
-
-`
 
 function Summary({ contestData, promptData, warnings, handleCloseDrawer }) {
     const { ens } = useParams();
     const { authenticated_post } = useCommon();
     const { walletConnect } = useWalletContext();
     const isWalletConnected = useSelector(selectConnectedBool);
-    const readableStart = new Date(contestData.date_times.start_date);
-    const readableVote = new Date(contestData.date_times.voting_begin);
-    const readableEnd = new Date(contestData.date_times.end_date);
-    const readableSnapshot = new Date(contestData.snapshot_block);
     const [isSaving, setIsSaving] = useState(false);
 
 
@@ -498,99 +432,8 @@ function Summary({ contestData, promptData, warnings, handleCloseDrawer }) {
     return (
         <SummaryWrap>
             <p style={{ color: 'grey' }}>Please review the contest configuration</p>
-            <h3>Summary</h3>
-            <ContestDatesWrap>
-                <h4>Dates</h4>
-                <div><p>Start:</p><p>{readableStart.toLocaleDateString() + ' ' + readableStart.toLocaleTimeString()}</p></div>
-                <div><p>Vote:</p><p>{readableVote.toLocaleDateString() + ' ' + readableVote.toLocaleTimeString()}</p></div>
-                <div><p>End:</p><p>{readableEnd.toLocaleDateString() + ' ' + readableEnd.toLocaleTimeString()}</p></div>
-                <div><p>Snapshot:</p><p>{readableSnapshot.toLocaleDateString() + ' ' + readableSnapshot.toLocaleTimeString()}</p></div>
-            </ContestDatesWrap>
-            <DetailWrap>
-                <h4>Submitter Rewards</h4>
-                {Object.values(contestData.submitter_rewards).length === 0 && <p><b>There are no submitter rewards defined for this contest.</b></p>}
-                {Object.values(contestData.submitter_rewards).length > 0 &&
-                    <RewardContainer>
-                        {Object.values(contestData.submitter_rewards).map((reward, idx) => {
-                            return (
-                                <RewardRow key={idx}>
-                                    <p><b>rank {reward.rank}:</b></p>
-                                    {reward.eth ? <p>{reward.eth.amount} ETH</p> : null}
-                                    {reward.erc20 ? <p style={{ marginLeft: '30px' }}>{reward.erc20.amount} {reward.erc20.symbol}</p> : null}
-                                    {reward.erc721 ? <p style={{ marginLeft: '30px' }}>1 {reward.erc721.symbol} (token id {reward.erc721.token_id}) </p> : null}
-
-                                </RewardRow>
-                            )
-                        })}
-                    </RewardContainer>
-                }
-            </DetailWrap>
-            <DetailWrap>
-                <h4>Voter Rewards</h4>
-                {Object.values(contestData.voter_rewards).length === 0 && <p><b>There are no voter rewards defined for this contest.</b></p>}
-                {Object.values(contestData.voter_rewards).length > 0 &&
-                    <RewardContainer>
-                        {Object.values(contestData.voter_rewards).map((reward, idx) => {
-                            return (
-                                <RewardRow key={idx}>
-                                    {reward.eth ? <p>Voters that accurately choose the rank {reward.rank} submission will <b>split </b>{reward.eth.amount} ETH</p> : null}
-                                    {reward.erc20 ? <p>Voters that accurately choose the rank {reward.rank} submission will <b>split </b>{reward.erc20.amount} {reward.erc20.symbol}</p> : null}
-                                </RewardRow>
-                            )
-                        })}
-                    </RewardContainer>
-                }
-            </DetailWrap>
-            <DetailWrap>
-                <h4>Submitter Restrictions</h4>
-                {Object.values(contestData.submitter_restrictions).length === 0 && <p><b>There are no submitter restrictions defined for this contest.</b></p>}
-                {Object.values(contestData.submitter_restrictions).length > 0 &&
-                    <RewardContainer>
-                        {Object.values(contestData.submitter_restrictions).map((restriction, idx) => {
-                            return (
-                                <RewardRow key={idx}>
-                                    <p>Type: <TagType type={restriction.type}>{restriction.type}</TagType></p>
-                                    <p>Symbol: {restriction.symbol}</p>
-                                    <p>Threshold: {restriction.threshold}</p>
-                                </RewardRow>
-                            )
-                        })}
-                    </RewardContainer>
-                }
-            </DetailWrap>
-            <DetailWrap>
-                <h4>Voter Restrictions</h4>
-                {Object.values(contestData.voter_restrictions).length === 0 && <p><b>There are no voter restrictions defined for this contest.</b></p>}
-                {Object.values(contestData.voter_restrictions).length > 0 &&
-                    <RewardContainer>
-                        {Object.values(contestData.voter_restrictions).map((restriction, idx) => {
-                            return (
-                                <RewardRow key={idx}>
-                                    <p>Type: <TagType type={restriction.type}>{restriction.type}</TagType></p>
-                                    <p>Symbol: {restriction.symbol}</p>
-                                    <p>Threshold: {restriction.threshold}</p>
-                                </RewardRow>
-                            )
-                        })}
-                    </RewardContainer>
-                }
-            </DetailWrap>
-            <DetailWrap>
-                <h4>Voting Policy</h4>
-                {contestData.voting_strategy.strategy_type == 'token' ?
-                    <TokenComponent voting_strategy={contestData.voting_strategy} />
-                    :
-                    <ArcadeComponent voting_strategy={contestData.voting_strategy} />
-                }
-            </DetailWrap>
-            <DetailWrap>
-                <h4>Additional Configs</h4>
-                <li>Votes <b>{contestData.visible_votes ? 'are' : 'not'}</b> visible during voting</li>
-                <li>Submitters will be <b>{contestData.anon_subs ? 'anonymous' : 'visible'}</b> throughout the contest</li>
-                <li>Voters can <b>{contestData.self_voting ? '' : 'not'}</b> vote on themselves</li>
-
-            </DetailWrap>
-
+          
+            <ContestSummaryComponent contest_settings={contestData}/>
             {warnings.map(warning => {
                 return <div className="tab-message warning" style={{ width: '100%' }}><p>{warning}</p></div>
             })}
@@ -603,42 +446,3 @@ function Summary({ contestData, promptData, warnings, handleCloseDrawer }) {
     )
 }
 
-
-function TokenComponent({ voting_strategy }) {
-
-
-    return (
-        <VoterRow>
-            <p><b>{voting_strategy.strategy_type} strategy</b></p>
-            <li>Type: <b>{voting_strategy.symbol}</b> <TagType type={voting_strategy.type}>{voting_strategy.type}</TagType></li>
-            <li>1 <b>{voting_strategy.symbol}</b> equals 1 <b>voting credit</b></li>
-            {voting_strategy.hard_cap > 0 &&
-                <li>Contest hard cap: <b>{voting_strategy.hard_cap}</b></li>
-            }
-            {voting_strategy.sub_cap > 0 &&
-                <li>Submission hard cap: <b>{voting_strategy.sub_cap}</b></li>
-            }
-
-        </VoterRow>
-
-    )
-
-
-
-}
-
-function ArcadeComponent({ voting_strategy }) {
-
-
-    return (
-        <VoterRow>
-            <p><b>{voting_strategy.strategy_type} strategy</b></p>
-            <li>Total Votes: <b>{voting_strategy.hard_cap}</b></li>
-            {voting_strategy.sub_cap > 0 &&
-                <li>Submission hard cap: <b>{voting_strategy.sub_cap}</b></li>
-            }
-        </VoterRow>
-    )
-
-
-}

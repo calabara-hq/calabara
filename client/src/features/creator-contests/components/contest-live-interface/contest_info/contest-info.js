@@ -12,7 +12,8 @@ import { selectContestSettings, selectContestState } from "../interface/contest-
 import DrawerComponent from "../../../../drawer/drawer.js";
 import styled from 'styled-components';
 import { Placeholder } from '../../common/common_components';
-import ContestMoreDetails from "./contest-more-details.js";
+import { SummaryWrap } from "../../contest-details/detail-style.js";
+import ContestSummaryComponent from "../../contest-details/detail-components.js";
 
 
 
@@ -124,7 +125,9 @@ export default function ContestInfo() {
             </ContestDetailWrapper>
             {/*<ContestInfoDrawer contest_settings={contest_settings} handleClose={handleDrawerClose} drawerOpen={drawerOpen} />*/}
             <DrawerComponent drawerOpen={drawerOpen} handleClose={handleDrawerClose} showExit={true}>
-                <ContestMoreDetails contest_settings={contest_settings} mode={0} />
+                <SummaryWrap>
+                    <ContestSummaryComponent contest_settings={contest_settings}/>
+                </SummaryWrap>
             </DrawerComponent>
         </>
     )
