@@ -44,13 +44,14 @@ const PromptTop = styled.div`
 
 const PromptHeadingInput = styled.div`
     margin-bottom: 20px;
+    width: 50%;
 `
 
 const PromptInput = styled.input`
     font-weight: 550;
     color: #d3d3d3;
     background-color: #121212;
-    border: 2px solid ${props => props.error ? "red" : 'rgb(83, 155, 245)'};
+    border: 2px solid ${props => props.error ? "rgba(254, 72, 73, 1)" : 'rgb(83, 155, 245)'};
     border-radius: 4px;
     outline: none;
     padding: 5px 10px;
@@ -59,7 +60,7 @@ const PromptInput = styled.input`
 `
 const PromptInputError = styled.div`
     margin-top: 5px;
-    color: red;
+    color: rgba(254, 72, 73, 1);
 `
 
 
@@ -67,9 +68,9 @@ const EditorWrap = styled.div`
     flex: 1 1 72%;
     border: 2px solid #4d4d4d;    
     border-radius: 4px;
-    height: 500px;
-    max-height: 600px;
-    overflow-y: scroll;
+    min-height: 500px;
+    //max-height: 600px;
+    //overflow-y: scroll;
     font-size: 20px;
     width: 100%;
     text-align: left;
@@ -150,7 +151,7 @@ const ListRow = styled.div`
     }
     &:hover{
         &::after{
-                content: "Labels help users identify and filter submission types";
+                content: "Labels help users identify and filter contest types";
                 position: absolute;
                 border: none;
                 background-color: #4d4d4d;
@@ -289,19 +290,24 @@ export default function PromptBuilder({ promptBuilderData, setPromptBuilderData,
         setPromptBuilderData({ type: "update_single", payload: { prompt_cover_image: null } })
     }
 
+    const clearEditorErrors = () => {
+        console.log('change')
+        if (promptBuilderData.prompt_content_error) return setPromptBuilderData({ type: "update_single", payload: { prompt_content_error: false } })
+    }
+
 
     return (
         <CreatePromptWrap title="Prompt Builder">
             <PromptBuilderWrap>
                 <PromptTop>
                     <PromptHeadingInput>
-                        <PromptInput error={prompt_heading_error} value={prompt_heading} onChange={handleHeadingChange} placeholder='Title'></PromptInput>
+                        <PromptInput error={prompt_heading_error} value={prompt_heading} onChange={handleHeadingChange} placeholder='Title' maxLength={50} style={{ width: '100%'}}></PromptInput>
                         {prompt_heading_error && <PromptInputError>Please provide a prompt title</PromptInputError>}
                     </PromptHeadingInput>
                 </PromptTop>
                 {prompt_content_error && <PromptInputError>Prompt body cannot be empty</PromptInputError>}
                 <PromptDataWrap>
-                    <EditorWrap>
+                    <EditorWrap onClick={clearEditorErrors}>
                         <ReactEditorJS value={null} ref={promptEditorCore} onInitialize={handleInitialize} tools={EDITOR_JS_TOOLS} />
                     </EditorWrap>
                     <PromptSidebarWrap >
@@ -339,7 +345,7 @@ function PromptSidebar({ labelInputRef, error, promptLabel, handleLabelChange, p
             </ListRow>
 
             <LabelConfig ref={labelInputRef} error={error}>
-                <PromptInput error={error} style={{ width: '95%' }} placeholder="e.g. art" value={promptLabel} onChange={handleLabelChange} />
+                <PromptInput error={error} style={{ width: '95%' }} maxLength={15} placeholder="e.g. art" value={promptLabel} onChange={handleLabelChange} />
                 {error && <PromptInputError>Please provide a prompt label</PromptInputError>}
                 <ColorSelector promptLabelColor={promptLabelColor} handleLabelColorChange={handleLabelColorChange} />
             </LabelConfig>

@@ -4,16 +4,20 @@ import styled from 'styled-components'
 export const SubmissionMeta = styled.div`
     display: flex;
     flex-direction: row;
-    width: 100%;
+    width: ${props => props.width};
     margin: 0 auto;
     align-items: center;
 `
+
 export const SubmissionBottomBlur = styled.div`
     position: absolute;
     bottom: 5px;
     display: flex;
     left: 0;
+    bottom: 0;
+    border-radius: 10px;
     width: 100%;
+    padding-bottom: 3px;
     height: 200px;
     align-items: flex-end;
     background-image: linear-gradient(to bottom, rgba(38, 38, 38, 0), rgba(38, 38, 38, 1) );

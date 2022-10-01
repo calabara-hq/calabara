@@ -6,7 +6,7 @@ import PromptBuilder from "./prompt_builder/prompt-builder";
 import SimpleInputs from "./contest_simple_inputs/contest_simple_inputs";
 import styled from 'styled-components'
 import VotingPolicy from "./voting_policy/voting-policy";
-import { useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import useDashboardRules from "../../../hooks/useDashboardRules";
 import useCommon from "../../../hooks/useCommon";
 import { rewardOptionState, voterRewardState, submitterRewardState } from "./contest_rewards/reducers/rewards-reducer";
@@ -14,11 +14,19 @@ import { useSelector } from "react-redux";
 import { fade_in } from "../common/common_styles";
 import '../../../../css/manage-widgets.css'
 import '../../../../css/gatekeeper-toggle.css'
+import { TagType } from "../common/common_styles";
 
 
 
 // error handling
 import useErrorHandler from "./handle-errors";
+import Twitter from "./twitter_automation/twitter";
+import DrawerComponent from "../../../drawer/drawer";
+import { selectConnectedBool } from "../../../wallet/wallet-reducer";
+import { useWalletContext } from "../../../../app/WalletContext";
+import Placeholder from "../common/spinner";
+import ContestSummaryComponent, { AdditionalConfigDetails, ContestDateDetails, SubmitterRestrictionDetails, SubmitterRewardDetails, VoterRestrictionDetails, VoterRewardDetails, VotingPolicyDetails } from "../contest-details/detail-components";
+import { DetailWrap, SummaryWrap } from "../contest-details/detail-style";
 
 
 
@@ -72,6 +80,51 @@ const SettingsBlockElement = styled.div`
         padding: 10px;
         background-color: #1e1e1e;
         color: #d9d9d9;
+
+        @media screen and (max-width: 1300px){
+            width: 90%;
+        }
+`
+
+const SaveButton = styled.button`
+    border: 2px solid rgb(3, 176, 159);
+    background-color: rgb(3, 176, 159); 
+    color: black;
+    padding: 10px 15px;
+    border-radius: 10px;
+    font-weight: bold;
+    &:hover{
+        background-color: rgba(3, 176, 159, 0.9);
+    }
+    &:active{
+        transform: scale(1.01);
+    }
+    &:disabled{
+        background-color: #262626;
+        border-color: rgba(3, 176, 159, 0.2);
+        color: grey;
+        cursor: not-allowed;
+        transform: none;
+    }
+    
+`
+
+const ConnectWalletButton = styled.button`
+    border: 2px solid rgb(83,155,245);
+    border-radius: 10px;
+    width: 100%;
+    padding: 10px 15px;
+    background-color: rgb(83,155,245);
+    color: black;
+    font-weight: bold;
+
+
+`
+
+const SummaryButtons = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 `
 
 function reducer(state, action) {
@@ -98,23 +151,19 @@ const initialPromptData = {
 
 
 export default function ContestSettings() {
-
     const [currentDate, setCurrentDate] = useState(new Date())
     const [date_1, setDate_1] = useState(new Date())
     const [date_2, setDate_2] = useState(new Date())
+    const [snapshotDate, setSnapshotDate] = useState(new Date())
+
     const [votingStrategy, setVotingStrategy] = useReducer(reducer, { strategy_id: 0x0 });
+    const [votingStrategyError, setVotingStrategyError] = useState(false);
     const [submitterAppliedRules, setSubmitterAppliedRules] = useReducer(reducer, {});
     const [voterAppliedRules, setVoterAppliedRules] = useReducer(reducer, {});
     const [submitterRuleError, setSubmitterRuleError] = useState(false);
     const [voterRuleError, setVoterRuleError] = useState(false);
-    const { ens } = useParams();
-    const { populateDashboardRules } = useDashboardRules();
-
-
     const [promptBuilderData, setPromptBuilderData] = useReducer(reducer, initialPromptData)
-    const [simpleInputData, setSimpleInputData] = useReducer(reducer, { anonSubmissions: false, visibleVotes: false, selfVoting: false })
-
-
+    const [simpleInputData, setSimpleInputData] = useReducer(reducer, { anonSubmissions: true, visibleVotes: false, selfVoting: false })
 
     const TimeBlockRef = useRef(null);
     const RewardsRef = useRef(null);
@@ -124,24 +173,17 @@ export default function ContestSettings() {
     const promptEditorCore = useRef(null);
 
 
-
-
-
-    useEffect(() => {
-        populateDashboardRules(ens)
-    }, [])
-
-
-
     return (
         <ContestSettingsWrap>
 
             <SettingsBlockElement ref={TimeBlockRef}>
                 <ContestDateTimeBlock
                     currentDate={currentDate}
+                    snapshotDate={snapshotDate}
                     date_1={date_1}
                     date_2={date_2}
                     setCurrentDate={setCurrentDate}
+                    setSnapshotDate={setSnapshotDate}
                     setDate_1={setDate_1}
                     setDate_2={setDate_2}
                 />
@@ -153,7 +195,7 @@ export default function ContestSettings() {
                 />
             </SettingsBlockElement>
 
-            <SettingsBlockElement>
+            <SettingsBlockElement ref={RestrictionsBlockRef}>
                 <ContestParticipantRestrictions
                     submitterAppliedRules={submitterAppliedRules}
                     setSubmitterAppliedRules={setSubmitterAppliedRules}
@@ -166,33 +208,43 @@ export default function ContestSettings() {
                 />
             </SettingsBlockElement>
 
-            <SettingsBlockElement>
-                <VotingPolicy votingStrategy={votingStrategy} setVotingStrategy={setVotingStrategy} />
+            <SettingsBlockElement ref={StrategyBlockRef}>
+                <VotingPolicy votingStrategy={votingStrategy} setVotingStrategy={setVotingStrategy} votingStrategyError={votingStrategyError} setVotingStrategyError={setVotingStrategyError} />
             </SettingsBlockElement>
 
-            <SettingsBlockElement>
+            <SettingsBlockElement ref={PromptBlockRef}>
                 <PromptBuilder promptBuilderData={promptBuilderData} setPromptBuilderData={setPromptBuilderData} promptEditorCore={promptEditorCore} />
             </SettingsBlockElement>
-
+            {/*
+            <SettingsBlockElement>
+                <Twitter />
+            </SettingsBlockElement>
+            */}
             <SettingsBlockElement>
                 <SimpleInputs simpleInputData={simpleInputData} setSimpleInputData={setSimpleInputData} />
             </SettingsBlockElement>
 
-            <SettingsBlockElement>
-                <SaveSettings
-                    setCurrentDate={setCurrentDate}
-                    date_1={date_1}
-                    date_2={date_2}
-                    promptEditorCore={promptEditorCore}
-                    votingStrategy={votingStrategy}
-                    submitterAppliedRules={submitterAppliedRules}
-                    voterAppliedRules={voterAppliedRules}
-                    simpleInputData={simpleInputData}
-                    promptBuilderData={promptBuilderData}
-                    TimeBlockRef={TimeBlockRef}
-                    RewardsRef={RewardsRef}
-                />
-            </SettingsBlockElement>
+            <SaveSettings
+                setCurrentDate={setCurrentDate}
+                date_1={date_1}
+                date_2={date_2}
+                snapshotDate={snapshotDate}
+                promptEditorCore={promptEditorCore}
+                votingStrategy={votingStrategy}
+                setVotingStrategyError={setVotingStrategyError}
+                submitterAppliedRules={submitterAppliedRules}
+                voterAppliedRules={voterAppliedRules}
+                setSubmitterRuleError={setSubmitterRuleError}
+                setVoterRuleError={setVoterRuleError}
+                simpleInputData={simpleInputData}
+                promptBuilderData={promptBuilderData}
+                setPromptBuilderData={setPromptBuilderData}
+                TimeBlockRef={TimeBlockRef}
+                RewardsRef={RewardsRef}
+                PromptBlockRef={PromptBlockRef}
+                RestrictionsBlockRef={RestrictionsBlockRef}
+                StrategyBlockRef={StrategyBlockRef}
+            />
 
         </ContestSettingsWrap >
     )
@@ -204,32 +256,92 @@ function SaveSettings(props) {
     const rewardOptions = useSelector(rewardOptionState.getRewardOptions)
     const submitterRewards = useSelector(submitterRewardState.getSubmitterRewards)
     const voterRewards = useSelector(voterRewardState.getVoterRewards)
-    const { authenticated_post } = useCommon();
-    const { handleErrors } = useErrorHandler();
+    const [showSummary, setShowSummary] = useState(false);
+    const [contestData, setContestData] = useState(null);
+    const [promptData, setPromptData] = useState(null);
+    const [warnings, setWarnings] = useState([]);
+    const history = useHistory();
+
+
+    const {
+        handleSubmitterErrors,
+        handleTimeBlockErrors,
+        handleVoterErrors,
+        handlePromptErrors,
+        handleRestrictionErrors,
+        handleVotingStrategyErrors,
+    } = useErrorHandler();
     const { ens } = useParams();
 
     const {
         setCurrentDate,
         date_1,
         date_2,
+        snapshotDate,
         promptEditorCore,
         votingStrategy,
+        setVotingStrategyError,
         submitterAppliedRules,
         voterAppliedRules,
+        setSubmitterRuleError,
+        setVoterRuleError,
         simpleInputData,
         promptBuilderData,
+        setPromptBuilderData,
         TimeBlockRef,
-        RewardsRef
+        RewardsRef,
+        PromptBlockRef,
+        RestrictionsBlockRef,
+        StrategyBlockRef
     } = props
+
+    const handleShowSummary = () => {
+        setShowSummary(true);
+        document.body.style.overflow = 'hidden';
+    }
+
+    const handleCloseSummary = (type) => {
+        setShowSummary(false);
+        document.body.style.overflow = 'unset';
+        if (type === 'saved') {
+            window.scrollTo(0, 0)
+            history.push('creator_contests')
+        }
+    }
+
+    const handleWarnings = () => {
+
+        let prep_warnings = []
+        if (Object.values(voterAppliedRules).length === 0 && votingStrategy.strategy_type === 'arcade') {
+            prep_warnings.push('An arcade strategy with no voter restrictions means that anyone can vote. Maybe this isn\'t what you wanted')
+        }
+        console.log(prep_warnings)
+        return setWarnings(prep_warnings)
+    }
+
 
 
     const handleSave = async () => {
 
-        let [isSubmitterError, isVoterError, isTimeError] = handleErrors([setCurrentDate, date_1, date_2]);
+        const isTimeError = handleTimeBlockErrors([setCurrentDate, date_1, date_2, snapshotDate]);
+        const isSubmitterError = handleSubmitterErrors();
+        const isVoterError = handleVoterErrors();
         if (isTimeError) return TimeBlockRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
         if (isSubmitterError) return RewardsRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
         if (isVoterError) return RewardsRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
 
+        const isRestrictionError = handleRestrictionErrors(submitterAppliedRules, setSubmitterRuleError, voterAppliedRules, setVoterRuleError);
+        if (isRestrictionError) return RestrictionsBlockRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+
+
+        const isVotingStrategyError = handleVotingStrategyErrors(votingStrategy, setVotingStrategyError)
+        if (isVotingStrategyError) return StrategyBlockRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+
+
+
+        const promptEditorData = await promptEditorCore.current.save();
+        const isPromptError = handlePromptErrors(promptEditorData, promptBuilderData, setPromptBuilderData);
+        if (isPromptError) return PromptBlockRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
 
         let strategy
         if (votingStrategy.strategy_type === 'arcade') {
@@ -253,13 +365,11 @@ function SaveSettings(props) {
             }
         }
 
-        const promptEditorData = await promptEditorCore.current.save();
-
-        let contest_data = {
+        setContestData({
             date_times: {
                 start_date: new Date().toISOString(),
                 voting_begin: date_1.toISOString(),
-                end_date: date_2.toISOString()
+                end_date: date_2.toISOString(),
             },
             reward_options: rewardOptions,
             submitter_rewards: submitterRewards,
@@ -269,28 +379,70 @@ function SaveSettings(props) {
             voting_strategy: strategy,
             anon_subs: simpleInputData.anonSubmissions,
             visible_votes: simpleInputData.visibleVotes,
-            self_voting: simpleInputData.selfVoting
-        }
+            self_voting: simpleInputData.selfVoting,
+            snapshot_block: snapshotDate.toISOString()
 
-        let prompt_data = {
+        })
+
+        setPromptData({
             editorData: promptEditorData,
             title: promptBuilderData.prompt_heading,
             coverImage: promptBuilderData.prompt_cover_image ? promptBuilderData.prompt_cover_image.url : null,
             promptLabel: promptBuilderData.prompt_label,
             promptLabelColor: promptBuilderData.prompt_label_color
-        }
+        })
 
-        console.log(contest_data.submitter_rewards)
-
-
-
-        if (window.confirm('are you sure you want to continue?')) {
-            authenticated_post('/creator_contests/create_contest', { ens: ens, contest_settings: contest_data, prompt_data: prompt_data })
-        }
-
+        handleWarnings();
+        handleShowSummary();
     }
 
     return (
-        <button style={{ color: 'black' }} onClick={handleSave}>save</button>
+        <>
+            <SaveButton disabled={showSummary} style={{ width: '60%', margin: '30px auto' }} onClick={handleSave}>save</SaveButton>
+            <DrawerComponent drawerOpen={showSummary} handleClose={handleCloseSummary} showExit={true}>
+                <Summary contestData={contestData} promptData={promptData} warnings={warnings} handleCloseDrawer={handleCloseSummary} />
+            </DrawerComponent>
+        </>
     )
 }
+
+
+
+
+function Summary({ contestData, promptData, warnings, handleCloseDrawer }) {
+    const { ens } = useParams();
+    const { authenticated_post } = useCommon();
+    const { walletConnect } = useWalletContext();
+    const isWalletConnected = useSelector(selectConnectedBool);
+    const [isSaving, setIsSaving] = useState(false);
+
+
+    const handleConfirm = async () => {
+        setIsSaving(true)
+        await authenticated_post('/creator_contests/create_contest', { ens: ens, contest_settings: contestData, prompt_data: promptData })
+        setTimeout(() => {
+            handleCloseDrawer('saved')
+        }, 500)
+    }
+
+    if (isSaving) {
+        return <Placeholder />
+    }
+
+    return (
+        <SummaryWrap>
+            <p style={{ color: 'grey' }}>Please review the contest configuration</p>
+          
+            <ContestSummaryComponent contest_settings={contestData}/>
+            {warnings.map(warning => {
+                return <div className="tab-message warning" style={{ width: '100%' }}><p>{warning}</p></div>
+            })}
+
+            <SummaryButtons>
+                {!isWalletConnected ? <ConnectWalletButton onClick={walletConnect}>Connect</ConnectWalletButton> : null}
+                <SaveButton disabled={!isWalletConnected} style={{ width: '100%' }} onClick={handleConfirm}>Confirm + Initialize Contest</SaveButton>
+            </SummaryButtons>
+        </SummaryWrap>
+    )
+}
+

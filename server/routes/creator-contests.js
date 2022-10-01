@@ -6,14 +6,17 @@ const contests = express();
 contests.use(express.json())
 const { authenticateToken } = require('../middlewares/jwt-middleware.js');
 const { isAdmin } = require('../middlewares/admin-middleware')
-const { clean, asArray } = require('../helpers/common')
+const { clean, asArray, shuffleArray } = require('../helpers/common')
 const { createContest, isNick } = require('../middlewares/creator-contests/create-contest-middleware');
 const { check_submitter_eligibility_unprotected, check_submitter_eligibility_PROTECTED, createSubmission } = require('../middlewares/creator-contests/submit-middleware');
 const { imageUpload } = require('../middlewares/image-upload-middleware.js');
-const { calc_sub_vp__unprotected, calc_sub_vp__PROTECTED } = require('../middlewares/creator-contests/vote-middleware-2.js');
+const { calc_sub_vp__unprotected, calc_sub_vp__PROTECTED } = require('../middlewares/creator-contests/vote-middleware.js');
 const logger = require('../logger').child({ component: 'creator-contests' })
 const { sendSocketMessage } = require('../sys/socket/socket-io');
-const { get_winners, get_winners_as_csv, verifyContestOver } = require('../middlewares/creator-contests/fetch-winners-middleware.js');
+const { get_winners_as_csv, verifyContestOver } = require('../middlewares/creator-contests/fetch-winners-middleware.js');
+const { fetchSubmissions } = require('../middlewares/creator-contests/fetch-submissions-middleware.js');
+const socketSendNewSubmission = require('../helpers/socket-messages.js');
+dotenv.config()
 
 const serverRoot = path.normalize(path.join(__dirname, '../'));
 
@@ -29,64 +32,24 @@ contests.get('/fetch_org_contests/*', async function (req, res, next) {
 })
 
 // fetch the latest contest for an organization
-contests.get('/fetch_contest/*', async function (req, res, next) {
-    let ens = req.url.split('/')[2];
-    let contest_hash = req.url.split('/')[3];
-
+contests.get('/fetch_contest', async function (req, res, next) {
+    const { ens, contest_hash } = req.query
 
     // will there be conditions where latest is not the current active contest? need to handle that if so.
     let data = await db.query('select settings, prompt_data from contests where ens = $1 and _hash = $2', [ens, contest_hash])
         .then(clean)
 
+    if (data === null) return res.sendStatus(404)
     res.send(data).status(200)
 })
 
 
 // fetch submissions
 
-contests.get('/fetch_submissions/*', async function (req, res, next) {
-    let ens = req.url.split('/')[2];
-    let contest_hash = req.url.split('/')[3];
-    let subs = await db.query('select id, _url from contest_submissions where ens=$1 and contest_hash=$2', [ens, contest_hash])
-        .then(clean)
-        .then(asArray)
-    res.send(subs).status(200)
+contests.get('/fetch_submissions', fetchSubmissions, async function (req, res, next) {
+    res.send(req.submissions).status(200)
 })
 
-/*
-contests.get('/fetch_submissions/*', async function (req, res, next) {
-    let ens = req.url.split('/')[2];
-    let contest_hash = req.url.split('/')[3];
-    let subs = await db.query('select contest_submissions.id,\
-                            contest_submissions._url,\
-                            case when (contests.settings->>\'visible_votes\')::boolean = false then null else contest_votes.votes_spent end as votes,\
-                            case when (contests.settings->>\'anon_subs\')::boolean = true then null else contest_submissions.author end as author\
-                            from contests\
-                            left join contest_submissions\
-                            on contests._hash = contest_submissions.contest_hash\
-                            left join contest_votes\
-                            on contests._hash = contest_votes.contest_hash\
-                            where contests.ens = $1 and contest_submissions.contest_hash = $2', [ens, contest_hash])
-        .then(clean)
-        .then(asArray)
-    console.log(subs)
-    res.send(subs).status(200)
-})
-*/
-
-// fetch all the winners for a contest
-// get the reward strategy
-// return the url, author, num votes, reward
-// check window last
-
-contests.get('/fetch_contest_winners', verifyContestOver, async function (req, res, next) {
-    const { ens, contest_hash } = req.query
-    let subs_full_details = await db.query('select contest_submissions.id, _url, author, coalesce(sum(votes_spent), 0) as votes from contest_submissions left join contest_votes on contest_submissions.id = contest_votes.submission_id where contest_submissions.ens=$1 and contest_submissions.contest_hash=$2 group by contest_submissions.id order by votes desc', [ens, contest_hash])
-        .then(clean)
-        .then(asArray)
-    res.send(subs_full_details).status(200);
-
-})
 
 contests.get('/fetch_contest_winners_as_csv', get_winners_as_csv, async function (req, res, next) {
     const { ens, contest_hash } = req.query
@@ -116,11 +79,12 @@ contests.get('/fetch_submission_votes', async function (req, res, next) {
 ///////////////////////////// begin submissions ////////////////////////////////////
 
 
-contests.post('/create_submission', authenticateToken, check_submitter_eligibility_PROTECTED, /*checkSubmissionRestrictions, checkUserSubmissions,*/ createSubmission, async function (req, res, next) {
+contests.post('/create_submission', authenticateToken, check_submitter_eligibility_PROTECTED, createSubmission, async function (req, res, next) {
     const { ens } = req.body;
     let result = await db.query('insert into contest_submissions (ens, contest_hash, author, created, locked, pinned, _url) values ($1, $2, $3, $4, $5, $6, $7) returning id ', [ens, req.contest_hash, req.user.address, req.created, false, false, req.url]).then(clean)
     res.sendStatus(200)
-    sendSocketMessage(req.contest_hash, 'new_submission', { id: result.id, _url: req.url })
+    //sendSocketMessage(req.contest_hash, 'new_submission', { id: result.id, _url: req.url })
+    socketSendNewSubmission(req.contest_hash, ens, { id: result.id, _url: req.url, author: req.user.address, votes: 0 })
 
 })
 
@@ -203,36 +167,23 @@ contests.post('/retract_sub_votes', authenticateToken, async function (req, res,
 
 ///////////////////////////// begin stats ////////////////////////////////////
 
-contests.get('/org_contest_stats/*', async function (req, res, next) {
-
-    let ens = req.url.split('/')[2];
+contests.get('/org_contest_stats', async function (req, res, next) {
+    const { ens } = req.query
+    console.log('entering')
     await db.query('select settings ->> \'submitter_rewards\' as rewards from contests where ens=$1', [ens])
         .then(clean)
         .then(asArray)
         .then(data => {
             let obj = { eth: 0, erc20: 0, erc721: 0 }
-            console.log('begin case')
-
-            if (data.length === 1) {
-                console.log('first case')
-
-                let parsed = Object.values(JSON.parse(data[0].rewards))
+            if (data.length === 0) return obj
+            data.map(el => {
+                let parsed = Object.values(JSON.parse(el.rewards))
                 parsed.map(inner => {
-                    obj[Object.keys(inner)[0]] += inner[Object.keys(inner)[0]].amount
+                    let { rank, ...reward } = inner
+                    let vals = Object.values(reward)[0]
+                    obj[vals.type] += vals.amount || 1 // 1 is the case that this is an nft reward
                 })
-            }
-            else {
-                console.log('this case')
-                data.map(el => {
-                    let parsed = Object.values(JSON.parse(el.rewards))
-                    parsed.map(inner => {
-                        let { rank, ...reward } = inner
-                        let vals = Object.values(reward)[0]
-                        //obj[Object.keys(inner)[0]] += inner[Object.keys(inner)[0]].amount
-                        obj[vals.type] += vals.amount
-                    })
-                })
-            }
+            })
             return obj
         })
         .then(data => res.send(data).status(200))
@@ -244,9 +195,6 @@ contests.get('/org_contest_stats/*', async function (req, res, next) {
 
 contests.post('/upload_img', imageUpload.single('image'), async (req, res) => {
 
-    console.log('IM HERE')
-
-    console.log(req.file)
 
     let img_data = {
         success: 1,
@@ -262,7 +210,6 @@ contests.post('/upload_img', imageUpload.single('image'), async (req, res) => {
 
 
 ///////////////////////// begin dev / test routes ////////////////////////////////////
-dotenv.config()
 if (process.env.NODE_ENV === 'test') {
 
     contests.post('/test_delete_dummy', async (req, res) => {
@@ -276,25 +223,13 @@ if (process.env.NODE_ENV === 'test') {
 
 
     contests.post('/test_create_submission', async (req, res) => {
-        const { ens, contest_hash } = req.body
-        let id = await db.query('insert into contest_submissions (ens, contest_hash, created, locked, pinned, _url) values ($1, $2, $3, $4, $5, $6) returning id', [ens, contest_hash, new Date().toISOString(), true, true, 'dummy.json']).then(clean)
+        const { ens, contest_hash, author } = req.body
+        let id = await db.query('insert into contest_submissions (ens, contest_hash, author, created, locked, pinned, _url) values ($1, $2, $3, $4, $5, $6, $7) returning id', [ens, contest_hash, author, new Date().toISOString(), true, true, 'dummy.json']).then(clean)
         res.send(JSON.stringify(id)).status(200)
     })
 
 }
 
-
-contests.post('/user_voting_metrics_alt', calc_sub_vp__unprotected, async function (req, res, next) {
-    let result = {
-        metrics: {
-            sub_total_vp: req.sub_total_vp,
-            sub_votes_spent: req.sub_votes_spent,
-            sub_remaining_vp: req.sub_remaining_vp,
-        },
-        restrictions_with_results: req.restrictions_with_results,
-    }
-    res.send(result).status(200)
-})
 
 ///////////////////////// end dev / test routes ////////////////////////////////////
 

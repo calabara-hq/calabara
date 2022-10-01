@@ -1,9 +1,8 @@
 import React from 'react';
-import Nav from '../features/navbar/navbar';
 import Container from '../features/container/container'
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
-import SuccessfulDiscordRedirect from '../features/discord/discord-oauth-redirect'
-import Homepage from '../features/homepage/homepage';
+import DiscordRedirect from '../features/discord/discord-oauth-redirect'
+import TwitterRedirect from '../features/creator-contests/components/contest_settings/twitter_automation/twitter_oauth_redirect';
 
 
 export default function App() {
@@ -14,8 +13,9 @@ export default function App() {
     <Router>
       <Switch>
         <Route path="/oauth/discord">
-          <SuccessfulDiscordRedirect />
+          <DiscordRedirect />
         </Route>
+        
 
         <Route path="/*">
           <Container />

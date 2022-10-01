@@ -12,7 +12,8 @@ import { selectContestSettings, selectContestState } from "../interface/contest-
 import DrawerComponent from "../../../../drawer/drawer.js";
 import styled from 'styled-components';
 import { Placeholder } from '../../common/common_components';
-import ContestMoreDetails from "./contest-more-details.js";
+import { SummaryWrap } from "../../contest-details/detail-style.js";
+import ContestSummaryComponent from "../../contest-details/detail-components.js";
 
 
 
@@ -25,7 +26,7 @@ const processSubmitterRewards = (contest_settings) => {
 
     Object.values(contest_settings.submitter_rewards).map((reward) => {
         if (reward['erc20']) erc20_sum += reward['erc20'].amount
-        if (reward['erc721']) erc721_sum += reward['erc721'].amount
+        if (reward['erc721']) erc721_sum += 1
         if (reward['eth']) eth_sum += reward['eth'].amount
     })
 
@@ -124,7 +125,9 @@ export default function ContestInfo() {
             </ContestDetailWrapper>
             {/*<ContestInfoDrawer contest_settings={contest_settings} handleClose={handleDrawerClose} drawerOpen={drawerOpen} />*/}
             <DrawerComponent drawerOpen={drawerOpen} handleClose={handleDrawerClose} showExit={true}>
-                <ContestMoreDetails contest_settings={contest_settings} mode={0} />
+                <SummaryWrap>
+                    <ContestSummaryComponent contest_settings={contest_settings}/>
+                </SummaryWrap>
             </DrawerComponent>
         </>
     )

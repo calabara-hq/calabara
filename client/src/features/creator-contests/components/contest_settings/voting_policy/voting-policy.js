@@ -1,12 +1,15 @@
 import styled from 'styled-components'
 import { Contest_h2, Contest_h3 } from '../../common/common_styles'
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import AddPolicyModal from './add-policy-modal';
 import '../../../../../css/status-messages.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTicket, faWallet } from '@fortawesome/free-solid-svg-icons';
 import { rewardOptionState } from '../contest_rewards/reducers/rewards-reducer';
 import { useSelector } from 'react-redux';
+import { selectDashboardRules } from '../../../../gatekeeper/gatekeeper-rules-reducer';
+import { useParams } from 'react-router-dom';
+import useDashboardRules from '../../../../hooks/useDashboardRules';
 
 const VotingPolicyWrap = styled.div`
     display: flex;
@@ -35,110 +38,30 @@ const CreditStrategyWrap = styled.div`
 
 `
 
-export default function VotingPolicy({ votingStrategy, setVotingStrategy }) {
+export default function VotingPolicy({ votingStrategy, setVotingStrategy, votingStrategyError, setVotingStrategyError }) {
     const [addPolicyModalOpen, setAddPolicyModalOpen] = useState(false);
     const [selectedStrategy, setSelectedStratgey] = useState(null);
     const rewardOptions = useSelector(rewardOptionState.getRewardOptions)
+    let availableRules = useSelector(selectDashboardRules)
+    const { populateDashboardRules } = useDashboardRules();
+    const { ens } = useParams()
+
+
+
 
     const handlePolicyModalOpen = (strategy_name) => {
         setSelectedStratgey(strategy_name)
         setAddPolicyModalOpen(true);
+        setVotingStrategyError(false)
     }
 
     const handlePolicyModalClose = () => {
         setAddPolicyModalOpen(false);
-
     }
 
-    let availableRules = {
-        "55": {
-            "guildId": "892877917762244680",
-            "serverName": "Calabara",
-            "type": "discord",
-            "available_roles": [
-                {
-                    "role_id": "892877917762244680",
-                    "role_name": "@everyone",
-                    "role_color": 0
-                },
-                {
-                    "role_id": "893184621523660850",
-                    "role_name": "core-team",
-                    "role_color": 15105570
-                },
-                {
-                    "role_id": "895903844926623785",
-                    "role_name": "bot",
-                    "role_color": 6323595
-                },
-                {
-                    "role_id": "896082699402510377",
-                    "role_name": "member",
-                    "role_color": 15277667
-                },
-                {
-                    "role_id": "896088160684089447",
-                    "role_name": "MEE6",
-                    "role_color": 0
-                },
-                {
-                    "role_id": "899761111476359269",
-                    "role_name": "szn1",
-                    "role_color": 1752220
-                },
-                {
-                    "role_id": "907775296659390496",
-                    "role_name": "OG calabarator",
-                    "role_color": 15844367
-                },
-                {
-                    "role_id": "908035108861251605",
-                    "role_name": "sesh",
-                    "role_color": 0
-                },
-                {
-                    "role_id": "919991694030671893",
-                    "role_name": "carl-bot",
-                    "role_color": 0
-                },
-                {
-                    "role_id": "919994529912881192",
-                    "role_name": "onboardee",
-                    "role_color": 10181046
-                },
-                {
-                    "role_id": "956696519384391703",
-                    "role_name": "calabara",
-                    "role_color": 11342935
-                },
-                {
-                    "role_id": "974402409533149217",
-                    "role_name": "Member",
-                    "role_color": 0
-                }
-            ]
-        },
-        "64": {
-            "type": "erc20",
-            "symbol": "SHARK",
-            "address": "0x232AFcE9f1b3AAE7cb408e482E847250843DB931",
-            "decimal": "18"
-        },
-        "72": {
-            "type": "erc721",
-            "symbol": "NOUN",
-            "address": "0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03",
-            "decimal": "0"
-        },
-        "73": {
-            "type": "erc721",
-            "symbol": "MFER",
-            "address": "0x79FCDEF22feeD20eDDacbB2587640e45491b757f",
-            "decimal": "0"
-        }
-    }
-
-
+    useEffect(() => {
+        populateDashboardRules(ens)
+    }, [])
 
 
     const creditStrategies = [
@@ -161,6 +84,9 @@ export default function VotingPolicy({ votingStrategy, setVotingStrategy }) {
             <div style={{ width: 'fit-content' }} className='tab-message neutral'>
                 <p>Voting credits determine how voting power is calculated, as well as any restrictions on voting power.</p>
             </div>
+            {votingStrategyError && <div style={{ width: 'fit-content', margin: '0 auto' }} className='tab-message error'>
+                <p>Please select a voting strategy</p>
+            </div>}
             <CreditStrategyWrap>
                 {creditStrategies.map(el => {
                     return <CreditStrategy strategy={el} handlePolicyModalOpen={handlePolicyModalOpen} handlePolicyModalClose={handlePolicyModalClose} votingStrategy={votingStrategy} />

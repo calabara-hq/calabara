@@ -46,8 +46,6 @@ const ModalHeading = styled.p`
 
 export default function AddPolicyModal({ modalOpen, handleClose, selectedStrategy, rewardOptions, availableRules, votingStrategy, setVotingStrategy }) {
 
-    const handleSave = async () => {
-    }
 
     return (
         <div>
@@ -197,6 +195,7 @@ function TokenStrategy({ rewardOptions, availableRules, votingStrategy, setVotin
                 additional_configs: additional_configs
             }
         }
+
         setVotingStrategy({ type: 'update_all', payload: obj });
         handleClose();
     }
@@ -273,7 +272,7 @@ function ArcadeStrategySummary({ votingStrategy, setProgress }) {
         <>
             <h4>Each qualifying voter recieves <b>{votingStrategy.data.credit_allowance}</b> voting credits.</h4>
             <p><b>Limit per sub:</b> {max_per_sub_bool ? max_per_sub_limit : 'Off'}</p>
-            <button onClick={() => setProgress(1)}>replace strategy</button>
+            <ReplaceStrategy onClick={() => setProgress(1)}>replace strategy</ReplaceStrategy>
         </>
     )
 }
@@ -380,7 +379,7 @@ const SettingDescription = styled.div`
 const CaptureInput = styled.input`
     flex: 1 0 10%;
     color: #f2f2f2;
-    border: 2px solid rgb(83, 155, 245);
+    border: 2px solid ${props => props.error ? 'rgba(254, 72, 73, 1)' : 'rgb(83, 155, 245)'};
     border-radius: 10px;
     background-color: #121212;
     outline: none;
@@ -404,45 +403,62 @@ function AdditionalConfig({ tokenData, setProgress, handleSave, handlePrevious }
     const [maxPerSubLimit, setMaxPerSubLimit] = useState(0);
     const [hardcapLimit, setHardcapLimit] = useState(0);
     const [arcadeCredits, setArcadeCredits] = useState(0);
+    const [isHardcapError, setIsHardcapError] = useState(false);
+    const [isMaxPerSubError, setIsMaxPerSubError] = useState(false);
+    const [isCreditError, setIsCreditError] = useState(false);
 
-    const tokenDisplay = () => {
-        return (
-            <TopLevelWrap>
-                {/*<h4><b>1</b> {tokenData.symbol} equals <b>1</b> voting credit</h4>*/}
-            </TopLevelWrap>
-        )
-    }
-
-    const arcadeDisplay = () => {
-        return (
-            <TopLevelWrap>
-                <p>Voting credits per qualifying participant</p>
-                <input onWheel={(e) => e.target.blur()} style={{ color: 'black' }} onChange={(e) => setHardcapLimit(Number(e.target.value))}></input>
-            </TopLevelWrap>
-        )
-    }
 
     const handleMaxPerSubToggle = () => {
         if (isMaxPerSubOn) {
             setMaxPerSubLimit(0);
             setIsMaxPerSubOn(false);
+            setIsMaxPerSubError(false);
         }
         else {
             setIsMaxPerSubOn(true);
         }
     }
 
+    const handleMaxPerSubChange = (e) => {
+        setMaxPerSubLimit(Math.round(Math.abs(e.target.value)))
+        if (isMaxPerSubError) setIsMaxPerSubError(false)
+    }
+
+
     const handleHardcapToggle = () => {
         if (isHardcapOn) {
             setHardcapLimit(0);
             setIsHardcapOn(false);
+            setIsHardcapError(false);
         }
         else {
             setIsHardcapOn(true);
         }
     }
 
+    const handleHardcapChange = (e) => {
+        setHardcapLimit(Math.round(Math.abs(e.target.value)))
+        if (isHardcapError) setIsHardcapError(false)
+    }
 
+    const handleArcadeCreditChange = (e) => {
+        setArcadeCredits(Math.round(Math.abs(e.target.value)))
+        setIsCreditError(false)
+    }
+
+    const prepareSave = (type) => {
+        if (type === 'token') {
+            if (isHardcapOn && hardcapLimit <= 0) return setIsHardcapError(true)
+            if (isMaxPerSubOn && maxPerSubLimit <= 0) return setIsMaxPerSubError(true)
+            handleSave({ hardcap_bool: isHardcapOn, hardcap_limit: hardcapLimit, max_per_sub_bool: isMaxPerSubOn, max_per_sub_limit: maxPerSubLimit })
+
+        }
+        else if (type === 'arcade') {
+            if (arcadeCredits <= 0) return setIsCreditError(true)
+            if (isMaxPerSubOn && maxPerSubLimit <= 0) return setIsMaxPerSubError(true)
+            handleSave({ credit_allowance: arcadeCredits, max_per_sub_bool: isMaxPerSubOn, max_per_sub_limit: maxPerSubLimit })
+        }
+    }
 
     return (
         <AdditionalConfigWrap>
@@ -460,7 +476,7 @@ function AdditionalConfig({ tokenData, setProgress, handleSave, handlePrevious }
                             <p style={{ color: '#a3a3a3' }}>Limit # of usable voting credits on a single submission. </p>
                         </SettingDescription>
                         <ToggleButton identifier={'max-per-sub-toggle'} isToggleOn={isMaxPerSubOn} setIsToggleOn={setIsMaxPerSubOn} handleToggle={handleMaxPerSubToggle} />
-                        {isMaxPerSubOn && <CaptureInput onWheel={(e) => e.target.blur()} type={'number'} onChange={(e) => setMaxPerSubLimit(Number(e.target.value))}></CaptureInput>}
+                        {isMaxPerSubOn && <CaptureInput error={isMaxPerSubError} onWheel={(e) => e.target.blur()} type={'number'} value={maxPerSubLimit || ''} onChange={handleMaxPerSubChange}></CaptureInput>}
                     </MaxPerSub>
                     <Hardcap>
                         <SettingDescription>
@@ -468,9 +484,9 @@ function AdditionalConfig({ tokenData, setProgress, handleSave, handlePrevious }
                             <p style={{ color: '#a3a3a3' }}>Limit # of usable voting credits across the entire contest.</p>
                         </SettingDescription>
                         <ToggleButton identifier={'hardcap-toggle'} isToggleOn={isHardcapOn} setIsToggleOn={setIsHardcapOn} handleToggle={handleHardcapToggle} />
-                        {isHardcapOn && <CaptureInput onWheel={(e) => e.target.blur()} type={'number'} onChange={(e) => setHardcapLimit(Number(e.target.value))}></CaptureInput>}
+                        {isHardcapOn && <CaptureInput error={isHardcapError} onWheel={(e) => e.target.blur()} type={'number'} value={hardcapLimit || ''} onChange={handleHardcapChange}></CaptureInput>}
                         <BackButton onClick={handlePrevious}>back</BackButton>
-                        <SaveButton onClick={() => handleSave({ hardcap_bool: isHardcapOn, hardcap_limit: hardcapLimit, max_per_sub_bool: isMaxPerSubOn, max_per_sub_limit: maxPerSubLimit })}>save</SaveButton>
+                        <SaveButton onClick={() => prepareSave('token')}>save</SaveButton>
                     </Hardcap>
                 </>
             }
@@ -482,19 +498,19 @@ function AdditionalConfig({ tokenData, setProgress, handleSave, handlePrevious }
 
                         <ArcadeVotes>
                             <Contest_h3_alt_small>Voting credits per qualifying participant</Contest_h3_alt_small>
-                            <CaptureInput onWheel={(e) => e.target.blur()} type={"number"} onChange={(e) => setArcadeCredits(Number(e.target.value))}></CaptureInput>
+                            <CaptureInput error={isCreditError} onWheel={(e) => e.target.blur()} type={"number"} value={arcadeCredits || ''} onChange={handleArcadeCreditChange}></CaptureInput>
                         </ArcadeVotes>
                     </TopLevelWrap>
                     <MaxPerSub>
                         <SettingDescription>
-                            <Contest_h3_alt_small >Max per Submission</Contest_h3_alt_small>
+                            <Contest_h3_alt_small>Max per Submission</Contest_h3_alt_small>
                             <p style={{ color: '#a3a3a3' }}>Limit # of usable voting credits on a single submission. </p>
                         </SettingDescription>
                         <ToggleButton identifier={'max-per-sub-toggle'} isToggleOn={isMaxPerSubOn} setIsToggleOn={setIsMaxPerSubOn} handleToggle={handleMaxPerSubToggle} />
-                        {isMaxPerSubOn && <CaptureInput onWheel={(e) => e.target.blur()} type={'number'} onChange={(e) => setMaxPerSubLimit(Number(e.target.value))}></CaptureInput>}
+                        {isMaxPerSubOn && <CaptureInput error={isMaxPerSubError} onWheel={(e) => e.target.blur()} type={'number'} value={maxPerSubLimit || ''} onChange={handleMaxPerSubChange}></CaptureInput>}
                     </MaxPerSub>
                     {handlePrevious && <BackButton onClick={handlePrevious}>back</BackButton>}
-                    <SaveButton onClick={() => handleSave({ credit_allowance: arcadeCredits, max_per_sub_bool: isMaxPerSubOn, max_per_sub_limit: maxPerSubLimit })}>save</SaveButton>
+                    <SaveButton onClick={() => prepareSave('arcade')}>save</SaveButton>
                 </>
             }
 

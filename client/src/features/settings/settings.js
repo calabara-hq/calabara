@@ -4,6 +4,7 @@ import { useHistory, useParams } from 'react-router-dom'
 import BackButton from '../back-button/back-button'
 import axios from 'axios'
 import '../../css/settings.css'
+import '../../css/settings-buttons.css'
 import '../../css/discord-add-bot.css'
 import { showNotification } from '../notifications/notifications'
 import { selectConnectedAddress } from '../wallet/wallet-reducer'
@@ -779,10 +780,10 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields, 
             gatekeeperCopy.push(gatekeeperObj)
             setFields({ gatekeeper: { rules: gatekeeperCopy, rulesToDelete: fields.gatekeeper.rulesToDelete } })
         }
-        // check if discord is already setup. If so, just replace the entry in rules
         else {
             for (var i in fields.gatekeeper.rules) {
-
+                
+                // check if discord is already setup. If so, just replace the entry in rules
                 if (fields.gatekeeper.rules[i].type === 'discord') {
                     //gatekeeperCopy.splice(i, 1);
                     gatekeeperCopy[i] = gatekeeperObj

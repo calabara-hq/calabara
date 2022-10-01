@@ -6,7 +6,6 @@ import { setContestSettings, setPromptData, stateReset, updateState, selectIsLoa
 import Placeholder from "../../common/spinner";
 import { socket, initializeSocketConnection, disconnectSocket } from "../../service/socket";
 import { selectContestState } from "./contest-interface-reducer";
-import fetchContest from "./interface-data-fetch";
 import ContestInterface from './interface'
 import styled from 'styled-components'
 import moment from 'moment';
@@ -55,6 +54,7 @@ export default function ContestInterfaceController() {
     const dispatch = useDispatch();
     const timerRef = useRef(null);
     const isLoading = useSelector(selectIsLoading);
+    const history = useHistory();
 
 
     const updateContestState = (t0, t1, t2) => {
@@ -74,10 +74,11 @@ export default function ContestInterfaceController() {
 
     useEffect(() => {
         initializeSocketConnection();
-        fetch(`/creator_contests/fetch_contest/${ens}/${contest_hash}`)
+        fetch(`/creator_contests/fetch_contest?ens=${ens}&contest_hash=${contest_hash}`)
             .then(data => data.text())
             .then(data => (data ? JSON.parse(data) : {}))
             .then(data => {
+                console.log(data)
                 dispatch(setContestSettings(data.settings))
                 dispatch(setPromptData(data.prompt_data))
                 let { start_date, voting_begin, end_date } = data.settings.date_times
@@ -86,6 +87,9 @@ export default function ContestInterfaceController() {
                 timerRef.current = setInterval(() => {
                     updateContestState(start_date, voting_begin, end_date)
                 }, 1000)
+            })
+            .catch(err => {
+                return history.push(`/${ens}/creator_contests`)
             })
 
 
