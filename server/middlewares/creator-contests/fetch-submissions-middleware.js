@@ -14,7 +14,7 @@ const pre_process = async (ens, contest_hash) => {
     settings->\'visible_votes\' as visible_votes,\
     settings->\'anon_subs\' as anon_subs,\
     _start, _voting, _end from contests where ens=$1 and _hash = $2', [ens, contest_hash]).then(clean)
-    return (params)
+    return params
 }
 
 

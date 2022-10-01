@@ -91,13 +91,13 @@ async function check_submitter_eligibility_PROTECTED(req, res, next) {
     let restriction_results = await compute_restrictions(mode, walletAddress, contest_meta.restrictions, contest_meta.snapshot_block);
 
     // if we failed the requirements check, return an error
-    if(!restriction_results) return res.sendStatus(419)
-    
+    if (!restriction_results) return res.sendStatus(419)
+
     // if user already submitted, return an error
-    if(contest_meta.has_already_submitted) return res.sendStatus(420)
+    if (contest_meta.has_already_submitted) return res.sendStatus(420)
 
     // if not in submission window, return an error
-    if(!contest_meta.is_submit_window) return res.sendStatus(432)
+    if (!contest_meta.is_submit_window) return res.sendStatus(432)
 
     next();
 }
@@ -128,7 +128,12 @@ async function createSubmission(req, res, next) {
 }
 
 
-
+async function socketSubmit(req, res, next) {
+    const { ens } = req.body
+    console.log(req.body)
+    //req.contest_hash, req.user.address, req.created, false, false, req.url
+    next();
+}
 
 module.exports = {
     check_submitter_eligibility_unprotected,

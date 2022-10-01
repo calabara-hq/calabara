@@ -15,6 +15,7 @@ const logger = require('../logger').child({ component: 'creator-contests' })
 const { sendSocketMessage } = require('../sys/socket/socket-io');
 const { get_winners_as_csv, verifyContestOver } = require('../middlewares/creator-contests/fetch-winners-middleware.js');
 const { fetchSubmissions } = require('../middlewares/creator-contests/fetch-submissions-middleware.js');
+const socketSendNewSubmission = require('../helpers/socket-messages.js');
 dotenv.config()
 
 const serverRoot = path.normalize(path.join(__dirname, '../'));
@@ -31,15 +32,14 @@ contests.get('/fetch_org_contests/*', async function (req, res, next) {
 })
 
 // fetch the latest contest for an organization
-contests.get('/fetch_contest/*', async function (req, res, next) {
-    let ens = req.url.split('/')[2];
-    let contest_hash = req.url.split('/')[3];
-
+contests.get('/fetch_contest', async function (req, res, next) {
+    const { ens, contest_hash } = req.query
 
     // will there be conditions where latest is not the current active contest? need to handle that if so.
     let data = await db.query('select settings, prompt_data from contests where ens = $1 and _hash = $2', [ens, contest_hash])
         .then(clean)
 
+    if (data === null) return res.sendStatus(404)
     res.send(data).status(200)
 })
 
@@ -83,7 +83,8 @@ contests.post('/create_submission', authenticateToken, check_submitter_eligibili
     const { ens } = req.body;
     let result = await db.query('insert into contest_submissions (ens, contest_hash, author, created, locked, pinned, _url) values ($1, $2, $3, $4, $5, $6, $7) returning id ', [ens, req.contest_hash, req.user.address, req.created, false, false, req.url]).then(clean)
     res.sendStatus(200)
-    sendSocketMessage(req.contest_hash, 'new_submission', { id: result.id, _url: req.url })
+    //sendSocketMessage(req.contest_hash, 'new_submission', { id: result.id, _url: req.url })
+    socketSendNewSubmission(req.contest_hash, ens, { id: result.id, _url: req.url, author: req.user.address, votes: 0 })
 
 })
 
@@ -174,7 +175,7 @@ contests.get('/org_contest_stats', async function (req, res, next) {
         .then(asArray)
         .then(data => {
             let obj = { eth: 0, erc20: 0, erc721: 0 }
-            if(data.length === 0) return obj
+            if (data.length === 0) return obj
             data.map(el => {
                 let parsed = Object.values(JSON.parse(el.rewards))
                 parsed.map(inner => {
