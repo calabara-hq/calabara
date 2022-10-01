@@ -14,7 +14,10 @@ export const SubmissionBottomBlur = styled.div`
     bottom: 5px;
     display: flex;
     left: 0;
+    bottom: 0;
+    border-radius: 10px;
     width: 100%;
+    padding-bottom: 3px;
     height: 200px;
     align-items: flex-end;
     background-image: linear-gradient(to bottom, rgba(38, 38, 38, 0), rgba(38, 38, 38, 1) );
