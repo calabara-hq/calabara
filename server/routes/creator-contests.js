@@ -13,7 +13,7 @@ const { imageUpload } = require('../middlewares/image-upload-middleware.js');
 const { calc_sub_vp__unprotected, calc_sub_vp__PROTECTED } = require('../middlewares/creator-contests/vote-middleware.js');
 const logger = require('../logger').child({ component: 'creator-contests' })
 const { sendSocketMessage } = require('../sys/socket/socket-io');
-const { get_winners, get_winners_as_csv, verifyContestOver } = require('../middlewares/creator-contests/fetch-winners-middleware.js');
+const { get_winners_as_csv, verifyContestOver } = require('../middlewares/creator-contests/fetch-winners-middleware.js');
 const { fetchSubmissions } = require('../middlewares/creator-contests/fetch-submissions-middleware.js');
 dotenv.config()
 
@@ -50,15 +50,6 @@ contests.get('/fetch_submissions', fetchSubmissions, async function (req, res, n
     res.send(req.submissions).status(200)
 })
 
-
-contests.get('/fetch_contest_winners', verifyContestOver, async function (req, res, next) {
-    const { ens, contest_hash } = req.query
-    let subs_full_details = await db.query('select contest_submissions.id, _url, author, coalesce(sum(votes_spent), 0) as votes from contest_submissions left join contest_votes on contest_submissions.id = contest_votes.submission_id where contest_submissions.ens=$1 and contest_submissions.contest_hash=$2 group by contest_submissions.id order by votes desc', [ens, contest_hash])
-        .then(clean)
-        .then(asArray)
-    res.send(subs_full_details).status(200);
-
-})
 
 contests.get('/fetch_contest_winners_as_csv', get_winners_as_csv, async function (req, res, next) {
     const { ens, contest_hash } = req.query
