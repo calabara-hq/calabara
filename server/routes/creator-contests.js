@@ -47,7 +47,7 @@ contests.get('/fetch_contest/*', async function (req, res, next) {
 // fetch submissions
 
 contests.get('/fetch_submissions', fetchSubmissions, async function (req, res, next) {
-   res.send(req.submissions).status(200)
+    res.send(req.submissions).status(200)
 })
 
 
@@ -175,33 +175,23 @@ contests.post('/retract_sub_votes', authenticateToken, async function (req, res,
 
 ///////////////////////////// begin stats ////////////////////////////////////
 
-contests.get('/org_contest_stats/*', async function (req, res, next) {
-
-    let ens = req.url.split('/')[2];
+contests.get('/org_contest_stats', async function (req, res, next) {
+    const { ens } = req.query
+    console.log('entering')
     await db.query('select settings ->> \'submitter_rewards\' as rewards from contests where ens=$1', [ens])
         .then(clean)
         .then(asArray)
         .then(data => {
             let obj = { eth: 0, erc20: 0, erc721: 0 }
-
-            if (data.length === 1) {
-
-                let parsed = Object.values(JSON.parse(data[0].rewards))
+            if(data.length === 0) return obj
+            data.map(el => {
+                let parsed = Object.values(JSON.parse(el.rewards))
                 parsed.map(inner => {
-                    obj[Object.keys(inner)[0]] += inner[Object.keys(inner)[0]].amount
+                    let { rank, ...reward } = inner
+                    let vals = Object.values(reward)[0]
+                    obj[vals.type] += vals.amount || 1 // 1 is the case that this is an nft reward
                 })
-            }
-            else {
-                data.map(el => {
-                    let parsed = Object.values(JSON.parse(el.rewards))
-                    parsed.map(inner => {
-                        let { rank, ...reward } = inner
-                        let vals = Object.values(reward)[0]
-                        //obj[Object.keys(inner)[0]] += inner[Object.keys(inner)[0]].amount
-                        obj[vals.type] += vals.amount
-                    })
-                })
-            }
+            })
             return obj
         })
         .then(data => res.send(data).status(200))
