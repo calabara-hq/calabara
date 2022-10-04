@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import RoleSelectModal from '../../../../manage-widgets/role-select-modal'
 import styled from 'styled-components'
 import {
     selectDashboardRules,
-} from '../../../../../features/gatekeeper/gatekeeper-rules-reducer';
+} from '../../../../gatekeeper/gatekeeper-rules-reducer';
+import { availableRestrictionsState } from './reducers/restrictions-reducer';
 
 
 
@@ -105,44 +106,62 @@ const TokenLink = styled.span`
 
 
 
-export default function ToggleOption({ appliedRules, setAppliedRules, ruleError, setRuleError, toggle_identifier }) {
-    // fetch available rules
-    let availableRules = useSelector(selectDashboardRules);
-    // 
-
-    /******************/
-
-
-
-    let rules = {};
-    Object.entries(availableRules).map(([key, val], index) => {
-        if (val.type !== 'discord') {
-            rules[index] = val;
-        }
-    })
-
-    availableRules = JSON.parse(JSON.stringify(rules));
-
-    /******************/
+export default function ToggleOption({ availableRestrictions, updateAvailableRestrictions, restriction_errors, toggle_identifier }) {
 
     return (
         <div className="apply-gatekeeper-rules">
-            {Object.entries(availableRules).map(([option_id, value]) => {
+
+            {availableRestrictions.map((value, index) => {
                 return (
-                    <Option ruleError={ruleError} key={option_id} setRuleError={setRuleError} element={value} option_id={option_id} appliedRules={appliedRules} setAppliedRules={setAppliedRules} toggle_identifier={toggle_identifier} ruleOption={value} />
+                    <Option key={index} error={restriction_errors[index]} element={value} option_id={index} updateAvailableRestrictions={updateAvailableRestrictions} toggle_identifier={toggle_identifier} />
                 )
             })}
+
         </div>
     )
 }
 
 
 
-function Option({ element, option_id, appliedRules, setAppliedRules, ruleError, setRuleError, toggle_identifier, ruleOption }) {
+function Option({ element, option_id, updateAvailableRestrictions, error, toggle_identifier }) {
 
-    const [isGatekeeperOn, setIsGatekeeperOn] = useState(appliedRules[option_id] != undefined)
+    const [isGatekeeperOn, setIsGatekeeperOn] = useState(false);
+    const dispatch = useDispatch();
+
+    /*
+    useEffect(() => {
+        setIsGatekeeperOn(appliedRules[option_id] != undefined)
+    }, [appliedRules])
+    */
+
+    const enableRestriction = (e) => {
+        //setAppliedRules({ type: 'update_single', payload: { [option_id]: "" } })
+        dispatch(updateAvailableRestrictions({ index: option_id, update_type: 'enable', payload: null }))
+        //setRuleError({ [option_id]: "" })
+    }
+
+    const disableRestriction = () => {
+        dispatch(updateAvailableRestrictions({ index: option_id, update_type: 'disable', payload: null }))
+    }
+
+    const handleThresholdChange = (e) => {
+        dispatch(updateAvailableRestrictions({ index: option_id, update_type: 'update', payload: Math.round(Math.abs(e.target.value)) || '' }))
+
+        /*
+        console.log('here')
+        let objCopy = { ...ruleOption }
+        objCopy['threshold'] = Math.round(Math.abs(e.target.value)) || ''
+        setAppliedRules({ type: 'update_single', payload: { [option_id]: objCopy } })
+        */
+        //setRuleError(false)
+    }
+
+    /*
+    discord integration
+
     const [roleModalOpen, setRoleModalOpen] = useState(false)
 
+    
     const open = () => {
         setRoleModalOpen(true)
     }
@@ -150,40 +169,16 @@ function Option({ element, option_id, appliedRules, setAppliedRules, ruleError, 
         if (reason && reason === 'backdropClick') return
         setRoleModalOpen(false)
     }
-
-
-    useEffect(() => {
-        setIsGatekeeperOn(appliedRules[option_id] != undefined)
-    }, [appliedRules])
-
-
-    const addRule = (e) => {
-        setAppliedRules({ type: 'update_single', payload: { [option_id]: "" } })
-        setRuleError({ [option_id]: "" })
-    }
-
-    const deleteRule = () => {
-        let objCopy = { ...appliedRules };
-        delete objCopy[option_id];
-        setAppliedRules({ type: 'update_all', payload: objCopy })
-    }
-
-    const handleThresholdChange = (e) => {
-        console.log('here')
-        let objCopy = { ...ruleOption }
-        objCopy['threshold'] = Math.round(Math.abs(e.target.value)) || ''
-        setAppliedRules({ type: 'update_single', payload: { [option_id]: objCopy } })
-        setRuleError(false)
-    }
-
+    
     const handleAddDiscordRule = (val) => {
 
         setAppliedRules({ type: 'update_single', payload: { [option_id]: { type: 'discord', roles: val } } })
     }
+    */
 
     return (
         <>
-            <GkRule error={ruleError.id == option_id} >
+            <GkRule error={error} >
                 {(element.type === 'erc721' || element.type === 'erc20') &&
                     <>
                         <p><b>Type:</b> <Tag tagtype={element.type}>{element.type}</Tag></p>
@@ -191,9 +186,9 @@ function Option({ element, option_id, appliedRules, setAppliedRules, ruleError, 
                             <TokenLink onClick={() => { window.open('https://etherscan.io/address/' + element.address) }}> {element.symbol} <i className="fas fa-external-link-alt"></i></TokenLink>
                         </p>
                         <ToggleFlex>
-                            <ToggleSwitch setRuleError={setRuleError} ruleError={ruleError} addRule={addRule} deleteRule={deleteRule} option_id={option_id} isGatekeeperOn={isGatekeeperOn} setIsGatekeeperOn={setIsGatekeeperOn} appliedRules={appliedRules} setAppliedRules={setAppliedRules} toggle_identifier={toggle_identifier} />
+                            <ToggleSwitch enableRestriction={enableRestriction} disableRestriction={disableRestriction} option_id={option_id} isGatekeeperOn={isGatekeeperOn} setIsGatekeeperOn={setIsGatekeeperOn} toggle_identifier={toggle_identifier} />
                             {isGatekeeperOn &&
-                                <GKInput onWheel={(e) => e.target.blur()} type="number" error={ruleError[option_id] === true} value={appliedRules[option_id]['threshold']} placeholder="threshold" onChange={handleThresholdChange}></GKInput>
+                                <GKInput onWheel={(e) => e.target.blur()} type="number" error={error} value={element.threshold} placeholder="threshold" onChange={handleThresholdChange}></GKInput>
                             }
                         </ToggleFlex>
                     </>
@@ -214,34 +209,23 @@ function Option({ element, option_id, appliedRules, setAppliedRules, ruleError, 
                     </>
                         */}
             </GkRule>
-
-            {ruleError.id == option_id &&
-                <div className="tab-message error" style={{ width: '100%' }}>
-                    {element.type !== 'discord' && <p>Please enter a threshold</p>}
-                    {element.type === 'discord' && <p>Selected roles cannot be left blank</p>}
-
-                </div>
-            }
         </>
     )
 }
 
 
-function ToggleSwitch({ addRule, setRuleError, deleteRule, ruleError, option_id, isGatekeeperOn, setIsGatekeeperOn, toggle_identifier }) {
+function ToggleSwitch({ option_id, enableRestriction, disableRestriction, isGatekeeperOn, setIsGatekeeperOn, toggle_identifier }) {
 
 
     const handleToggle = () => {
 
         if (!isGatekeeperOn) {
             // gatekeeper just flipped on. Add it to applied rules
-            addRule();
+            enableRestriction();
         }
         else {
             //  gatekeeper just flipped off delete it from applied rules
-            deleteRule();
-            if (ruleError.id === option_id) {
-                setRuleError({ [option_id]: '' })
-            }
+            disableRestriction();
         }
         setIsGatekeeperOn(!isGatekeeperOn)
     }

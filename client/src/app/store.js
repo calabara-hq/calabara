@@ -13,7 +13,7 @@ import rulesReducer from '../features/gatekeeper/gatekeeper-rules-reducer';
 import userReducer from '../features/user/user-reducer';
 import contestStateReducer from '../features/creator-contests/components/contest-live-interface/interface/contest-interface-reducer';
 import contestRewardsReducer from '../features/creator-contests/components/contest_settings/contest_rewards/reducers/rewards-reducer';
-
+import contestParticipantRestrictionsReducer from '../features/creator-contests/components/contest_settings/contest_gatekeeper/reducers/restrictions-reducer';
 
 const rootReducer = combineReducers({
   notifications: notificationReducer,
@@ -25,7 +25,8 @@ const rootReducer = combineReducers({
   gatekeeperRules: rulesReducer,
   user: userReducer,
   contestState: contestStateReducer,
-  contestRewards: contestRewardsReducer
+  contestRewards: contestRewardsReducer,
+  contestParticipantRestrictions: contestParticipantRestrictionsReducer
 });
 
 

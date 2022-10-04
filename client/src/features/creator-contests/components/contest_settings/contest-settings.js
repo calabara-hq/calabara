@@ -1,7 +1,7 @@
 import React, { useEffect, useReducer, useRef, useState } from "react"
 import ContestDateTimeBlock from "./datepicker/start-end-date"
 import ContestRewardsBlock from "./contest_rewards/contest-rewards-block"
-import ContestParticipantRestrictions from "./contest_gatekeeper/particpant_restrictions";
+import ContestParticipantRestrictions from "./contest_gatekeeper/particpant-restrictions";
 import PromptBuilder from "./prompt_builder/prompt-builder";
 import SimpleInputs from "./contest_simple_inputs/contest_simple_inputs";
 import styled from 'styled-components'
@@ -151,12 +151,14 @@ const initialPromptData = {
 
 
 export default function ContestSettings() {
+    const { populateDashboardRules } = useDashboardRules();
+    const { ens } = useParams();
     const [currentDate, setCurrentDate] = useState(new Date())
     const [date_1, setDate_1] = useState(new Date())
     const [date_2, setDate_2] = useState(new Date())
     const [snapshotDate, setSnapshotDate] = useState(new Date())
 
-    const [votingStrategy, setVotingStrategy] = useReducer(reducer, { strategy_id: 0x0 });
+    const [votingStrategy, setVotingStrategy] = useReducer(reducer, { strategy_id: 0 });
     const [votingStrategyError, setVotingStrategyError] = useState(false);
     const [submitterAppliedRules, setSubmitterAppliedRules] = useReducer(reducer, {});
     const [voterAppliedRules, setVoterAppliedRules] = useReducer(reducer, {});
@@ -172,6 +174,9 @@ export default function ContestSettings() {
     const PromptBlockRef = useRef(null)
     const promptEditorCore = useRef(null);
 
+    useEffect(() => {
+        populateDashboardRules(ens)
+    }, [])
 
     return (
         <ContestSettingsWrap>
@@ -330,7 +335,7 @@ function SaveSettings(props) {
         if (isSubmitterError) return RewardsRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
         if (isVoterError) return RewardsRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
 
-        const isRestrictionError = handleRestrictionErrors(submitterAppliedRules, setSubmitterRuleError, voterAppliedRules, setVoterRuleError);
+        const isRestrictionError = handleRestrictionErrors();
         if (isRestrictionError) return RestrictionsBlockRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
 
 
@@ -432,8 +437,8 @@ function Summary({ contestData, promptData, warnings, handleCloseDrawer }) {
     return (
         <SummaryWrap>
             <p style={{ color: 'grey' }}>Please review the contest configuration</p>
-          
-            <ContestSummaryComponent contest_settings={contestData}/>
+
+            <ContestSummaryComponent contest_settings={contestData} />
             {warnings.map(warning => {
                 return <div className="tab-message warning" style={{ width: '100%' }}><p>{warning}</p></div>
             })}

@@ -3,20 +3,16 @@ import styled from "styled-components";
 import { useParams } from "react-router-dom";
 import ContestInfo from "../contest_info/contest-info";
 import PromptDisplay from '../prompts/prompt-display';
-import SubmissionBuilder from '../submissions/submission-builder'
-//import SubmissionDisplay from '../submissions/test-submission-display';
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { ContestDurationCheckpointBar, ContestSubmissionCheckpointFallback } from "../../../../checkpoint-bar/checkpoint-bar";
 import { CheckpointWrap, CheckpointTop, CheckpointBottomTag, CheckpointBottom } from '../contest_info/contest-info-style';
 import { selectDashboardInfo } from "../../../../dashboard/dashboard-info-reducer";
-import { selectLogoCache } from "../../../../org-cards/org-cards-reducer";
 import useCommon from "../../../../hooks/useCommon";
 import { Contest_h2_alt, fade_in } from '../../common/common_styles';
 import BackButton from '../../../../back-button/back-button';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
-import SubmissionDisplay from '../submissions/test-submission-display';
-import { selectDurations, selectProgressRatio, selectContestState } from './contest-interface-reducer';
-import Placeholder from '../../common/spinner';
+import SubmissionDisplay from '../submissions/submission-display';
+import { selectDurations, selectProgressRatio } from './contest-interface-reducer';
 
 const ContestInterfaceWrap = styled.div`
     display: flex;

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { submitterRewardActions, submitterRewardState, voterRewardActions, voterRewardState } from './contest_rewards/reducers/rewards-reducer';
-
+import { submitterRestrictionsActions, submitterRestrictionsState, voterRestrictionsActions, voterRestrictionsState } from './contest_gatekeeper/reducers/restrictions-reducer';
 
 
 const check_rank_error = (rank) => {
@@ -39,8 +39,8 @@ const check_erc721_error = (erc721) => {
 export default function useErrorHandler(date_times) {
     const submitterRewards = useSelector(submitterRewardState.getSubmitterRewards)
     const voterRewards = useSelector(voterRewardState.getVoterRewards)
-    const submitterErrors = useSelector(submitterRewardState.getSubmitterErrors);
-    const voterErrors = useSelector(voterRewardState.getVoterErrors);
+    const submitter_restrictions = useSelector(submitterRestrictionsState.getSubmitterRestrictions);
+    const voter_restrictions = useSelector(voterRestrictionsState.getVoterRestrictions);
     const dispatch = useDispatch();
 
 
@@ -119,27 +119,18 @@ export default function useErrorHandler(date_times) {
     }
 
 
-    const handleRestrictionErrors = (submitterAppliedRules, setSubmitterError, voterAppliedRules, setVoterError) => {
+    const handleRestrictionErrors = () => {
         let restrictions_error = false;
-        Object.entries(submitterAppliedRules).map(([key, val]) => {
-            if (val === '') {
-                setSubmitterError({ [key]: true })
-                restrictions_error = true
-            }
+        submitter_restrictions.map((val, idx) => {
             if (val.threshold === '') {
-                setSubmitterError({ [key]: true })
+                dispatch(submitterRestrictionsActions.setSubmitterRestrictions({ index: idx, update_type: 'error', payload: null }))
                 restrictions_error = true
             }
         })
 
-        Object.entries(voterAppliedRules).map(([key, val]) => {
-            console.log(key)
-            if (val === '') {
-                setVoterError({ [key]: true })
-                restrictions_error = true
-            }
+        voter_restrictions.map((val, idx) => {
             if (val.threshold === '') {
-                setVoterError({ [key]: true })
+                dispatch(voterRestrictionsActions.setVoterRestrictions({ index: idx, update_type: 'error', payload: null }))
                 restrictions_error = true
             }
         })
@@ -160,7 +151,7 @@ export default function useErrorHandler(date_times) {
         handleVoterErrors: () => handleVoterErrors(),
         handleTimeBlockErrors: (args) => handleTimeBlockErrors(args),
         handlePromptErrors: (editorData, promptBuilderData, setPromptBuilderData) => handlePromptErrors(editorData, promptBuilderData, setPromptBuilderData),
-        handleRestrictionErrors: (submitterAppliedRules, setSubmitterError, voterAppliedRules, setVoterError) => handleRestrictionErrors(submitterAppliedRules, setSubmitterError, voterAppliedRules, setVoterError),
+        handleRestrictionErrors: () => handleRestrictionErrors(),
         handleVotingStrategyErrors: (votingStrategy, setVotingStrategyError) => handleVotingStrategyErrors(votingStrategy, setVotingStrategyError)
     }
 

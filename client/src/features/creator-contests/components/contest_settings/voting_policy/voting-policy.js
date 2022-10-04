@@ -43,9 +43,6 @@ export default function VotingPolicy({ votingStrategy, setVotingStrategy, voting
     const [selectedStrategy, setSelectedStratgey] = useState(null);
     const rewardOptions = useSelector(rewardOptionState.getRewardOptions)
     let availableRules = useSelector(selectDashboardRules)
-    const { populateDashboardRules } = useDashboardRules();
-    const { ens } = useParams()
-
 
 
 
@@ -58,10 +55,6 @@ export default function VotingPolicy({ votingStrategy, setVotingStrategy, voting
     const handlePolicyModalClose = () => {
         setAddPolicyModalOpen(false);
     }
-
-    useEffect(() => {
-        populateDashboardRules(ens)
-    }, [])
 
 
     const creditStrategies = [

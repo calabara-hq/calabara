@@ -1,7 +1,7 @@
 import React, { useState, useReducer, useEffect } from 'react'
 import styled from 'styled-components'
 import { Contest_h2, Contest_h2_alt, Contest_h3, Contest_h3_alt, ERC20Button_alt, ERC721Button_alt } from '../../common/common_styles'
-import ToggleOption from '../../common/toggle_option/toggle-option'
+import ToggleOption from './toggle-option'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import useDashboardRules from '../../../../hooks/useDashboardRules'
@@ -10,6 +10,14 @@ import { selectDashboardRules } from '../../../../gatekeeper/gatekeeper-rules-re
 import { useParams } from 'react-router-dom'
 import EditRestrictionModal from '../contest_rewards/contest-reward-input-modal'
 import { setDashboardRules } from '../../../../gatekeeper/gatekeeper-rules-reducer'
+import {
+    availableRestrictionsActions,
+    submitterRestrictionsActions,
+    submitterRestrictionsState,
+    voterRestrictionsActions,
+    voterRestrictionsState
+} from './reducers/restrictions-reducer'
+
 
 const RestrictionsWrap = styled.div`
     display: flex;
@@ -65,17 +73,21 @@ const NewRewardContainer = styled.div`
 
 
 export default function ContestParticipantRestrictions(props) {
-    const { populateDashboardRules } = useDashboardRules()
     const dashboardRules = useSelector(selectDashboardRules)
+    const submitter_restrictions = useSelector(submitterRestrictionsState.getSubmitterRestrictions)
+    const voter_restrictions = useSelector(voterRestrictionsState.getVoterRestrictions)
+    const submitter_restriction_errors = useSelector(submitterRestrictionsState.getSubmitterRestrictionErrors)
+    const voter_restriction_errors = useSelector(voterRestrictionsState.getVoterRestrictionErrors)
     const dispatch = useDispatch();
-    const { ens } = useParams()
     const [editRewardsModalOpen, setEditRewardsModalOpen] = useState(false)
     const [newTokenType, setNewTokenType] = useState(null)
 
 
+
     useEffect(() => {
-        populateDashboardRules(ens);
-    }, [])
+        dispatch(availableRestrictionsActions.initializeAvailableRules(dashboardRules))
+    }, [dashboardRules])
+
 
     const handleEditRestriction = (tokenType) => {
         setNewTokenType(tokenType)
@@ -110,7 +122,7 @@ export default function ContestParticipantRestrictions(props) {
             <RestrictionsContent>
                 <Contest_h3_alt>Submitter Restrictions</Contest_h3_alt>
                 <RestrictionOptionWrap>
-                    <Restriction ruleError={props.submitterRuleError} setRuleError={props.setSubmitterRuleError} appliedRules={props.submitterAppliedRules} setAppliedRules={props.setSubmitterAppliedRules} toggle_identifier={"submitter-restrictions"} />
+                    <Restriction restriction_errors={submitter_restriction_errors} availableRestrictions={submitter_restrictions} updateAvailableRestrictions={submitterRestrictionsActions.setSubmitterRestrictions} toggle_identifier={"submitter-restrictions"} />
                 </RestrictionOptionWrap>
 
                 <NewRewardContainer>
@@ -120,7 +132,7 @@ export default function ContestParticipantRestrictions(props) {
 
                 <Contest_h3_alt style={{ marginTop: '50px' }}>Voter Restrictions</Contest_h3_alt>
                 <RestrictionOptionWrap>
-                    <Restriction ruleError={props.voterRuleError} setRuleError={props.setVoterRuleError} appliedRules={props.voterAppliedRules} setAppliedRules={props.setVoterAppliedRules} toggle_identifier={"voter-restrictions"} />
+                    <Restriction restriction_errors={voter_restriction_errors} availableRestrictions={voter_restrictions} updateAvailableRestrictions={voterRestrictionsActions.setVoterRestrictions} toggle_identifier={"voter-restrictions"} />
                 </RestrictionOptionWrap>
 
                 <NewRewardContainer>
@@ -135,9 +147,9 @@ export default function ContestParticipantRestrictions(props) {
 }
 
 
-function Restriction({ ruleError, setRuleError, appliedRules, setAppliedRules, toggle_identifier }) {
+function Restriction({ restriction_errors, availableRestrictions, updateAvailableRestrictions, toggle_identifier }) {
     return (
-        <ToggleOption ruleError={ruleError} setRuleError={setRuleError} appliedRules={appliedRules} setAppliedRules={setAppliedRules} toggle_identifier={toggle_identifier} />
+        <ToggleOption restriction_errors={restriction_errors} availableRestrictions={availableRestrictions} updateAvailableRestrictions={updateAvailableRestrictions} toggle_identifier={toggle_identifier} />
     )
 }
 
