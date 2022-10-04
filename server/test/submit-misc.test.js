@@ -7,8 +7,8 @@ describe('misc. submitting tests', async (done) => {
     it(`limit 1 submission`, async () => {
 
         let voting_strategy = {}
-        let voter_restrictions = {}
-        let submitter_restrictions = {}
+        let voter_restrictions = []
+        let submitter_restrictions = []
 
 
         let contest_hash = await create_accepting_submissions_scenario(voting_strategy, submitter_restrictions, voter_restrictions)

@@ -14,7 +14,7 @@ export default function useSubmissionEngine(submitter_restrictions) {
     const isConnected = useSelector(selectConnectedBool);
     const [alreadySubmittedError, setAlreadySubmittedError] = useState(false)
     const { ens, contest_hash } = useParams();
-    const [restrictionResults, setRestrictionResults] = useState(Object.values(submitter_restrictions))
+    const [restrictionResults, setRestrictionResults] = useState(submitter_restrictions)
     const [isUserEligible, setIsUserEligible] = useState(false);
     const { authenticated_post } = useCommon();
 
@@ -27,7 +27,6 @@ export default function useSubmissionEngine(submitter_restrictions) {
                 setRestrictionResults(eligibility.restrictions);
 
                 // error if not in submit window
-                console.log(eligibility)
                 if (!eligibility.is_submit_window) return setIsUserEligible(false);
 
                 // submitter restrictions are either true or an array

@@ -76,6 +76,8 @@ const getSubmitterRestrictions = state => state.contestParticipantRestrictions.s
 const getVoterRestrictions = state => state.contestParticipantRestrictions.voter_restrictions;
 const getSubmitterRestrictionErrors = state => state.contestParticipantRestrictions.sub_restriction_error_matrix;
 const getVoterRestrictionErrors = state => state.contestParticipantRestrictions.voter_restriction_error_matrix;
+const getSelectedSubmitterRestrictions = state => state.contestParticipantRestrictions.submitter_restrictions.filter(val => typeof val.threshold !== 'undefined')
+const getSelectedVoterRestrictions = state => state.contestParticipantRestrictions.voter_restrictions.filter(val => typeof val.threshold !== 'undefined')
 
 export default contestParticipantRestrictions.reducer
 
@@ -99,10 +101,15 @@ const initializeAvailableRules = (dashboardRules) => (dispatch, getState) => {
 
 }
 
-export const availableRestrictionsActions = { initializeAvailableRules }
+const addNewAvailableRule = (payload) => (dispatch) => {
+    dispatch(setSubmitterRestrictions({ update_type: 'add', index: null, payload: payload }))
+    dispatch(setVoterRestrictions({ update_type: 'add', index: null, payload: payload }))
+}
+
+export const availableRestrictionsActions = { initializeAvailableRules, addNewAvailableRule }
 
 export const submitterRestrictionsActions = { setSubmitterRestrictions }
-export const submitterRestrictionsState = { getSubmitterRestrictions, getSubmitterRestrictionErrors }
+export const submitterRestrictionsState = { getSubmitterRestrictions, getSubmitterRestrictionErrors, getSelectedSubmitterRestrictions }
 
 export const voterRestrictionsActions = { setVoterRestrictions }
-export const voterRestrictionsState = { getVoterRestrictions, getVoterRestrictionErrors }
+export const voterRestrictionsState = { getVoterRestrictions, getVoterRestrictionErrors, getSelectedVoterRestrictions }

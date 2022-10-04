@@ -10,7 +10,7 @@ dotenv.config()
 
 
 twitter.get('/generateAuthLink', async function (req, res, next) {
-    const { url, codeVerifier, state } = await requestClient.generateOAuth2AuthLink('https://localhost:3001/twitter/oauth2', { scope: ['tweet.read', 'users.read', 'offline.access'] });
+    const { url, codeVerifier, state } = await requestClient.generateOAuth2AuthLink('https://localhost:3001/twitter/oauth2', { scope: ['tweet.read', 'users.read', 'tweet.write'] });
     req.session.codeVerifier = codeVerifier;
     req.session.state = state
     res.send(url).status(200)

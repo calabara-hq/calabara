@@ -7,8 +7,8 @@ describe('misc. voting tests', async (done) => {
     it(`self voting off`, async () => {
 
         let voting_strategy = {}
-        let voter_restrictions = {}
-        let submitter_restrictions = {}
+        let voter_restrictions = []
+        let submitter_restrictions = []
         let anon_subs = false
         let visible_votes = false
         let self_voting = false
@@ -25,8 +25,8 @@ describe('misc. voting tests', async (done) => {
     it(`self voting on`, async () => {
 
         let voting_strategy = {}
-        let voter_restrictions = {}
-        let submitter_restrictions = {}
+        let voter_restrictions = []
+        let submitter_restrictions = []
         let anon_subs = false
         let visible_votes = false
         let self_voting = true

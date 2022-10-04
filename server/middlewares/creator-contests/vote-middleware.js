@@ -30,7 +30,7 @@ const pre_process = async (ens, contest_hash, sub_id, walletAddress) => {
 
     let curr_time = new Date().toISOString()
     return {
-        restrictions: Object.values(contest_meta.restrictions),
+        restrictions: contest_meta.restrictions,
         strategy: contest_meta.strategy,
         is_voting_window: ((contest_meta._voting < curr_time) && (curr_time < contest_meta._end)),
         is_self_voting_error: (walletAddress === sub_author.author) && !JSON.parse(contest_meta.self_voting),

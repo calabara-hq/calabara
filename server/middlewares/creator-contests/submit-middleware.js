@@ -25,7 +25,7 @@ const pre_process = async (ens, walletAddress, contest_hash) => {
     let curr_time = new Date().toISOString();
 
     return {
-        restrictions: Object.values(contest_meta.restrictions),
+        restrictions: contest_meta.restrictions,
         is_submit_window: ((contest_meta._start < curr_time) && (curr_time < contest_meta._voting)),
         has_already_submitted: user_subs.length > 0,
         snapshot_block: contest_meta.snapshot_block

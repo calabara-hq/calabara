@@ -34,17 +34,17 @@ describe('token voting math', async (done) => {
             hard_cap: 0,
         }
 
-        let voter_restrictions = {
-            0: {
+        let voter_restrictions = [
+            {
                 type: 'erc20',
                 symbol: 'SHARK',
                 address: '0x232AFcE9f1b3AAE7cb408e482E847250843DB931',
                 decimal: 18,
                 threshold: 1
             }
-        }
+        ]
 
-        let submitter_restrictions = {}
+        let submitter_restrictions = []
 
         const contest_hash = await create_voting_scenario(voting_strategy, submitter_restrictions, voter_restrictions)
         const submission_id = await create_dummy_submission(contest_hash)
@@ -74,17 +74,17 @@ describe('token voting math', async (done) => {
             hard_cap: 0,
         }
 
-        let voter_restrictions = {
-            0: {
+        let voter_restrictions = [
+            {
                 type: 'erc20',
                 symbol: 'SHARK',
                 address: '0x232AFcE9f1b3AAE7cb408e482E847250843DB931',
                 decimal: 18,
                 threshold: 1
             }
-        }
+        ]
 
-        let submitter_restrictions = {}
+        let submitter_restrictions = []
 
         const contest_hash = await create_voting_scenario(voting_strategy, submitter_restrictions, voter_restrictions)
         const submission_id_1 = await create_dummy_submission(contest_hash)
@@ -126,17 +126,17 @@ describe('token voting math', async (done) => {
             hard_cap: 100,
         }
 
-        let voter_restrictions = {
-            0: {
+        let voter_restrictions = [
+            {
                 type: 'erc20',
                 symbol: 'SHARK',
                 address: '0x232AFcE9f1b3AAE7cb408e482E847250843DB931',
                 decimal: 18,
                 threshold: 1
             }
-        }
+        ]
 
-        let submitter_restrictions = {}
+        let submitter_restrictions = []
 
         const contest_hash = await create_voting_scenario(voting_strategy, submitter_restrictions, voter_restrictions)
         const submission_id_1 = await create_dummy_submission(contest_hash)
@@ -162,6 +162,58 @@ describe('token voting math', async (done) => {
         await cast_vote(contest_hash, submission_id_2, 20, 200)
         await check_metrics(contest_hash, submission_id_1, '{"sub_total_vp":80,"sub_votes_spent":20,"sub_remaining_vp":60}')
         await check_metrics(contest_hash, submission_id_2, '{"sub_total_vp":80,"sub_votes_spent":20,"sub_remaining_vp":60}')
+
+        await cleanup();
+
+    })
+
+    it('multi sub hardcap on subcap on', async () => {
+        let voting_strategy = {
+            strategy_type: 'token',
+            type: 'erc20',
+            symbol: 'SHARK',
+            address: '0x232AFcE9f1b3AAE7cb408e482E847250843DB931',
+            decimal: 18,
+            sub_cap: 20,
+            hard_cap: 100,
+        }
+
+        let voter_restrictions = [
+            {
+                type: 'erc20',
+                symbol: 'SHARK',
+                address: '0x232AFcE9f1b3AAE7cb408e482E847250843DB931',
+                decimal: 18,
+                threshold: 1
+            }
+        ]
+
+        let submitter_restrictions = []
+
+        const contest_hash = await create_voting_scenario(voting_strategy, submitter_restrictions, voter_restrictions)
+        const submission_id_1 = await create_dummy_submission(contest_hash)
+        const submission_id_2 = await create_dummy_submission(contest_hash)
+
+        await check_metrics(contest_hash, submission_id_1, '{"sub_total_vp":20,"sub_votes_spent":0,"sub_remaining_vp":20}')
+        await check_metrics(contest_hash, submission_id_2, '{"sub_total_vp":20,"sub_votes_spent":0,"sub_remaining_vp":20}')
+
+
+        // spend 10 votes on sub_1
+        await cast_vote(contest_hash, submission_id_1, 10, 200)
+        await check_metrics(contest_hash, submission_id_1, '{"sub_total_vp":20,"sub_votes_spent":10,"sub_remaining_vp":10}')
+        await check_metrics(contest_hash, submission_id_2, '{"sub_total_vp":20,"sub_votes_spent":0,"sub_remaining_vp":20}')
+
+
+        // spend 20 votes on sub_1
+        await cast_vote(contest_hash, submission_id_1, 20, 200)
+        await check_metrics(contest_hash, submission_id_1, '{"sub_total_vp":20,"sub_votes_spent":20,"sub_remaining_vp":0}')
+        await check_metrics(contest_hash, submission_id_2, '{"sub_total_vp":20,"sub_votes_spent":0,"sub_remaining_vp":20}')
+
+
+        // spend 2000 votes on sub_2
+        await cast_vote(contest_hash, submission_id_2, 20, 200)
+        await check_metrics(contest_hash, submission_id_1, '{"sub_total_vp":20,"sub_votes_spent":20,"sub_remaining_vp":0}')
+        await check_metrics(contest_hash, submission_id_2, '{"sub_total_vp":20,"sub_votes_spent":20,"sub_remaining_vp":0}')
 
         await cleanup();
 

@@ -4,12 +4,9 @@ import { Contest_h2, Contest_h2_alt, Contest_h3, Contest_h3_alt, ERC20Button_alt
 import ToggleOption from './toggle-option'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import useDashboardRules from '../../../../hooks/useDashboardRules'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectDashboardRules } from '../../../../gatekeeper/gatekeeper-rules-reducer'
-import { useParams } from 'react-router-dom'
-import EditRestrictionModal from '../contest_rewards/contest-reward-input-modal'
-import { setDashboardRules } from '../../../../gatekeeper/gatekeeper-rules-reducer'
+import EditRestrictionModal from '../../common/add-token-modal'
 import {
     availableRestrictionsActions,
     submitterRestrictionsActions,
@@ -72,14 +69,14 @@ const NewRewardContainer = styled.div`
 
 
 
-export default function ContestParticipantRestrictions(props) {
+export default function ContestParticipantRestrictions() {
     const dashboardRules = useSelector(selectDashboardRules)
     const submitter_restrictions = useSelector(submitterRestrictionsState.getSubmitterRestrictions)
     const voter_restrictions = useSelector(voterRestrictionsState.getVoterRestrictions)
     const submitter_restriction_errors = useSelector(submitterRestrictionsState.getSubmitterRestrictionErrors)
     const voter_restriction_errors = useSelector(voterRestrictionsState.getVoterRestrictionErrors)
     const dispatch = useDispatch();
-    const [editRewardsModalOpen, setEditRewardsModalOpen] = useState(false)
+    const [editRestrictionModalOpen, setEditRestrictionModalOpen] = useState(false)
     const [newTokenType, setNewTokenType] = useState(null)
 
 
@@ -91,27 +88,16 @@ export default function ContestParticipantRestrictions(props) {
 
     const handleEditRestriction = (tokenType) => {
         setNewTokenType(tokenType)
-        setEditRewardsModalOpen(true)
+        setEditRestrictionModalOpen(true)
 
     }
-
-    // really need to change gk rules to be an array
-    const gen_non_colliding_key = () => {
-        let num = Math.floor(Math.random() * 100)
-        if (typeof dashboardRules[num] !== 'undefined') return gen_non_colliding_key();
-        return num
-    }
-
 
     const handleRestrictionModalClose = (payload) => {
         if (payload.type === 'save') {
-            let copy = JSON.parse(JSON.stringify(dashboardRules))
-            const key = gen_non_colliding_key();
-            copy[key] = { type: payload.data.type, symbol: payload.data.symbol, address: payload.data.address, decimal: payload.data.decimal }
-            console.log(copy)
-            dispatch(setDashboardRules(copy))
+            const obj = { type: payload.data.type, symbol: payload.data.symbol, address: payload.data.address, decimal: payload.data.decimal }
+            dispatch(availableRestrictionsActions.addNewAvailableRule(obj))
         }
-        setEditRewardsModalOpen(false)
+        setEditRestrictionModalOpen(false)
     }
 
 
@@ -122,7 +108,7 @@ export default function ContestParticipantRestrictions(props) {
             <RestrictionsContent>
                 <Contest_h3_alt>Submitter Restrictions</Contest_h3_alt>
                 <RestrictionOptionWrap>
-                    <Restriction restriction_errors={submitter_restriction_errors} availableRestrictions={submitter_restrictions} updateAvailableRestrictions={submitterRestrictionsActions.setSubmitterRestrictions} toggle_identifier={"submitter-restrictions"} />
+                    <ToggleOption restriction_errors={submitter_restriction_errors} availableRestrictions={submitter_restrictions} updateAvailableRestrictions={submitterRestrictionsActions.setSubmitterRestrictions} toggle_identifier={"submitter-restrictions"} />
                 </RestrictionOptionWrap>
 
                 <NewRewardContainer>
@@ -132,7 +118,7 @@ export default function ContestParticipantRestrictions(props) {
 
                 <Contest_h3_alt style={{ marginTop: '50px' }}>Voter Restrictions</Contest_h3_alt>
                 <RestrictionOptionWrap>
-                    <Restriction restriction_errors={voter_restriction_errors} availableRestrictions={voter_restrictions} updateAvailableRestrictions={voterRestrictionsActions.setVoterRestrictions} toggle_identifier={"voter-restrictions"} />
+                    <ToggleOption restriction_errors={voter_restriction_errors} availableRestrictions={voter_restrictions} updateAvailableRestrictions={voterRestrictionsActions.setVoterRestrictions} toggle_identifier={"voter-restrictions"} />
                 </RestrictionOptionWrap>
 
                 <NewRewardContainer>
@@ -141,15 +127,7 @@ export default function ContestParticipantRestrictions(props) {
                 </NewRewardContainer>
 
             </RestrictionsContent>
-            <EditRestrictionModal modalOpen={editRewardsModalOpen} handleClose={handleRestrictionModalClose} existingRewardData={null} tokenType={newTokenType} />
+            <EditRestrictionModal modalOpen={editRestrictionModalOpen} handleClose={handleRestrictionModalClose} existingRewardData={null} tokenType={newTokenType} title={'Add Restriction'} />
         </RestrictionsWrap>
     )
 }
-
-
-function Restriction({ restriction_errors, availableRestrictions, updateAvailableRestrictions, toggle_identifier }) {
-    return (
-        <ToggleOption restriction_errors={restriction_errors} availableRestrictions={availableRestrictions} updateAvailableRestrictions={updateAvailableRestrictions} toggle_identifier={toggle_identifier} />
-    )
-}
-

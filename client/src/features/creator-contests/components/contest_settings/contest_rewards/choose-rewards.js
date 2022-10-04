@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPencil, faPlus } from '@fortawesome/free-solid-svg-icons';
 import ethLogo from '../../../../../img/eth.png'
-import EditRewardsModal from './contest-reward-input-modal';
+import EditRewardsModal from '../../common/add-token-modal';
 import { Contest_h3_alt, ERC20Button_alt, TagType } from '../../common/common_styles';
 import { ERC20Button, ERC721Button_alt } from '../../common/common_styles';
 import { rewardOptionActions, rewardOptionState } from './reducers/rewards-reducer';
@@ -156,7 +156,7 @@ export default function RewardSelector({ }) {
                 {!rewardOptions.erc20 && <ERC20Button_alt onClick={() => handleEditRewardOption('erc20')}><FontAwesomeIcon icon={faPlus} /> ERC-20</ERC20Button_alt>}
                 {!rewardOptions.erc721 && <ERC721Button_alt onClick={() => handleEditRewardOption('erc721')}><FontAwesomeIcon icon={faPlus} /> ERC-721</ERC721Button_alt>}
             </NewRewardContainer>
-            <EditRewardsModal modalOpen={editRewardsModalOpen} handleClose={handleRewardsModalClose} existingRewardData={rewardOptions[tokenType]} tokenType={tokenType} />
+            <EditRewardsModal modalOpen={editRewardsModalOpen} handleClose={handleRewardsModalClose} existingRewardData={rewardOptions[tokenType]} tokenType={tokenType} title={"Add Reward Option"} />
         </Wrap>
     )
 }

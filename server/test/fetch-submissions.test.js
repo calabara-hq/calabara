@@ -10,8 +10,8 @@ describe('test fetch submissions', async (done) => {
 
 
         let voting_strategy = {}
-        let submitter_restrictions = {}
-        let voter_restrictions = {}
+        let submitter_restrictions = []
+        let voter_restrictions = []
         let anon_subs = false;
         let visible_votes = false;
 
@@ -32,8 +32,8 @@ describe('test fetch submissions', async (done) => {
     
     it('anon_subs / no visible votes', async () => {
         let voting_strategy = {}
-        let submitter_restrictions = {}
-        let voter_restrictions = {}
+        let submitter_restrictions = []
+        let voter_restrictions = []
         let anon_subs = true;
         let visible_votes = false;
 
@@ -53,8 +53,8 @@ describe('test fetch submissions', async (done) => {
 
     it('no anon_subs / visible votes', async () => {
         let voting_strategy = {}
-        let submitter_restrictions = {}
-        let voter_restrictions = {}
+        let submitter_restrictions = []
+        let voter_restrictions = []
         let anon_subs = false;
         let visible_votes = true;
 
@@ -74,8 +74,8 @@ describe('test fetch submissions', async (done) => {
 
     it('anon_subs / visible votes', async () => {
         let voting_strategy = {}
-        let submitter_restrictions = {}
-        let voter_restrictions = {}
+        let submitter_restrictions = []
+        let voter_restrictions = []
         let anon_subs = true;
         let visible_votes = true;
 
@@ -95,8 +95,8 @@ describe('test fetch submissions', async (done) => {
 
     it('contest over / no anon subs / no visible votes', async () => {
         let voting_strategy = {}
-        let submitter_restrictions = {}
-        let voter_restrictions = {}
+        let submitter_restrictions = []
+        let voter_restrictions = []
         let anon_subs = false;
         let visible_votes = false;
 
@@ -117,8 +117,8 @@ describe('test fetch submissions', async (done) => {
 
     it('contest over / anon subs / no visible votes', async () => {
         let voting_strategy = {}
-        let submitter_restrictions = {}
-        let voter_restrictions = {}
+        let submitter_restrictions = []
+        let voter_restrictions = []
         let anon_subs = true;
         let visible_votes = false;
 
@@ -138,8 +138,8 @@ describe('test fetch submissions', async (done) => {
 
     it('contest over / no anon subs / visible votes', async () => {
         let voting_strategy = {}
-        let submitter_restrictions = {}
-        let voter_restrictions = {}
+        let submitter_restrictions = []
+        let voter_restrictions = []
         let anon_subs = false;
         let visible_votes = true;
 
@@ -159,8 +159,8 @@ describe('test fetch submissions', async (done) => {
 
     it('contest over / anon subs / visible votes', async () => {
         let voting_strategy = {}
-        let submitter_restrictions = {}
-        let voter_restrictions = {}
+        let submitter_restrictions = []
+        let voter_restrictions = []
         let anon_subs = true;
         let visible_votes = true;
 
