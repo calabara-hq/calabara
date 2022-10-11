@@ -80,7 +80,7 @@ export default function useWallet() {
     const account_change = useSelector(selectAccountChange);
     const is_token_expired = useSelector(selectIsTokenExpired)
     const dispatch = useDispatch();
-    const [connectBtnTxt, setConnectBtnTxt] = useState('Connect wallet');
+    const [connectBtnTxt, setConnectBtnTxt] = useState('Connect wallet'); 
     const [isMoreExpanded, setIsMoreExpanded] = useState(false);
 
     useInterval(async () => {

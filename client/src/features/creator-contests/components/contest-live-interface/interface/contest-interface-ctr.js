@@ -78,7 +78,6 @@ export default function ContestInterfaceController() {
             .then(data => data.text())
             .then(data => (data ? JSON.parse(data) : {}))
             .then(data => {
-                console.log(data)
                 dispatch(setContestSettings(data.settings))
                 dispatch(setPromptData(data.prompt_data))
                 let { start_date, voting_begin, end_date } = data.settings.date_times

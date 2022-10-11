@@ -1,12 +1,64 @@
-import React, { useContext, useState, createContext } from 'react';
-import useWallet from '../features/hooks/useWallet';
+import React, { useContext, createContext, useMemo } from 'react';
+import '@rainbow-me/rainbowkit/styles.css';
+import {
+    getDefaultWallets,
+    RainbowKitProvider,
+    createAuthenticationAdapter,
+    RainbowKitAuthenticationProvider,
+    darkTheme
+} from '@rainbow-me/rainbowkit';
+import {
+    chain,
+    configureChains,
+    createClient,
+    WagmiConfig,
+} from 'wagmi';
+import { alchemyProvider } from 'wagmi/providers/alchemy';
+import { publicProvider } from 'wagmi/providers/public';
+import useWallet2 from '../features/hooks/useWallet2.js';
 
 
-const WalletContext = createContext({});
+export const { chains, provider } = configureChains(
+    [chain.mainnet],
+    [
+        alchemyProvider({ apiKey: process.env.ALCHEMY_ID }),
+        publicProvider()
+    ]
+);
 
-const WalletProvider = ({ children }) => {
+export const { connectors } = getDefaultWallets({
+    appName: 'calabara',
+    chains
+});
 
-    const { walletDisconnect, walletConnect, walletAddress, validAddress, isConnected, connectBtnTxt, isMoreExpanded, setIsMoreExpanded } = useWallet();
+export const wagmiClient = createClient({
+    autoConnect: false,
+    connectors,
+    provider,
+})
+
+
+
+export const WalletProvider = ({ children }) => {
+    console.log('RE RENDER WALLET PROVIDER')
+
+    return (
+        <WagmiConfig client={wagmiClient}>
+            <RainbowKitProvider chains={chains} theme={darkTheme()} >
+                <WalletHookMethods>
+                    {children}
+                </WalletHookMethods>
+            </RainbowKitProvider>
+
+        </WagmiConfig >
+    );
+}
+
+export const WalletContext = createContext({});
+
+const WalletHookMethods = ({ children }) => {
+
+    const { walletDisconnect, walletConnect, walletAddress, validAddress, isConnected, authenticationState } = useWallet2();
 
     let walletProviderValues = {
         walletDisconnect,
@@ -14,18 +66,16 @@ const WalletProvider = ({ children }) => {
         walletAddress,
         validAddress,
         isConnected,
-        connectBtnTxt,
-        isMoreExpanded,
-        setIsMoreExpanded
+        authenticationState
     }
+
 
     return (
         <WalletContext.Provider value={walletProviderValues}>
             {children}
         </WalletContext.Provider>
-    );
-};
 
-const useWalletContext = () => useContext(WalletContext);
+    )
+}
 
-export { WalletProvider, useWalletContext };
+export const useWalletContext = () => useContext(WalletContext)

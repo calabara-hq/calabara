@@ -1,31 +1,33 @@
-import Web3 from "web3";
 import { erc20abi } from '../wallet/erc20abi';
 import { erc721abi } from '../wallet/erc721abi';
+import { ethers } from "ethers";
+
+const ALCHEMY_KEY = process.env.REACT_APP_ALCHEMY_KEY;
+const provider = new ethers.providers.AlchemyProvider('homestead', process.env.REACT_APP_ALCHEMY_KEY)
 
 
-const INFURA_KEY = process.env.REACT_APP_INFURA_KEY;
-let web3Infura = new Web3(new Web3.providers.HttpProvider('https://mainnet.infura.io/v3/' + INFURA_KEY))
 
 
 export default function useContract() {
 
 
     async function erc20GetSymbolAndDecimal(contractAddress) {
-        const tokenContract = new web3Infura.eth.Contract(erc20abi, contractAddress);
+        const tokenContract = new ethers.Contract(contractAddress, erc20abi, provider)
         const symbol = await tokenContract.methods.symbol().call();
         const decimal = await tokenContract.methods.decimals().call();
+
         return [symbol, decimal]
     }
 
     async function erc721GetSymbol(contractAddress) {
-        const tokenContract = new web3Infura.eth.Contract(erc721abi, contractAddress);
+        const tokenContract = new ethers.Contract(contractAddress, erc20abi, provider)
         const symbol = await tokenContract.methods.symbol().call();
         return symbol
     }
 
     // check balance of token given a wallet address and a contract address
     async function checkERC20Balance(walletAddress, contractAddress, decimal) {
-        const tokenContract = new web3Infura.eth.Contract(erc20abi, contractAddress);
+        const tokenContract = new ethers.Contract(contractAddress, erc20abi, provider)
         const balance = await tokenContract.methods.balanceOf(walletAddress).call();
         const adjusted = balance / 10 ** decimal
         return adjusted;
@@ -33,7 +35,7 @@ export default function useContract() {
 
 
     async function checkERC721Balance(walletAddress, contractAddress) {
-        const tokenContract = new web3Infura.eth.Contract(erc721abi, contractAddress);
+        const tokenContract = new ethers.Contract(contractAddress, erc721abi, provider)
         const balance = await tokenContract.methods.balanceOf(walletAddress).call();
         return +balance;
     }
@@ -43,7 +45,7 @@ export default function useContract() {
     // use this function for both erc721 and erc20. If decimal call fails but we have a symbol, use decimal of 0
 
     async function tokenGetSymbolAndDecimal(contractAddress) {
-        const tokenContract = new web3Infura.eth.Contract(erc20abi, contractAddress);
+        const tokenContract = new ethers.Contract(contractAddress, erc20abi, provider)
         const symbol = await tokenContract.methods.symbol().call();
         let decimal = '0'
         try {
@@ -58,7 +60,7 @@ export default function useContract() {
     // Mainly used for UI purposes
     async function isERC721(contractAddress) {
         try {
-            const tokenContract = new web3Infura.eth.Contract(erc721abi, contractAddress);
+            const tokenContract = new ethers.Contract(contractAddress, erc721abi, provider)
             await tokenContract.methods.ownerOf(0).call();
             return true
         } catch (e) {
@@ -68,7 +70,7 @@ export default function useContract() {
 
     // check balance of token given a wallet address and a contract address and decimal
     async function checkWalletTokenBalance(walletAddress, contractAddress, decimal) {
-        const tokenContract = new web3Infura.eth.Contract(erc20abi, contractAddress);
+        const tokenContract = new ethers.Contract(contractAddress, erc20abi, provider)
         const balance = await tokenContract.methods.balanceOf(walletAddress).call();
         const adjusted = balance / 10 ** decimal
         return adjusted;

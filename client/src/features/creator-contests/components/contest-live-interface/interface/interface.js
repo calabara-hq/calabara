@@ -58,7 +58,6 @@ const OrgCard = styled.div`
 
 
 export default function ContestInterface() {
-    console.log('re rendering interface')
     const { ens, contest_hash } = useParams();
     const info = useSelector(selectDashboardInfo)
     const { batchFetchDashboardData } = useCommon();

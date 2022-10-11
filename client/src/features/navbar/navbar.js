@@ -1,5 +1,5 @@
 import '../../css/navbar.css'
-import Wallet from '../wallet/wallet'
+import Wallet from '../wallet/wallet2'
 import calabaraLogo from '../../img/calabara-logo.svg'
 import React, { useEffect } from 'react'
 import { useHistory } from "react-router-dom"

@@ -1,21 +1,21 @@
 import { Suspense, lazy } from 'react'
 import { BrowserRouter as Router, Switch, Route, Link, useLocation } from 'react-router-dom'
 import '../../css/container.css'
-import { HomepageNav, ApplicationNav } from '../navbar/navbar'
-import Homepage from '../homepage/homepage'
-import { WalletProvider } from '../../app/WalletContext'
-import LazyLoader from '../lazy-loader/lazy-loader'
-const Cards = lazy(() => import('../org-cards/org-cards'))
-const Dashboard = lazy(() => import('../dashboard/dashboard'))
-const Analytics = lazy(() => import('../snapshot-analytics/snapshot-analytics'))
-const WikiDisplay = lazy(() => import('../wiki/wiki-display'))
-const Events = lazy(() => import('../calendar/calendar'))
-const ReactEditor = lazy(() => import('../wiki/wiki-edit'))
-const SettingsManager = lazy(() => import('../settings/settings'))
-const ManageWidgets = lazy(() => import('../manage-widgets/manage-widgets'))
-const ContestSettings = lazy(() => import('../creator-contests/components/contest_settings/contest-settings'))
-const ContestHomepage = lazy(() => import('../creator-contests/components/contest-home/contest-home'))
-const ContestInterfaceController = lazy(() => import('../creator-contests/components/contest-live-interface/interface/contest-interface-ctr'))
+import { HomepageNav, ApplicationNav } from '../navbar/navbar.js'
+import Homepage from '../homepage/homepage.js'
+import { WalletProvider } from '../../app/WalletContext.js'
+import LazyLoader from '../lazy-loader/lazy-loader.js'
+const Cards = lazy(() => import('../org-cards/org-cards.js'))
+const Dashboard = lazy(() => import('../dashboard/dashboard.js'))
+const Analytics = lazy(() => import('../snapshot-analytics/snapshot-analytics.js'))
+const WikiDisplay = lazy(() => import('../wiki/wiki-display.js'))
+const Events = lazy(() => import('../calendar/calendar.js'))
+const ReactEditor = lazy(() => import('../wiki/wiki-edit.js'))
+const SettingsManager = lazy(() => import('../settings/settings.js'))
+const ManageWidgets = lazy(() => import('../manage-widgets/manage-widgets.js'))
+const ContestSettings = lazy(() => import('../creator-contests/components/contest_settings/contest-settings.js'))
+const ContestHomepage = lazy(() => import('../creator-contests/components/contest-home/contest-home.js'))
+const ContestInterfaceController = lazy(() => import('../creator-contests/components/contest-live-interface/interface/contest-interface-ctr.js'))
 
 
 export default function Container() {
@@ -41,8 +41,6 @@ export default function Container() {
         </Route>
       </Switch>
     </div>
-
-
   )
 }
 
@@ -51,7 +49,9 @@ export default function Container() {
 
 function Application({ }) {
   return (
+
     <WalletProvider>
+
       <ApplicationNav />
 
       <Route path="/:ens/dashboard">
@@ -102,6 +102,7 @@ function Application({ }) {
       </Route>
 
     </WalletProvider>
+
 
   )
 }

@@ -208,11 +208,11 @@ export default function ContestSettings() {
             <SettingsBlockElement ref={PromptBlockRef}>
                 <PromptBuilder promptBuilderData={promptBuilderData} setPromptBuilderData={setPromptBuilderData} promptEditorCore={promptEditorCore} />
             </SettingsBlockElement>
-            
+            {/*
             <SettingsBlockElement>
                 <Twitter />
             </SettingsBlockElement>
-            
+            */}
             <SettingsBlockElement>
                 <SimpleInputs simpleInputData={simpleInputData} setSimpleInputData={setSimpleInputData} />
             </SettingsBlockElement>

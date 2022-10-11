@@ -1,8 +1,8 @@
 import React from 'react';
-import Container from '../features/container/container'
+import Container from '../features/container/container.js'
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
-import DiscordRedirect from '../features/discord/discord-oauth-redirect'
-import TwitterRedirect from '../features/creator-contests/components/contest_settings/twitter_automation/twitter_oauth_redirect';
+import DiscordRedirect from '../features/discord/discord-oauth-redirect.js'
+import TwitterRedirect from '../features/creator-contests/components/contest_settings/twitter_automation/twitter_oauth_redirect.js';
 
 
 export default function App() {

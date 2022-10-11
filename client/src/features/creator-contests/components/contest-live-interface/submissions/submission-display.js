@@ -267,7 +267,6 @@ function LazyLoadedSubmission({ sub, handleExpand, index }) {
     useEffect(() => {
         fetch(sub._url).then(res => {
             res.json().then(json => {
-                console.log(json)
                 set_tldr_img(json.tldr_image)
                 set_tldr_text(json.tldr_text)
                 set_submission_body(json.submission_body)
@@ -298,7 +297,6 @@ function LazyLoadedSubmission({ sub, handleExpand, index }) {
 
 
 function SubmissionMetadata({ contest_state, sub }) {
-    console.log(typeof sub.author)
     return (
         <SubmissionMeta width={'98%'}>
             {typeof sub.author !== 'undefined' ? <Author>{sub.author.substring(0, 6)}...{sub.author.substring(38, 42)}</Author> : null}
