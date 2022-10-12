@@ -131,7 +131,7 @@ export default function WikiDisplay({ mode }) {
     }
   }, [wikiList])
 
-  useEffect(async () => {
+  useEffect(() => {
     checkForAdmin();
   }, [isConnected, info])
 

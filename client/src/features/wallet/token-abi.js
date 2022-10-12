@@ -1,5 +1,4 @@
-
-module.exports.erc20abi = [
+export const tokenAbi = [
 
     {
         "constant": true,

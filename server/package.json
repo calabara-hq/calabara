@@ -26,6 +26,7 @@
     "discord.js": "^13.6.0",
     "dotenv": "^14.3.2",
     "ethereum-block-by-date": "^1.4.5",
+    "ethers": "^5.7.1",
     "express-session": "^1.17.3",
     "fs": "0.0.1-security",
     "googleapis": "^89.0.0",

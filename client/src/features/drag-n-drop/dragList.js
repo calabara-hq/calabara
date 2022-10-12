@@ -22,7 +22,7 @@ const DragDropContextContainer = styled.div`
 
 const ListGrid = styled.div`
   display: grid;
-  grid-template-rows;
+  //grid-template-rows;
   grid-gap: 8px;
   position: relative;
 `;

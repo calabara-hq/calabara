@@ -9,12 +9,26 @@ import axios from "axios";
 import { ethers } from "ethers";
 import registerUser from "../user/user";
 
+import {
+    setConnected,
+    setDisconnected,
+    selectConnectedBool,
+    selectConnectedAddress,
+    setAccountChange,
+    selectAccountChange,
+    manageAccountChange,
+    selectIsTokenExpired,
+} from '../wallet/wallet-reducer';
+import { useDispatch } from "react-redux";
+
+
 export default function useAuthentication() {
     const { address, isConnected } = useAccount();
     const { signMessageAsync } = useSignMessage()
     const [authToken, setAuthToken] = useLocalStorage('jwt', null, false)
     const { openConnectModal } = useConnectModal()
     const [state, setState] = useState('loading')
+    const dispatch = useDispatch();
 
     const { disconnect } = useDisconnect({
         onSuccess() {
@@ -22,38 +36,9 @@ export default function useAuthentication() {
         }
     });
 
-    /*
-    autoconnect false
-
     useEffect(() => {
         let authState = checkCurrentJwt(authToken);
-        if (authState === 'authenticated') autoConnect()
-        setState(authState);
-    }, [])
-
-
-    useEffect(() => {
-        if (state === 'unauthenticated' && isConnected) {
-            secure_sign()
-                .then(sig_res => {
-                    if (sig_res) {
-                        authorize(sig_res)
-                        registerUser(address) // TURTLES remove this when we refactor the other apps
-                    }
-                })
-        }
-
-        if (state === 'authenticated' && !isConnected) {
-            disconnect()
-        }
-
-    }, [state, isConnected])
-
-*/
-
-
-    useEffect(() => {
-        let authState = checkCurrentJwt(authToken);
+        if (authState === 'authenticated') dispatch(setConnected(address))
         setState(authState);
     }, [])
 
@@ -66,6 +51,7 @@ export default function useAuthentication() {
                     if (sig_res) {
                         authorize(sig_res)
                         registerUser(address) // TURTLES remove this when we refactor the other apps
+                        dispatch(setConnected(address))
                     }
                 })
         }
