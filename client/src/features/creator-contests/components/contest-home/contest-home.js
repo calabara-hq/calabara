@@ -37,8 +37,6 @@ export default function ContestHomepage() {
     const history = useHistory();
     const [homepage_data, set_homepage_data] = useState(nonResolvingPromise)
 
-    console.log(homepage_data)
-
     useEffect(() => {
         set_homepage_data(fetchHomePageData(ens))
     }, [])

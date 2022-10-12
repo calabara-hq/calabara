@@ -399,8 +399,7 @@ function SaveSettings(props) {
 
 function Summary({ contestData, promptData, warnings, handleCloseDrawer }) {
     const { ens } = useParams();
-    const { authenticated_post } = useCommon();
-    const { walletConnect } = useWalletContext();
+    const { walletConnect, authenticated_post } = useWalletContext();
     const isWalletConnected = useSelector(selectConnectedBool);
     const [isSaving, setIsSaving] = useState(false);
 

@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import useCommon from './useCommon'
 import { showNotification } from '../notifications/notifications';
+import { useWalletContext } from '../../app/WalletContext';
 
 
 
@@ -26,13 +27,13 @@ export default function useVotingEngine(sub_id) {
     const walletAddress = useSelector(selectConnectedAddress);
     const isConnected = useSelector(selectConnectedBool);
     const [is_self_voting_error, set_is_self_voting_error] = useState(true);
-    const { authenticated_post } = useCommon();
+    const { authenticated_post } = useWalletContext();
     console.log(sub_id)
     const { ens, contest_hash } = useParams();
 
     useEffect(() => {
         if (isConnected) {
-            
+
             calculateVotingPower(ens, sub_id, walletAddress, contest_hash).then(result => {
                 console.log(result)
                 if (!result.is_self_voting_error) {

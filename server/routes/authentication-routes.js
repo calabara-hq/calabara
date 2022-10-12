@@ -5,7 +5,7 @@ const authentication = express();
 authentication.use(express.json())
 const { verifySignature } = require('../helpers/edcsa-auth.js');
 const jwt = require('jsonwebtoken');
-
+const { keccak256 } = require('../helpers/hash.js');
 
 dotenv.config();
 
@@ -29,7 +29,7 @@ const clean = (data) => {
 }
 
 const generate_access_token = (address) => {
-    return jwt.sign({ address: address }, JWT_TOKEN_SECRET, { expiresIn: 2160 });
+    return jwt.sign({ address: address }, JWT_TOKEN_SECRET, { expiresIn: "6h" });
 }
 
 
@@ -42,7 +42,6 @@ authentication.post('/generate_nonce', async function (req, res, next) {
     res.status(200);
 })
 
-
 authentication.post('/generate_jwt', async function (req, res, next) {
     const { sig, address } = req.body;
     const nonce_result = await db.query('select nonce from users where address = $1', [address]).then(clean)
@@ -51,6 +50,7 @@ authentication.post('/generate_jwt', async function (req, res, next) {
     // verify the signature
     try {
         let signatureResult = await verifySignature(sig, msg, address)
+
         // update the nonce
 
         const new_nonce = randomNonce(25);
@@ -72,7 +72,6 @@ authentication.post('/generate_jwt', async function (req, res, next) {
         res.send('error')
     }
 })
-
 
 
 

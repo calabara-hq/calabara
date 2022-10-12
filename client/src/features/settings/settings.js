@@ -257,7 +257,7 @@ function OrganizationInfoComponent({ standardProps, hasImageChanged, setHasImage
     const [logo, setLogo] = useState(logoCache[fields.logo])
     const [logoPath, setLogoPath] = useState(fields.logo);
     const { deleteOrganization } = useOrganization();
-    const { authenticated_post } = useCommon();
+    const { authenticated_post } = useWalletContext();
 
 
     const updateName = (e) => {
@@ -929,8 +929,7 @@ function SaveComponent({ standardProps, infoErrorController, adminErrorControlle
     const { ens } = useParams();
     const { populateDashboardRules } = useDashboardRules();
     const { updateDashboardInfo } = useDashboard();
-    const { authenticated_post } = useCommon();
-    const { validAddress } = useWalletContext();
+    const { validAddress, authenticated_post } = useWalletContext();
     console.log(validAddress)
 
 

@@ -209,6 +209,12 @@ contests.post('/upload_img', imageUpload.single('image'), async (req, res) => {
 })
 
 
+contests.post('/test_auth', authenticateToken, async (req, res) => {
+    const message = 'hello from server'
+    res.send(message).status(200)
+})
+
+
 ///////////////////////// begin dev / test routes ////////////////////////////////////
 if (process.env.NODE_ENV === 'test') {
 

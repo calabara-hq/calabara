@@ -14,6 +14,7 @@ import { selectWikiList, renameWikiList, addToWikiList } from './wiki-reducer.js
 import { selectDashboardRules } from '../gatekeeper/gatekeeper-rules-reducer.js';
 import useCommon from '../hooks/useCommon.js';
 import useWiki from '../hooks/useWiki.js';
+import { useWalletContext } from '../../app/WalletContext.js';
 
 const style = {
     position: 'absolute',
@@ -55,7 +56,7 @@ export default function WikiModal({ modalOpen, handleClose, groupID }) {
     const { ens } = useParams();
     const dispatch = useDispatch();
     const [appliedRules, setAppliedRules] = useReducer(reducer, {});
-    const { authenticated_post } = useCommon();
+    const { authenticated_post } = useWalletContext();
     const { renameWikiList } = useWiki();
 
     useEffect(() => {

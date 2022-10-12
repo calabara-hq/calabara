@@ -39,6 +39,7 @@ import useDashboardRules from '../hooks/useDashboardRules.js'
 import useGatekeeper from '../hooks/useGatekeeper.js'
 import useCommon from '../hooks/useCommon.js'
 import useWiki from '../hooks/useWiki.js'
+import { useWalletContext } from '../../app/WalletContext'
 
 export default function WikiDisplay({ mode }) {
   const { ens } = useParams();
@@ -57,8 +58,9 @@ export default function WikiDisplay({ mode }) {
   const [currentWikiId, setCurrentWikiId] = useState(-1)
   const [modalOpen, setModalOpen] = useState(false);
   const [groupID, setGroupID] = useState(null)
-  const {applyDashboardRules} = useDashboardRules();
-  const { batchFetchDashboardData, authenticated_post } = useCommon();
+  const { applyDashboardRules } = useDashboardRules();
+  const { batchFetchDashboardData } = useCommon();
+  const { authenticated_post } = useWalletContext();
   const { populateInitialWikiList, removeFromWikiList } = useWiki();
 
   useEffect(() => {
@@ -146,7 +148,7 @@ export default function WikiDisplay({ mode }) {
   }, [currentWikiId])
 
 
-  useEffect(() => {},[isAdmin])
+  useEffect(() => { }, [isAdmin])
 
   const newWikiGroupingClick = () => {
     open();
@@ -217,7 +219,7 @@ function TestWikiVisibility({ setCurrentWikiId, wikiList, dashboardRuleResults }
 }
 
 function WikiRuleMap({ setCurrentWikiId, group, group_data, dashboardRuleResults }) {
-const {testDiscordRoles} = useGatekeeper();
+  const { testDiscordRoles } = useGatekeeper();
 
   useEffect(() => {
   }, [dashboardRuleResults])

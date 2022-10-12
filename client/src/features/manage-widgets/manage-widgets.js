@@ -29,6 +29,7 @@ import {
 
 import useWidgets from '../hooks/useWidgets'
 import useCommon from '../hooks/useCommon'
+import { useWalletContext } from '../../app/WalletContext'
 
 
 
@@ -231,7 +232,7 @@ function ConfigureGatekeeper({ setProgress, selected, appliedRules, setAppliedRu
           <div className="tab-message neutral">
             <p>Toggle the switches to apply gatekeeper rules to this app. If multiple rules are applied, the gatekeeper will pass if the connected wallet passes 1 or more rules.</p>
           </div>
-          <RuleSelect ruleError={ruleError} setRuleError={setRuleError} appliedRules={appliedRules} setAppliedRules={setAppliedRules} toggle_identifier={"manage-widgets"}/>
+          <RuleSelect ruleError={ruleError} setRuleError={setRuleError} appliedRules={appliedRules} setAppliedRules={setAppliedRules} toggle_identifier={"manage-widgets"} />
         </>
       }
 
@@ -256,7 +257,7 @@ function FinalMessage({ setProgress, selected, appliedRules, metadata, setSelect
   const availableRules = useSelector(selectDashboardRules);
   const history = useHistory()
   const { updateWidgets } = useWidgets();
-  const { authenticated_post } = useCommon();
+  const { authenticated_post } = useWalletContext();
 
   useEffect(() => {
     setTabHeader('')

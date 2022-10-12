@@ -3,25 +3,27 @@ import { useInterval } from "./useInterval";
 import useLocalStorage from "./useLocalStorage";
 import jwt_decode from 'jwt-decode'
 import { useAccount, useDisconnect, useConnect, useSignMessage } from 'wagmi'
+import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { showNotification } from "../notifications/notifications";
 import axios from "axios";
 import { ethers } from "ethers";
-
-
+import registerUser from "../user/user";
 
 export default function useAuthentication() {
-    const { address, isConnected, isDisconnected } = useAccount();
-    const { connect, connectors, error, isLoading, pendingConnector } = useConnect()
-    const { signMessageAsync } = useSignMessage();
+    const { address, isConnected } = useAccount();
+    const { signMessageAsync } = useSignMessage()
+    const [authToken, setAuthToken] = useLocalStorage('jwt', null, false)
+    const { openConnectModal } = useConnectModal()
+    const [state, setState] = useState('loading')
+
     const { disconnect } = useDisconnect({
-        onSuccess(data) {
-            console.log('SUCCESSFULLY DISCONNECTED');
+        onSuccess() {
             clearAuthenticationState()
         }
     });
-    const [authToken, setAuthToken] = useLocalStorage('jwt', null, false)
-    const [lastUsedConnector, setLastUsedConnector] = useLocalStorage('wagmi.wallet')
-    const [state, setState] = useState('loading')
+
+    /*
+    autoconnect false
 
     useEffect(() => {
         let authState = checkCurrentJwt(authToken);
@@ -31,60 +33,61 @@ export default function useAuthentication() {
 
 
     useEffect(() => {
-        console.log(state, isConnected)
         if (state === 'unauthenticated' && isConnected) {
-            console.log('AUTH CASE')
-            handleAuth()
+            secure_sign()
+                .then(sig_res => {
+                    if (sig_res) {
+                        authorize(sig_res)
+                        registerUser(address) // TURTLES remove this when we refactor the other apps
+                    }
+                })
         }
 
-        /*
         if (state === 'authenticated' && !isConnected) {
-            autoConnect();
-        }
-        */
-
-        if (state === 'unauthenticated' && !isConnected) {
-            //alert('HERE')
-            //disconnect();
-        }
-    }, [state, isConnected])
-
-    useEffect(() => {
-        if (isDisconnected && state === 'authenticated') {
             disconnect()
         }
-    }, [isDisconnected])
+
+    }, [state, isConnected])
+
+*/
+
+
+    useEffect(() => {
+        let authState = checkCurrentJwt(authToken);
+        setState(authState);
+    }, [])
+
+
+    useEffect(() => {
+
+        if (state === 'unauthenticated' && isConnected) {
+            secure_sign()
+                .then(sig_res => {
+                    if (sig_res) {
+                        authorize(sig_res)
+                        registerUser(address) // TURTLES remove this when we refactor the other apps
+                    }
+                })
+        }
+
+
+        if (state === 'authenticated' && !isConnected) {
+            disconnect()
+        }
+
+    }, [state, isConnected])
 
 
 
     useInterval(() => {
+        let prev_state = state
+        let auth_state = checkCurrentJwt(authToken)
+        if (prev_state === 'authenticated' && auth_state === 'unauthenticated') return disconnect()
+
         setState(checkCurrentJwt(authToken));
+
     }, 15000)
 
-
-
-    const autoConnect = async () => {
-
-
-        const sorted = lastUsedConnector
-            ? [...connectors].sort((x) =>
-                x.id === lastUsedConnector ? -1 : 1
-            )
-            : connectors
-
-        let connected = false
-        let data
-        for (const connector of sorted) {
-            if (!connector.ready || !connector.isAuthorized) continue
-            const isAuthorized = await connector.isAuthorized()
-            if (!isAuthorized) continue
-            console.log('HERE')
-            connect({ connector })
-            connected = true
-            break
-        }
-        return data
-    }
 
 
     const checkCurrentJwt = (value) => {
@@ -100,6 +103,9 @@ export default function useAuthentication() {
     }
 
 
+
+    // helpers
+
     const clearAuthenticationState = () => {
         setState('unauthenticated');
         setAuthToken(null);
@@ -110,19 +116,17 @@ export default function useAuthentication() {
         setState(checkCurrentJwt(token))
     }
 
-
-    const handleAuth = async () => {
+    const secure_sign = async () => {
         const nonce_from_server = await axios.post('/authentication/generate_nonce', { address: address })
-        signMessage(nonce_from_server.data.nonce)
+        return signMessage(nonce_from_server.data.nonce)
             .then(signatureResult => {
-                axios.post('/authentication/generate_jwt', { sig: signatureResult.sig, address: address })
+                return axios.post('/authentication/generate_jwt', { sig: signatureResult.sig, address: address })
                     .then(jwt_result => {
-                        showNotification('success', 'success', 'welcome back!')
-                        authorize(jwt_result.data.jwt)
+                        if (state === 'unauthenticated') showNotification('success', 'success', 'welcome back!')
+                        return jwt_result.data.jwt
                     })
-
             })
-            .catch(error => console.log(error))
+            .catch(error => { return null })
     }
 
 
@@ -134,17 +138,72 @@ export default function useAuthentication() {
             })
             .catch(error => {
                 disconnect();
-                showNotification('error', 'error', 'user rejected signature request')
+                if (error.code === 4001) {
+                    showNotification('error', 'error', 'User denied signature request')
+                }
+                else showNotification('error', 'error', 'user rejected signature request')
                 throw error
             })
     }
 
 
 
+    const authenticated_post = async (endpoint, body) => {
+        // just stop them here if they aren't authenticated
+        if (state !== 'authenticated') {
+            showNotification('hint', 'hint', 'please connect your wallet')
+            openConnectModal()
+            return null
+        }
+
+        return axios.post(endpoint, body, { headers: { 'Authorization': `Bearer ${authToken}` } })
+            .then(res => { return res })
+            .catch(err => {
+                switch (err.response.status) {
+                    case 401:
+                        showNotification('hint', 'hint', 'please connect your wallet')
+                        if (state !== 'authenticated') openConnectModal()
+                        break;
+                    case 403:
+                        showNotification('error', 'error', 'this wallet is not an organization admin')
+                        break;
+                    case 419:
+                        showNotification('error', 'error', 'this wallet does not meet submission requirements')
+                    case 420:
+                        showNotification('error', 'error', 'you have already made a submission for this contest')
+                        break;
+                    case 432:
+                        showNotification('error', 'error', 'this contest is not accepting submissions at this time')
+                        break;
+                    case 433:
+                        showNotification('error', 'error', 'this contest is not accepting votes at this time')
+                        break;
+                    case 434:
+                        showNotification('error', 'error', 'this wallet does not meet voting requirements')
+                        break;
+                    case 435:
+                        showNotification('error', 'error', 'you cannot vote on your own submission')
+                        break
+                    case 436:
+                        showNotification('error', 'error', 'amount exceeds available voting power')
+                        break
+                    case 437:
+                        showNotification('error', 'error', 'only select addresses are able to create contests at this time')
+                        break
+                    case 438:
+                        showNotification('error', 'error', 'the contest is not over yet!')
+                        break
+                }
+                return null
+            })
+
+    }
+
+
 
     return {
-        authenticationState: state,
-        clearAuthenticationState: clearAuthenticationState,
-        authorize: authorize
+        disconnect: () => { disconnect() },
+        secure_sign: () => { return secure_sign() },
+        authenticated_post: async (endpoint, body) => { return await authenticated_post(endpoint, body) }
     }
 }

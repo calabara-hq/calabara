@@ -10,6 +10,7 @@ import useCommon from '../../../../hooks/useCommon'
 import { EDITOR_JS_TOOLS } from '../../common/editor_tools'
 import Placeholder from '../../common/spinner'
 import { showNotification } from '../../../../notifications/notifications'
+import { useWalletContext } from '../../../../../app/WalletContext'
 
 const CreateSubmissionContainer = styled.div`
     display: flex;
@@ -107,7 +108,7 @@ export default function SubmissionBuilder({ handleExitSubmission, isUserEligible
     const { ens, contest_hash } = useParams();
     const ReactEditorJS = createReactEditorJS();
     const editorCore = useRef(null);
-    const { authenticated_post } = useCommon();
+    const { authenticated_post } = useWalletContext();
     const [isSaving, setIsSaving] = useState(false);
     const errorCheck = async () => {
 
@@ -122,7 +123,7 @@ export default function SubmissionBuilder({ handleExitSubmission, isUserEligible
         else return false;
     }
 
-    
+
 
 
     const handleClose = () => {

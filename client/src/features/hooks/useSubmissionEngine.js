@@ -3,7 +3,6 @@ import axios from 'axios';
 import { selectConnectedBool, selectConnectedAddress } from "../wallet/wallet-reducer";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import useCommon from './useCommon';
 import { selectContestState } from '../creator-contests/components/contest-live-interface/interface/contest-interface-reducer';
 
 
@@ -16,7 +15,6 @@ export default function useSubmissionEngine(submitter_restrictions) {
     const { ens, contest_hash } = useParams();
     const [restrictionResults, setRestrictionResults] = useState(submitter_restrictions)
     const [isUserEligible, setIsUserEligible] = useState(false);
-    const { authenticated_post } = useCommon();
 
     useEffect(() => {
         if (isConnected) {

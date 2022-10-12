@@ -12,6 +12,7 @@ import {
   setWikiList,
 } from '../wiki/wiki-reducer';
 import useCommon from "../hooks/useCommon";
+import { useWalletContext } from "../../app/WalletContext";
 
 const DragDropContextContainer = styled.div`
   padding: 20px;
@@ -54,7 +55,7 @@ function DragList({ setCurrentWikiId, editWikiGroupingClick, lists, setLists }) 
   const history = useHistory();
   const dispatch = useDispatch();
   const wikiList = useSelector(selectWikiList);
-  const { authenticated_post } = useCommon()
+  const { authenticated_post } = useWalletContext();
 
   // watch elements and update db on change
   // since we use length, we only need to watch 1 of them
