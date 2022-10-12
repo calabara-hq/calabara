@@ -117,7 +117,7 @@ export default function useAuthentication() {
             .then(signatureResult => {
                 axios.post('/authentication/generate_jwt', { sig: signatureResult.sig, address: address })
                     .then(jwt_result => {
-                        console.log(jwt_result)
+                        showNotification('success', 'success', 'welcome back!')
                         authorize(jwt_result.data.jwt)
                     })
 

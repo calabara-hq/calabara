@@ -12,21 +12,6 @@ const provider = new ethers.providers.AlchemyProvider('homestead', process.env.R
 
 
 
-const checkCurrentJwt = () => {
-    const token = localStorage.getItem('jwt');
-    try {
-        const { exp } = jwt_decode(token);
-        if (Date.now() >= exp * 1000) {
-            return false;
-        }
-    } catch (err) {
-        return false;
-    }
-    return true;
-}
-
-
-
 const validAddress = async (address) => {
     // if it's an ens, convert it
     if (address.endsWith('.eth')) address = await provider.resolveName(address)
@@ -38,9 +23,6 @@ const validAddress = async (address) => {
     } catch (err) { return false }
 }
 
-const walletDisconnect = async () => {
-
-}
 
 const walletSignMessage = async () => {
 

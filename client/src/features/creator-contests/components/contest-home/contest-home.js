@@ -118,9 +118,9 @@ function ListContests({ homepage_data }) {
 
     return (
         <RoundContainer>
-            {all_contests.map(el => {
+            {all_contests.map((el, id) => {
                 return (
-                    <Contest onClick={() => handleInterface(el._hash)}>
+                    <Contest onClick={() => handleInterface(el._hash)} key={id}>
                         <ContestTag>{el._title}</ContestTag>
                         <Label color={labelColorOptions[el._prompt_label_color]}>{el._prompt_label}</Label>
                         <CalculateState contest_info={el} />

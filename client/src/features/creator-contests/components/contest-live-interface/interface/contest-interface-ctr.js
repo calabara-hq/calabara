@@ -49,6 +49,7 @@ const calculateProgressRatio = (cc_state, t0, t1, t2) => {
 
 
 export default function ContestInterfaceController() {
+    console.log('INTERFACE CONTROLLER')
     const { ens, contest_hash } = useParams();
     const [settings, setSettings] = useState(null);
     const dispatch = useDispatch();
@@ -73,19 +74,22 @@ export default function ContestInterfaceController() {
 
 
     useEffect(() => {
+        let ignore = false;
         initializeSocketConnection();
         fetch(`/creator_contests/fetch_contest?ens=${ens}&contest_hash=${contest_hash}`)
             .then(data => data.text())
-            .then(data => (data ? JSON.parse(data) : {}))
+            .then(data => (data ? JSON.parse(data) : { mydata: null }))
             .then(data => {
-                dispatch(setContestSettings(data.settings))
-                dispatch(setPromptData(data.prompt_data))
-                let { start_date, voting_begin, end_date } = data.settings.date_times
-                //updateContestState(start_date, voting_begin, end_date)
+                if (!ignore) {
+                    dispatch(setContestSettings(data.settings))
+                    dispatch(setPromptData(data.prompt_data))
+                    let { start_date, voting_begin, end_date } = data.settings.date_times
+                    //updateContestState(start_date, voting_begin, end_date)
 
-                timerRef.current = setInterval(() => {
-                    updateContestState(start_date, voting_begin, end_date)
-                }, 1000)
+                    timerRef.current = setInterval(() => {
+                        updateContestState(start_date, voting_begin, end_date)
+                    }, 1000)
+                }
             })
             .catch(err => {
                 return history.push(`/${ens}/creator_contests`)
@@ -99,6 +103,7 @@ export default function ContestInterfaceController() {
 
 
         return () => {
+            ignore = true;
             dispatch(stateReset())
             clearInterval(timerRef.current)
             disconnectSocket();

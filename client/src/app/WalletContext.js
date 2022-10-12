@@ -1,24 +1,13 @@
 import React, { useContext, createContext, useMemo } from 'react';
 import '@rainbow-me/rainbowkit/styles.css';
-import {
-    getDefaultWallets,
-    RainbowKitProvider,
-    createAuthenticationAdapter,
-    RainbowKitAuthenticationProvider,
-    darkTheme
-} from '@rainbow-me/rainbowkit';
-import {
-    chain,
-    configureChains,
-    createClient,
-    WagmiConfig,
-} from 'wagmi';
+import { getDefaultWallets, RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+import { chain, configureChains, createClient, WagmiConfig } from 'wagmi';
 import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { publicProvider } from 'wagmi/providers/public';
 import useWallet2 from '../features/hooks/useWallet2.js';
+import merge from 'lodash.merge'
 
-
-export const { chains, provider } = configureChains(
+const { chains, provider } = configureChains(
     [chain.mainnet],
     [
         alchemyProvider({ apiKey: process.env.ALCHEMY_ID }),
@@ -26,25 +15,48 @@ export const { chains, provider } = configureChains(
     ]
 );
 
-export const { connectors } = getDefaultWallets({
+const { connectors } = getDefaultWallets({
     appName: 'calabara',
     chains
 });
 
-export const wagmiClient = createClient({
+const wagmiClient = createClient({
     autoConnect: false,
     connectors,
     provider,
 })
 
 
+const myTheme = merge(darkTheme(), {
+    colors: {
+        accentColor: '#539bf5',
+        accentColorForeground: 'white',
+        connectButtonBackground: '#24262a',
+        modalBackground: '#24262a'
+    },
+    blurs: {
+        modalOverlay: 'blur(4px)'
+    },
+    fonts: {
+        body: 'Ubuntu'
+    },
+    radii: {
+        actionButton: '10px',
+        connectButton: '8px',
+        menuButton: '8px',
+        modal: '16px',
+        modalMobile: '18px',
+    }
+
+});
+
+
 
 export const WalletProvider = ({ children }) => {
-    console.log('RE RENDER WALLET PROVIDER')
 
     return (
         <WagmiConfig client={wagmiClient}>
-            <RainbowKitProvider chains={chains} theme={darkTheme()} >
+            <RainbowKitProvider modalSize='compact' chains={chains} theme={myTheme}>
                 <WalletHookMethods>
                     {children}
                 </WalletHookMethods>
@@ -54,7 +66,7 @@ export const WalletProvider = ({ children }) => {
     );
 }
 
-export const WalletContext = createContext({});
+const WalletContext = createContext({});
 
 const WalletHookMethods = ({ children }) => {
 
