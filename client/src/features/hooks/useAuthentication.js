@@ -23,24 +23,24 @@ import { useDispatch } from "react-redux";
 
 
 export default function useAuthentication() {
-    const { address, isConnected } = useAccount();
     const { signMessageAsync } = useSignMessage()
     const [authToken, setAuthToken] = useLocalStorage('jwt', null, false)
     const { openConnectModal } = useConnectModal()
     const [state, setState] = useState('loading')
     const dispatch = useDispatch();
+    const { disconnect } = useDisconnect();
+    const { address, isConnected } = useAccount({
+        onDisconnect() { clearAuthenticationState() }
+    })
 
-    const { disconnect } = useDisconnect({
-        onSuccess() {
-            clearAuthenticationState()
-        }
-    });
 
     useEffect(() => {
         let authState = checkCurrentJwt(authToken);
         if (authState === 'authenticated') dispatch(setConnected(address))
         setState(authState);
+
     }, [])
+
 
 
     useEffect(() => {
@@ -56,12 +56,8 @@ export default function useAuthentication() {
                 })
         }
 
-
-        if (state === 'authenticated' && !isConnected) {
-            disconnect()
-        }
-
     }, [state, isConnected])
+
 
 
 

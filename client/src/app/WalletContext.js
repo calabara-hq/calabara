@@ -90,9 +90,9 @@ const WalletHookMethods = ({ children }) => {
     let walletProviderValues = {
         walletDisconnect,
         walletConnect,
-        walletAddress,
+        //walletAddress,
         validAddress,
-        isConnected,
+        //isConnected,
         authenticated_post
     }
 

@@ -3,9 +3,6 @@ import { ethers } from "ethers";
 
 const provider = new ethers.providers.AlchemyProvider('homestead', process.env.REACT_APP_ALCHEMY_KEY)
 
-
-
-
 export default function useContract() {
 
 

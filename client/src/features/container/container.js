@@ -5,6 +5,7 @@ import { HomepageNav, ApplicationNav } from '../navbar/navbar.js'
 import Homepage from '../homepage/homepage.js'
 import { WalletProvider } from '../../app/WalletContext.js'
 import LazyLoader from '../lazy-loader/lazy-loader.js'
+import Test from './test'
 const Cards = lazy(() => import('../org-cards/org-cards.js'))
 const Dashboard = lazy(() => import('../dashboard/dashboard.js'))
 const Analytics = lazy(() => import('../snapshot-analytics/snapshot-analytics.js'))
@@ -91,11 +92,13 @@ function Application({ }) {
       <Route path="/:ens/contest_settings">
         <ContestSettings />
       </Route>
+      <Route path="/:ens/test_path">
+        <Test />
+      </Route>
 
       <Route exact path="/:ens/creator_contests">
         <ContestHomepage />
       </Route>
-
 
       <Route exact path="/:ens/creator_contests/:contest_hash">
         <ContestInterfaceController />

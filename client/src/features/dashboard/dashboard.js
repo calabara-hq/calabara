@@ -47,8 +47,8 @@ import { useWalletContext } from '../../app/WalletContext'
 
 export default function Dashboard() {
 
-  const { isConnected, walletAddress } = useWalletContext()
-
+  const isConnected = useSelector(selectConnectedBool)
+  const walletAddress = useSelector(selectConnectedAddress)
   const visibleWidgets = useSelector(selectVisibleWidgets)
   const info = useSelector(selectDashboardInfo)
   const gatekeeperRules = useSelector(selectDashboardRules)
@@ -136,7 +136,7 @@ export default function Dashboard() {
 
 
 function InfoCard({ info, ens, discordIntegrationProps }) {
-  const { isConnected } = useSelector(selectConnectedBool)
+  const isConnected = useSelector(selectConnectedBool)
   const logoCache = useSelector(selectLogoCache);
   const dashboardRules = useSelector(selectDashboardRules);
   const discord_id = useSelector(selectDiscordId);
@@ -275,7 +275,7 @@ function InfoCard({ info, ens, discordIntegrationProps }) {
 
 function ManageWidgets({ isAdmin }) {
 
-  const { isConnected } = useWalletContext()
+  const isConnected = useSelector(selectConnectedBool)
   const history = useHistory();
 
   useEffect(() => {
