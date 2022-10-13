@@ -7,7 +7,6 @@ import { fade_in, labelColorOptions } from '../../common/common_styles';
 import { faQuestionCircle, faPalette, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios'
 
-
 const CreatePromptWrap = styled.div`
 display: flex;
 flex-direction: column;
@@ -243,9 +242,8 @@ export default function PromptBuilder({ promptBuilderData, setPromptBuilderData,
         prompt_content_error
     } = promptBuilderData
 
-    console.log('re-rendering')
-
-    const handleInitialize = useCallback(async (instance) => {
+    const handleInitialize = useCallback((instance) => {
+        console.log('initializing')
         promptEditorCore.current = instance;
     }, [])
 
@@ -301,14 +299,14 @@ export default function PromptBuilder({ promptBuilderData, setPromptBuilderData,
             <PromptBuilderWrap>
                 <PromptTop>
                     <PromptHeadingInput>
-                        <PromptInput error={prompt_heading_error} value={prompt_heading} onChange={handleHeadingChange} placeholder='Title' maxLength={50} style={{ width: '100%'}}></PromptInput>
+                        <PromptInput error={prompt_heading_error} value={prompt_heading} onChange={handleHeadingChange} placeholder='Title' maxLength={50} style={{ width: '100%' }}></PromptInput>
                         {prompt_heading_error && <PromptInputError>Please provide a prompt title</PromptInputError>}
                     </PromptHeadingInput>
                 </PromptTop>
                 {prompt_content_error && <PromptInputError>Prompt body cannot be empty</PromptInputError>}
                 <PromptDataWrap>
                     <EditorWrap onClick={clearEditorErrors}>
-                        <ReactEditorJS value={null} ref={promptEditorCore} onInitialize={handleInitialize} tools={EDITOR_JS_TOOLS} />
+                        <ReactEditorJS value={null} onInitialize={handleInitialize} tools={EDITOR_JS_TOOLS} />
                     </EditorWrap>
                     <PromptSidebarWrap >
                         <CoverImgUploader>

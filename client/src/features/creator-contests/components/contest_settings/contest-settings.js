@@ -141,9 +141,9 @@ function reducer(state, action) {
 
 
 const initialPromptData = {
-    prompt_heading: null,
+    prompt_heading: '',
     prompt_heading_error: false,
-    prompt_label: null,
+    prompt_label: '',
     prompt_label_error: false,
     prompt_label_color: 0,
     prompt_content_error: false,
@@ -327,6 +327,7 @@ function SaveSettings(props) {
 
 
         const promptEditorData = await promptEditorCore.current.save();
+        console.log(promptEditorData)
         const isPromptError = handlePromptErrors(promptEditorData, promptBuilderData, setPromptBuilderData);
         if (isPromptError) return PromptBlockRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
 

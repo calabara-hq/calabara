@@ -39,6 +39,20 @@ export default function useAuthentication() {
 
     })
 
+
+
+    useEffect(() => {
+        let authState = checkCurrentJwt(authToken);
+        if (authState === 'authenticated') {
+            registerUser(address)
+            dispatch(setConnected(address))
+        }
+        setState(authState);
+
+    }, [])
+
+
+
     // monitor address for account change. If it's a real change, disconnect them.
     // would like to re-auth but the MetaMask UI is not great for this situation
 
@@ -50,18 +64,8 @@ export default function useAuthentication() {
         }
     }, [address])
 
-    useEffect(() => {
-        let authState = checkCurrentJwt(authToken);
-        if (authState === 'authenticated') dispatch(setConnected(address))
-        setState(authState);
-
-    }, [])
-
-
-
 
     useInterval(() => {
-        console.log('running interval')
         let new_state = checkCurrentJwt(authToken)
         if (state === 'authenticated' && new_state === 'unauthenticated') return disconnect()
 

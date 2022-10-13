@@ -81,8 +81,8 @@ export default function VotingPolicy({ votingStrategy, setVotingStrategy, voting
                 <p>Please select a voting strategy</p>
             </div>}
             <CreditStrategyWrap>
-                {creditStrategies.map(el => {
-                    return <CreditStrategy strategy={el} handlePolicyModalOpen={handlePolicyModalOpen} handlePolicyModalClose={handlePolicyModalClose} votingStrategy={votingStrategy} />
+                {creditStrategies.map((el, idx) => {
+                    return <CreditStrategy key={idx} strategy={el} handlePolicyModalOpen={handlePolicyModalOpen} handlePolicyModalClose={handlePolicyModalClose} votingStrategy={votingStrategy} />
                 })}
             </CreditStrategyWrap>
             {addPolicyModalOpen &&

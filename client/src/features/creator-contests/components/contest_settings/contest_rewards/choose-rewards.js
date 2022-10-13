@@ -135,20 +135,16 @@ export default function RewardSelector({ }) {
                 {Object.values(rewardOptions).map((el, idx) => {
 
                     return (
-                        <>
-
-                            <RewardOption key={idx}>
-                                <>
-                                    {el.type != 'eth' && <RewardOptionEditBtn onClick={() => handleEditRewardOption(el.type)}><FontAwesomeIcon icon={faPencil}></FontAwesomeIcon></RewardOptionEditBtn>}
-                                    <p><b>Type:</b> <TagType type={el.type}>{el.type}</TagType></p>
-                                    {el.symbol != 'ETH' && <p><b>Symbol:</b> {el.symbol}</p>}
-                                    {el.address && <EtherScanLinkButton onClick={() => { window.open('https://etherscan.io/address/' + el.address) }} className="gatekeeper-config">{el.address.substring(0, 6)}...{el.address.substring(38, 42)} <i className="fas fa-external-link-alt"></i></EtherScanLinkButton>}
-                                    {el.img && <img style={{ margin: '0 auto' }} src={ethLogo}></img>}
-                                    <ToggleSwitch selectedRewards={selectedRewards} id={idx} value={el} />
-                                </>
-                            </RewardOption>
-
-                        </>
+                        <RewardOption key={idx}>
+                            <>
+                                {el.type != 'eth' && <RewardOptionEditBtn onClick={() => handleEditRewardOption(el.type)}><FontAwesomeIcon icon={faPencil}></FontAwesomeIcon></RewardOptionEditBtn>}
+                                <p><b>Type:</b> <TagType type={el.type}>{el.type}</TagType></p>
+                                {el.symbol != 'ETH' && <p><b>Symbol:</b> {el.symbol}</p>}
+                                {el.address && <EtherScanLinkButton onClick={() => { window.open('https://etherscan.io/address/' + el.address) }} className="gatekeeper-config">{el.address.substring(0, 6)}...{el.address.substring(38, 42)} <i className="fas fa-external-link-alt"></i></EtherScanLinkButton>}
+                                {el.img && <img style={{ margin: '0 auto' }} src={ethLogo}></img>}
+                                <ToggleSwitch selectedRewards={selectedRewards} id={idx} value={el} />
+                            </>
+                        </RewardOption>
                     )
                 })}
             </AvailableRewards>

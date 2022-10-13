@@ -106,11 +106,11 @@ export default function useErrorHandler(date_times) {
             prompt_error = true
         }
 
-        if (!promptBuilderData.prompt_heading) {
+        if (promptBuilderData.prompt_heading === '') {
             setPromptBuilderData({ type: 'update_single', payload: { prompt_heading_error: true } })
             prompt_error = true
         }
-        if (!promptBuilderData.prompt_label) {
+        if (promptBuilderData.prompt_label === '') {
             setPromptBuilderData({ type: 'update_single', payload: { prompt_label_error: true } })
             prompt_error = true
         }
