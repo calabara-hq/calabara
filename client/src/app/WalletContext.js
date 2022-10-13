@@ -35,6 +35,8 @@ const is_jwt_valid = () => {
     return true;
 }
 
+
+console.log('re init wagmi client')
 const wagmiClient = createClient({
     autoConnect: is_jwt_valid(),
     connectors,

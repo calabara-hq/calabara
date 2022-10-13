@@ -6,7 +6,6 @@ export const connectivity = createSlice({
   initialState: {
     connected: false,
     address: '',
-    account_change: false,
   },
   reducers: {
 
@@ -18,10 +17,6 @@ export const connectivity = createSlice({
     setDisconnected: (state, data) => {
       state.address = '';
       state.connected = false;
-    },
-
-    setAccountChange: (state, data) => {
-      state.account_change = data.payload;
     },
 
   },
@@ -37,20 +32,5 @@ export const { setConnected, setDisconnected, setAccountChange } = connectivity.
 
 export const selectConnectedBool = state => state.connectivity.connected;
 export const selectConnectedAddress = state => state.connectivity.address;
-export const selectAccountChange = state => state.connectivity.account_change;
-
-export const manageAccountChange = (newAddress) => async (dispatch, getState, axios) => {
-  let { connectivity } = getState();
-
-  if(connectivity.address !== '' && newAddress){
-    // account changed, not just normal log in/log out flow
-    dispatch(setDisconnected())
-    dispatch(setAccountChange(true))
-  }
-
- 
-  
-}
-
 
 export default connectivity.reducer;

@@ -11,15 +11,9 @@ import registerUser from "../user/user";
 
 import {
     setConnected,
-    setDisconnected,
-    selectConnectedBool,
     selectConnectedAddress,
-    setAccountChange,
-    selectAccountChange,
-    manageAccountChange,
-    selectIsTokenExpired,
 } from '../wallet/wallet-reducer';
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 
 export default function useAuthentication() {
@@ -27,12 +21,34 @@ export default function useAuthentication() {
     const [authToken, setAuthToken] = useLocalStorage('jwt', null, false)
     const { openConnectModal } = useConnectModal()
     const [state, setState] = useState('loading')
+    const connectedAddress = useSelector(selectConnectedAddress)
     const dispatch = useDispatch();
     const { disconnect } = useDisconnect();
-    const { address, isConnected } = useAccount({
-        onDisconnect() { clearAuthenticationState() }
+
+
+    const { address } = useAccount({
+        onDisconnect() {
+            clearAuthenticationState()
+        },
+        onConnect({ address }) {
+            if (state === 'unauthenticated' && address) {
+                handleAuth(address)
+            }
+
+        }
+
     })
 
+    // monitor address for account change. If it's a real change, disconnect them.
+    // would like to re-auth but the MetaMask UI is not great for this situation
+
+    useEffect(() => {
+        if (connectedAddress && (connectedAddress !== address)) {
+            if (state === 'authenticated') {
+                disconnect();
+            }
+        }
+    }, [address])
 
     useEffect(() => {
         let authState = checkCurrentJwt(authToken);
@@ -43,34 +59,20 @@ export default function useAuthentication() {
 
 
 
-    useEffect(() => {
-
-        if (state === 'unauthenticated' && isConnected) {
-            secure_sign()
-                .then(sig_res => {
-                    if (sig_res) {
-                        authorize(sig_res)
-                        registerUser(address) // TURTLES remove this when we refactor the other apps
-                        dispatch(setConnected(address))
-                    }
-                })
-        }
-
-    }, [state, isConnected])
-
-
-
 
     useInterval(() => {
-        let prev_state = state
-        let auth_state = checkCurrentJwt(authToken)
-        if (prev_state === 'authenticated' && auth_state === 'unauthenticated') return disconnect()
+        console.log('running interval')
+        let new_state = checkCurrentJwt(authToken)
+        if (state === 'authenticated' && new_state === 'unauthenticated') return disconnect()
 
         setState(checkCurrentJwt(authToken));
 
     }, 15000)
 
 
+
+
+    // helpers
 
     const checkCurrentJwt = (value) => {
         try {
@@ -86,7 +88,17 @@ export default function useAuthentication() {
 
 
 
-    // helpers
+
+    const handleAuth = (address) => {
+        secure_sign(address)
+            .then(sig_res => {
+                if (sig_res) {
+                    authorize(sig_res)
+                    registerUser(address) // TURTLES remove this when we refactor the other apps
+                    dispatch(setConnected(address))
+                }
+            })
+    }
 
     const clearAuthenticationState = () => {
         setState('unauthenticated');
@@ -98,7 +110,7 @@ export default function useAuthentication() {
         setState(checkCurrentJwt(token))
     }
 
-    const secure_sign = async () => {
+    const secure_sign = async (address) => {
         const nonce_from_server = await axios.post('/authentication/generate_nonce', { address: address })
         return signMessage(nonce_from_server.data.nonce)
             .then(signatureResult => {
