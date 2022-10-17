@@ -75,8 +75,8 @@ const TLDRWrap = styled.div`
 export default function TLDR({ isUserEligible, setShowWarning, TLDRimage, setTLDRImage, TLDRText, setTLDRText }) {
 
     const tldr_max_length = {
-        with_img: "150",
-        no_img: "250"
+        with_img: "280",
+        no_img: "480"
     }
 
 
@@ -126,7 +126,7 @@ export default function TLDR({ isUserEligible, setShowWarning, TLDRimage, setTLD
 
     return (
         <TLDRWrap>
-            <TextAreaWrap textLength={TLDRText.length} maxLength={TLDRimage ? 150 : 250}>
+            <TextAreaWrap textLength={TLDRText.length} maxLength={TLDRimage ? 280 : 480}>
                 <TextArea placeholder='TLDR text' value={TLDRText} onChange={updateTLDRText}></TextArea>
             </TextAreaWrap>
             <ImageWrapper>

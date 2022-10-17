@@ -1,11 +1,12 @@
-import { Suspense, lazy } from 'react'
-import { BrowserRouter as Router, Switch, Route, Link, useLocation } from 'react-router-dom'
-import '../../css/container.css'
+import { Suspense, lazy, useEffect } from 'react'
+import { Switch, Route, Link, useLocation } from 'react-router-dom'
 import { HomepageNav, ApplicationNav } from '../navbar/navbar.js'
 import Homepage from '../homepage/homepage.js'
 import { WalletProvider } from '../../app/WalletContext.js'
 import LazyLoader from '../lazy-loader/lazy-loader.js'
 import Test from './test'
+import { clearSession } from '../../app/sessionReducer'
+import { useDispatch } from 'react-redux'
 const Cards = lazy(() => import('../org-cards/org-cards.js'))
 const Dashboard = lazy(() => import('../dashboard/dashboard.js'))
 const Analytics = lazy(() => import('../snapshot-analytics/snapshot-analytics.js'))
@@ -19,13 +20,25 @@ const ContestHomepage = lazy(() => import('../creator-contests/components/contes
 const ContestInterfaceController = lazy(() => import('../creator-contests/components/contest-live-interface/interface/contest-interface-ctr.js'))
 
 
-export default function Container() {
-
+export default function Routes({ initial_session }) {
+  const dispatch = useDispatch();
+  const fetchWithSessionCheck = () => {
+    fetch('/authentication/isAuthenticated', { credentials: 'include' })
+      .then(res => res.json())
+      .then(res => {
+        if (!res.authenticated) dispatch(clearSession())
+      })
+      .catch(err => false)
+  }
 
 
   const location = useLocation();
 
   const homepage = location.pathname === '/'
+
+  useEffect(() => {
+    fetchWithSessionCheck()
+  }, [location])
 
   return (
     <div className='application-container'>
@@ -37,7 +50,7 @@ export default function Container() {
 
         <Route path="/*">
           <Suspense fallback={<LazyLoader />}>
-            <Application />
+            <ApplicationRoutes initial_session={initial_session} />
           </Suspense>
         </Route>
       </Switch>
@@ -48,17 +61,15 @@ export default function Container() {
 
 
 
-function Application({ }) {
+function ApplicationRoutes({ initial_session }) {
   return (
 
-    <WalletProvider>
+    <WalletProvider initial_session={initial_session}>
 
       <ApplicationNav />
 
       <Route path="/:ens/dashboard">
-        <Suspense>
-          <Dashboard />
-        </Suspense>
+        <Dashboard />
       </Route>
 
       <Route path="/explore">

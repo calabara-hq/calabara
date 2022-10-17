@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import { useInterval } from "./useInterval";
-import useLocalStorage from "./useLocalStorage";
-import jwt_decode from 'jwt-decode'
 import { useAccount, useDisconnect, useConnect, useSignMessage } from 'wagmi'
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import { showNotification } from "../notifications/notifications";
@@ -9,119 +7,69 @@ import axios from "axios";
 import { ethers } from "ethers";
 import registerUser from "../user/user";
 
-import {
-    setConnected,
-    selectConnectedAddress,
-} from '../wallet/wallet-reducer';
 import { useDispatch, useSelector } from "react-redux";
+import { clearSession, selectUserSession, selectWalletAddress, setUserSession } from "../../app/sessionReducer";
 
 
 export default function useAuthentication() {
     const { signMessageAsync } = useSignMessage()
-    const [authToken, setAuthToken] = useLocalStorage('jwt', null, false)
+    const [sessionExpiresAt, setSessionExpiresAt] = useState(null)
     const { openConnectModal } = useConnectModal()
     const [state, setState] = useState('loading')
-    const connectedAddress = useSelector(selectConnectedAddress)
+    const connectedAddress = useSelector(selectWalletAddress)
     const dispatch = useDispatch();
+    const session = useSelector(selectUserSession)
     const { disconnect } = useDisconnect();
-
 
     const { address } = useAccount({
         onDisconnect() {
-            clearAuthenticationState()
+            clearAuthenticationState();
         },
+
         onConnect({ address }) {
-            if (state === 'unauthenticated' && address) {
+            if (!session && address) {
                 handleAuth(address)
             }
-
         }
-
     })
-
-
-
-    useEffect(() => {
-        let authState = checkCurrentJwt(authToken);
-        if (authState === 'authenticated') {
-            registerUser(address)
-            dispatch(setConnected(address))
-        }
-        setState(authState);
-
-    }, [])
-
-
-
-    // monitor address for account change. If it's a real change, disconnect them.
-    // would like to re-auth but the MetaMask UI is not great for this situation
 
     useEffect(() => {
         if (connectedAddress && (connectedAddress !== address)) {
-            if (state === 'authenticated') {
-                disconnect();
-            }
+            disconnect();
         }
     }, [address])
 
 
-    useInterval(() => {
-        let new_state = checkCurrentJwt(authToken)
-        if (state === 'authenticated' && new_state === 'unauthenticated') return disconnect()
-
-        setState(checkCurrentJwt(authToken));
-
-    }, 15000)
-
-
-
-
-    // helpers
-
-    const checkCurrentJwt = (value) => {
-        try {
-            const { exp } = jwt_decode(value);
-            if (Date.now() >= exp * 1000) {
-                return 'unauthenticated';
-            }
-        } catch (err) {
-            return 'unauthenticated';
-        }
-        return 'authenticated';
-    }
-
-
+    useEffect(() => {
+        if (!session) return disconnect()
+    }, [session])
 
 
     const handleAuth = (address) => {
         secure_sign(address)
             .then(sig_res => {
                 if (sig_res) {
-                    authorize(sig_res)
-                    registerUser(address) // TURTLES remove this when we refactor the other apps
-                    dispatch(setConnected(address))
+                    dispatch(setUserSession(sig_res))
                 }
             })
     }
 
+
     const clearAuthenticationState = () => {
-        setState('unauthenticated');
-        setAuthToken(null);
+        fetch('/authentication/signOut', { credentials: 'include' })
+            .then(dispatch(clearSession()))
     }
 
-    const authorize = (token) => {
-        setAuthToken(token);
-        setState(checkCurrentJwt(token))
-    }
+
 
     const secure_sign = async (address) => {
         const nonce_from_server = await axios.post('/authentication/generate_nonce', { address: address })
         return signMessage(nonce_from_server.data.nonce)
             .then(signatureResult => {
-                return axios.post('/authentication/generate_jwt', { sig: signatureResult.sig, address: address })
-                    .then(jwt_result => {
-                        if (state === 'unauthenticated') showNotification('success', 'success', 'welcome back!')
-                        return jwt_result.data.jwt
+                return axios.post('/authentication/generate_session', { sig: signatureResult.sig, address: address }, { withCredentials: true })
+                    .then((res) => {
+                        if (!session) showNotification('success', 'success', 'welcome back!')
+                        return res.data.user
                     })
             })
             .catch(error => { return null })
@@ -154,7 +102,7 @@ export default function useAuthentication() {
             return null
         }
 
-        return axios.post(endpoint, body, { headers: { 'Authorization': `Bearer ${authToken}` } })
+        return axios.post(endpoint, body, { withCredentials: true })
             .then(res => { return res })
             .catch(err => {
                 switch (err.response.status) {

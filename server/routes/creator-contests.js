@@ -4,7 +4,7 @@ const dotenv = require('dotenv')
 const path = require('path')
 const contests = express();
 contests.use(express.json())
-const { authenticateToken } = require('../middlewares/jwt-middleware.js');
+const { authenticateToken } = require('../middlewares/auth-middleware.js');
 const { isAdmin } = require('../middlewares/admin-middleware')
 const { clean, asArray, shuffleArray } = require('../helpers/common')
 const { createContest, isNick } = require('../middlewares/creator-contests/create-contest-middleware');
@@ -81,10 +81,10 @@ contests.get('/fetch_submission_votes', async function (req, res, next) {
 
 contests.post('/create_submission', authenticateToken, check_submitter_eligibility_PROTECTED, createSubmission, async function (req, res, next) {
     const { ens } = req.body;
-    let result = await db.query('insert into contest_submissions (ens, contest_hash, author, created, locked, pinned, _url) values ($1, $2, $3, $4, $5, $6, $7) returning id ', [ens, req.contest_hash, req.user.address, req.created, false, false, req.url]).then(clean)
+    let result = await db.query('insert into contest_submissions (ens, contest_hash, author, created, locked, pinned, _url) values ($1, $2, $3, $4, $5, $6, $7) returning id ', [ens, req.contest_hash, req.session.user.address, req.created, false, false, req.url]).then(clean)
     res.sendStatus(200)
     //sendSocketMessage(req.contest_hash, 'new_submission', { id: result.id, _url: req.url })
-    socketSendNewSubmission(req.contest_hash, ens, { id: result.id, _url: req.url, author: req.user.address, votes: 0 })
+    socketSendNewSubmission(req.contest_hash, ens, { id: result.id, _url: req.url, author: req.session.user.address, votes: 0 })
 
 })
 
@@ -98,7 +98,7 @@ const getUserSubmissions = async (walletAddress, contest_hash) => {
 contests.post('/get_user_submissions', authenticateToken, async function (req, res, next) {
     let { contest_hash } = req.body
 
-    let subs = await getUserSubmissions(req.user.address, contest_hash)
+    let subs = await getUserSubmissions(req.session.user.address, contest_hash)
     res.send(subs).status(200)
 
 })
@@ -140,7 +140,7 @@ contests.post('/user_voting_metrics', calc_sub_vp__unprotected, async function (
 // authenticate user, check restrictions, get strategy, check voting power
 contests.post('/cast_vote', authenticateToken, calc_sub_vp__PROTECTED, async function (req, res, next) {
     let { contest_hash, sub_id, num_votes } = req.body;
-    let walletAddress = req.user.address
+    let walletAddress = req.session.user.address
     let result = await db.query('insert into contest_votes (contest_hash, submission_id, voter, votes_spent)\
                                 values ($1, $2, $3, $4)\
                                 on conflict (voter, submission_id)\
@@ -158,7 +158,7 @@ contests.post('/cast_vote', authenticateToken, calc_sub_vp__PROTECTED, async fun
 
 contests.post('/retract_sub_votes', authenticateToken, async function (req, res, next) {
     let { sub_id } = req.body;
-    db.query('delete from contest_votes where submission_id = $1 and voter = $2', [sub_id, req.user.address])
+    db.query('delete from contest_votes where submission_id = $1 and voter = $2', [sub_id, req.session.user.address])
         .then(() => res.sendStatus(200))
 
 })
@@ -206,12 +206,6 @@ contests.post('/upload_img', imageUpload.single('image'), async (req, res) => {
 }, (error, req, res, next) => {
     console.log(error)
     res.status(400).send({ error: error.message })
-})
-
-
-contests.post('/test_auth', authenticateToken, async (req, res) => {
-    const message = 'hello from server'
-    res.send(message).status(200)
 })
 
 

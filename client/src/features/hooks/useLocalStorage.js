@@ -22,7 +22,6 @@ const useLocalStorage = (key, initialValue, shouldSaveInitial = false) => {
   const setValue = (value) => {
     try {
       const valueToStore = value instanceof Function ? value(storedValue) : value
-      console.log('value to store', valueToStore)
       setStoredValue(valueToStore)
       if (valueToStore === undefined) {
         window.localStorage.removeItem(key)

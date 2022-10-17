@@ -4,13 +4,8 @@ const dotenv = require('dotenv')
 const authentication = express();
 authentication.use(express.json())
 const { verifySignature } = require('../helpers/edcsa-auth.js');
-const jwt = require('jsonwebtoken');
-const { keccak256 } = require('../helpers/hash.js');
-
+const { clean } = require('../helpers/common')
 dotenv.config();
-
-
-const JWT_TOKEN_SECRET = process.env.JWT_TOKEN_SECRET;
 
 
 const randomNonce = (length) => {
@@ -22,17 +17,6 @@ const randomNonce = (length) => {
     return text;
 }
 
-const clean = (data) => {
-    if (data.rows.length == 0) { return null }
-    else if (data.rows.length == 1) { return data.rows[0] }
-    else { return data.rows }
-}
-
-const generate_access_token = (address) => {
-    return jwt.sign({ address: address }, JWT_TOKEN_SECRET, { expiresIn: "6h" });
-}
-
-
 authentication.post('/generate_nonce', async function (req, res, next) {
     const { address } = req.body;
     let nonce = randomNonce(25)
@@ -42,7 +26,8 @@ authentication.post('/generate_nonce', async function (req, res, next) {
     res.status(200);
 })
 
-authentication.post('/generate_jwt', async function (req, res, next) {
+
+authentication.post('/generate_session', async function (req, res, next) {
     const { sig, address } = req.body;
     const nonce_result = await db.query('select nonce from users where address = $1', [address]).then(clean)
     const msg = `Signing one time message with nonce: ${nonce_result.nonce}`
@@ -59,23 +44,29 @@ authentication.post('/generate_jwt', async function (req, res, next) {
         // generate a token
 
         if (signatureResult) {
-            let jwt = generate_access_token(address)
-            res.send({ jwt: jwt })
-            res.status(200)
+
+            req.session.user = { address }
+            res.send({ user: req.session.user }).status(200)
         }
         else {
             res.status(401)
-            res.send('error')
         }
     } catch (e) {
         res.status(401)
-        res.send('error')
     }
 })
 
 
+authentication.get('/signOut', async function (req, res, next) {
+    req.session.destroy()
+    res.sendStatus(200)
+})
 
 
+authentication.get('/isAuthenticated', async function (req, res, next) {
+    if (!(req.sessionID && req.session.user)) return res.send({ authenticated: false }).status(200)
+    return res.send({ authenticated: true, user: req.session.user }).status(200)
+})
 
 
 module.exports = {

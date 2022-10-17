@@ -6,6 +6,7 @@ dotenv.config();
 
 const db_init = () => {
 
+
     let config;
 
     if (process.env.NODE_ENV == 'production') {

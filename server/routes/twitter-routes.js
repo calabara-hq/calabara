@@ -21,7 +21,6 @@ twitter.get('/generateAuthLink', async function (req, res, next) {
 
 
 twitter.get('/oauth2', async function (req, res, next) {
-    console.log('entering oauth2')
     const { state, code } = req.query;
 
     const { codeVerifier, state: sessionState, accessToken, refreshToken, expiresIn } = req.session;
@@ -30,12 +29,9 @@ twitter.get('/oauth2', async function (req, res, next) {
 
     if (state !== sessionState) return res.status(400).send('Stored tokens didnt match!')
 
-
     requestClient.loginWithOAuth2({ code: code, codeVerifier: codeVerifier, redirectUri: 'https://localhost:3001/twitter/oauth2' })
         .then(async ({ client: loggedClient, accessToken, refreshToken, expiresIn }) => {
-            // {loggedClient} is an authenticated client in behalf of some user
-            // Store {accessToken} somewhere, it will be valid until {expiresIn} is hit.
-            // If you want to refresh your token later, store {refreshToken} (it is present if 'offline.access' has been given as scope)
+
             req.session.accessToken = accessToken
             req.session.refreshToken = refreshToken
             req.sessionStore.expiresIn = expiresIn
@@ -48,20 +44,40 @@ twitter.get('/oauth2', async function (req, res, next) {
 })
 
 
+
+
+
+
+
+
 twitter.get('/poll_auth_status', async function (req, res, next) {
     const { codeVerifier, state: sessionState, accessToken, refreshToken, expiresIn } = req.session;
-    
-    if(codeVerifier && !accessToken){
+
+    if (codeVerifier && !accessToken) {
         // user got the auth link but hasn't yet approved the authorization
-        res.send(JSON.stringify({authorized: false})).status(200)
+        res.send(JSON.stringify({ authorized: false })).status(200)
     }
 
-    if(codeVerifier && accessToken){
+    if (codeVerifier && accessToken) {
         const client = new TwitterApi(accessToken);
-        const {data: user} = await client.v2.me({"user.fields": ["profile_image_url"]});
-        res.send(JSON.stringify({authorized: true, user}))
+        const { data: user } = await client.v2.me({ "user.fields": ["profile_image_url"] });
+        res.send(JSON.stringify({ authorized: true, user }))
     }
 })
+
+
+twitter.get('/destroy_session', async function (req, res, next) {
+    console.log(req.session)
+    req.session.accessToken = null
+    req.session.refreshToken = null
+    req.sessionStore.expiresIn = null
+    res.sendStatus(200)
+})
+
+
+
+
+
 
 
 module.exports = { twitter }

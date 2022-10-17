@@ -5,7 +5,7 @@ const path = require('path')
 const dashboard = express();
 dashboard.use(express.json())
 const asyncfs = require('fs').promises;
-const { authenticateToken } = require('../middlewares/jwt-middleware.js');
+const { authenticateToken } = require('../middlewares/auth-middleware.js');
 const { isAdmin } = require('../middlewares/admin-middleware')
 const { clean, asArray } = require('../helpers/common')
 const { getGuildRoles } = require('./discord-routes')

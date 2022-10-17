@@ -5,7 +5,7 @@ const path = require('path')
 const ipfs = express();
 ipfs.use(express.json())
 const asyncfs = require('fs').promises;
-const { authenticateToken } = require('../middlewares/jwt-middleware.js');
+const { authenticateToken } = require('../middlewares/auth-middleware.js');
 const { isAdmin } = require('../middlewares/admin-middleware');
 const { imageUpload } = require('../middlewares/image-upload-middleware');
 const { testAuthentication, pinFile } = require('../helpers/ipfs-api.js');

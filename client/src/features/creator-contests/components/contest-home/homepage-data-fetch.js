@@ -1,4 +1,3 @@
-import axios from 'axios'
 import wrapPromise from '../../../../helpers/wrap-promise'
 
 const fetchContests = (ens) => {

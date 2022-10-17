@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import usePopupWindow from "./usePopupWindow";
-
+import { socket } from "../../service/socket";
 const DISCORD_CLIENT_KEY = process.env.REACT_APP_DISCORD_CLIENT_KEY;
 
 export const useTwitterAuth = () => {
@@ -26,7 +26,15 @@ export const useTwitterAuth = () => {
             })
     }
 
+    useEffect(() => {
+        console.log('socket update!!!')
 
+        const authListener = (user) => {
+            console.log(user)
+        }
+
+        socket.on('twitter_authorization', authListener)
+    }, [socket])
 
 
     const pollAuthState = () => {
@@ -39,7 +47,6 @@ export const useTwitterAuth = () => {
                     setTimeout(pollAuthState, 1000)
                 }
             })
-
     }
 
     const handleOpenAuth = () => {

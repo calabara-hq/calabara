@@ -1,16 +1,16 @@
 import { useState, useMemo, useEffect } from 'react'
 import axios from 'axios';
-import { selectConnectedBool, selectConnectedAddress } from "../wallet/wallet-reducer";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { selectContestState } from '../creator-contests/components/contest-live-interface/interface/contest-interface-reducer';
+import { selectIsConnected, selectWalletAddress } from '../../app/sessionReducer';
 
 
 
 
 export default function useSubmissionEngine(submitter_restrictions) {
-    const walletAddress = useSelector(selectConnectedAddress);
-    const isConnected = useSelector(selectConnectedBool);
+    const walletAddress = useSelector(selectWalletAddress);
+    const isConnected = useSelector(selectIsConnected);
     const [alreadySubmittedError, setAlreadySubmittedError] = useState(false)
     const { ens, contest_hash } = useParams();
     const [restrictionResults, setRestrictionResults] = useState(submitter_restrictions)

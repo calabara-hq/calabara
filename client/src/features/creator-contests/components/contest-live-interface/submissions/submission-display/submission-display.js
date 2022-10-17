@@ -4,11 +4,11 @@ import ExpandSubmissionDrawer from './expand-submission-drawer';
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
-import { socket } from '../../service/socket';
-import { selectContestState } from '../interface/contest-interface-reducer';
-import DisplayWinners from '../winners/contest-winners';
-import { ExpandedPromptComponent } from '../prompts/prompt-display';
-import { VoteTotals, SubmissionMeta, Author, SubmissionBottomBlur } from './submission-styles';
+import { socket } from '../../../../../../service/socket';
+import { selectContestState } from '../../interface/contest-interface-reducer';
+import DisplayWinners from '../../winners/contest-winners';
+import { ExpandedPromptComponent } from '../../prompts/prompt-display';
+import { VoteTotals, SubmissionMeta, Author, SubmissionBottomBlur } from './submission-display-styles';
 
 
 const SubmissionWrap = styled.div`

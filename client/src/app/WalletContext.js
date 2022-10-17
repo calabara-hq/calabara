@@ -6,8 +6,6 @@ import { alchemyProvider } from 'wagmi/providers/alchemy';
 import { publicProvider } from 'wagmi/providers/public';
 import useWallet from '../features/hooks/useWallet.js';
 import merge from 'lodash.merge'
-import jwt_decode from 'jwt-decode'
-import useAuthentication from '../features/hooks/useAuthentication.js';
 
 const { chains, provider } = configureChains(
     [chain.mainnet],
@@ -22,25 +20,6 @@ const { connectors } = getDefaultWallets({
     chains
 });
 
-
-const is_jwt_valid = () => {
-    try {
-        const { exp } = jwt_decode(window.localStorage.getItem('jwt'));
-        if (Date.now() >= exp * 1000) {
-            return false;
-        }
-    } catch (err) {
-        return false;
-    }
-    return true;
-}
-
-
-const wagmiClient = createClient({
-    autoConnect: is_jwt_valid(),
-    connectors,
-    provider,
-})
 
 
 const myTheme = merge(darkTheme(), {
@@ -68,7 +47,16 @@ const myTheme = merge(darkTheme(), {
 
 
 
-export const WalletProvider = ({ children }) => {
+export const WalletProvider = ({ children, initial_session }) => {
+
+    const wagmiClient = React.useMemo(() =>
+        createClient({
+            autoConnect: initial_session ? true : false,
+            connectors,
+            provider,
+        }), [])
+
+
 
     return (
         <WagmiConfig client={wagmiClient}>
@@ -91,9 +79,7 @@ const WalletHookMethods = ({ children }) => {
     let walletProviderValues = {
         walletDisconnect,
         walletConnect,
-        //walletAddress,
         validAddress,
-        //isConnected,
         authenticated_post
     }
 

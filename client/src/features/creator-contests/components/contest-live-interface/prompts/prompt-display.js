@@ -21,7 +21,6 @@ export default function PromptDisplay({ }) {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [isCreating, setIsCreating] = useState(false);
     const prompt_data = useSelector(selectPromptData)
-    console.log('PROMPT DATA', prompt_data)
 
     const handleDrawerOpen = () => {
         if (!isDrawerOpen) {

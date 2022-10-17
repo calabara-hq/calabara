@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useDispatch, useSelector } from "react-redux";
 import { setContestSettings, setPromptData, stateReset, updateState, selectIsLoading } from "./contest-interface-reducer";
 import Placeholder from "../../common/spinner";
-import { socket, initializeSocketConnection, disconnectSocket } from "../../service/socket";
+import { socket, initializeSocketConnection, disconnectSocket } from "../../../../../service/socket";
 import { selectContestState } from "./contest-interface-reducer";
 import ContestInterface from './interface'
 import styled from 'styled-components'
@@ -49,7 +49,6 @@ const calculateProgressRatio = (cc_state, t0, t1, t2) => {
 
 
 export default function ContestInterfaceController() {
-    console.log('INTERFACE CONTROLLER')
     const { ens, contest_hash } = useParams();
     const [settings, setSettings] = useState(null);
     const dispatch = useDispatch();
@@ -84,7 +83,6 @@ export default function ContestInterfaceController() {
                     dispatch(setContestSettings(data.settings))
                     dispatch(setPromptData(data.prompt_data))
                     let { start_date, voting_begin, end_date } = data.settings.date_times
-                    //updateContestState(start_date, voting_begin, end_date)
 
                     timerRef.current = setInterval(() => {
                         updateContestState(start_date, voting_begin, end_date)

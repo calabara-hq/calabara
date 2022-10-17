@@ -12,12 +12,6 @@ import useDiscordAuth from '../hooks/useDiscordAuth'
 //redux
 import { useSelector, useDispatch } from 'react-redux';
 
-
-import {
-  selectConnectedBool,
-  selectConnectedAddress,
-} from '../wallet/wallet-reducer';
-
 import {
   selectMemberOf,
   selectLogoCache,
@@ -43,12 +37,13 @@ import useWidgets from '../hooks/useWidgets'
 import useOrganization from '../hooks/useOrganization'
 import useCommon from '../hooks/useCommon'
 import { useWalletContext } from '../../app/WalletContext'
+import { selectIsConnected, selectWalletAddress } from '../../app/sessionReducer'
 
 
 export default function Dashboard() {
 
-  const isConnected = useSelector(selectConnectedBool)
-  const walletAddress = useSelector(selectConnectedAddress)
+  const isConnected = useSelector(selectIsConnected)
+  const walletAddress = useSelector(selectWalletAddress)
   const visibleWidgets = useSelector(selectVisibleWidgets)
   const info = useSelector(selectDashboardInfo)
   const gatekeeperRules = useSelector(selectDashboardRules)
@@ -136,7 +131,7 @@ export default function Dashboard() {
 
 
 function InfoCard({ info, ens, discordIntegrationProps }) {
-  const isConnected = useSelector(selectConnectedBool)
+  const isConnected = useSelector(selectIsConnected)
   const logoCache = useSelector(selectLogoCache);
   const dashboardRules = useSelector(selectDashboardRules);
   const discord_id = useSelector(selectDiscordId);
@@ -275,7 +270,7 @@ function InfoCard({ info, ens, discordIntegrationProps }) {
 
 function ManageWidgets({ isAdmin }) {
 
-  const isConnected = useSelector(selectConnectedBool)
+  const isConnected = useSelector(selectIsConnected)
   const history = useHistory();
 
   useEffect(() => {

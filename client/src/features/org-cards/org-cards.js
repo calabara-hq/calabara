@@ -4,7 +4,7 @@ import '../../css/org-cards.css'
 import * as WebWorker from '../../app/worker-client'
 import { showNotification } from '../notifications/notifications'
 import plusSign from '../../img/plus-sign.svg'
-
+import { fetchOrganizations } from './org-cards-data-fetch'
 
 //redux
 import { useSelector, useDispatch } from 'react-redux';
@@ -17,11 +17,6 @@ import {
 } from './org-cards-reducer';
 
 import {
-  selectConnectedBool,
-  selectConnectedAddress,
-} from '../wallet/wallet-reducer';
-
-import {
   dashboardWidgetsReset,
 } from '../dashboard/dashboard-widgets-reducer'
 
@@ -29,12 +24,14 @@ import { gatekeeperReset } from '../gatekeeper/gatekeeper-rules-reducer'
 import { dashboardInfoReset } from '../dashboard/dashboard-info-reducer'
 import useOrganization from '../hooks/useOrganization'
 import useCommon from '../hooks/useCommon'
+import { selectIsConnected, selectWalletAddress } from '../../app/sessionReducer'
 
+let resource = fetchOrganizations()
 
 export default function Cards() {
-  const isConnected = useSelector(selectConnectedBool);
-  const walletAddress = useSelector(selectConnectedAddress);
-  const organizations = useSelector(selectOrganizations);
+  const isConnected = useSelector(selectIsConnected);
+  const walletAddress = useSelector(selectWalletAddress);
+  //const organizations = useSelector(selectOrganizations);
   const cardsPulled = useSelector(selectCardsPulled);
   const membershipPulled = useSelector(selectMembershipPulled);
   const membership = useSelector(selectMemberOf);
@@ -42,21 +39,36 @@ export default function Cards() {
   const { fetchOrganizations } = useCommon();
   const { fetchUserMembership } = useOrganization();
   const dispatch = useDispatch();
+  const [organizations, setOrganizations] = useState(resource.read())
 
+  useEffect(() => {
+    console.log('running this')
 
+    // check for new orgs + check session
+    fetch('/organizations/organizations')
+      .then(res => res.json())
+      .then(res => {
+        setOrganizations(prevState => {
+          return prevState
+        })
+      })
+
+  }, [])
 
 
   // there is room for optimization here. The webworker is fetching new resources everytime this page loads.
   // i created a cardsPulled state in the org-cards reducer that may come in handy for a solution
-
+  /*
   useEffect(() => {
     // clear redux store so that clicking into a new dashboard doesn't briefly render stale data
     dispatch(dashboardInfoReset());
     dispatch(dashboardWidgetsReset());
     dispatch(dashboardInfoReset());
     dispatch(gatekeeperReset());
-    fetchOrganizations(cardsPulled)
+    fetchOrganizations()
   }, [])
+*/
+
 
   useEffect(() => {
     fetchUserMembership(walletAddress, membershipPulled)
@@ -91,8 +103,8 @@ export default function Cards() {
 
 function DaoCard({ org, membership }) {
   const { name, logo, verified, ens } = org;
-  const isConnected = useSelector(selectConnectedBool)
-  const walletAddress = useSelector(selectConnectedAddress)
+  const isConnected = useSelector(selectIsConnected)
+  const walletAddress = useSelector(selectWalletAddress)
   const dispatch = useDispatch();
   const [members, setMembers] = useState(org.members)
   const [isMemberOf, setIsMemberOf] = useState(false)
@@ -103,10 +115,10 @@ function DaoCard({ org, membership }) {
 
   useEffect(() => {
     setIsMemberOf(isMember(ens))
-  },[])
+  }, [])
 
   function handleJoinOrg() {
-    
+
     addMembership(ens)
     setMembers(members + 1);
     setIsMemberOf(true)

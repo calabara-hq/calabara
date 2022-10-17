@@ -5,7 +5,6 @@ import { populateInfo } from '../dashboard/dashboard-info-reducer';
 import { setDashboardRules } from '../gatekeeper/gatekeeper-rules-reducer';
 import { setInstallableWidgets, setInstalledWidgets } from '../dashboard/dashboard-widgets-reducer';
 import { populateOrganizations } from '../org-cards/org-cards-reducer';
-import { setIsTokenExpired } from '../wallet/wallet-reducer';
 import { showNotification } from '../notifications/notifications';
 import { useWalletContext } from '../../app/WalletContext';
 

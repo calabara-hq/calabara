@@ -22,12 +22,12 @@ import { TagType } from "../common/common_styles";
 import useErrorHandler from "./handle-errors";
 import Twitter from "./twitter_automation/twitter";
 import DrawerComponent from "../../../drawer/drawer";
-import { selectConnectedBool } from "../../../wallet/wallet-reducer";
 import { useWalletContext } from "../../../../app/WalletContext";
 import Placeholder from "../common/spinner";
 import ContestSummaryComponent, { AdditionalConfigDetails, ContestDateDetails, SubmitterRestrictionDetails, SubmitterRewardDetails, VoterRestrictionDetails, VoterRewardDetails, VotingPolicyDetails } from "../contest-details/detail-components";
 import { DetailWrap, SummaryWrap } from "../contest-details/detail-style";
 import { submitterRestrictionsState, voterRestrictionsState } from "./contest_gatekeeper/reducers/restrictions-reducer";
+import { selectIsConnected } from "../../../../app/sessionReducer";
 
 
 
@@ -208,11 +208,11 @@ export default function ContestSettings() {
             <SettingsBlockElement ref={PromptBlockRef}>
                 <PromptBuilder promptBuilderData={promptBuilderData} setPromptBuilderData={setPromptBuilderData} promptEditorCore={promptEditorCore} />
             </SettingsBlockElement>
-            {/*
+
             <SettingsBlockElement>
                 <Twitter />
             </SettingsBlockElement>
-            */}
+
             <SettingsBlockElement>
                 <SimpleInputs simpleInputData={simpleInputData} setSimpleInputData={setSimpleInputData} />
             </SettingsBlockElement>
@@ -250,6 +250,7 @@ function SaveSettings(props) {
     const [showSummary, setShowSummary] = useState(false);
     const [contestData, setContestData] = useState(null);
     const [promptData, setPromptData] = useState(null);
+
     const [warnings, setWarnings] = useState([]);
     const history = useHistory();
 
@@ -368,7 +369,8 @@ function SaveSettings(props) {
             anon_subs: simpleInputData.anonSubmissions,
             visible_votes: simpleInputData.visibleVotes,
             self_voting: simpleInputData.selfVoting,
-            snapshot_block: snapshotDate.toISOString()
+            snapshot_block: snapshotDate.toISOString(),
+            twitter_integration: true
 
         })
 
@@ -401,7 +403,7 @@ function SaveSettings(props) {
 function Summary({ contestData, promptData, warnings, handleCloseDrawer }) {
     const { ens } = useParams();
     const { walletConnect, authenticated_post } = useWalletContext();
-    const isWalletConnected = useSelector(selectConnectedBool);
+    const isWalletConnected = useSelector(selectIsConnected)
     const [isSaving, setIsSaving] = useState(false);
 
     const handleConfirm = async () => {

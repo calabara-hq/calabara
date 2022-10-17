@@ -1,12 +1,34 @@
-import React from 'react';
-import Container from '../features/container/container.js'
+import React, { useEffect } from 'react';
+import Routes from '../features/routes/routes.js'
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
 import DiscordRedirect from '../features/discord/discord-oauth-redirect.js'
-import TwitterRedirect from '../features/creator-contests/components/contest_settings/twitter_automation/twitter_oauth_redirect.js';
+import wrapPromise from '../helpers/wrap-promise';
+import { useDispatch } from 'react-redux';
+import { clearSession, setUserSession } from './sessionReducer.js';
 
+const fetchSession = () => {
+  console.log('re fetching session')
+  const promise = fetch('/authentication/isAuthenticated', { credentials: 'include' })
+    .then(res => res.json())
+    .then(res => res.authenticated ? res.user : false)
+    .catch(err => false)
+  return wrapPromise(promise)
+}
+
+const resource = fetchSession()
 
 export default function App() {
+  const dispatch = useDispatch()
+  const session = resource.read()
 
+
+  useEffect(() => {
+    dispatch(setUserSession(session))
+    return () => {
+      dispatch(clearSession())
+    }
+
+  }, [])
 
   return (
 
@@ -17,7 +39,7 @@ export default function App() {
         </Route>
 
         <Route path="/*">
-          <Container />
+          <Routes initial_session={session} />
         </Route>
 
       </Switch>

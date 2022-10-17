@@ -1,107 +1,25 @@
 import { useState, useRef, useCallback } from 'react'
-import styled, { css, keyframes } from 'styled-components'
 import TLDR from './TLDR-editor'
 import { createReactEditorJS } from 'react-editor-js'
 import { useParams } from 'react-router-dom'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes, faCheck, faCheckCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
-import { fade_in, fade_out, WarningMessage } from '../../common/common_styles'
-import useCommon from '../../../../hooks/useCommon'
-import { EDITOR_JS_TOOLS } from '../../common/editor_tools'
-import Placeholder from '../../common/spinner'
-import { showNotification } from '../../../../notifications/notifications'
-import { useWalletContext } from '../../../../../app/WalletContext'
+import { faTimes, faCheck } from '@fortawesome/free-solid-svg-icons'
+import { WarningMessage } from '../../../../common/common_styles'
+import { EDITOR_JS_TOOLS } from '../../../../common/editor_tools'
+import Placeholder from '../../../../common/spinner'
+import { showNotification } from '../../../../../../notifications/notifications'
+import { useWalletContext } from '../../../../../../../app/WalletContext'
 
-const CreateSubmissionContainer = styled.div`
-    display: flex;
-    position: relative;
-    flex-direction: column;
-    flex-wrap: wrap;
-    align-content: center;
-    align-items: stretch;
-    padding: 10px;
-    border: none;
-    border-radius: 10px;
-    height: none;
-    animation: ${props => (props.isSaving ? css`${fade_out} 0.3s forwards` : '')};
-    > * {
-        margin-bottom: 15px;
-        margin-top: 15px;
-    }
-`
+import {
+    CreateSubmissionContainer,
+    SavingSubmissionDiv,
+    SubmissionActionButtons,
+    SubmitButton,
+    CancelButton,
+    EditorWrap
+} from '../submission-builder-styles'
 
-const SavingSubmissionDiv = styled.div`
-    animation: ${fade_in} 0.4s ease-in-out;
-    height: 70vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-`
-
-const SubmissionActionButtons = styled.div`
-    width: fit-content;
-    position: absolute;
-    margin-left: auto;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-`
-
-const SubmitButton = styled.button`
-    align-self: center;
-    margin-left: auto;
-    margin-right: 10px;
-    border: 2px solid #22272e;
-    border-radius: 100px;
-    padding: 10px 15px 10px 15px;
-    background-color: rgb(6, 214, 160);
-    color: black;
-    &:hover{
-        color: black;
-        background-color: rgba(6, 214, 160, 0.8);
-        &::before{
-            content: "save";
-            position: absolute;
-            border: none;
-            background-color: #444c56;
-            padding: 3px;
-            border-radius: 4px;
-            top: 0;
-            color: lightgrey;
-            transform: translate(-50%, -150%);
-            animation: ${fade_in} 0.5s ease-in-out;
-        }
-    }
-`
-const CancelButton = styled.button`
-    border: 2px solid #4d4d4d;
-    color: grey;
-    border-radius: 100px;
-    padding: 10px 15px 10px 15px;
-    background-color: transparent;
-    margin-right: 10px;
-    &:hover{
-        color: #d3d3d3;
-        background-color: rgba(34, 34, 46, 0.8);
-        border: 2px solid #d3d3d3;
-        &::before{
-            content: "cancel";
-            position: absolute;
-            border: none;
-            background-color: #1e1e1e;
-            padding: 3px;
-            border-radius: 4px;
-            top: 0;
-            color: lightgrey;
-            transform: translate(-50%, -150%);
-            animation: ${fade_in} 0.5s ease-in-out;
-        }
-    }
-`
-
-export default function SubmissionBuilder({ handleExitSubmission, isUserEligible, handleCloseDrawer }) {
+export default function StandardSubmissionBuilder({ handleExitSubmission, isUserEligible, handleCloseDrawer }) {
     const [TLDRImage, setTLDRImage] = useState(null)
     const [TLDRText, setTLDRText] = useState('')
     const [longFormValue, setLongFormValue] = useState(null)
@@ -116,7 +34,7 @@ export default function SubmissionBuilder({ handleExitSubmission, isUserEligible
             showNotification('error', 'error', 'Atleast one TLDR field is required')
             return true
         }
-        else if ((TLDRImage && (TLDRText.length > 150)) || (!TLDRImage && (TLDRText.length > 250))) {
+        else if ((TLDRImage && (TLDRText.length > 280)) || (!TLDRImage && (TLDRText.length > 480))) {
             showNotification('error', 'error', 'Your TLDR section is too long')
             return true
         }
@@ -210,32 +128,6 @@ function EditLongForm({ longFormValue, setLongFormValue, ReactEditorJS, editorCo
     )
 }
 
-const EditorWrap = styled.div`
-    background-color: white;
-    border-radius: 10px;
-    border: 2px solid #4d4d4d;
-    font-size: 18px;
-    text-align: left;
-    padding: 10px;
-    background-color: #262626;
-    max-height: 80vh;
-    width: 100%;
-    margin: 0 auto;
-    overflow-y: scroll;
-    color: white;
-    * > .ce-popover--opened{
-        color: black;
-    }
-    * > .ce-inline-toolbar{
-        color: black;
-    }
-    * > .ce-toolbar__settings-btn, .ce-toolbar__plus{
-        background-color: #d3d3d3;
-    }
-    * > .ce-toolbar__settings-btn:hover, .ce-toolbar__plus:hover{
-        background-color: white;
-    }
-`
 
 
 function SubmissionEdit({ ReactEditorJS, editorCore, longFormValue, setLongFormValue }) {

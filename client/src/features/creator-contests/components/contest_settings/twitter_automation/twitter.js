@@ -3,11 +3,9 @@ import { faCheck } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react"
 import styled from 'styled-components'
-import usePopupWindow from "../../../../hooks/usePopupWindow";
 import useTwitterAuth from "../../../../hooks/useTwitterAuth";
 import { ToggleButton } from "../../common/common_components";
 import { Contest_h3_alt } from "../../common/common_styles";
-import Placeholder from "../../common/spinner";
 
 const TwitterWrap = styled.div`
     display: flex;

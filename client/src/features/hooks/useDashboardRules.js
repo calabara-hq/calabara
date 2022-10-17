@@ -1,14 +1,14 @@
 import axios from "axios"
 import { useSelector, useDispatch } from "react-redux"
+import { selectIsConnected } from "../../app/sessionReducer";
 import { selectDashboardRules, setDashboardRules, setDashboardResults } from "../gatekeeper/gatekeeper-rules-reducer"
-import { selectConnectedBool } from "../wallet/wallet-reducer";
 import { selectDiscordId } from "../user/user-reducer";
 import useGatekeeper from "./useGatekeeper";
 
 export default function useDashboardRules() {
     const dashboardRules = useSelector(selectDashboardRules);
     const { queryGatekeeper } = useGatekeeper();
-    const isConnected = useSelector(selectConnectedBool);
+    const isConnected = useSelector(selectIsConnected);
     const discordId = useSelector(selectDiscordId);
     const dispatch = useDispatch();
 

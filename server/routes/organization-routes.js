@@ -4,17 +4,15 @@ const dotenv = require('dotenv')
 const path = require('path')
 const organizations = express();
 organizations.use(express.json())
-const { authenticateToken } = require('../middlewares/jwt-middleware.js');
+const { authenticateToken } = require('../middlewares/auth-middleware.js');
 const { clean, asArray } = require('../helpers/common')
 
 // get organizations
 organizations.get('/organizations', async function (req, res, next) {
 
-    var result = await db.query('select name, members, logo, verified, ens from organizations').then(clean).then(asArray);
-
-    res.status(200);
-    //
-    res.send(result)
+    var orgs = await db.query('select name, members, logo, verified, ens from organizations').then(clean).then(asArray)
+    
+    res.send(orgs).status(200)
 
 });
 
@@ -45,7 +43,7 @@ organizations.get('/doesEnsExist/*', async function (req, res, next) {
 organizations.post('/addSubscription', authenticateToken, async function (req, res, next) {
 
     const { ens } = req.body;
-    const address = req.user.address;
+    const address = req.session.user.address;
 
 
     await db.query('insert into subscriptions (address, subscription) values ($1, $2)', [address, ens]);
@@ -59,7 +57,7 @@ organizations.post('/addSubscription', authenticateToken, async function (req, r
 organizations.post('/removeSubscription', authenticateToken, async function (req, res, next) {
 
     const { ens } = req.body;
-    const address = req.user.address;
+    const address = req.session.user.address;
 
     await db.query('delete from subscriptions where address = $1 AND subscription = $2', [address, ens]);
     await db.query('update organizations set members = members - 1 where ens = $1', [ens])

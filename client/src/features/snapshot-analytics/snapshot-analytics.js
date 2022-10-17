@@ -6,18 +6,16 @@ import { useSelector } from 'react-redux';
 import { Doughnut } from 'react-chartjs-2';
 import BackButton from '../back-button/back-button';
 import { useWalletContext } from '../../app/WalletContext';
-import {
-  selectConnectedBool,
-  selectConnectedAddress,
-} from '../wallet/wallet-reducer';
+import { selectIsConnected, selectWalletAddress } from '../../app/sessionReducer';
+
 
 
 
 function Analytics() {
 
   const { ens } = useParams();
-  const walletAddress = useSelector(selectConnectedAddress)
-  const isConnected = useSelector(selectConnectedBool)
+  const walletAddress = useSelector(selectWalletAddress)
+  const isConnected = useSelector(selectIsConnected)
   const [missedVotes, setMissedVotes] = useState({ votes: [] })
   const [userParticipationPercentage, setUserParticipationPercentage] = useState(0)
   const [globalParticipationPercentage, setGlobalParticipationPercentage] = useState(0)

@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState, useMemo } from "react";
 import styled from 'styled-components'
-import { ParseBlocks, parse_base_js } from "../block-parser";
-import { SubmissionVotingBox } from "../vote/voting-components";
-import DrawerComponent from "../../../../drawer/drawer";
-import { selectContestState } from "../interface/contest-interface-reducer";
+import { ParseBlocks, parse_base_js } from "../../block-parser";
+import { SubmissionVotingBox } from "../../vote/voting-components";
+import DrawerComponent from "../../../../../drawer/drawer";
+import { selectContestState } from "../../interface/contest-interface-reducer";
 import { useSelector } from "react-redux";
-import { fade_in } from "../../common/common_styles";
+import { fade_in } from "../../../common/common_styles";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import { Author, SubmissionMeta, VoteTotals } from "./submission-styles";
+import { Author, SubmissionMeta, VoteTotals } from "./submission-display-styles";
 
 
 

@@ -7,7 +7,6 @@ import '../../css/settings.css'
 import '../../css/settings-buttons.css'
 import '../../css/discord-add-bot.css'
 import { showNotification } from '../notifications/notifications'
-import { selectConnectedAddress } from '../wallet/wallet-reducer'
 import { selectDashboardInfo } from '../dashboard/dashboard-info-reducer'
 import { selectDashboardRules } from '../gatekeeper/gatekeeper-rules-reducer'
 import { addOrganization, selectLogoCache } from '../org-cards/org-cards-reducer'
@@ -17,10 +16,9 @@ import { useDiscordAuth } from '../hooks/useDiscordAuth'
 import useDashboardRules from '../hooks/useDashboardRules'
 import useDashboard from '../hooks/useDashboard'
 import useOrganization from '../hooks/useOrganization'
-import useCommon from '../hooks/useCommon'
-import useContract from '../hooks/useContract'
 import AddNewToken from '../creator-contests/components/common/add_token'
 import { useWalletContext } from '../../app/WalletContext'
+import { selectIsConnected, selectWalletAddress } from '../../app/sessionReducer'
 
 
 export default function SettingsManager() {
@@ -154,8 +152,8 @@ function OrganizationENSComponent({ standardProps }) {
     const [validEns, setValidEns] = useState(false);
     const [resolvedAddress, setResolvedAddress] = useState("");
     const [errorMsg, setErrorMsg] = useState({ error: false, msg: "" });
-    const walletAddress = useSelector(selectConnectedAddress);
-    const isConnected = useSelector(selectConnectedAddress);
+    const walletAddress = useSelector(selectWalletAddress);
+    const isConnected = useSelector(selectIsConnected);
     const history = useHistory();
     const { validAddress } = useWalletContext();
 
@@ -249,7 +247,7 @@ function OrganizationInfoComponent({ standardProps, hasImageChanged, setHasImage
     const { fields, setFields } = standardProps
     const { nameErrorMsg, setNameErrorMsg, websiteErrorMsg, setWebsiteErrorMsg, infoRef } = infoErrorController;
     const imageUploader = useRef(null);
-    const walletAddress = useSelector(selectConnectedAddress);
+    const walletAddress = useSelector(selectWalletAddress);
     const dispatch = useDispatch();
     const { ens } = useParams();
     const history = useHistory();
@@ -782,7 +780,7 @@ function DiscordRoleGatekeeper({ setGatekeeperInnerProgress, fields, setFields, 
         }
         else {
             for (var i in fields.gatekeeper.rules) {
-                
+
                 // check if discord is already setup. If so, just replace the entry in rules
                 if (fields.gatekeeper.rules[i].type === 'discord') {
                     //gatekeeperCopy.splice(i, 1);
@@ -922,7 +920,7 @@ function SaveComponent({ standardProps, infoErrorController, adminErrorControlle
     const { fields, setFields } = standardProps;
     const { setNameErrorMsg, setWebsiteErrorMsg, infoRef } = infoErrorController;
     const { addressErrors, setAddressErrors, addresses, setAddresses, adminRef } = adminErrorController;
-    const walletAddress = useSelector(selectConnectedAddress)
+    const walletAddress = useSelector(selectWalletAddress)
     const existingGatekeeperRules = useSelector(selectDashboardRules);
     const dispatch = useDispatch();
     const history = useHistory();

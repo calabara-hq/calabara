@@ -1,11 +1,11 @@
 import { useState, useMemo, useEffect } from 'react'
 import axios from 'axios';
-import { selectConnectedBool, selectConnectedAddress } from "../wallet/wallet-reducer";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import useCommon from './useCommon'
 import { showNotification } from '../notifications/notifications';
 import { useWalletContext } from '../../app/WalletContext';
+import { selectIsConnected, selectWalletAddress } from '../../app/sessionReducer';
 
 
 
@@ -24,8 +24,8 @@ export default function useVotingEngine(sub_id) {
     const [total_available_vp, set_total_available_vp] = useState(0);
     const [votes_spent, set_votes_spent] = useState(0);
     const [restrictions, set_restrictions] = useState(null)
-    const walletAddress = useSelector(selectConnectedAddress);
-    const isConnected = useSelector(selectConnectedBool);
+    const walletAddress = useSelector(selectIsConnected);
+    const isConnected = useSelector(selectWalletAddress);
     const [is_self_voting_error, set_is_self_voting_error] = useState(true);
     const { authenticated_post } = useWalletContext();
     console.log(sub_id)

@@ -114,7 +114,7 @@ async function calc_sub_vp__unprotected(req, res, next) {
 
 async function calc_sub_vp__PROTECTED(req, res, next) {
     const { ens, sub_id, contest_hash, num_votes } = req.body;
-    const walletAddress = req.user.address;
+    const walletAddress = req.session.user.address;
     const mode = { protected: true };
 
     let contest_params = await pre_process(ens, contest_hash, sub_id, walletAddress);

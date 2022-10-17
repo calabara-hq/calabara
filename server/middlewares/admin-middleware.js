@@ -4,7 +4,6 @@ const db = require('../helpers/db-init.js')
 
 function isAdmin(req, res, next) {
   const { ens } = req.body;
-  const user = req.user;
 
   if (ens == null) return res.sendStatus(401);
 
@@ -16,15 +15,15 @@ function isAdmin(req, res, next) {
     
     // if !admins, it's a new organization
     if (admins) {
-      let is_admin = admins.addresses.includes(user.address);
+      let is_admin = admins.addresses.includes(req.session.user.address);
 
       if (!is_admin) return res.status(403).send('error')
 
-      req.user.isAdmin = is_admin;
+      req.session.user.isAdmin = is_admin;
     }
     else {
-      req.user.isAdmin = true;
-      req.user.isNewOrganization = true;
+      req.session.user.isAdmin = true;
+      req.session.user.isNewOrganization = true;
     }
 
     next();

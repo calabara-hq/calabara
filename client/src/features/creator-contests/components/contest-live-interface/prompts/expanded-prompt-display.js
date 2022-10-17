@@ -1,10 +1,10 @@
 import { ParseBlocks } from "../block-parser";
 import { Label } from "../../common/common_styles";
 import { labelColorOptions } from "../../common/common_styles";
-import SubmissionBuilder from "../submissions/submission-builder";
 import useSubmissionEngine from "../../../../hooks/useSubmissionEngine";
 import { useWalletContext } from "../../../../../app/WalletContext";
 import { selectContestSettings, selectPromptData } from "../interface/contest-interface-reducer";
+import SubmissionBuilderInterfaceController from "../submissions/submission-builder/submission-builder-interface-ctr";
 import { useSelector } from "react-redux";
 import {
     PromptWrap,
@@ -82,7 +82,7 @@ export default function ExpandedPrompt({ isCreating, setIsCreating, handleClose 
     else {
         return (
             <FadeDiv>
-                <SubmissionBuilder handleExitSubmission={handleExitSubmission} restrictionResults={restrictionResults} isUserEligible={isUserEligible} handleCloseDrawer={handleClose} />
+                <SubmissionBuilderInterfaceController handleExitSubmission={handleExitSubmission} restrictionResults={restrictionResults} isUserEligible={isUserEligible} handleCloseDrawer={handleClose} />
             </FadeDiv>
         )
     }

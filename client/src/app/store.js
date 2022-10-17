@@ -2,10 +2,9 @@ import { configureStore } from '@reduxjs/toolkit';
 import { combineReducers } from "redux";
 import { composeWithDevTools } from 'redux-devtools-extension/developmentOnly.js';
 
-
+import sessionReducer from './sessionReducer.js';
 import notificationReducer from '../features/notifications/notification-reducer.js';
 import organizationsReducer from '../features/org-cards/org-cards-reducer.js';
-import connectedReducer from '../features/wallet/wallet-reducer.js';
 import dashboardWidgetsReducer from '../features/dashboard/dashboard-widgets-reducer.js';
 import dashboardInfoReducer from '../features/dashboard/dashboard-info-reducer.js';
 import wikiReducer from '../features/wiki/wiki-reducer.js';
@@ -16,9 +15,9 @@ import contestRewardsReducer from '../features/creator-contests/components/conte
 import contestParticipantRestrictionsReducer from '../features/creator-contests/components/contest_settings/contest_gatekeeper/reducers/restrictions-reducer.js';
 
 const rootReducer = combineReducers({
+  session: sessionReducer,
   notifications: notificationReducer,
   organizations: organizationsReducer,
-  connectivity: connectedReducer,
   dashboardWidgets: dashboardWidgetsReducer,
   dashboardInfo: dashboardInfoReducer,
   wiki_data: wikiReducer,

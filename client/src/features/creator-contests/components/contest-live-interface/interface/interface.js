@@ -11,7 +11,7 @@ import useCommon from "../../../../hooks/useCommon";
 import { Contest_h2_alt, fade_in } from '../../common/common_styles';
 import BackButton from '../../../../back-button/back-button';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
-import SubmissionDisplay from '../submissions/submission-display';
+import SubmissionDisplay from '../submissions/submission-display/submission-display';
 import { selectDurations, selectProgressRatio } from './contest-interface-reducer';
 
 const ContestInterfaceWrap = styled.div`

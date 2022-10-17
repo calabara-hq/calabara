@@ -4,7 +4,7 @@ const dotenv = require('dotenv')
 const path = require('path')
 const user = express();
 user.use(express.json())
-const { authenticateToken } = require('../middlewares/jwt-middleware.js');
+const { authenticateToken } = require('../middlewares/auth-middleware.js');
 const { clean } = require('../helpers/common')
 
 user.get('/fetch_discord_id/*', async function (req, res, next) {
