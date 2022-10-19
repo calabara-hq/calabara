@@ -121,8 +121,6 @@ const StrategyStyle = styled.div`
         background-color: #1e1e1e;
         transform: scale(1.01);
         transition-duration: .5s;
-
-        
     }
     &::after{
         font-family: 'Font Awesome 5 Free';

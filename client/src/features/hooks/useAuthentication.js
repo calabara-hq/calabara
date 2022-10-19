@@ -96,7 +96,8 @@ export default function useAuthentication() {
 
     const authenticated_post = async (endpoint, body) => {
         // just stop them here if they aren't authenticated
-        if (state !== 'authenticated') {
+        if (!session) {
+            alert('here!')
             showNotification('hint', 'hint', 'please connect your wallet')
             openConnectModal()
             return null
@@ -108,7 +109,7 @@ export default function useAuthentication() {
                 switch (err.response.status) {
                     case 401:
                         showNotification('hint', 'hint', 'please connect your wallet')
-                        if (state !== 'authenticated') openConnectModal()
+                        if (!session) openConnectModal()
                         break;
                     case 403:
                         showNotification('error', 'error', 'this wallet is not an organization admin')

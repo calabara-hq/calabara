@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import Routes from '../features/routes/routes.js'
+import Routes from '../routes/routes.js'
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
 import DiscordRedirect from '../features/discord/discord-oauth-redirect.js'
 import wrapPromise from '../helpers/wrap-promise';

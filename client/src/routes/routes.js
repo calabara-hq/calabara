@@ -1,23 +1,23 @@
 import { Suspense, lazy, useEffect } from 'react'
 import { Switch, Route, Link, useLocation } from 'react-router-dom'
-import { HomepageNav, ApplicationNav } from '../navbar/navbar.js'
-import Homepage from '../homepage/homepage.js'
-import { WalletProvider } from '../../app/WalletContext.js'
-import LazyLoader from '../lazy-loader/lazy-loader.js'
+import { HomepageNav, ApplicationNav } from '../features/navbar/navbar.js'
+import Homepage from '../features/homepage/homepage.js'
+import { WalletProvider } from '../app/WalletContext.js'
+import LazyLoader from '../features/lazy-loader/lazy-loader.js'
 import Test from './test'
-import { clearSession } from '../../app/sessionReducer'
+import { clearSession } from '../app/sessionReducer'
 import { useDispatch } from 'react-redux'
-const Cards = lazy(() => import('../org-cards/org-cards.js'))
-const Dashboard = lazy(() => import('../dashboard/dashboard.js'))
-const Analytics = lazy(() => import('../snapshot-analytics/snapshot-analytics.js'))
-const WikiDisplay = lazy(() => import('../wiki/wiki-display.js'))
-const Events = lazy(() => import('../calendar/calendar.js'))
-const ReactEditor = lazy(() => import('../wiki/wiki-edit.js'))
-const SettingsManager = lazy(() => import('../settings/settings.js'))
-const ManageWidgets = lazy(() => import('../manage-widgets/manage-widgets.js'))
-const ContestSettings = lazy(() => import('../creator-contests/components/contest_settings/contest-settings.js'))
-const ContestHomepage = lazy(() => import('../creator-contests/components/contest-home/contest-home.js'))
-const ContestInterfaceController = lazy(() => import('../creator-contests/components/contest-live-interface/interface/contest-interface-ctr.js'))
+const Cards = lazy(() => import('../features/org-cards/org-cards.js'))
+const Dashboard = lazy(() => import('../features/dashboard/dashboard.js'))
+const Analytics = lazy(() => import('../features/snapshot-analytics/snapshot-analytics.js'))
+const WikiDisplay = lazy(() => import('../features/wiki/wiki-display.js'))
+const Events = lazy(() => import('../features/calendar/calendar.js'))
+const ReactEditor = lazy(() => import('../features/wiki/wiki-edit.js'))
+const SettingsManager = lazy(() => import('../features/settings/settings.js'))
+const ManageWidgets = lazy(() => import('../features/manage-widgets/manage-widgets.js'))
+const ContestSettings = lazy(() => import('../features/creator-contests/components/contest_settings/contest-settings.js'))
+const ContestHomepage = lazy(() => import('../features/creator-contests/components/contest-home/contest-home.js'))
+const ContestInterfaceController = lazy(() => import('../features/creator-contests/components/contest-live-interface/interface/contest-interface-ctr.js'))
 
 
 export default function Routes({ initial_session }) {

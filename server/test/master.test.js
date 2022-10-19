@@ -12,8 +12,7 @@ let walletAddress_alt = '0xedcC867bc8B5FEBd0459af17a6f134F41f422f0C'
 const initializeServer = () => {
     let key = fs.readFileSync("localhost.key", "utf-8");
     let cert = fs.readFileSync("localhost.cert", "utf-8");
-    app._router.stack.splice(7, 1) // remove discord route
-    app._router.stack.splice(9, 1) // remove dashboard route
+
     secureServer = https.createServer({ key, cert }, app);
     return secureServer.listen(3002, () => {
         secureServer.emit('app_started')

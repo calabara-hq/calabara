@@ -370,7 +370,9 @@ function SaveSettings(props) {
             visible_votes: simpleInputData.visibleVotes,
             self_voting: simpleInputData.selfVoting,
             snapshot_block: snapshotDate.toISOString(),
-            twitter_integration: true
+            twitter_integration: {
+                announcementID: "1573694758773559297"
+            }
 
         })
 
