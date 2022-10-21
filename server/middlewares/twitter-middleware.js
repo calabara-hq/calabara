@@ -46,10 +46,7 @@ async function sendQuoteTweet(req, res, next) {
 
     tweet[0].quote_tweet_id = announcementID
 
-
-
     const client = new TwitterApi(accessToken);
-
 
     try {
         //const { data: createdTweet } = await client.v2.tweet(tweet)

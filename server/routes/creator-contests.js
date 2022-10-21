@@ -16,6 +16,9 @@ const { sendSocketMessage } = require('../sys/socket/socket-io');
 const { get_winners_as_csv, verifyContestOver } = require('../middlewares/creator-contests/fetch-winners-middleware.js');
 const { fetchSubmissions } = require('../middlewares/creator-contests/fetch-submissions-middleware.js');
 const socketSendNewSubmission = require('../helpers/socket-messages.js');
+const { TwitterApi } = require('twitter-api-v2');
+const { createReadStream } = require('fs');
+const { uploadTwitterMedia } = require('../middlewares/twitter-upload-media.js');
 dotenv.config()
 
 const serverRoot = path.normalize(path.join(__dirname, '../'));
@@ -207,6 +210,27 @@ contests.post('/upload_img', imageUpload.single('image'), async (req, res) => {
     console.log(error)
     res.status(400).send({ error: error.message })
 })
+
+
+
+contests.post('/twitter_contest_upload_img', imageUpload.single('image'), uploadTwitterMedia, async (req, res) => {
+
+    console.log(req.file.media_id)
+
+
+    let img_data = {
+        success: 1,
+        file: {
+            url: '/' + req.file.path,
+            media_id: req.file.media_id
+        }
+    }
+    res.status(200).send(img_data)
+}, (error, req, res, next) => {
+    console.log(error)
+    res.status(400).send({ error: error.message })
+})
+
 
 
 ///////////////////////// begin dev / test routes ////////////////////////////////////

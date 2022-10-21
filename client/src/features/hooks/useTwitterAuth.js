@@ -13,8 +13,8 @@ export const useTwitterAuth = () => {
 
 
     // on initial open, we check if user is already authed
-    const handleOpenAuth = () => {
-        axios.post('/twitter/generateAuthLink', { withCredentials: true })
+    const handleOpenAuth = (scope_type) => {
+        axios.post('/twitter/generateAuthLink', { scope_type: scope_type }, { withCredentials: true })
             .then(res => {
                 openWindow(res.data)
                 setAuthState(1);
@@ -51,8 +51,8 @@ export const useTwitterAuth = () => {
     return {
         authState: authState,
         accountInfo,
-        onOpen: () => {
-            handleOpenAuth()
+        onOpen: (scope_type) => {
+            handleOpenAuth(scope_type)
         },
         auth_error: error
     }

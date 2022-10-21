@@ -82,19 +82,8 @@ export default function TLDR({ isUserEligible, setShowWarning, TLDRimage, setTLD
 
     const imageUploader = useRef(null);
 
-    function b64toBlob(dataURI) {
-
-        var byteString = atob(dataURI.split(',')[1]);
-        var ab = new ArrayBuffer(byteString.length);
-        var ia = new Uint8Array(ab);
-
-        for (var i = 0; i < byteString.length; i++) {
-            ia[i] = byteString.charCodeAt(i);
-        }
-        return new Blob([ab], { type: 'image/jpeg' });
-    }
-
     const handleUpload = (e) => {
+        if (e.target.files.length === 0) return
         const img = {
             preview: URL.createObjectURL(e.target.files[0]),
             data: e.target.files[0],
@@ -122,6 +111,10 @@ export default function TLDR({ isUserEligible, setShowWarning, TLDRimage, setTLD
         }
     }
 
+    const handleDeleteMedia = () => {
+        setTLDRImage(null);
+        imageUploader.current.value = null;
+    }
 
 
     return (
@@ -137,7 +130,7 @@ export default function TLDR({ isUserEligible, setShowWarning, TLDRimage, setTLD
                         {!TLDRimage && <p style={{ color: '#d3d3d3' }}>TLDR Image</p>}
                     </div>
                 </ImageUploadBtn>
-                {TLDRimage && <RemoveImageButton onClick={() => setTLDRImage(null)}><FontAwesomeIcon icon={faTimes}></FontAwesomeIcon></RemoveImageButton>}
+                {TLDRimage && <RemoveImageButton onClick={handleDeleteMedia}><FontAwesomeIcon icon={faTimes}></FontAwesomeIcon></RemoveImageButton>}
             </ImageWrapper>
         </TLDRWrap>
     )

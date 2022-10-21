@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer, useRef, useState } from "react";
 import { CreateSubmissionButtonContainer } from "../../../prompts/styles";
 import { CancelButton, CreateSubmissionContainer, SubmissionActionButtons } from "../submission-builder-styles";
 import { faCirclePlus, faImage, faPlus, faTimes, faTrash } from "@fortawesome/free-solid-svg-icons";
@@ -83,19 +83,48 @@ function reducer(state, action) {
                 ...state,
                 focus_tweet: action.payload
             }
-        case 'add_tweet': // dont work
+        case 'add_tweet':
             return {
                 ...state,
                 tweets: [...state.tweets, { text: "" }],
                 focus_tweet: state.tweets.length
             }
-        case 'update_tweet_text': // works
+        case 'update_tweet_text':
             return {
                 ...state,
                 tweets: [
                     ...state.tweets.slice(0, action.payload.index),
-                    state.tweets[action.payload.index] = { text: action.payload.value },
+                    { ...state.tweets[action.payload.index], text: action.payload.value },
                     ...state.tweets.slice(action.payload.index + 1)
+                ]
+            }
+        case 'update_tweet_media_preview':
+            return {
+                ...state,
+                tweets: [
+                    ...state.tweets.slice(0, action.payload.index),
+                    { ...state.tweets[action.payload.index], media: { ...state.tweets[action.payload.index].media, preview: action.payload.value } },
+                    ...state.tweets.slice(action.payload.index + 1)
+                ]
+            }
+
+        case 'update_tweet_media_id':
+            return {
+                ...state,
+                tweets: [
+                    ...state.tweets.slice(0, action.payload.index),
+                    { ...state.tweets[action.payload.index], media: { ...state.tweets[action.payload.index].media, media_id: action.payload.value } },
+                    ...state.tweets.slice(action.payload.index + 1)
+                ]
+            }
+
+        case 'delete_tweet_media':
+            return {
+                ...state,
+                tweets: [
+                    ...state.tweets.slice(0, action.payload),
+                    { text: state.tweets[action.payload].text },
+                    ...state.tweets.slice(action.payload + 1)
                 ]
             }
         case 'delete_tweet':
@@ -182,7 +211,7 @@ function ActionsController(props) {
 
         return (
             <LinkTwitterWrap>
-                <LinkTwitter onOpen={props.onOpen} auth_error={props.auth_error} />
+                <LinkTwitter onOpen={props.onOpen} auth_error={props.auth_error} auth_type={props.builderData.auth_type} />
             </LinkTwitterWrap>
         )
     }
@@ -222,7 +251,7 @@ function AuthChoice(props) {
 
     return (
         <AuthChoiceWrap>
-            <AuthChoiceButton onClick={() => handleChoice('privelaged')}>tweet for me</AuthChoiceButton>
+            <AuthChoiceButton onClick={() => handleChoice('privileged')}>tweet for me</AuthChoiceButton>
             <AuthChoiceButton onClick={() => handleChoice('standard')}>gen link</AuthChoiceButton>
         </AuthChoiceWrap>
     )
@@ -267,7 +296,7 @@ function LinkTwitter(props) {
 
     const handleClick = () => {
         setLoading(true)
-        props.onOpen()
+        props.onOpen(props.auth_type)
     }
 
 
@@ -326,7 +355,7 @@ const TextAreaBottom = styled.div`
     display: ${props => props.focused ? 'flex' : 'none'};
     animation: ${fade_in} 0.2s ease-in-out;
 `
-const TwitterHelperButton = styled.div`
+const AddImageButton = styled.div`
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -335,10 +364,11 @@ const TwitterHelperButton = styled.div`
     padding: 5px 10px;
     border-radius: 100px;
     font-size: 20px;
-    color: rgba(29, 155, 240);
+    color: ${props => props.disabled ? 'grey' : 'rgba(29, 155, 240)'};
+    cursor: ${props => props.disabled ? 'default' : 'pointer'};
 
     &:hover{
-        background-color: rgba(29, 155, 240, 0.1);
+        background-color: ${props => props.disabled ? 'transparent' : 'rgba(29, 155, 240, 0.1)'};
     }
 `
 
@@ -405,7 +435,6 @@ const DeleteTweetButton = styled.div`
 const ThreadWrap = styled.div`
     display: flex;
     flex-direction: column;
-    //gap: 10px;
 `
 
 function CreateThread(props) {
@@ -427,6 +456,8 @@ function CreateTweet(props) {
     const { authenticated_post } = useWalletContext();
     const { ens, contest_hash } = useParams();
     const { sendQuoteTweet } = useTweet();
+    const mediaUploader = useRef(null);
+
 
     const updateTweet = (e) => {
         props.setBuilderData({ type: 'update_tweet_text', payload: { index: props.tweet_id, value: e.target.value } })
@@ -449,12 +480,42 @@ function CreateTweet(props) {
     }
 
 
+
+    const handleMediaUpload = (e) => {
+        console.log('handling media upload!!!')
+        if (e.target.files.length === 0) return
+        const img = {
+            preview: URL.createObjectURL(e.target.files[0]),
+            data: e.target.files[0],
+            url: null
+        }
+        props.setBuilderData({ type: 'update_tweet_media_preview', payload: { index: props.tweet_id, value: img.preview } })
+        const formData = new FormData();
+        formData.append(
+            "image",
+            img.data
+        )
+
+        axios({
+            method: 'post',
+            url: '/creator_contests/twitter_contest_upload_img',
+            data: formData
+        }).then((response) => {
+            const { media_id } = response.data.file
+            props.setBuilderData({ type: 'update_tweet_media_id', payload: { index: props.tweet_id, value: media_id } })
+        })
+
+    }
+
+
     return (
         <TextAreaWrap onClick={focusTweet} focused={props.builderData.focus_tweet === props.tweet_id}>
             <RenderAccount authState={props.authState} accountInfo={props.accountInfo} builderData={props.builderData} tweet_id={props.tweet_id} />
             <TextArea onChange={updateTweet} placeholder="What's happening?" focused={props.builderData.focus_tweet === props.tweet_id} />
+            <RenderMedia tweet={props.builderData.tweets[props.tweet_id]} tweet_id={props.tweet_id} setBuilderData={props.setBuilderData} mediaUploader={mediaUploader} />
             <TextAreaBottom focused={props.builderData.focus_tweet === props.tweet_id}>
-                <TwitterHelperButton><FontAwesomeIcon icon={faImage} /></TwitterHelperButton>
+                <input placeholder="Logo" type="file" accept="image/*" style={{ display: 'none' }} onChange={handleMediaUpload} ref={mediaUploader} />
+                <AddImageButton disabled={props.builderData.tweets[props.tweet_id].media?.preview} onClick={() => mediaUploader.current.click()}><FontAwesomeIcon icon={faImage} /></AddImageButton>
                 <RightAlignButtons>
                     <DeleteTweetButton disabled={props.tweet_id === 0} onClick={deleteTweet}><FontAwesomeIcon icon={faTrash} /></DeleteTweetButton>
                     <AddTweetButton disabled={!props.builderData.tweets[props.tweet_id]} onClick={addTweet}><FontAwesomeIcon icon={faPlus} /></AddTweetButton>
@@ -463,6 +524,59 @@ function CreateTweet(props) {
             </TextAreaBottom>
         </TextAreaWrap>
     )
+}
+
+const MediaContainer = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 85%;
+    margin-left: auto;
+    padding-bottom: 20px;
+    position: relative;
+`
+
+const TweetMedia = styled.img`
+    max-width: 35em;
+    grid-area: ${props => props.index};
+    border-radius: 20px;
+`
+const RemoveMediaButton = styled.div`
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 5px;
+    left: 5px;
+    border-radius: 100px;
+    padding: 5px 10px;
+    width: 40px;
+    height: 40px;
+    background-color: rgb(0, 0, 0, 0.7);
+
+    &:hover{
+        background-color: rgb(0, 0, 0, 1);
+    }
+
+`
+
+function RenderMedia(props) {
+
+    const removeMedia = () => {
+        props.setBuilderData({ type: 'delete_tweet_media', payload: props.tweet_id })
+        props.mediaUploader.current.value = null
+    }
+
+
+    if (props.tweet?.media) {
+        return (
+            <MediaContainer>
+                <RemoveMediaButton onClick={removeMedia}><FontAwesomeIcon icon={faTimes} /></RemoveMediaButton>
+                <TweetMedia src={props.tweet.media.preview} />
+            </MediaContainer>
+        )
+
+    }
 }
 
 

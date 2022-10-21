@@ -263,6 +263,7 @@ export default function PromptBuilder({ promptBuilderData, setPromptBuilderData,
     }
 
     const handleImageUpload = (e) => {
+        if (e.target.files.length === 0) return
         const img = {
             preview: URL.createObjectURL(e.target.files[0]),
             data: e.target.files[0],
@@ -286,6 +287,7 @@ export default function PromptBuilder({ promptBuilderData, setPromptBuilderData,
 
     const removeCoverImage = () => {
         setPromptBuilderData({ type: "update_single", payload: { prompt_cover_image: null } })
+        imageUploader.current.value = null;
     }
 
     const clearEditorErrors = () => {

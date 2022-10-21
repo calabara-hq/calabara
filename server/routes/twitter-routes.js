@@ -21,9 +21,19 @@ dotenv.config()
  */
 
 
+let scopes = {
+    privileged: ['tweet.read', 'users.read', 'tweet.write'],
+    standard: ['tweet.read', 'users.read']
+}
+
+
 
 twitter.post('/generateAuthLink', authenticateToken, async function (req, res, next) {
-    const { url, codeVerifier, state } = requestClient.generateOAuth2AuthLink('https://localhost:3001/twitter/oauth2', { scope: ['tweet.read', 'users.read', 'tweet.write'] });
+    const { scope_type } = req.body
+
+    console.log(scope_type)
+
+    const { url, codeVerifier, state } = requestClient.generateOAuth2AuthLink('https://localhost:3001/twitter/oauth2', { scope: scopes[scope_type] });
     req.session.twitter = {
         codeVerifier: codeVerifier,
         stateVerifier: state,
@@ -119,6 +129,13 @@ twitter.get('/poll_auth_status', authenticateToken, async function (req, res, ne
 
 // 403 error -> tweet with duplicate content
 // 
+
+
+// parse the thread
+// send the tweet
+// on success,
+// parse the thread into a calabara submission
+// submit in the contest
 
 twitter.post('/sendQuoteTweet', authenticateToken, sendQuoteTweet, async function (req, res, next) {
 
