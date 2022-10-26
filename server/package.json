@@ -4,7 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "mocha -b --timeout 100000000 --exit",
+    "test:all": "mocha -b --timeout 100000000 --exit \"{,!(node_modules)/**/}*.test.js\"",
+    "test:twitter": "mocha -b --timeout 100000000 --exit \"./test/test-twitter/*.test.js\"",
     "start": "node server.js"
   },
   "author": "",
@@ -12,6 +13,7 @@
   "devDependencies": {
     "chai": "^4.3.6",
     "express": "^4.17.1",
+    "node-mocks-http": "^1.11.0",
     "nodemon": "^2.0.15",
     "supertest": "^6.2.4"
   },

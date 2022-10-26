@@ -1,6 +1,6 @@
 const { expect } = require('chai');
-const { createDummyContest, fetchDummyContest, createDummySubmission, createRealSubmission, fetchVotingMetrics, castDummyVote, cleanup } = require('./master.test');
-const { create_voting_scenario, create_accepting_submissions_scenario, create_contest_end_scenario } = require('./helpers/contest-test-setup')
+const { createDummyContest, fetchDummyContest, createDummySubmission, createRealSubmission, fetchVotingMetrics, castDummyVote, cleanup } = require('../../master.test');
+const { create_voting_scenario, create_accepting_submissions_scenario, create_contest_end_scenario } = require('../helpers/contest-test-setup')
 
 describe('misc. submitting tests', async (done) => {
 

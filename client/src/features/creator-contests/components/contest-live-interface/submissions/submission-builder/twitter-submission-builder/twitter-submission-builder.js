@@ -15,6 +15,7 @@ import { scaleElement } from "../../../../../../../css/scale-element";
 import { faTwitter } from "@fortawesome/free-brands-svg-icons";
 import Placeholder from '../../../../common/spinner'
 import { fade_in } from "../../../../common/common_styles";
+import useAutosizeTextArea from "../../../../../../hooks/useAutosizeTextArea";
 
 const TwitterSubmissionContainer = styled.div`
     display: flex;
@@ -99,6 +100,7 @@ function reducer(state, action) {
                 ]
             }
         case 'update_tweet_media_preview':
+            // set the preview blob for quick UI
             return {
                 ...state,
                 tweets: [
@@ -108,12 +110,13 @@ function reducer(state, action) {
                 ]
             }
 
-        case 'update_tweet_media_id':
+        case 'update_tweet_media_phase_2':
+            // set the media ID and asset url from server response
             return {
                 ...state,
                 tweets: [
                     ...state.tweets.slice(0, action.payload.index),
-                    { ...state.tweets[action.payload.index], media: { ...state.tweets[action.payload.index].media, media_id: action.payload.value } },
+                    { ...state.tweets[action.payload.index], media: { ...state.tweets[action.payload.index].media, ...action.payload.value } },
                     ...state.tweets.slice(action.payload.index + 1)
                 ]
             }
@@ -146,7 +149,6 @@ const initial_state = {
     auth_type: null,
     focus_tweet: 0,
     tweets: [{ text: "" }]
-
 
 }
 
@@ -415,7 +417,7 @@ const TweetButton = styled.button`
 `
 const DeleteTweetButton = styled.div`
     cursor: pointer;
-    display: flex;
+    display: ${props => props.disabled ? 'none' : 'flex'};
     align-items: center;
     justify-content: center;
     font-size: 16px;
@@ -426,9 +428,6 @@ const DeleteTweetButton = styled.div`
     margin-left: auto;
     &:hover{
         background-color: rgba(178,31,71,0.3);
-    }
-    &:disabled{
-        visibility: hidden;
     }
 `
 
@@ -457,7 +456,8 @@ function CreateTweet(props) {
     const { ens, contest_hash } = useParams();
     const { sendQuoteTweet } = useTweet();
     const mediaUploader = useRef(null);
-
+    const textAreaRef = useRef(null);
+    useAutosizeTextArea(textAreaRef.current, props.builderData.tweets[props.tweet_id].text)
 
     const updateTweet = (e) => {
         props.setBuilderData({ type: 'update_tweet_text', payload: { index: props.tweet_id, value: e.target.value } })
@@ -501,8 +501,8 @@ function CreateTweet(props) {
             url: '/creator_contests/twitter_contest_upload_img',
             data: formData
         }).then((response) => {
-            const { media_id } = response.data.file
-            props.setBuilderData({ type: 'update_tweet_media_id', payload: { index: props.tweet_id, value: media_id } })
+            console.log(response.data.file)
+            props.setBuilderData({ type: 'update_tweet_media_phase_2', payload: { index: props.tweet_id, value: response.data.file } })
         })
 
     }
@@ -511,7 +511,7 @@ function CreateTweet(props) {
     return (
         <TextAreaWrap onClick={focusTweet} focused={props.builderData.focus_tweet === props.tweet_id}>
             <RenderAccount authState={props.authState} accountInfo={props.accountInfo} builderData={props.builderData} tweet_id={props.tweet_id} />
-            <TextArea onChange={updateTweet} placeholder="What's happening?" focused={props.builderData.focus_tweet === props.tweet_id} />
+            <TextArea ref={textAreaRef} onChange={updateTweet} placeholder="What's happening?" focused={props.builderData.focus_tweet === props.tweet_id} />
             <RenderMedia tweet={props.builderData.tweets[props.tweet_id]} tweet_id={props.tweet_id} setBuilderData={props.setBuilderData} mediaUploader={mediaUploader} />
             <TextAreaBottom focused={props.builderData.focus_tweet === props.tweet_id}>
                 <input placeholder="Logo" type="file" accept="image/*" style={{ display: 'none' }} onChange={handleMediaUpload} ref={mediaUploader} />
@@ -553,9 +553,9 @@ const RemoveMediaButton = styled.div`
     width: 40px;
     height: 40px;
     background-color: rgb(0, 0, 0, 0.7);
-
+    ${scaleElement};
     &:hover{
-        background-color: rgb(0, 0, 0, 1);
+        background-color: rgba(178,31,71,0.3);
     }
 
 `

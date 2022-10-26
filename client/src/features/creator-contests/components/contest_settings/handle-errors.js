@@ -146,13 +146,44 @@ export default function useErrorHandler(date_times) {
     }
 
 
+    // auth expired
+    // tweet is empty
+    const handleTwitterErrors = async (twitterData, setTwitterData) => {
+        if (!twitterData.enabled) return false
+
+        // verify auth state
+
+        let isAuthenticated = await fetch('/twitter/verify_twitter_auth', { method: 'POST', credentials: 'include' })
+            .then(res => {
+                if (res.status === 200) {
+                    return true
+                }
+                // set the error and revert back to stage 1 so user can re-auth
+                setTwitterData({ type: 'update_single', payload: { error: 'invalid_auth', stage: 1 } })
+
+                return false
+            })
+
+        if (!isAuthenticated) return true
+
+        // check for empty content
+
+        if (!twitterData.tweets[0].text) {
+            setTwitterData({ type: 'update_single', payload: { error: 'empty_content' } })
+            return true
+        }
+        return false
+
+    }
+
     return {
         handleSubmitterErrors: () => handleSubmitterErrors(),
         handleVoterErrors: () => handleVoterErrors(),
         handleTimeBlockErrors: (args) => handleTimeBlockErrors(args),
         handlePromptErrors: (editorData, promptBuilderData, setPromptBuilderData) => handlePromptErrors(editorData, promptBuilderData, setPromptBuilderData),
         handleRestrictionErrors: () => handleRestrictionErrors(),
-        handleVotingStrategyErrors: (votingStrategy, setVotingStrategyError) => handleVotingStrategyErrors(votingStrategy, setVotingStrategyError)
+        handleVotingStrategyErrors: (votingStrategy, setVotingStrategyError) => handleVotingStrategyErrors(votingStrategy, setVotingStrategyError),
+        handleTwitterErrors: async (twitterData, setTwitterData) => await handleTwitterErrors(twitterData, setTwitterData)
     }
 
 }

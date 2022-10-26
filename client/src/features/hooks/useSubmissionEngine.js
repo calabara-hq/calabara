@@ -22,6 +22,7 @@ export default function useSubmissionEngine(submitter_restrictions) {
             (async () => {
                 let eligibility = await axios.post('/creator_contests/check_user_eligibility', { contest_hash: contest_hash, ens: ens, walletAddress: walletAddress }).then(result => { return result.data })
                 setAlreadySubmittedError(eligibility.has_already_submitted);
+                console.log(eligibility.restrictions)
                 setRestrictionResults(eligibility.restrictions);
 
                 // error if not in submit window

@@ -28,6 +28,8 @@ import ContestSummaryComponent, { AdditionalConfigDetails, ContestDateDetails, S
 import { DetailWrap, SummaryWrap } from "../contest-details/detail-style";
 import { submitterRestrictionsState, voterRestrictionsState } from "./contest_gatekeeper/reducers/restrictions-reducer";
 import { selectIsConnected } from "../../../../app/sessionReducer";
+import axios from "axios";
+import { showNotification } from "../../../notifications/notifications";
 
 
 
@@ -140,6 +142,88 @@ function reducer(state, action) {
 }
 
 
+
+function twitter_reducer(state, action) {
+    switch (action.type) {
+        case 'update_single':
+            return { ...state, ...action.payload };
+        case 'focus_tweet':
+            return {
+                ...state,
+                focus_tweet: action.payload
+            }
+        case 'add_tweet':
+            return {
+                ...state,
+                tweets: [...state.tweets, { text: "" }],
+                focus_tweet: state.tweets.length
+            }
+        case 'update_tweet_text':
+            return {
+                ...state,
+                tweets: [
+                    ...state.tweets.slice(0, action.payload.index),
+                    { ...state.tweets[action.payload.index], text: action.payload.value },
+                    ...state.tweets.slice(action.payload.index + 1)
+                ]
+            }
+        case 'update_tweet_media_preview':
+            // set the preview blob for quick UI
+            return {
+                ...state,
+                tweets: [
+                    ...state.tweets.slice(0, action.payload.index),
+                    { ...state.tweets[action.payload.index], media: { ...state.tweets[action.payload.index].media, preview: action.payload.value } },
+                    ...state.tweets.slice(action.payload.index + 1)
+                ]
+            }
+
+        case 'update_tweet_media_phase_2':
+            // set the media ID and asset url from server response
+            return {
+                ...state,
+                tweets: [
+                    ...state.tweets.slice(0, action.payload.index),
+                    { ...state.tweets[action.payload.index], media: { ...state.tweets[action.payload.index].media, ...action.payload.value } },
+                    ...state.tweets.slice(action.payload.index + 1)
+                ]
+            }
+
+        case 'delete_tweet_media':
+            return {
+                ...state,
+                tweets: [
+                    ...state.tweets.slice(0, action.payload),
+                    { text: state.tweets[action.payload].text },
+                    ...state.tweets.slice(action.payload + 1)
+                ]
+            }
+        case 'delete_tweet':
+            return {
+                ...state,
+                tweets: [
+                    ...state.tweets.slice(0, action.payload),
+                    ...state.tweets.slice(action.payload + 1)
+                ],
+                focus_tweet: action.payload - 1
+            }
+        case 'reset_state':
+            return twitter_initial_state
+        default:
+            throw new Error();
+    }
+}
+
+const twitter_initial_state = {
+    enabled: false,
+    stage: 0,
+    focus_tweet: 0,
+    tweets: [{ text: "" }],
+    error: null
+}
+
+
+
 const initialPromptData = {
     prompt_heading: '',
     prompt_heading_error: false,
@@ -163,13 +247,15 @@ export default function ContestSettings() {
     const [votingStrategyError, setVotingStrategyError] = useState(false);
     const [promptBuilderData, setPromptBuilderData] = useReducer(reducer, initialPromptData)
     const [simpleInputData, setSimpleInputData] = useReducer(reducer, { anonSubmissions: true, visibleVotes: false, selfVoting: false })
+    const [twitterData, setTwitterData] = useReducer(twitter_reducer, twitter_initial_state)
 
-    const TimeBlockRef = useRef(null);
-    const RewardsRef = useRef(null);
+    const TimeBlockRef = useRef(null)
+    const RewardsRef = useRef(null)
     const RestrictionsBlockRef = useRef(null)
     const StrategyBlockRef = useRef(null)
     const PromptBlockRef = useRef(null)
-    const promptEditorCore = useRef(null);
+    const promptEditorCore = useRef(null)
+    const TwitterBlockRef = useRef(null)
 
     useEffect(() => {
         populateDashboardRules(ens)
@@ -209,8 +295,8 @@ export default function ContestSettings() {
                 <PromptBuilder promptBuilderData={promptBuilderData} setPromptBuilderData={setPromptBuilderData} promptEditorCore={promptEditorCore} />
             </SettingsBlockElement>
 
-            <SettingsBlockElement>
-                <Twitter />
+            <SettingsBlockElement ref={TwitterBlockRef}>
+                <Twitter twitterData={twitterData} setTwitterData={setTwitterData} />
             </SettingsBlockElement>
 
             <SettingsBlockElement>
@@ -228,11 +314,14 @@ export default function ContestSettings() {
                 simpleInputData={simpleInputData}
                 promptBuilderData={promptBuilderData}
                 setPromptBuilderData={setPromptBuilderData}
+                twitterData={twitterData}
+                setTwitterData={setTwitterData}
                 TimeBlockRef={TimeBlockRef}
                 RewardsRef={RewardsRef}
                 PromptBlockRef={PromptBlockRef}
                 RestrictionsBlockRef={RestrictionsBlockRef}
                 StrategyBlockRef={StrategyBlockRef}
+                TwitterBlockRef={TwitterBlockRef}
             />
 
         </ContestSettingsWrap >
@@ -263,6 +352,7 @@ function SaveSettings(props) {
         handlePromptErrors,
         handleRestrictionErrors,
         handleVotingStrategyErrors,
+        handleTwitterErrors
     } = useErrorHandler();
     const { ens } = useParams();
 
@@ -277,11 +367,14 @@ function SaveSettings(props) {
         simpleInputData,
         promptBuilderData,
         setPromptBuilderData,
+        twitterData,
+        setTwitterData,
         TimeBlockRef,
         RewardsRef,
         PromptBlockRef,
         RestrictionsBlockRef,
-        StrategyBlockRef
+        StrategyBlockRef,
+        TwitterBlockRef
     } = props
 
     const handleShowSummary = () => {
@@ -309,6 +402,8 @@ function SaveSettings(props) {
 
 
 
+
+
     const handleSave = async () => {
 
         const isTimeError = handleTimeBlockErrors([setCurrentDate, date_1, date_2, snapshotDate]);
@@ -328,9 +423,16 @@ function SaveSettings(props) {
 
 
         const promptEditorData = await promptEditorCore.current.save();
-        console.log(promptEditorData)
         const isPromptError = handlePromptErrors(promptEditorData, promptBuilderData, setPromptBuilderData);
         if (isPromptError) return PromptBlockRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+
+
+        const isTwitterError = await handleTwitterErrors(twitterData, setTwitterData)
+        if (isTwitterError) return TwitterBlockRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+
+
+
+
 
         let strategy
         if (votingStrategy.strategy_type === 'arcade') {
@@ -370,9 +472,6 @@ function SaveSettings(props) {
             visible_votes: simpleInputData.visibleVotes,
             self_voting: simpleInputData.selfVoting,
             snapshot_block: snapshotDate.toISOString(),
-            twitter_integration: {
-                announcementID: "1573694758773559297"
-            }
 
         })
 
@@ -393,7 +492,7 @@ function SaveSettings(props) {
         <>
             <SaveButton disabled={showSummary} style={{ width: '60%', margin: '30px auto' }} onClick={handleSave}>save</SaveButton>
             <DrawerComponent drawerOpen={showSummary} handleClose={handleCloseSummary} showExit={true}>
-                <Summary contestData={contestData} promptData={promptData} warnings={warnings} handleCloseDrawer={handleCloseSummary} />
+                <Summary contestData={contestData} promptData={promptData} twitterData={twitterData} warnings={warnings} handleCloseDrawer={handleCloseSummary} />
             </DrawerComponent>
         </>
     )
@@ -402,18 +501,34 @@ function SaveSettings(props) {
 
 
 
-function Summary({ contestData, promptData, warnings, handleCloseDrawer }) {
+function Summary({ contestData, promptData, twitterData, warnings, handleCloseDrawer }) {
     const { ens } = useParams();
     const { walletConnect, authenticated_post } = useWalletContext();
     const isWalletConnected = useSelector(selectIsConnected)
     const [isSaving, setIsSaving] = useState(false);
 
+
+    const sendAnnouncementTweet = async () => {
+        let result = await authenticated_post('/twitter/send_announcement_tweet', { ens: ens, tweet: twitterData.tweets })
+        return result.data
+    }
+
     const handleConfirm = async () => {
         setIsSaving(true)
+        if (twitterData.enabled) {
+            let announcement_id = await sendAnnouncementTweet();
+            if (announcement_id) contestData.twitter_integration = { announcementID: announcement_id }
+            else {
+                handleCloseDrawer()
+                return
+            }
+        }
+
         await authenticated_post('/creator_contests/create_contest', { ens: ens, contest_settings: contestData, prompt_data: promptData })
         setTimeout(() => {
             handleCloseDrawer('saved')
         }, 500)
+
     }
 
     if (isSaving) {

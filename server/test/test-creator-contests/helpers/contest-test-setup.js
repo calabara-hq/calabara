@@ -1,4 +1,4 @@
-const { createDummyContest, createDummySubmission, fetchDummyContest } = require("../master.test");
+const { createDummyContest, createDummySubmission, fetchDummyContest } = require("../../master.test");
 const { base_settings } = require('./dummy-settings')
 
 

@@ -1,7 +1,7 @@
 const { expect } = require('chai');
-let { base_settings, test_token_strategies, test_arcade_strategies, test_voter_restrictions, test_submitter_restrictions } = require('./helpers/dummy-settings')
-const { createDummyContest, fetchDummyContest, createDummySubmission, fetchVotingMetrics, castDummyVote, cleanup } = require('./master.test');
-const { create_voting_scenario, create_dummy_submission } = require('./helpers/contest-test-setup')
+let { base_settings, test_token_strategies, test_arcade_strategies, test_voter_restrictions, test_submitter_restrictions } = require('../helpers/dummy-settings')
+const { createDummyContest, fetchDummyContest, createDummySubmission, fetchVotingMetrics, castDummyVote, cleanup } = require('../../master.test');
+const { create_voting_scenario, create_dummy_submission } = require('../helpers/contest-test-setup')
 
 
 

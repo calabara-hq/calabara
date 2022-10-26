@@ -12,7 +12,7 @@ let dater = new EthDater(
 )
 */
 
-const provider = new ethers.providers.AlchemyProvider('homestead', process.env.ALCHEMY_KEY)
+const provider = new ethers.providers.InfuraProvider('homestead', process.env.INFURA_KEY)
 
 
 let dater = new EthDater(

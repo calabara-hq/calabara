@@ -6,15 +6,15 @@ const fs = require('fs')
 const { TwitterApi } = require('twitter-api-v2')
 const MEDIA_ENDPOINT_URL = 'https://upload.twitter.com/1.1/media/upload.json'
 
-const CONSUMER_KEY = process.env.TWITTER_API_KEY
-const CONSUMER_SECRET = process.env.TWITTER_API_SECRET
-const APP_KEY = process.env.TWITTER_ACCESS_TOKEN_KEY
-const APP_SECRET = process.env.TWITTER_ACCESS_TOKEN_SECRET
+const CONSUMER_KEY = process.env.TWITTER_CONSUMER_KEY
+const CONSUMER_SECRET = process.env.TWITTER_CONSUMER_SECRET
+const ACCESS_TOKEN = process.env.TWITTER_ACCESS_TOKEN_KEY
+const ACCESS_SECRET = process.env.TWITTER_ACCESS_TOKEN_SECRET
 
 
 const token = {
-    key: APP_KEY,
-    secret: APP_SECRET,
+    key: ACCESS_TOKEN,
+    secret: ACCESS_SECRET,
 }
 
 
@@ -165,7 +165,7 @@ const upload_append = async (media_id, file_data, file) => {
 
 async function uploadTwitterMedia(req, res, next) {
 
-    const client = new TwitterApi({ appKey: CONSUMER_KEY, appSecret: CONSUMER_SECRET, accessToken: APP_KEY, accessSecret: APP_SECRET })
+    const client = new TwitterApi({ appKey: CONSUMER_KEY, appSecret: CONSUMER_SECRET, accessToken: ACCESS_TOKEN, accessSecret: ACCESS_SECRET })
     const file_path = path.normalize(path.join(__dirname, '../', req.file.path))
 
     const media_id = await client.v1.uploadMedia(file_path, { additionalOwners: [req.session.twitter.user.id] })

@@ -1,4 +1,4 @@
-const { checkWalletTokenBalance, calculateBlock } = require('../web3/web3')
+const { checkWalletTokenBalance, calculateBlock } = require('../../../web3/web3')
 const { expect } = require('chai');
 
 

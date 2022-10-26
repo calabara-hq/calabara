@@ -36,14 +36,16 @@ export default function ExpandedPrompt({ isCreating, setIsCreating, handleClose 
         setIsCreating(false);
     }
 
+    console.log(restrictionResults)
 
     if (!isCreating) {
         return (
             <>
                 <SubmissionRequirements>
+
                     <h2 style={{ marginBottom: '30px', marginTop: '20px' }}>Submission Requirements</h2>
                     <p >Limit 1 submission <RestrictionStatus isConnected={isWalletConnected} status={!alreadySubmittedError} key={`${isWalletConnected}-already-submitted`} /></p>
-                    {restrictionResults.map((restriction, index) => {
+                    {Object.values(restrictionResults).map((restriction, index) => {
                         if (restriction.type === 'erc20' || restriction.type === 'erc721') {
                             return (
                                 <>
@@ -63,6 +65,7 @@ export default function ExpandedPrompt({ isCreating, setIsCreating, handleClose 
                         {!isWalletConnected && <ConnectWalletButton onClick={walletConnect}>Connect Wallet</ConnectWalletButton>}
                         <AltSubmissionButton disabled={!isUserEligible} onClick={handleCreateSubmission}>Create Submission</AltSubmissionButton>
                     </SubButton>
+
                 </SubmissionRequirements>
                 <PromptWrap>
                     <PromptTop>

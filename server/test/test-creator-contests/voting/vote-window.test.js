@@ -1,6 +1,6 @@
 const { expect } = require('chai');
-const { castDummyVote, cleanup } = require('./master.test');
-const { create_voting_scenario, create_accepting_submissions_scenario, create_contest_end_scenario, create_dummy_submission } = require('./helpers/contest-test-setup')
+const { castDummyVote, cleanup } = require('../../master.test');
+const { create_voting_scenario, create_accepting_submissions_scenario, create_contest_end_scenario, create_dummy_submission } = require('../helpers/contest-test-setup')
 
 describe('voting window tests', async (done) => {
 

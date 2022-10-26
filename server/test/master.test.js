@@ -78,6 +78,15 @@ const castDummyVote = async (contest_hash, submission_id, num_votes) => {
     return response
 }
 
+
+const getTwitterAuthLink = async (scope_type) => {
+    let response = await request(secureServer)
+        .post('/twitter/generateAuthLink')
+        .send({ scope_type: scope_type })
+        .trustLocalhost()
+    return response
+}
+
 const cleanup = async () => {
     let response = await request(secureServer)
         .post('/creator_contests/test_delete_dummy')
@@ -105,4 +114,4 @@ after(done => {
 })
 
 
-module.exports = { createDummyContest, fetchDummyContest, createDummySubmission, createRealSubmission, fetchVotingMetrics, castDummyVote, fetchSubmissions, cleanup }
+module.exports = { createDummyContest, fetchDummyContest, createDummySubmission, createRealSubmission, fetchVotingMetrics, castDummyVote, fetchSubmissions, getTwitterAuthLink, cleanup }

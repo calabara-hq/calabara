@@ -25,14 +25,18 @@ export default function useTweet() {
     const process_thread = (thread) => {
         return thread.map(el => {
             let { text, media } = el
-            let { media_id } = media
-            return { text, media: { media_ids: [media_id] } }
+            if (media) {
+                let { media_id } = media
+                return { text, media: { media_ids: [media_id] } }
+            }
+            return el
         })
     }
 
     const sendQuoteTweet = (ens, contest_hash, tweet) => {
-        let processed_thread = process_thread(tweet)
-        authenticated_post('/twitter/sendQuoteTweet', { ens: ens, contest_hash: contest_hash, tweet: processed_thread })
+        console.log(tweet)
+        //let processed_thread = process_thread(tweet)
+        authenticated_post('/twitter/sendQuoteTweet', { ens: ens, contest_hash: contest_hash, tweet: tweet })
             .then(res => console.log(res))
     }
 

@@ -2,7 +2,7 @@ import React, { useContext, createContext, useMemo, useEffect } from 'react';
 import '@rainbow-me/rainbowkit/styles.css';
 import { getDefaultWallets, RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
 import { chain, configureChains, createClient, WagmiConfig } from 'wagmi';
-import { alchemyProvider } from 'wagmi/providers/alchemy';
+import { infuraProvider } from 'wagmi/providers/infura'
 import { publicProvider } from 'wagmi/providers/public';
 import useWallet from '../features/hooks/useWallet.js';
 import merge from 'lodash.merge'
@@ -10,7 +10,7 @@ import merge from 'lodash.merge'
 const { chains, provider } = configureChains(
     [chain.mainnet],
     [
-        alchemyProvider({ apiKey: process.env.ALCHEMY_ID }),
+        infuraProvider({ apiKey: process.env.INFURA_KEY }),
         publicProvider()
     ]
 );

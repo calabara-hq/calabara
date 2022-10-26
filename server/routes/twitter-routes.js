@@ -5,7 +5,11 @@ const dotenv = require('dotenv')
 const twitter = express();
 const db = require('../helpers/db-init')
 const { authenticateToken } = require('../middlewares/auth-middleware');
-const { sendTweet, sendQuoteTweet } = require('../middlewares/twitter-middleware');
+const { sendTweet, sendQuoteTweet, convertTweet, verifyTwitterAuth } = require('../middlewares/twitter-middleware');
+const { check_submitter_eligibility_PROTECTED, createSubmission } = require('../middlewares/creator-contests/submit-middleware');
+const { clean } = require('../helpers/common');
+const socketSendNewSubmission = require('../helpers/socket-messages');
+const { isAdmin } = require('../middlewares/admin-middleware');
 twitter.use(express.json())
 
 
@@ -30,9 +34,8 @@ let scopes = {
 
 twitter.post('/generateAuthLink', authenticateToken, async function (req, res, next) {
     const { scope_type } = req.body
-
-    console.log(scope_type)
-
+    if (!scope_type) return res.sendStatus(400)
+    if (!scopes[scope_type]) return res.sendStatus(400)
     const { url, codeVerifier, state } = requestClient.generateOAuth2AuthLink('https://localhost:3001/twitter/oauth2', { scope: scopes[scope_type] });
     req.session.twitter = {
         codeVerifier: codeVerifier,
@@ -90,12 +93,12 @@ const update_user_twitter = async (address, data) => {
 
 twitter.get('/poll_auth_status', authenticateToken, async function (req, res, next) {
     const { codeVerifier, stateVerifier, state, code, accessToken, retries } = req.session.twitter;
-    req.session.twitter.retries = retries + 1
-    console.log(req.session.twitter)
+    req.session.twitter.retries = typeof retries === 'undefined' ? 0 : retries + 1
 
     // there was an error in the oauth process
 
     if (retries > 20) {
+        req.session.twitter.retries = 0;
         return res.send({ status: 'error' }).status(200)
     }
 
@@ -130,19 +133,32 @@ twitter.get('/poll_auth_status', authenticateToken, async function (req, res, ne
 // 403 error -> tweet with duplicate content
 // 
 
-
+// auth user
+// check eligibility
 // parse the thread
 // send the tweet
 // on success,
 // parse the thread into a calabara submission
 // submit in the contest
 
-twitter.post('/sendQuoteTweet', authenticateToken, sendQuoteTweet, async function (req, res, next) {
-
+twitter.post('/sendQuoteTweet', authenticateToken, check_submitter_eligibility_PROTECTED, sendQuoteTweet, convertTweet, createSubmission, async function (req, res, next) {
+    const { ens } = req.body
+    let result = await db.query('insert into contest_submissions (ens, contest_hash, author, created, locked, pinned, _url) values ($1, $2, $3, $4, $5, $6, $7) returning id ', [ens, req.contest_hash, req.session.user.address, req.created, false, false, req.url]).then(clean)
     res.sendStatus(200)
+    socketSendNewSubmission(req.contest_hash, ens, { id: result.id, _url: req.url, author: req.session.user.address, votes: 0 })
+
 })
 
+// attempt to tweet, then return the announcementID
+twitter.post('/send_announcement_tweet', authenticateToken, isAdmin, sendTweet, async function (req, res, next) {
+    const { ens } = req.body
+    console.log(req.announcementID)
+    res.send(req.announcementID).status(200)
+})
 
+twitter.post('/verify_twitter_auth', authenticateToken, verifyTwitterAuth, async function (req, res, next) {
+    res.sendStatus(200)
+})
 
 twitter.get('/destroy_session', async function (req, res, next) {
     req.session.twitter = null

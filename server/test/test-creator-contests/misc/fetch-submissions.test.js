@@ -1,7 +1,7 @@
 const { expect } = require('chai');
-const { create_accepting_submissions_scenario, create_contest_end_scenario } = require('./helpers/contest-test-setup');
+const { create_accepting_submissions_scenario, create_contest_end_scenario } = require('../helpers/contest-test-setup');
 
-const {fetchSubmissions, cleanup, createRealSubmission, } = require('./master.test');
+const {fetchSubmissions, cleanup, createRealSubmission, } = require('../../master.test');
 
 
 describe('test fetch submissions', async (done) => {

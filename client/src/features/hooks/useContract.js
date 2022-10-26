@@ -1,7 +1,7 @@
 import { tokenAbi } from "../wallet/token-abi";
 import { ethers } from "ethers";
 
-const provider = new ethers.providers.AlchemyProvider('homestead', process.env.REACT_APP_ALCHEMY_KEY)
+const provider = new ethers.providers.InfuraProvider('homestead', process.env.INFURA_KEY)
 
 export default function useContract() {
 

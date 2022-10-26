@@ -140,6 +140,18 @@ export default function useAuthentication() {
                     case 438:
                         showNotification('error', 'error', 'the contest is not over yet!')
                         break
+                    case 439:
+                        showNotification('error', 'error', 'not a twitter contest')
+                        break
+                    case 440:
+                        showNotification('error', 'error', 'twitter account not authorized')
+                        break
+                    case 441:
+                        showNotification('error', 'error', 'duplicate of tweet content')
+                        break
+                    case 442:
+                        showNotification('error', 'error', 'problem sending the tweet')
+                        break
                 }
                 return null
             })
