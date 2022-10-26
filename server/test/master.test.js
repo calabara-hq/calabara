@@ -87,6 +87,7 @@ const getTwitterAuthLink = async (scope_type) => {
     return response
 }
 
+
 const cleanup = async () => {
     let response = await request(secureServer)
         .post('/creator_contests/test_delete_dummy')

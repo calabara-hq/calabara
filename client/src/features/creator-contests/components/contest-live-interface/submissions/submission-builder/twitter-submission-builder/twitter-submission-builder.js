@@ -496,14 +496,11 @@ function CreateTweet(props) {
             img.data
         )
 
-        axios({
-            method: 'post',
-            url: '/creator_contests/twitter_contest_upload_img',
-            data: formData
-        }).then((response) => {
-            console.log(response.data.file)
-            props.setBuilderData({ type: 'update_tweet_media_phase_2', payload: { index: props.tweet_id, value: response.data.file } })
-        })
+        authenticated_post('/creator_contests/twitter_contest_upload_img', { data: formData })
+            .then((response) => {
+                console.log(response.data.file)
+                props.setBuilderData({ type: 'update_tweet_media_phase_2', payload: { index: props.tweet_id, value: response.data.file } })
+            })
 
     }
 

@@ -15,3 +15,5 @@
 * 440: twitter account not authorized
 * 441: duplicate of tweet content
 * 442: problem sending the tweet
+* 443: malformed tweet
+* 444: service unavailable

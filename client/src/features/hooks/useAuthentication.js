@@ -152,6 +152,12 @@ export default function useAuthentication() {
                     case 442:
                         showNotification('error', 'error', 'problem sending the tweet')
                         break
+                    case 443:
+                        showNotification('error', 'error', 'malformed tweet')
+                        break
+                    case 444:
+                        showNotification('error', 'error', 'twitter is down. please try again later')
+                        break
                 }
                 return null
             })
