@@ -31,16 +31,10 @@ const testAuthentication = async () => {
 
 const pinFileStream = async (stream, filename, options) => {
 
-    console.log('entering')
-
     var data = new FormData();
     data.append('file', stream, {
         filepath: 'submission',
     });
-
-
-
-
 
     var config = {
         method: 'post',
@@ -53,15 +47,12 @@ const pinFileStream = async (stream, filename, options) => {
     };
 
 
-    
     return axios(config).then((res, err) => {
         if (err) return
         return constructURL(res.data.IpfsHash);
 
     });
     
-   //return config
-
 }
 
 const pinFromFs = async (path, options) => {

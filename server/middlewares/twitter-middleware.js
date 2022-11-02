@@ -117,7 +117,7 @@ async function sendTweet(req, res, next) {
     if (!accessToken) return res.sendStatus(440)
 
     let processed_thread = process_thread(tweet)
-    if (!process_thread) return res.sendStatus(443)
+    if (!processed_thread) return res.sendStatus(443)
 
     try {
         let tweet_id = await twitter_send_tweet(accessToken, processed_thread)
@@ -141,9 +141,10 @@ async function sendQuoteTweet(req, res, next) {
     if (!accessToken) return res.sendStatus(440)
     if (!announcementID) return res.sendStatus(400)
     let processed_thread = process_thread(tweet)
-    if (!process_thread) return res.sendStatus(443)
+    if (!processed_thread) return res.sendStatus(443)
 
     processed_thread[0].quote_tweet_id = announcementID
+
 
     try {
         let tweet_id = await twitter_send_tweet(accessToken, processed_thread)
@@ -152,6 +153,7 @@ async function sendQuoteTweet(req, res, next) {
 
     }
     catch (err) {
+        console.log(err)
         if (err.data.title === 'Unsupported Authentication') return res.sendStatus(440)
         if (err.data.title === 'Forbidden') return res.sendStatus(441)
         if (err.code === 503) return res.sendStatus(444)

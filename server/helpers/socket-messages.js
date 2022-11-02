@@ -34,7 +34,9 @@ const construct_broadcast_data = async (contest_hash, ens, submission_fields) =>
 
 const socketSendNewSubmission = async (contest_hash, ens, submission_fields) => {
     const broadcast_data = await construct_broadcast_data(contest_hash, ens, submission_fields)
-    return sendSocketMessage(contest_hash, 'new_submission', broadcast_data)
+    try {
+        return sendSocketMessage(contest_hash, 'new_submission', broadcast_data)
+    } catch (err) { console.log(err) }
 }
 
 

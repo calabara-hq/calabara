@@ -6,6 +6,7 @@
   "scripts": {
     "test:all": "mocha -b --timeout 100000000 --exit \"{,!(node_modules)/**/}*.test.js\"",
     "test:twitter": "mocha -b --timeout 100000000 --exit \"./test/test-twitter/*.test.js\"",
+    "test:cron": "mocha -b --timeout 100000000 --exit \"./test/test-cronjobs/*.test.js\"",
     "start": "node server.js"
   },
   "author": "",

@@ -56,7 +56,7 @@ describe('send tweet', async (done) => {
 
         await sendTweet(request, response, () => { })
         expect(response.statusCode).to.eql(200)
-        let tweet_id = request.announcementID
+        let tweet_id = JSON.parse(request.announcementID)
         // delete the tweet
         let deleted = await twitter_delete_tweet(request.session.twitter.accessToken, tweet_id)
         expect(deleted).to.equal(true);
@@ -92,7 +92,7 @@ describe('send tweet', async (done) => {
 
         await sendTweet(request, response, () => { })
         expect(response.statusCode).to.eql(200)
-        let tweet_id = request.announcementID
+        let tweet_id = JSON.parse(request.announcementID)
         await sendTweet(request, response, () => { })
         expect(response.statusCode).to.eql(441)
 

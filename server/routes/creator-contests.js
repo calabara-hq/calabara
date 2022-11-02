@@ -9,7 +9,7 @@ const { isAdmin } = require('../middlewares/admin-middleware')
 const { clean, asArray, shuffleArray } = require('../helpers/common')
 const { createContest, isNick } = require('../middlewares/creator-contests/create-contest-middleware');
 const { check_submitter_eligibility_unprotected, check_submitter_eligibility_PROTECTED, createSubmission } = require('../middlewares/creator-contests/submit-middleware');
-const { imageUpload } = require('../middlewares/image-upload-middleware.js');
+const { imageUpload, twitterMediaUpload } = require('../middlewares/image-upload-middleware.js');
 const { calc_sub_vp__unprotected, calc_sub_vp__PROTECTED } = require('../middlewares/creator-contests/vote-middleware.js');
 const logger = require('../logger').child({ component: 'creator-contests' })
 const { sendSocketMessage } = require('../sys/socket/socket-io');
@@ -19,6 +19,7 @@ const socketSendNewSubmission = require('../helpers/socket-messages.js');
 const { TwitterApi } = require('twitter-api-v2');
 const { createReadStream } = require('fs');
 const { uploadTwitterMedia } = require('../middlewares/twitter-upload-media.js');
+const { add_stream_rule } = require('../twitter-client/stream.js');
 dotenv.config()
 
 const serverRoot = path.normalize(path.join(__dirname, '../'));
@@ -67,6 +68,9 @@ contests.post('/create_contest', authenticateToken, isAdmin, isNick, createConte
     const { ens, contest_settings, prompt_data } = req.body
     const { start_date, voting_begin, end_date } = contest_settings.date_times
     await db.query('insert into contests (ens, created, _start, _voting, _end, _hash, settings, prompt_data, locked, pinned) values ($1, $2, $3, $4, $5, $6, $7, $8, false, false)', [ens, req.created, start_date, voting_begin, end_date, req.hash, contest_settings, prompt_data])
+    if (contest_settings.twitter_integration) {
+        add_stream_rule({ value: `conversation_id:${contest_settings.twitter_integration.announcementID} is:quote`, tag: req.hash })
+    }
     res.sendStatus(200)
 })
 
@@ -172,7 +176,6 @@ contests.post('/retract_sub_votes', authenticateToken, async function (req, res,
 
 contests.get('/org_contest_stats', async function (req, res, next) {
     const { ens } = req.query
-    console.log('entering')
     await db.query('select settings ->> \'submitter_rewards\' as rewards from contests where ens=$1', [ens])
         .then(clean)
         .then(asArray)
@@ -213,7 +216,7 @@ contests.post('/upload_img', imageUpload.single('image'), async (req, res) => {
 
 
 
-contests.post('/twitter_contest_upload_img', imageUpload.single('image'), uploadTwitterMedia, async (req, res) => {
+contests.post('/twitter_contest_upload_img', twitterMediaUpload.single('image'), uploadTwitterMedia, async (req, res) => {
 
     console.log(req.file.media_id)
 

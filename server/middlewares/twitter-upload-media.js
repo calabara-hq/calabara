@@ -85,8 +85,6 @@ const upload_init = async (file_data) => {
 
 }
 
-
-
 const upload_append = async (media_id, file_data, file) => {
     let chunk_id = 0
     let segment_size = 0

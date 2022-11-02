@@ -7,30 +7,41 @@ dotenv.config();
 
 
 const imageStorage = multer.diskStorage({
-    // Destination to store image     
-    destination: 'contest-assets/staging/media',
-      filename: (req, file, cb) => {
-          cb(null, '_' + new Date().toISOString() + '_'
-             + path.extname(file.originalname))
-    }
+  // Destination to store image     
+  destination: 'contest-assets/staging/media',
+  filename: (req, file, cb) => {
+    cb(null, '_' + new Date().toISOString() + '_'
+      + path.extname(file.originalname))
+  }
 });
 
 
 const imageUpload = multer({
-    storage: imageStorage,
-    limits: {
-      fileSize: 10000000 // 1000000 Bytes = 1 MB
-    },
-    fileFilter(req, file, cb) {
-      if (!file.originalname.match(/\.(png|jpg|jpeg|svg|gif)$/)) { 
-         return cb(new Error('Please upload a Image'))
-       }
-     cb(undefined, true)
+  storage: imageStorage,
+  limits: {
+    fileSize: 10000000 // 1000000 Bytes = 1 MB
+  },
+  fileFilter(req, file, cb) {
+    if (!file.originalname.match(/\.(png|jpg|jpeg|svg|gif)$/)) {
+      return cb(new Error('Please upload a Image'))
+    }
+    cb(undefined, true)
   }
 })
 
 
+const twitterMediaUpload = multer({
+  storage: imageStorage,
+  limits: {
+    fileSize: 10000000 // 1000000 Bytes = 1 MB
+  },
+  fileFilter(req, file, cb) {
+    if (!file.originalname.match(/\.(png|jpg|jpeg|gif)$/)) {
+      return cb(new Error('Please upload a Image'))
+    }
+    cb(undefined, true)
+  }
+})
 
 
-
-module.exports.imageUpload = imageUpload;
+module.exports = { imageUpload, twitterMediaUpload }

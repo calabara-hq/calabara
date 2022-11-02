@@ -99,7 +99,7 @@ describe('quote tweet', async (done) => {
 
         await sendQuoteTweet(request, response, () => { })
         expect(response.statusCode).to.eql(200)
-        let tweet_id = request.tweet_id
+        let tweet_id = JSON.parse(request.tweet_id)
         // delete the tweet
         let deleted = await twitter_delete_tweet(request.session.twitter.accessToken, tweet_id)
         expect(deleted).to.equal(true);
@@ -136,7 +136,8 @@ describe('quote tweet', async (done) => {
 
         await sendQuoteTweet(request, response, () => { })
         expect(response.statusCode).to.eql(200)
-        let tweet_id = request.tweet_id
+        let tweet_id = JSON.parse(request.tweet_id)
+        
         //duplicate should fail
         await sendQuoteTweet(request, response, () => { })
         expect(response.statusCode).to.eql(441)

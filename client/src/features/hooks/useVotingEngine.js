@@ -24,8 +24,8 @@ export default function useVotingEngine(sub_id) {
     const [total_available_vp, set_total_available_vp] = useState(0);
     const [votes_spent, set_votes_spent] = useState(0);
     const [restrictions, set_restrictions] = useState(null)
-    const walletAddress = useSelector(selectIsConnected);
-    const isConnected = useSelector(selectWalletAddress);
+    const isConnected = useSelector(selectIsConnected);
+    const walletAddress = useSelector(selectWalletAddress);
     const [is_self_voting_error, set_is_self_voting_error] = useState(true);
     const { authenticated_post } = useWalletContext();
     console.log(sub_id)
