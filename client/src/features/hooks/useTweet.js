@@ -20,24 +20,13 @@ export default function useTweet() {
      * }]
      */
 
-
-    // process thread to strip out previews
-    const process_thread = (thread) => {
-        return thread.map(el => {
-            let { text, media } = el
-            if (media) {
-                let { media_id } = media
-                return { text, media: { media_ids: [media_id] } }
-            }
-            return el
-        })
-    }
-
     const sendQuoteTweet = (ens, contest_hash, tweet) => {
         console.log(tweet)
-        //let processed_thread = process_thread(tweet)
-        authenticated_post('/twitter/sendQuoteTweet', { ens: ens, contest_hash: contest_hash, tweet: tweet })
-            .then(res => console.log(res))
+        return authenticated_post('/twitter/sendQuoteTweet', { ens: ens, contest_hash: contest_hash, tweet: tweet })
+            .then(res => {
+                if (!res) throw (new Error())
+                return res
+            })
     }
 
     return {

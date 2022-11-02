@@ -147,7 +147,7 @@ export default function useAuthentication() {
                         showNotification('error', 'error', 'twitter account not authorized')
                         break
                     case 441:
-                        showNotification('error', 'error', 'duplicate of tweet content')
+                        showNotification('error', 'error', 'this tweet looks too similar to one you\'ve posted before. Please change it and try again')
                         break
                     case 442:
                         showNotification('error', 'error', 'problem sending the tweet')
