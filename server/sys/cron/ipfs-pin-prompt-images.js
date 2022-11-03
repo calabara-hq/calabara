@@ -1,7 +1,7 @@
 const cron = require('node-cron');
 const { clean, asArray } = require('../../helpers/common.js');
 const db = require('../../helpers/db-init.js');
-const { EVERY_10_SECONDS } = require('./schedule');
+const { EVERY_10_SECONDS, EVERY_30_SECONDS } = require('./schedule');
 const { pinFromFs, pinFileStream } = require('../../helpers/ipfs-api.js');
 
 
@@ -53,7 +53,7 @@ const mainLoop = async (prompts) => {
 
 
 const pin_prompt_assets = async () => {
-    cron.schedule(EVERY_10_SECONDS, async () => {
+    cron.schedule(EVERY_30_SECONDS, async () => {
         console.log('running')
         let prompts = await getPrompts();
         await mainLoop(prompts);

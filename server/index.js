@@ -7,9 +7,7 @@ const initialize_cron = require('./sys/cron/main')
 dotenv.config();
 const initialize_discord_bot = require('./discord-bot/deploy-commands.js')
 const { socketConnection } = require('./sys/socket/socket-io')
-
-const { Server } = require('socket.io')
-
+const twitterStream = require('./twitter-client/stream')
 
 
 if (!process.env.NODE_ENV) {
@@ -29,6 +27,7 @@ var secureServer = https.createServer({ key, cert }, app);
 if (process.env.NODE_ENV === 'development') {
     secureServer.listen(3001, () => {
         socketConnection(secureServer)
+        initialize_cron();
         initialize_discord_bot()
             .then(res => console.log(res))
             .then(console.log('Running at Port 3001'))

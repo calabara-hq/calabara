@@ -8,44 +8,42 @@ import axios from 'axios';
 import Editor from 'react-medium-editor';
 import DragList from '../drag-n-drop/dragList'
 import Glyphicon from '@strongdm/glyphicon'
-import WikiModal from './wiki-folder-modal'
-import BackButton from '../back-button/back-button'
+import WikiModal from './wiki-folder-modal.js'
+import BackButton from '../back-button/back-button.js'
 
 
 //redux
 import { useSelector, useDispatch } from 'react-redux';
 
-import {
-  selectConnectedBool,
-  selectConnectedAddress,
-} from '../wallet/wallet-reducer';
 
 import {
   selectWikiList,
   selectWikiListOrganization,
-} from './wiki-reducer';
+} from './wiki-reducer.js';
 
 import {
   selectDashboardInfo,
-} from '../dashboard/dashboard-info-reducer'
+} from '../dashboard/dashboard-info-reducer.js'
 
 import {
   selectDashboardRuleResults,
   selectDashboardRules,
-} from '../gatekeeper/gatekeeper-rules-reducer'
+} from '../gatekeeper/gatekeeper-rules-reducer.js'
 
 // import { testDiscordRoles } from '../hooks/useGatekeeper'
-import useDashboardRules from '../hooks/useDashboardRules'
-import useGatekeeper from '../hooks/useGatekeeper'
-import useCommon from '../hooks/useCommon'
-import useWiki from '../hooks/useWiki'
+import useDashboardRules from '../hooks/useDashboardRules.js'
+import useGatekeeper from '../hooks/useGatekeeper.js'
+import useCommon from '../hooks/useCommon.js'
+import useWiki from '../hooks/useWiki.js'
+import { useWalletContext } from '../../app/WalletContext'
+import { selectIsConnected, selectWalletAddress } from '../../app/sessionReducer'
 
 export default function WikiDisplay({ mode }) {
   const { ens } = useParams();
   const wikiList = useSelector(selectWikiList)
   const info = useSelector(selectDashboardInfo)
-  const isConnected = useSelector(selectConnectedBool)
-  const walletAddress = useSelector(selectConnectedAddress)
+  const isConnected = useSelector(selectIsConnected)
+  const walletAddress = useSelector(selectWalletAddress)
   const dashboardRuleResults = useSelector(selectDashboardRuleResults)
   const dashboardRules = useSelector(selectDashboardRules)
   const organizationEns = useSelector(selectWikiListOrganization);
@@ -57,8 +55,9 @@ export default function WikiDisplay({ mode }) {
   const [currentWikiId, setCurrentWikiId] = useState(-1)
   const [modalOpen, setModalOpen] = useState(false);
   const [groupID, setGroupID] = useState(null)
-  const {applyDashboardRules} = useDashboardRules();
-  const { batchFetchDashboardData, authenticated_post } = useCommon();
+  const { applyDashboardRules } = useDashboardRules();
+  const { batchFetchDashboardData } = useCommon();
+  const { authenticated_post } = useWalletContext();
   const { populateInitialWikiList, removeFromWikiList } = useWiki();
 
   useEffect(() => {
@@ -129,7 +128,7 @@ export default function WikiDisplay({ mode }) {
     }
   }, [wikiList])
 
-  useEffect(async () => {
+  useEffect(() => {
     checkForAdmin();
   }, [isConnected, info])
 
@@ -146,7 +145,7 @@ export default function WikiDisplay({ mode }) {
   }, [currentWikiId])
 
 
-  useEffect(() => {},[isAdmin])
+  useEffect(() => { }, [isAdmin])
 
   const newWikiGroupingClick = () => {
     open();
@@ -197,7 +196,7 @@ export default function WikiDisplay({ mode }) {
 
 
 function TestWikiVisibility({ setCurrentWikiId, wikiList, dashboardRuleResults }) {
-  const isConnected = useSelector(selectConnectedBool)
+  const isConnected = useSelector(selectIsConnected)
 
   useEffect(() => {
 
@@ -217,7 +216,7 @@ function TestWikiVisibility({ setCurrentWikiId, wikiList, dashboardRuleResults }
 }
 
 function WikiRuleMap({ setCurrentWikiId, group, group_data, dashboardRuleResults }) {
-const {testDiscordRoles} = useGatekeeper();
+  const { testDiscordRoles } = useGatekeeper();
 
   useEffect(() => {
   }, [dashboardRuleResults])

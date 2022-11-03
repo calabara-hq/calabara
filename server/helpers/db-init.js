@@ -6,6 +6,7 @@ dotenv.config();
 
 const db_init = () => {
 
+
     let config;
 
     if (process.env.NODE_ENV == 'production') {
@@ -43,6 +44,11 @@ const db_init = () => {
 
 const db = new Pool(db_init().db)
 
+/*
+const serialized_query = async () => {
+
+}
+*/
 
 
 module.exports = db;

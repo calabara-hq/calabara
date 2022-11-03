@@ -10,8 +10,6 @@ import { InterfaceHeading, ContestDetails, DetailRow, DetailRowHover, Checkpoint
 import { selectContestSettings, selectContestState } from "../interface/contest-interface-reducer";
 
 import DrawerComponent from "../../../../drawer/drawer.js";
-import styled from 'styled-components';
-import { Placeholder } from '../../common/common_components';
 import { SummaryWrap } from "../../contest-details/detail-style.js";
 import ContestSummaryComponent from "../../contest-details/detail-components.js";
 
@@ -22,7 +20,6 @@ const processSubmitterRewards = (contest_settings) => {
 
     let [erc20_sum, erc721_sum, eth_sum] = [0, 0, 0];
     let agg_rewards = []
-
 
     Object.values(contest_settings.submitter_rewards).map((reward) => {
         if (reward['erc20']) erc20_sum += reward['erc20'].amount
@@ -126,7 +123,7 @@ export default function ContestInfo() {
             {/*<ContestInfoDrawer contest_settings={contest_settings} handleClose={handleDrawerClose} drawerOpen={drawerOpen} />*/}
             <DrawerComponent drawerOpen={drawerOpen} handleClose={handleDrawerClose} showExit={true}>
                 <SummaryWrap>
-                    <ContestSummaryComponent contest_settings={contest_settings}/>
+                    <ContestSummaryComponent contest_settings={contest_settings} />
                 </SummaryWrap>
             </DrawerComponent>
         </>

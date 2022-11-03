@@ -1,73 +1,82 @@
-import { useEffect, useState } from "react";
-import usePopupWindow from "./usePopupWindow";
-
-const DISCORD_CLIENT_KEY = process.env.REACT_APP_DISCORD_CLIENT_KEY;
+import axios from "axios";
+import { useState } from "react";
 
 export const useTwitterAuth = () => {
-    const [authLink, setAuthLink] = useState(false);
     const [authState, setAuthState] = useState(0);
     const [accountInfo, setAccountInfo] = useState(null);
-    const { onOpen, windowInstance } = usePopupWindow(authLink);
+    const [error, setError] = useState(false);
 
-
-
-    const getAuthState = () => {
-        return fetch('/twitter/poll_auth_status')
-            .then(data => data.json())
-            .then(data => {
-                if (data.authorized) {
-                    setAccountInfo(data);
-                    setAuthState(2);
-                    return true
-                }
-                else {
-                    return false
-                }
-            })
+    const openWindow = (uri) => {
+        return window.open(uri, "_blank", "height=750,width=600,scrollbars")
     }
 
-
-
+    // on initial open, we check if user is already authed
+    const handleOpenAuth = (scope_type) => {
+        if(error) setError(false)
+        axios.post('/twitter/generateAuthLink', { scope_type: scope_type }, { withCredentials: true })
+            .then(res => {
+                openWindow(res.data)
+                setAuthState(1);
+                setTimeout(pollAuthState, 3000)
+            })
+    }
 
     const pollAuthState = () => {
         console.log('polling')
-        getAuthState()
+        return fetch('/twitter/poll_auth_status', { credentials: 'include' })
+            .then(data => data.json())
             .then(data => {
-                console.log(data)
-                if (!data) {
-                    setAuthState(1);
-                    setTimeout(pollAuthState, 1000)
+                switch (data.status) {
+                    case 'error':
+                        console.log('something went horribly wrong')
+                        handleAuthError()
+                        break
+                    case 'pending':
+                        console.log('pending')
+                        console.log(error)
+                        setTimeout(pollAuthState, 2000)
+                        break
+                    case 'ready':
+                        console.log('ready')
+                        setAccountInfo(data.user)
+                        setError(false)
+                        setAuthState(2)
                 }
             })
-
-    }
-
-    const handleOpenAuth = () => {
-        getAuthState()
-            .then(data => {
-                if (!data) {
-                    onOpen();
-                    setAuthState(1);
-                    setTimeout(pollAuthState, 2000);
-                }
+            .catch(err => {
+                console.log(err)
             })
     }
 
-
-    const getAuthLink = () => {
-        fetch('/twitter/generateAuthLink')
-            .then(data => data.text())
-            .then(data => setAuthLink(data))
+    const handleAuthError = () => {
+        fetch('/twitter/destroy_session')
+            .then(() => {
+                setError(true);
+                setAccountInfo(null);
+                setAuthState(0)
+            })
     }
+
+    const destroySession = () => {
+        fetch('/twitter/destroy_session')
+            .then(() => {
+                console.log('resetting state')
+                setError(false);
+                setAccountInfo(null);
+                setAuthState(0)
+            })
+    }
+
 
     return {
-        authLink,
         authState: authState,
         accountInfo,
-        getAuthLink,
-        onOpen: () => {
-            handleOpenAuth()
+        onOpen: (scope_type) => {
+            handleOpenAuth(scope_type)
         },
+        destroySession: () => destroySession(),
+        auth_error: error,
+
     }
 
 }

@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPencil, faPlus } from '@fortawesome/free-solid-svg-icons';
 import ethLogo from '../../../../../img/eth.png'
-import EditRewardsModal from './contest-reward-input-modal';
+import EditRewardsModal from '../../common/add-token-modal';
 import { Contest_h3_alt, ERC20Button_alt, TagType } from '../../common/common_styles';
 import { ERC20Button, ERC721Button_alt } from '../../common/common_styles';
 import { rewardOptionActions, rewardOptionState } from './reducers/rewards-reducer';
@@ -135,20 +135,16 @@ export default function RewardSelector({ }) {
                 {Object.values(rewardOptions).map((el, idx) => {
 
                     return (
-                        <>
-
-                            <RewardOption key={idx}>
-                                <>
-                                    {el.type != 'eth' && <RewardOptionEditBtn onClick={() => handleEditRewardOption(el.type)}><FontAwesomeIcon icon={faPencil}></FontAwesomeIcon></RewardOptionEditBtn>}
-                                    <p><b>Type:</b> <TagType type={el.type}>{el.type}</TagType></p>
-                                    {el.symbol != 'ETH' && <p><b>Symbol:</b> {el.symbol}</p>}
-                                    {el.address && <EtherScanLinkButton onClick={() => { window.open('https://etherscan.io/address/' + el.address) }} className="gatekeeper-config">{el.address.substring(0, 6)}...{el.address.substring(38, 42)} <i className="fas fa-external-link-alt"></i></EtherScanLinkButton>}
-                                    {el.img && <img style={{ margin: '0 auto' }} src={ethLogo}></img>}
-                                    <ToggleSwitch selectedRewards={selectedRewards} id={idx} value={el} />
-                                </>
-                            </RewardOption>
-
-                        </>
+                        <RewardOption key={idx}>
+                            <>
+                                {el.type != 'eth' && <RewardOptionEditBtn onClick={() => handleEditRewardOption(el.type)}><FontAwesomeIcon icon={faPencil}></FontAwesomeIcon></RewardOptionEditBtn>}
+                                <p><b>Type:</b> <TagType type={el.type}>{el.type}</TagType></p>
+                                {el.symbol != 'ETH' && <p><b>Symbol:</b> {el.symbol}</p>}
+                                {el.address && <EtherScanLinkButton onClick={() => { window.open('https://etherscan.io/address/' + el.address) }} className="gatekeeper-config">{el.address.substring(0, 6)}...{el.address.substring(38, 42)} <i className="fas fa-external-link-alt"></i></EtherScanLinkButton>}
+                                {el.img && <img style={{ margin: '0 auto' }} src={ethLogo}></img>}
+                                <ToggleSwitch selectedRewards={selectedRewards} id={idx} value={el} />
+                            </>
+                        </RewardOption>
                     )
                 })}
             </AvailableRewards>
@@ -156,7 +152,7 @@ export default function RewardSelector({ }) {
                 {!rewardOptions.erc20 && <ERC20Button_alt onClick={() => handleEditRewardOption('erc20')}><FontAwesomeIcon icon={faPlus} /> ERC-20</ERC20Button_alt>}
                 {!rewardOptions.erc721 && <ERC721Button_alt onClick={() => handleEditRewardOption('erc721')}><FontAwesomeIcon icon={faPlus} /> ERC-721</ERC721Button_alt>}
             </NewRewardContainer>
-            <EditRewardsModal modalOpen={editRewardsModalOpen} handleClose={handleRewardsModalClose} existingRewardData={rewardOptions[tokenType]} tokenType={tokenType} />
+            <EditRewardsModal modalOpen={editRewardsModalOpen} handleClose={handleRewardsModalClose} existingRewardData={rewardOptions[tokenType]} tokenType={tokenType} title={"Add Reward Option"} />
         </Wrap>
     )
 }

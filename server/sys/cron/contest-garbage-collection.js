@@ -1,6 +1,6 @@
 const cron = require('node-cron')
 const db = require('../../helpers/db-init.js')
-const { EVERY_10_SECONDS } = require('./schedule')
+const { EVERY_10_SECONDS, EVERY_HOUR } = require('./schedule')
 const fs = require('fs');
 const path = require('path')
 
@@ -50,7 +50,7 @@ const image_garbage_collection = () => {
 
 
 const garbage_collection = () => {
-    cron.schedule(EVERY_10_SECONDS, () => {
+    cron.schedule(EVERY_HOUR, () => {
         console.log('running contest garbage collection')
         image_garbage_collection();
     })

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { submitterRewardActions, submitterRewardState, voterRewardActions, voterRewardState } from './contest_rewards/reducers/rewards-reducer';
-
+import { submitterRestrictionsActions, submitterRestrictionsState, voterRestrictionsActions, voterRestrictionsState } from './contest_gatekeeper/reducers/restrictions-reducer';
 
 
 const check_rank_error = (rank) => {
@@ -39,8 +39,8 @@ const check_erc721_error = (erc721) => {
 export default function useErrorHandler(date_times) {
     const submitterRewards = useSelector(submitterRewardState.getSubmitterRewards)
     const voterRewards = useSelector(voterRewardState.getVoterRewards)
-    const submitterErrors = useSelector(submitterRewardState.getSubmitterErrors);
-    const voterErrors = useSelector(voterRewardState.getVoterErrors);
+    const submitter_restrictions = useSelector(submitterRestrictionsState.getSubmitterRestrictions);
+    const voter_restrictions = useSelector(voterRestrictionsState.getVoterRestrictions);
     const dispatch = useDispatch();
 
 
@@ -106,11 +106,11 @@ export default function useErrorHandler(date_times) {
             prompt_error = true
         }
 
-        if (!promptBuilderData.prompt_heading) {
+        if (promptBuilderData.prompt_heading === '') {
             setPromptBuilderData({ type: 'update_single', payload: { prompt_heading_error: true } })
             prompt_error = true
         }
-        if (!promptBuilderData.prompt_label) {
+        if (promptBuilderData.prompt_label === '') {
             setPromptBuilderData({ type: 'update_single', payload: { prompt_label_error: true } })
             prompt_error = true
         }
@@ -119,27 +119,18 @@ export default function useErrorHandler(date_times) {
     }
 
 
-    const handleRestrictionErrors = (submitterAppliedRules, setSubmitterError, voterAppliedRules, setVoterError) => {
+    const handleRestrictionErrors = () => {
         let restrictions_error = false;
-        Object.entries(submitterAppliedRules).map(([key, val]) => {
-            if (val === '') {
-                setSubmitterError({ [key]: true })
-                restrictions_error = true
-            }
+        submitter_restrictions.map((val, idx) => {
             if (val.threshold === '') {
-                setSubmitterError({ [key]: true })
+                dispatch(submitterRestrictionsActions.setSubmitterRestrictions({ index: idx, update_type: 'error', payload: null }))
                 restrictions_error = true
             }
         })
 
-        Object.entries(voterAppliedRules).map(([key, val]) => {
-            console.log(key)
-            if (val === '') {
-                setVoterError({ [key]: true })
-                restrictions_error = true
-            }
+        voter_restrictions.map((val, idx) => {
             if (val.threshold === '') {
-                setVoterError({ [key]: true })
+                dispatch(voterRestrictionsActions.setVoterRestrictions({ index: idx, update_type: 'error', payload: null }))
                 restrictions_error = true
             }
         })
@@ -155,13 +146,44 @@ export default function useErrorHandler(date_times) {
     }
 
 
+    // auth expired
+    // tweet is empty
+    const handleTwitterErrors = async (twitterData, setTwitterData) => {
+        if (!twitterData.enabled) return false
+
+        // verify auth state
+
+        let isAuthenticated = await fetch('/twitter/verify_twitter_auth', { method: 'POST', credentials: 'include' })
+            .then(res => {
+                if (res.status === 200) {
+                    return true
+                }
+                // set the error and revert back to stage 1 so user can re-auth
+                setTwitterData({ type: 'update_single', payload: { error: 'invalid_auth', stage: 1 } })
+
+                return false
+            })
+
+        if (!isAuthenticated) return true
+
+        // check for empty content
+
+        if (!twitterData.tweets[0].text) {
+            setTwitterData({ type: 'update_single', payload: { error: 'empty_content' } })
+            return true
+        }
+        return false
+
+    }
+
     return {
         handleSubmitterErrors: () => handleSubmitterErrors(),
         handleVoterErrors: () => handleVoterErrors(),
         handleTimeBlockErrors: (args) => handleTimeBlockErrors(args),
         handlePromptErrors: (editorData, promptBuilderData, setPromptBuilderData) => handlePromptErrors(editorData, promptBuilderData, setPromptBuilderData),
-        handleRestrictionErrors: (submitterAppliedRules, setSubmitterError, voterAppliedRules, setVoterError) => handleRestrictionErrors(submitterAppliedRules, setSubmitterError, voterAppliedRules, setVoterError),
-        handleVotingStrategyErrors: (votingStrategy, setVotingStrategyError) => handleVotingStrategyErrors(votingStrategy, setVotingStrategyError)
+        handleRestrictionErrors: () => handleRestrictionErrors(),
+        handleVotingStrategyErrors: (votingStrategy, setVotingStrategyError) => handleVotingStrategyErrors(votingStrategy, setVotingStrategyError),
+        handleTwitterErrors: async (twitterData, setTwitterData) => await handleTwitterErrors(twitterData, setTwitterData)
     }
 
 }

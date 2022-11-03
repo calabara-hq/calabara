@@ -3,10 +3,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import { selectOrganizations, selectMemberOf, populateMembership, populateOrganizations, join } from '../org-cards/org-cards-reducer';
 import { decreaseMemberCount, increaseMemberCount } from '../dashboard/dashboard-info-reducer';
 import useCommon from './useCommon';
+import { useWalletContext } from '../../app/WalletContext';
 
 export default function useOrganization() {
     const organizations = useSelector(selectOrganizations);
-    const { authenticated_post } = useCommon()
+    const { authenticated_post } = useWalletContext();
     const memberOf = useSelector(selectMemberOf);
     const dispatch = useDispatch();
 
@@ -48,7 +49,7 @@ export default function useOrganization() {
 
     const addMembership = async (ens) => {
 
-        let res = await authenticated_post('/organizations/addSubscription/', {ens: ens });
+        let res = await authenticated_post('/organizations/addSubscription/', { ens: ens });
         if (res) {
             dispatch(join(ens))
             dispatch(increaseMemberCount)

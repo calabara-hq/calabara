@@ -1,33 +1,32 @@
-import React, { useEffect, useReducer, useRef, useState } from "react"
-import ContestDateTimeBlock from "./datepicker/start-end-date"
-import ContestRewardsBlock from "./contest_rewards/contest-rewards-block"
-import ContestParticipantRestrictions from "./contest_gatekeeper/particpant_restrictions";
-import PromptBuilder from "./prompt_builder/prompt-builder";
-import SimpleInputs from "./contest_simple_inputs/contest_simple_inputs";
-import styled from 'styled-components'
-import VotingPolicy from "./voting_policy/voting-policy";
-import { useHistory, useParams } from "react-router-dom";
-import useDashboardRules from "../../../hooks/useDashboardRules";
-import useCommon from "../../../hooks/useCommon";
-import { rewardOptionState, voterRewardState, submitterRewardState } from "./contest_rewards/reducers/rewards-reducer";
+import React, { useEffect, useReducer, useRef, useState } from "react";
 import { useSelector } from "react-redux";
+import { useHistory, useParams } from "react-router-dom";
+import styled from 'styled-components';
+import '../../../../css/gatekeeper-toggle.css';
+import '../../../../css/manage-widgets.css';
+import useDashboardRules from "../../../hooks/useDashboardRules";
 import { fade_in } from "../common/common_styles";
-import '../../../../css/manage-widgets.css'
-import '../../../../css/gatekeeper-toggle.css'
-import { TagType } from "../common/common_styles";
+import ContestParticipantRestrictions from "./contest_gatekeeper/particpant-restrictions";
+import ContestRewardsBlock from "./contest_rewards/contest-rewards-block";
+import { rewardOptionState, submitterRewardState, voterRewardState } from "./contest_rewards/reducers/rewards-reducer";
+import SimpleInputs from "./contest_simple_inputs/contest_simple_inputs";
+import ContestDateTimeBlock from "./datepicker/start-end-date";
+import PromptBuilder from "./prompt_builder/prompt-builder";
+import VotingPolicy from "./voting_policy/voting-policy";
 
 
 
 // error handling
+import { selectIsConnected } from "../../../../app/sessionReducer";
+import { useWalletContext } from "../../../../app/WalletContext";
+import DrawerComponent from "../../../drawer/drawer";
+import TwitterThreadReducer, { twitter_initial_state } from "../../../reducers/twitter-thread-reducer";
+import Placeholder from "../common/spinner";
+import ContestSummaryComponent from "../contest-details/detail-components";
+import { SummaryWrap } from "../contest-details/detail-style";
+import { submitterRestrictionsState, voterRestrictionsState } from "./contest_gatekeeper/reducers/restrictions-reducer";
 import useErrorHandler from "./handle-errors";
 import Twitter from "./twitter_automation/twitter";
-import DrawerComponent from "../../../drawer/drawer";
-import { selectConnectedBool } from "../../../wallet/wallet-reducer";
-import { useWalletContext } from "../../../../app/WalletContext";
-import Placeholder from "../common/spinner";
-import ContestSummaryComponent, { AdditionalConfigDetails, ContestDateDetails, SubmitterRestrictionDetails, SubmitterRewardDetails, VoterRestrictionDetails, VoterRewardDetails, VotingPolicyDetails } from "../contest-details/detail-components";
-import { DetailWrap, SummaryWrap } from "../contest-details/detail-style";
-
 
 
 
@@ -140,9 +139,9 @@ function reducer(state, action) {
 
 
 const initialPromptData = {
-    prompt_heading: null,
+    prompt_heading: '',
     prompt_heading_error: false,
-    prompt_label: null,
+    prompt_label: '',
     prompt_label_error: false,
     prompt_label_color: 0,
     prompt_content_error: false,
@@ -151,27 +150,30 @@ const initialPromptData = {
 
 
 export default function ContestSettings() {
+    const { populateDashboardRules } = useDashboardRules();
+    const { ens } = useParams();
     const [currentDate, setCurrentDate] = useState(new Date())
     const [date_1, setDate_1] = useState(new Date())
     const [date_2, setDate_2] = useState(new Date())
     const [snapshotDate, setSnapshotDate] = useState(new Date())
 
-    const [votingStrategy, setVotingStrategy] = useReducer(reducer, { strategy_id: 0x0 });
+    const [votingStrategy, setVotingStrategy] = useReducer(reducer, { strategy_id: 0 });
     const [votingStrategyError, setVotingStrategyError] = useState(false);
-    const [submitterAppliedRules, setSubmitterAppliedRules] = useReducer(reducer, {});
-    const [voterAppliedRules, setVoterAppliedRules] = useReducer(reducer, {});
-    const [submitterRuleError, setSubmitterRuleError] = useState(false);
-    const [voterRuleError, setVoterRuleError] = useState(false);
     const [promptBuilderData, setPromptBuilderData] = useReducer(reducer, initialPromptData)
     const [simpleInputData, setSimpleInputData] = useReducer(reducer, { anonSubmissions: true, visibleVotes: false, selfVoting: false })
+    const [twitterData, setTwitterData] = useReducer(TwitterThreadReducer, twitter_initial_state)
 
-    const TimeBlockRef = useRef(null);
-    const RewardsRef = useRef(null);
+    const TimeBlockRef = useRef(null)
+    const RewardsRef = useRef(null)
     const RestrictionsBlockRef = useRef(null)
     const StrategyBlockRef = useRef(null)
     const PromptBlockRef = useRef(null)
-    const promptEditorCore = useRef(null);
+    const promptEditorCore = useRef(null)
+    const TwitterBlockRef = useRef(null)
 
+    useEffect(() => {
+        populateDashboardRules(ens)
+    }, [])
 
     return (
         <ContestSettingsWrap>
@@ -196,16 +198,7 @@ export default function ContestSettings() {
             </SettingsBlockElement>
 
             <SettingsBlockElement ref={RestrictionsBlockRef}>
-                <ContestParticipantRestrictions
-                    submitterAppliedRules={submitterAppliedRules}
-                    setSubmitterAppliedRules={setSubmitterAppliedRules}
-                    voterAppliedRules={voterAppliedRules}
-                    setVoterAppliedRules={setVoterAppliedRules}
-                    submitterRuleError={submitterRuleError}
-                    setSubmitterRuleError={setSubmitterRuleError}
-                    voterRuleError={voterRuleError}
-                    setVoterRuleError={setVoterRuleError}
-                />
+                <ContestParticipantRestrictions />
             </SettingsBlockElement>
 
             <SettingsBlockElement ref={StrategyBlockRef}>
@@ -215,11 +208,11 @@ export default function ContestSettings() {
             <SettingsBlockElement ref={PromptBlockRef}>
                 <PromptBuilder promptBuilderData={promptBuilderData} setPromptBuilderData={setPromptBuilderData} promptEditorCore={promptEditorCore} />
             </SettingsBlockElement>
-            {/*
-            <SettingsBlockElement>
-                <Twitter />
+
+            <SettingsBlockElement ref={TwitterBlockRef}>
+                <Twitter twitterData={twitterData} setTwitterData={setTwitterData} />
             </SettingsBlockElement>
-            */}
+
             <SettingsBlockElement>
                 <SimpleInputs simpleInputData={simpleInputData} setSimpleInputData={setSimpleInputData} />
             </SettingsBlockElement>
@@ -232,18 +225,17 @@ export default function ContestSettings() {
                 promptEditorCore={promptEditorCore}
                 votingStrategy={votingStrategy}
                 setVotingStrategyError={setVotingStrategyError}
-                submitterAppliedRules={submitterAppliedRules}
-                voterAppliedRules={voterAppliedRules}
-                setSubmitterRuleError={setSubmitterRuleError}
-                setVoterRuleError={setVoterRuleError}
                 simpleInputData={simpleInputData}
                 promptBuilderData={promptBuilderData}
                 setPromptBuilderData={setPromptBuilderData}
+                twitterData={twitterData}
+                setTwitterData={setTwitterData}
                 TimeBlockRef={TimeBlockRef}
                 RewardsRef={RewardsRef}
                 PromptBlockRef={PromptBlockRef}
                 RestrictionsBlockRef={RestrictionsBlockRef}
                 StrategyBlockRef={StrategyBlockRef}
+                TwitterBlockRef={TwitterBlockRef}
             />
 
         </ContestSettingsWrap >
@@ -256,11 +248,15 @@ function SaveSettings(props) {
     const rewardOptions = useSelector(rewardOptionState.getRewardOptions)
     const submitterRewards = useSelector(submitterRewardState.getSubmitterRewards)
     const voterRewards = useSelector(voterRewardState.getVoterRewards)
+    const submitterRestrictions = useSelector(submitterRestrictionsState.getSelectedSubmitterRestrictions)
+    const voterRestrictions = useSelector(voterRestrictionsState.getSelectedVoterRestrictions)
     const [showSummary, setShowSummary] = useState(false);
     const [contestData, setContestData] = useState(null);
     const [promptData, setPromptData] = useState(null);
+
     const [warnings, setWarnings] = useState([]);
     const history = useHistory();
+
 
 
     const {
@@ -270,6 +266,7 @@ function SaveSettings(props) {
         handlePromptErrors,
         handleRestrictionErrors,
         handleVotingStrategyErrors,
+        handleTwitterErrors
     } = useErrorHandler();
     const { ens } = useParams();
 
@@ -281,18 +278,17 @@ function SaveSettings(props) {
         promptEditorCore,
         votingStrategy,
         setVotingStrategyError,
-        submitterAppliedRules,
-        voterAppliedRules,
-        setSubmitterRuleError,
-        setVoterRuleError,
         simpleInputData,
         promptBuilderData,
         setPromptBuilderData,
+        twitterData,
+        setTwitterData,
         TimeBlockRef,
         RewardsRef,
         PromptBlockRef,
         RestrictionsBlockRef,
-        StrategyBlockRef
+        StrategyBlockRef,
+        TwitterBlockRef
     } = props
 
     const handleShowSummary = () => {
@@ -312,12 +308,13 @@ function SaveSettings(props) {
     const handleWarnings = () => {
 
         let prep_warnings = []
-        if (Object.values(voterAppliedRules).length === 0 && votingStrategy.strategy_type === 'arcade') {
+        if (Object.values(voterRestrictions).length === 0 && votingStrategy.strategy_type === 'arcade') {
             prep_warnings.push('An arcade strategy with no voter restrictions means that anyone can vote. Maybe this isn\'t what you wanted')
         }
-        console.log(prep_warnings)
         return setWarnings(prep_warnings)
     }
+
+
 
 
 
@@ -330,7 +327,7 @@ function SaveSettings(props) {
         if (isSubmitterError) return RewardsRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
         if (isVoterError) return RewardsRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
 
-        const isRestrictionError = handleRestrictionErrors(submitterAppliedRules, setSubmitterRuleError, voterAppliedRules, setVoterRuleError);
+        const isRestrictionError = handleRestrictionErrors();
         if (isRestrictionError) return RestrictionsBlockRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
 
 
@@ -342,6 +339,14 @@ function SaveSettings(props) {
         const promptEditorData = await promptEditorCore.current.save();
         const isPromptError = handlePromptErrors(promptEditorData, promptBuilderData, setPromptBuilderData);
         if (isPromptError) return PromptBlockRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+
+
+        const isTwitterError = await handleTwitterErrors(twitterData, setTwitterData)
+        if (isTwitterError) return TwitterBlockRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+
+
+
+
 
         let strategy
         if (votingStrategy.strategy_type === 'arcade') {
@@ -374,13 +379,13 @@ function SaveSettings(props) {
             reward_options: rewardOptions,
             submitter_rewards: submitterRewards,
             voter_rewards: voterRewards,
-            submitter_restrictions: submitterAppliedRules,
-            voter_restrictions: voterAppliedRules,
+            submitter_restrictions: submitterRestrictions,
+            voter_restrictions: voterRestrictions,
             voting_strategy: strategy,
             anon_subs: simpleInputData.anonSubmissions,
             visible_votes: simpleInputData.visibleVotes,
             self_voting: simpleInputData.selfVoting,
-            snapshot_block: snapshotDate.toISOString()
+            snapshot_block: snapshotDate.toISOString(),
 
         })
 
@@ -392,6 +397,7 @@ function SaveSettings(props) {
             promptLabelColor: promptBuilderData.prompt_label_color
         })
 
+
         handleWarnings();
         handleShowSummary();
     }
@@ -400,7 +406,7 @@ function SaveSettings(props) {
         <>
             <SaveButton disabled={showSummary} style={{ width: '60%', margin: '30px auto' }} onClick={handleSave}>save</SaveButton>
             <DrawerComponent drawerOpen={showSummary} handleClose={handleCloseSummary} showExit={true}>
-                <Summary contestData={contestData} promptData={promptData} warnings={warnings} handleCloseDrawer={handleCloseSummary} />
+                <Summary contestData={contestData} promptData={promptData} twitterData={twitterData} warnings={warnings} handleCloseDrawer={handleCloseSummary} />
             </DrawerComponent>
         </>
     )
@@ -409,20 +415,34 @@ function SaveSettings(props) {
 
 
 
-function Summary({ contestData, promptData, warnings, handleCloseDrawer }) {
+function Summary({ contestData, promptData, twitterData, warnings, handleCloseDrawer }) {
     const { ens } = useParams();
-    const { authenticated_post } = useCommon();
-    const { walletConnect } = useWalletContext();
-    const isWalletConnected = useSelector(selectConnectedBool);
+    const { walletConnect, authenticated_post } = useWalletContext();
+    const isWalletConnected = useSelector(selectIsConnected)
     const [isSaving, setIsSaving] = useState(false);
 
 
+    const sendAnnouncementTweet = async () => {
+        let result = await authenticated_post('/twitter/send_announcement_tweet', { ens: ens, tweet: twitterData.tweets })
+        return result.data
+    }
+
     const handleConfirm = async () => {
         setIsSaving(true)
+        if (twitterData.enabled) {
+            let announcement_id = await sendAnnouncementTweet();
+            if (announcement_id) contestData.twitter_integration = { announcementID: announcement_id }
+            else {
+                handleCloseDrawer()
+                return
+            }
+        }
+
         await authenticated_post('/creator_contests/create_contest', { ens: ens, contest_settings: contestData, prompt_data: promptData })
         setTimeout(() => {
             handleCloseDrawer('saved')
         }, 500)
+
     }
 
     if (isSaving) {
@@ -432,8 +452,8 @@ function Summary({ contestData, promptData, warnings, handleCloseDrawer }) {
     return (
         <SummaryWrap>
             <p style={{ color: 'grey' }}>Please review the contest configuration</p>
-          
-            <ContestSummaryComponent contest_settings={contestData}/>
+
+            <ContestSummaryComponent contest_settings={contestData} />
             {warnings.map(warning => {
                 return <div className="tab-message warning" style={{ width: '100%' }}><p>{warning}</p></div>
             })}

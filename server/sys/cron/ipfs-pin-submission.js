@@ -1,7 +1,7 @@
 const cron = require('node-cron');
 const { clean, asArray } = require('../../helpers/common.js');
 const db = require('../../helpers/db-init.js');
-const { EVERY_10_SECONDS } = require('./schedule');
+const { EVERY_10_SECONDS, EVERY_30_SECONDS } = require('./schedule');
 const fs = require('fs');
 const fs_path = require('path');
 const { parser } = require('stream-json/Parser');
@@ -123,7 +123,7 @@ const mainLoop = async (unpinned_files) => {
 
 
 const pin_staging_files = () => {
-    cron.schedule(EVERY_10_SECONDS, async () => {
+    cron.schedule(EVERY_30_SECONDS, async () => {
         let unpinned_files = await getFileUrls();
         await mainLoop(unpinned_files);
     })

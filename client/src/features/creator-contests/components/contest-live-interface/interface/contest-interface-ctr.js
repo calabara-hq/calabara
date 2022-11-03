@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useDispatch, useSelector } from "react-redux";
 import { setContestSettings, setPromptData, stateReset, updateState, selectIsLoading } from "./contest-interface-reducer";
 import Placeholder from "../../common/spinner";
-import { socket, initializeSocketConnection, disconnectSocket } from "../../service/socket";
+import { socket, initializeSocketConnection, disconnectSocket } from "../../../../../service/socket";
 import { selectContestState } from "./contest-interface-reducer";
 import ContestInterface from './interface'
 import styled from 'styled-components'
@@ -73,20 +73,21 @@ export default function ContestInterfaceController() {
 
 
     useEffect(() => {
+        let ignore = false;
         initializeSocketConnection();
         fetch(`/creator_contests/fetch_contest?ens=${ens}&contest_hash=${contest_hash}`)
             .then(data => data.text())
-            .then(data => (data ? JSON.parse(data) : {}))
+            .then(data => (data ? JSON.parse(data) : { mydata: null }))
             .then(data => {
-                console.log(data)
-                dispatch(setContestSettings(data.settings))
-                dispatch(setPromptData(data.prompt_data))
-                let { start_date, voting_begin, end_date } = data.settings.date_times
-                //updateContestState(start_date, voting_begin, end_date)
+                if (!ignore) {
+                    dispatch(setContestSettings(data.settings))
+                    dispatch(setPromptData(data.prompt_data))
+                    let { start_date, voting_begin, end_date } = data.settings.date_times
 
-                timerRef.current = setInterval(() => {
-                    updateContestState(start_date, voting_begin, end_date)
-                }, 1000)
+                    timerRef.current = setInterval(() => {
+                        updateContestState(start_date, voting_begin, end_date)
+                    }, 1000)
+                }
             })
             .catch(err => {
                 return history.push(`/${ens}/creator_contests`)
@@ -100,6 +101,7 @@ export default function ContestInterfaceController() {
 
 
         return () => {
+            ignore = true;
             dispatch(stateReset())
             clearInterval(timerRef.current)
             disconnectSocket();

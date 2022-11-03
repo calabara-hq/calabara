@@ -25,7 +25,7 @@ const pre_process = async (ens, walletAddress, contest_hash) => {
     let curr_time = new Date().toISOString();
 
     return {
-        restrictions: Object.values(contest_meta.restrictions),
+        restrictions: contest_meta.restrictions,
         is_submit_window: ((contest_meta._start < curr_time) && (curr_time < contest_meta._voting)),
         has_already_submitted: user_subs.length > 0,
         snapshot_block: contest_meta.snapshot_block
@@ -83,7 +83,7 @@ async function check_submitter_eligibility_unprotected(req, res, next) {
 // protected eligibility check (used in actual submitting). this function either continues or throws an error
 async function check_submitter_eligibility_PROTECTED(req, res, next) {
     const { ens, contest_hash } = req.body;
-    const walletAddress = req.user.address;
+    const walletAddress = req.session.user.address;
 
     const mode = { protected: true };
 
@@ -127,13 +127,6 @@ async function createSubmission(req, res, next) {
 
 }
 
-
-async function socketSubmit(req, res, next) {
-    const { ens } = req.body
-    console.log(req.body)
-    //req.contest_hash, req.user.address, req.created, false, false, req.url
-    next();
-}
 
 module.exports = {
     check_submitter_eligibility_unprotected,

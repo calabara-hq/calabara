@@ -1,10 +1,10 @@
 import { ParseBlocks } from "../block-parser";
 import { Label } from "../../common/common_styles";
 import { labelColorOptions } from "../../common/common_styles";
-import SubmissionBuilder from "../submissions/submission-builder";
 import useSubmissionEngine from "../../../../hooks/useSubmissionEngine";
 import { useWalletContext } from "../../../../../app/WalletContext";
 import { selectContestSettings, selectPromptData } from "../interface/contest-interface-reducer";
+import SubmissionBuilderInterfaceController from "../submissions/submission-builder/submission-builder-interface-ctr";
 import { useSelector } from "react-redux";
 import {
     PromptWrap,
@@ -36,11 +36,13 @@ export default function ExpandedPrompt({ isCreating, setIsCreating, handleClose 
         setIsCreating(false);
     }
 
+    console.log(restrictionResults)
 
     if (!isCreating) {
         return (
             <>
                 <SubmissionRequirements>
+
                     <h2 style={{ marginBottom: '30px', marginTop: '20px' }}>Submission Requirements</h2>
                     <p >Limit 1 submission <RestrictionStatus isConnected={isWalletConnected} status={!alreadySubmittedError} key={`${isWalletConnected}-already-submitted`} /></p>
                     {Object.values(restrictionResults).map((restriction, index) => {
@@ -63,6 +65,7 @@ export default function ExpandedPrompt({ isCreating, setIsCreating, handleClose 
                         {!isWalletConnected && <ConnectWalletButton onClick={walletConnect}>Connect Wallet</ConnectWalletButton>}
                         <AltSubmissionButton disabled={!isUserEligible} onClick={handleCreateSubmission}>Create Submission</AltSubmissionButton>
                     </SubButton>
+
                 </SubmissionRequirements>
                 <PromptWrap>
                     <PromptTop>
@@ -82,7 +85,7 @@ export default function ExpandedPrompt({ isCreating, setIsCreating, handleClose 
     else {
         return (
             <FadeDiv>
-                <SubmissionBuilder handleExitSubmission={handleExitSubmission} restrictionResults={restrictionResults} isUserEligible={isUserEligible} handleCloseDrawer={handleClose} />
+                <SubmissionBuilderInterfaceController handleExitSubmission={handleExitSubmission} restrictionResults={restrictionResults} isUserEligible={isUserEligible} handleCloseDrawer={handleClose} />
             </FadeDiv>
         )
     }

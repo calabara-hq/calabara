@@ -1,22 +1,22 @@
 import { useState, useMemo, useEffect } from 'react'
 import axios from 'axios';
-import { selectConnectedBool, selectConnectedAddress } from "../wallet/wallet-reducer";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import useCommon from './useCommon';
 import { selectContestState } from '../creator-contests/components/contest-live-interface/interface/contest-interface-reducer';
+import { selectIsConnected, selectWalletAddress } from '../../app/sessionReducer';
 
 
 
 
 export default function useSubmissionEngine(submitter_restrictions) {
-    const walletAddress = useSelector(selectConnectedAddress);
-    const isConnected = useSelector(selectConnectedBool);
+    const walletAddress = useSelector(selectWalletAddress);
+    const isConnected = useSelector(selectIsConnected);
     const [alreadySubmittedError, setAlreadySubmittedError] = useState(false)
     const { ens, contest_hash } = useParams();
-    const [restrictionResults, setRestrictionResults] = useState(Object.values(submitter_restrictions))
+    const [restrictionResults, setRestrictionResults] = useState(submitter_restrictions)
     const [isUserEligible, setIsUserEligible] = useState(false);
-    const { authenticated_post } = useCommon();
+
+
 
     useEffect(() => {
         if (isConnected) {
@@ -24,10 +24,10 @@ export default function useSubmissionEngine(submitter_restrictions) {
             (async () => {
                 let eligibility = await axios.post('/creator_contests/check_user_eligibility', { contest_hash: contest_hash, ens: ens, walletAddress: walletAddress }).then(result => { return result.data })
                 setAlreadySubmittedError(eligibility.has_already_submitted);
+                console.log(eligibility.restrictions)
                 setRestrictionResults(eligibility.restrictions);
 
                 // error if not in submit window
-                console.log(eligibility)
                 if (!eligibility.is_submit_window) return setIsUserEligible(false);
 
                 // submitter restrictions are either true or an array
