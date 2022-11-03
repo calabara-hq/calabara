@@ -10,7 +10,7 @@ const { expectThrowsAsync } = require('../test-helpers');
 
 describe('register tweets job', async (done) => {
 
-    /*
+
     it('parse tldr simple text', async () => {
         let head_tweet = await get_tweet("1587591713341718529")  // get first tweet
         let tldr_result = await parse_tldr(head_tweet)
@@ -48,14 +48,6 @@ describe('register tweets job', async (done) => {
         expect(submission_obj.submission_body.blocks[0].type).to.eql('paragraph')
         expect(submission_obj.submission_body.blocks[1].type).to.eql('paragraph')
         expect(submission_obj.submission_body.blocks[2].type).to.eql('image')
-    })
-*/
-
-
-    it('pull unregistered', async () => {
-        let result = await pull_unregistered_tweets();
-        console.log(result)
-        console.log(result[0].contests)
     })
 
     done()
