@@ -88,22 +88,10 @@ twitter.get('/oauth2', authenticateToken, async function (req, res, next) {
 twitter.get('/poll_auth_status', authenticateToken, poll_auth_status)
 
 
-
-// 403 error -> tweet with duplicate content
-// 
-
-// auth user
-// check eligibility
-// parse the thread
-// send the tweet
-// on success,
-// parse the thread into a calabara submission
-// submit in the contest
-
 twitter.post('/sendQuoteTweet', authenticateToken, check_submitter_eligibility_PROTECTED, verifyTwitterContest, sendQuoteTweet, convertTweet, createSubmission, async function (req, res, next) {
     const { ens } = req.body
     console.log('TWEET ID', req.tweet_id)
-    let meta_data = {tweet_id: req.tweet_id}
+    let meta_data = { tweet_id: req.tweet_id }
     console.log(meta_data)
     let result = await db.query('insert into contest_submissions (ens, contest_hash, author, created, locked, pinned, _url, meta_data) values ($1, $2, $3, $4, $5, $6, $7, $8) returning id ', [ens, req.contest_hash, req.session.user.address, req.created, false, false, req.url, { tweet_id: JSON.parse(req.tweet_id) }]).then(clean)
     res.sendStatus(200)
@@ -129,7 +117,9 @@ twitter.get('/destroy_session', async function (req, res, next) {
 
 
 
-
+twitter.post('/generate_quote_intent', verifyTwitterContest, async function (req, res, next) {
+    res.send(`https://twitter.com/i/web/status/${req.announcementID}`).status(200)
+})
 
 
 

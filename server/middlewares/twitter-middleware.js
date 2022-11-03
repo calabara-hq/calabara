@@ -98,6 +98,7 @@ const process_thread = (thread) => {
 
 async function verifyTwitterContest(req, res, next) {
     const { ens, contest_hash } = req.body
+    console.log(ens, contest_hash)
     try {
         const twitter_settings = await pre_process(ens, contest_hash)
         if (!twitter_settings) return res.send('not a twitter contest').status(439)

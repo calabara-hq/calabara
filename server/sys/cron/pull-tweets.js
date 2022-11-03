@@ -1,6 +1,6 @@
 const cron = require('node-cron')
 const db = require('../../helpers/db-init.js')
-const { EVERY_5_MINUTES } = require('./schedule')
+const { EVERY_5_MINUTES, EVERY_10_SECONDS } = require('./schedule')
 const { clean, asArray } = require('../../helpers/common.js');
 const { fetch_quote_tweets } = require('../../twitter-client/helpers.js');
 
@@ -10,10 +10,15 @@ const { fetch_quote_tweets } = require('../../twitter-client/helpers.js');
 // look for unregistered quote tweets
 // try to match them with users in our DB
 
+// add 5 minutes since this loop only runs every 5 mins
+const getDate = () => {
+    const now = new Date()
+    return new Date(now.getTime() + 5 * 60000).toISOString()
+}
 
 const pull_active_twitter_contests = async () => {
-    const now = new Date().toISOString()
-    return await db.query('select ens, _hash, settings->\'twitter_integration\' as twitter_integration from contests where _start < $1 and _voting > $1', [now])
+    const date = getDate()
+    return await db.query('select ens, _hash, settings->\'twitter_integration\' as twitter_integration from contests where _start < $1 and _voting > $1', [date])
         .then(clean)
         .then(asArray)
         .then(data => {
@@ -52,7 +57,7 @@ const main_loop = async () => {
 const pull_tweets = () => {
     cron.schedule(EVERY_5_MINUTES, () => {
         console.log('pulling contest tweets')
-        loop()
+        main_loop()
     })
 }
 

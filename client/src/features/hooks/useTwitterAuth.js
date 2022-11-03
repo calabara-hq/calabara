@@ -1,6 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
-import usePopupWindow from "./usePopupWindow";
+import { useState } from "react";
 
 export const useTwitterAuth = () => {
     const [authState, setAuthState] = useState(0);

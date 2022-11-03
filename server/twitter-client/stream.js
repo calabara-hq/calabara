@@ -7,46 +7,60 @@ const { handle_fetched_tweet } = require('./helpers');
 let stream = null
 
 const get_stream_rules = async () => {
-    let rules = await bearerClient.v2.streamRules()
-    let parsed_rules = rules.data ? rules.data : []
-    return parsed_rules
+    try {
+        let rules = await bearerClient.v2.streamRules()
+        let parsed_rules = rules.data ? rules.data : []
+        return parsed_rules
+    } catch (err) {
+        console.log(err)
+        console.log('THIS IS THE PROBLEM')
+        throw (err)
+    }
 }
 
 const delete_stream_rules = async (ids) => {
-    await bearerClient.v2.updateStreamRules({
-        delete: {
-            ids: ids
-        }
-    })
+    try {
+        await bearerClient.v2.updateStreamRules({
+            delete: {
+                ids: ids
+            }
+        })
 
-    let rules = await get_stream_rules()
-    if ((rules.length === 0) && (stream)) return close_stream()
+        let rules = await get_stream_rules()
+        if ((rules.length === 0) && (stream)) return close_stream()
+    } catch (err) { console.log(err) }
 }
 
 const add_stream_rule = async (rule) => {
-    console.log('adding stream rule')
-    console.log(rule);
-    let rules = await get_stream_rules()
-    if (rules.length === 5) return console.log('stream buffer is full')
-    console.log(rules);
-    await bearerClient.v2.updateStreamRules({
-        add: [
-            rule
-        ]
-    });
-    if (!stream) return start_stream()
+    try {
+        console.log('adding stream rule')
+        console.log(rule);
+        let rules = await get_stream_rules()
+        if (rules.length === 5) return console.log('stream buffer is full')
+        console.log(rules);
+        await bearerClient.v2.updateStreamRules({
+            add: [rule]
+        });
+        if (!stream) return start_stream()
+    } catch (err) {
+        console.log(err)
+    }
 }
 
 
 const start_stream = async () => {
-    stream = await bearerClient.v2.searchStream({ expansions: "author_id", "tweet.fields": "created_at" });
-    stream_listen();
+    try {
+        stream = await bearerClient.v2.searchStream({ expansions: "author_id", "tweet.fields": "created_at" });
+        stream_listen();
+    } catch (err) { console.log(err) }
 }
 
 
 const close_stream = () => {
-    stream.close()
-    stream = null
+    try {
+        stream.close()
+        stream = null
+    } catch (err) { console.log(err) }
 }
 
 

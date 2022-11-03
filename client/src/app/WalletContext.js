@@ -1,11 +1,17 @@
-import React, { useContext, createContext, useMemo, useEffect } from 'react';
+import React, { useContext, createContext, useMemo, useEffect, useState } from 'react';
 import '@rainbow-me/rainbowkit/styles.css';
-import { getDefaultWallets, RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
-import { chain, configureChains, createClient, WagmiConfig } from 'wagmi';
+import { getDefaultWallets, RainbowKitProvider, darkTheme, createAuthenticationAdapter, RainbowKitAuthenticationProvider } from '@rainbow-me/rainbowkit';
+import { chain, configureChains, createClient, WagmiConfig, useAccount } from 'wagmi';
 import { infuraProvider } from 'wagmi/providers/infura'
 import { publicProvider } from 'wagmi/providers/public';
 import useWallet from '../features/hooks/useWallet.js';
+import { ethers } from "ethers";
+import { SiweMessage } from 'siwe'
+import axios from 'axios'
 import merge from 'lodash.merge'
+import { useDispatch, useSelector } from 'react-redux';
+import { clearSession, selectIsAuthenticated, setUserSession } from './sessionReducer.js';
+import { showNotification } from '../features/notifications/notifications.js';
 
 const { chains, provider } = configureChains(
     [chain.mainnet],
@@ -46,8 +52,8 @@ const myTheme = merge(darkTheme(), {
 });
 
 
-
 export const WalletProvider = ({ children, initial_session }) => {
+
 
     const wagmiClient = React.useMemo(() =>
         createClient({
@@ -56,18 +62,70 @@ export const WalletProvider = ({ children, initial_session }) => {
             provider,
         }), [])
 
-
+    console.log(wagmiClient)
 
     return (
         <WagmiConfig client={wagmiClient}>
-            <RainbowKitProvider modalSize='compact' chains={chains} theme={myTheme}>
-                <WalletHookMethods>
-                    {children}
-                </WalletHookMethods>
-            </RainbowKitProvider>
-
+            <AuthenticationProvider>
+                <RainbowKitProvider modalSize='compact' chains={chains} theme={myTheme}>
+                    <WalletHookMethods>
+                        {children}
+                    </WalletHookMethods>
+                </RainbowKitProvider>
+            </AuthenticationProvider>
         </WagmiConfig >
     );
+}
+
+const AuthenticationProvider = ({ children }) => {
+    const { address, isConnected } = useAccount();
+    const isAuthenticated = useSelector(selectIsAuthenticated)
+    const dispatch = useDispatch()
+    const authenticationAdapter = React.useMemo(() =>
+        createAuthenticationAdapter({
+
+            getNonce: async () => {
+                const nonce_from_server = await axios.post('/authentication/generate_nonce', { address: address })
+                return nonce_from_server.data.nonce
+            },
+
+            createMessage: ({ nonce, address, chainId }) => {
+                return new SiweMessage({
+                    domain: window.location.host,
+                    address,
+                    statement: 'Sign in with Ethereum to the app.',
+                    uri: window.location.origin,
+                    version: '1',
+                    chainId,
+                    nonce,
+                });
+            },
+
+            getMessageBody: ({ message }) => {
+                return message.prepareMessage();
+            },
+
+            verify: async ({ message, signature }) => {
+                await axios.post('/authentication/generate_session', { message: message, signature: signature }, { withCredentials: true })
+                    .then(res => {
+                        dispatch(setUserSession(res.data.user))
+                        showNotification('success', 'success', 'welcome back!')
+                    })
+                    .catch(err => { throw new Error() })
+            },
+
+            signOut: async () => {
+                fetch('/authentication/signOut', { credentials: 'include' })
+                    .then(dispatch(clearSession()))
+            },
+        }), [])
+
+
+    return (
+        <RainbowKitAuthenticationProvider adapter={authenticationAdapter} status={isAuthenticated}>
+            {children}
+        </RainbowKitAuthenticationProvider>
+    )
 }
 
 const WalletContext = createContext({});

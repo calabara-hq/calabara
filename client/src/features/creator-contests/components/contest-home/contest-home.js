@@ -46,7 +46,7 @@ export default function ContestHomepage() {
     }
 
 
-    if (ens === 'sharkdao.eth') {
+    if (ens === 'sharkdao.eth' || ens === 'thenounsquare.eth') {
         return (
             <>
                 <BackButton customWidth={'68%'} link={'/' + ens + '/dashboard'} text={"dashboard"} />

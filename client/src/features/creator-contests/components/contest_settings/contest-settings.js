@@ -1,36 +1,32 @@
-import React, { useEffect, useReducer, useRef, useState } from "react"
-import ContestDateTimeBlock from "./datepicker/start-end-date"
-import ContestRewardsBlock from "./contest_rewards/contest-rewards-block"
-import ContestParticipantRestrictions from "./contest_gatekeeper/particpant-restrictions";
-import PromptBuilder from "./prompt_builder/prompt-builder";
-import SimpleInputs from "./contest_simple_inputs/contest_simple_inputs";
-import styled from 'styled-components'
-import VotingPolicy from "./voting_policy/voting-policy";
-import { useHistory, useParams } from "react-router-dom";
-import useDashboardRules from "../../../hooks/useDashboardRules";
-import useCommon from "../../../hooks/useCommon";
-import { rewardOptionState, voterRewardState, submitterRewardState } from "./contest_rewards/reducers/rewards-reducer";
+import React, { useEffect, useReducer, useRef, useState } from "react";
 import { useSelector } from "react-redux";
+import { useHistory, useParams } from "react-router-dom";
+import styled from 'styled-components';
+import '../../../../css/gatekeeper-toggle.css';
+import '../../../../css/manage-widgets.css';
+import useDashboardRules from "../../../hooks/useDashboardRules";
 import { fade_in } from "../common/common_styles";
-import '../../../../css/manage-widgets.css'
-import '../../../../css/gatekeeper-toggle.css'
-import { TagType } from "../common/common_styles";
+import ContestParticipantRestrictions from "./contest_gatekeeper/particpant-restrictions";
+import ContestRewardsBlock from "./contest_rewards/contest-rewards-block";
+import { rewardOptionState, submitterRewardState, voterRewardState } from "./contest_rewards/reducers/rewards-reducer";
+import SimpleInputs from "./contest_simple_inputs/contest_simple_inputs";
+import ContestDateTimeBlock from "./datepicker/start-end-date";
+import PromptBuilder from "./prompt_builder/prompt-builder";
+import VotingPolicy from "./voting_policy/voting-policy";
 
 
 
 // error handling
+import { selectIsConnected } from "../../../../app/sessionReducer";
+import { useWalletContext } from "../../../../app/WalletContext";
+import DrawerComponent from "../../../drawer/drawer";
+import TwitterThreadReducer, { twitter_initial_state } from "../../../reducers/twitter-thread-reducer";
+import Placeholder from "../common/spinner";
+import ContestSummaryComponent from "../contest-details/detail-components";
+import { SummaryWrap } from "../contest-details/detail-style";
+import { submitterRestrictionsState, voterRestrictionsState } from "./contest_gatekeeper/reducers/restrictions-reducer";
 import useErrorHandler from "./handle-errors";
 import Twitter from "./twitter_automation/twitter";
-import DrawerComponent from "../../../drawer/drawer";
-import { useWalletContext } from "../../../../app/WalletContext";
-import Placeholder from "../common/spinner";
-import ContestSummaryComponent, { AdditionalConfigDetails, ContestDateDetails, SubmitterRestrictionDetails, SubmitterRewardDetails, VoterRestrictionDetails, VoterRewardDetails, VotingPolicyDetails } from "../contest-details/detail-components";
-import { DetailWrap, SummaryWrap } from "../contest-details/detail-style";
-import { submitterRestrictionsState, voterRestrictionsState } from "./contest_gatekeeper/reducers/restrictions-reducer";
-import { selectIsConnected } from "../../../../app/sessionReducer";
-import axios from "axios";
-import { showNotification } from "../../../notifications/notifications";
-import TwitterThreadReducer, {twitter_initial_state} from "../../../reducers/twitter-thread-reducer";
 
 
 

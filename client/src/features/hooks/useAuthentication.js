@@ -1,37 +1,19 @@
-import { useEffect, useState } from "react";
-import { useInterval } from "./useInterval";
-import { useAccount, useDisconnect, useConnect, useSignMessage } from 'wagmi'
 import { useConnectModal } from "@rainbow-me/rainbowkit";
-import { showNotification } from "../notifications/notifications";
 import axios from "axios";
-import { ethers } from "ethers";
-import registerUser from "../user/user";
+import { useEffect, useState } from "react";
+import { useAccount, useDisconnect, useSignMessage } from 'wagmi';
+import { showNotification } from "../notifications/notifications";
 
 import { useDispatch, useSelector } from "react-redux";
-import { clearSession, selectUserSession, selectWalletAddress, setUserSession } from "../../app/sessionReducer";
+import { selectUserSession, selectWalletAddress } from "../../app/sessionReducer";
 
 
 export default function useAuthentication() {
-    const { signMessageAsync } = useSignMessage()
-    const [sessionExpiresAt, setSessionExpiresAt] = useState(null)
     const { openConnectModal } = useConnectModal()
-    const [state, setState] = useState('loading')
     const connectedAddress = useSelector(selectWalletAddress)
-    const dispatch = useDispatch();
     const session = useSelector(selectUserSession)
     const { disconnect } = useDisconnect();
-
-    const { address } = useAccount({
-        onDisconnect() {
-            clearAuthenticationState();
-        },
-
-        onConnect({ address }) {
-            if (!session && address) {
-                handleAuth(address)
-            }
-        }
-    })
+    const { address } = useAccount()
 
     useEffect(() => {
         if (connectedAddress && (connectedAddress !== address)) {
@@ -43,55 +25,6 @@ export default function useAuthentication() {
     useEffect(() => {
         if (!session) return disconnect()
     }, [session])
-
-
-    const handleAuth = (address) => {
-        secure_sign(address)
-            .then(sig_res => {
-                if (sig_res) {
-                    dispatch(setUserSession(sig_res))
-                }
-            })
-    }
-
-
-    const clearAuthenticationState = () => {
-        fetch('/authentication/signOut', { credentials: 'include' })
-            .then(dispatch(clearSession()))
-    }
-
-
-
-    const secure_sign = async (address) => {
-        const nonce_from_server = await axios.post('/authentication/generate_nonce', { address: address })
-        return signMessage(nonce_from_server.data.nonce)
-            .then(signatureResult => {
-                return axios.post('/authentication/generate_session', { sig: signatureResult.sig, address: address }, { withCredentials: true })
-                    .then((res) => {
-                        if (!session) showNotification('success', 'success', 'welcome back!')
-                        return res.data.user
-                    })
-            })
-            .catch(error => { return null })
-    }
-
-
-    const signMessage = (nonce) => {
-        const message = ethers.utils.toUtf8Bytes(`Signing one time message with nonce: ${nonce}`)
-        return signMessageAsync({ message })
-            .then(signature => {
-                return { status: 'success', sig: signature, message: message }
-            })
-            .catch(error => {
-                disconnect();
-                if (error.code === 4001) {
-                    showNotification('error', 'error', 'User denied signature request')
-                }
-                else showNotification('error', 'error', 'user rejected signature request')
-                throw error
-            })
-    }
-
 
 
     const authenticated_post = async (endpoint, body) => {
@@ -168,7 +101,6 @@ export default function useAuthentication() {
 
     return {
         disconnect: () => { disconnect() },
-        secure_sign: () => { return secure_sign() },
         authenticated_post: async (endpoint, body) => { return await authenticated_post(endpoint, body) }
     }
 }

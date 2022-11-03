@@ -9,9 +9,6 @@ const initialize_discord_bot = require('./discord-bot/deploy-commands.js')
 const { socketConnection } = require('./sys/socket/socket-io')
 const twitterStream = require('./twitter-client/stream')
 
-const { Server } = require('socket.io')
-
-
 
 if (!process.env.NODE_ENV) {
     console.log('please pass NODE_ENV. Available options are dev and prod')

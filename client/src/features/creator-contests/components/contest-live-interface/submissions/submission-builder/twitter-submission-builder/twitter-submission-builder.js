@@ -1,26 +1,24 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useEffect, useReducer, useRef, useState } from "react";
-import useTwitterAuth from "../../../../../../hooks/useTwitterAuth";
-import styled from 'styled-components'
+import { useEffect, useReducer, useState } from "react";
 import { useParams } from "react-router-dom";
-import useTweet from "../../../../../../hooks/useTweet";
 import { TwitterSubmissionCheckpointBar } from "../../../../../../checkpoint-bar/checkpoint-bar";
-import { scaleElement } from "../../../../../../../css/scale-element";
-import Placeholder from '../../../../common/spinner'
 import CreateThread from "../../../../../../create-twitter-thread/create-thread";
-import LinkTwitter from "../../../../../../twitter-link-account/link-twitter";
+import useTweet from "../../../../../../hooks/useTweet";
+import useTwitterAuth from "../../../../../../hooks/useTwitterAuth";
 import TwitterThreadReducer, { twitter_initial_state } from "../../../../../../reducers/twitter-thread-reducer";
+import LinkTwitter from "../../../../../../twitter-link-account/link-twitter";
+import Placeholder from '../../../../common/spinner';
+import axios from 'axios'
+import styled from 'styled-components'
 import {
     CreateSubmissionContainer,
     SavingSubmissionDiv,
     SubmissionActionButtons
 } from "../submission-builder-styles";
 import {
-    TwitterSubmissionContainer,
-    CheckpointWrap,
-    CheckpointBottom,
-    ContentWrap
-} from './styles'
+    AuthChoiceButton, AuthChoiceWrap, CheckpointBottom, CheckpointWrap, ContentWrap, LinkTwitterWrap, TwitterSubmissionContainer
+} from './styles';
+import { LinkTwitterButton } from "../../../../../../twitter-link-account/styles";
+import { fade_in } from "../../../../common/common_styles";
 
 
 export default function TwitterSubmissionBuilder({ handleExitSubmission, isUserEligible, handleCloseDrawer }) {
@@ -120,45 +118,19 @@ function ActionsController(props) {
     }
 
     else if (props.builderData.stage === 2) {
-        return <CreateThread
-            accountInfo={props.accountInfo}
-            authState={props.authState}
-            twitterData={props.builderData}
-            setTwitterData={props.setBuilderData}
-            handleSubmit={handleSubmit}
-            showTweetButton={true}
-        />
+        if (props.builderData.auth_type === 'privileged') {
+            return <CreateThread
+                accountInfo={props.accountInfo}
+                authState={props.authState}
+                twitterData={props.builderData}
+                setTwitterData={props.setBuilderData}
+                handleSubmit={handleSubmit}
+                showTweetButton={true}
+            />
+        }
+        else if (props.builderData.auth_type === 'standard') return <TwitterRedirect handleCloseDrawer={props.handleCloseDrawer} />
     }
 }
-
-const AuthChoiceWrap = styled.div`
-    display: flex;
-    width: 80%;
-    margin: 0 auto;
-    gap: 20px;
-`
-
-const AuthChoiceButton = styled.button`
-    width: 50%;
-    height: 200px;
-    border-radius: 10px;
-    background-color: #2a2a2a;
-    border: 2px solid transparent;
-    font-size: 16px;
-    &:hover{
-        background-color: #2f2f2f;
-    }
-    ${scaleElement}
-`
-const LinkTwitterWrap = styled.div`
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    position: relative;
-    width: 80%;
-    height: 100px;
-    margin: 0 auto;
-`
 
 function AuthChoice(props) {
 
@@ -175,3 +147,38 @@ function AuthChoice(props) {
     )
 }
 
+
+
+const RedirectWrap = styled.div`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    width: 80%;
+    height: 100px;
+    margin: 30px auto;
+    animation: ${fade_in} 0.3s ease-in-out;
+    > p{
+        font-size: 16px;
+    }
+`
+
+
+function TwitterRedirect(props) {
+    const { ens, contest_hash } = useParams()
+
+    const handleClick = async () => {
+        let intent = await axios.post('/twitter/generate_quote_intent', { ens: ens, contest_hash: contest_hash })
+            .then(res => res.data)
+            .catch(err => console.log(err))
+        window.open(intent)
+    }
+
+    return (
+        <RedirectWrap>
+            <p style={{ marginBottom: '20px' }}>All set! Head to twitter and quote tweet the contest announcement with your submission. </p>
+            <LinkTwitterButton onClick={handleClick}>take me there</LinkTwitterButton>
+        </RedirectWrap>
+    )
+}

@@ -44,10 +44,12 @@ const add_missing_rules = async (twitter_contests, stream_rules) => {
 }
 
 const main = async () => {
-    let stream_rules = await get_stream_rules();
-    let twitter_contests = await pull_active_twitter_contests();
-    await remove_stale_rules(twitter_contests, stream_rules)
-    await add_missing_rules(twitter_contests, stream_rules)
+    try {
+        let stream_rules = await get_stream_rules();
+        let twitter_contests = await pull_active_twitter_contests();
+        await remove_stale_rules(twitter_contests, stream_rules)
+        await add_missing_rules(twitter_contests, stream_rules)
+    } catch (err) { console.log(err) }
 }
 
 

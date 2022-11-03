@@ -112,7 +112,7 @@ contests.post('/get_user_submissions', authenticateToken, async function (req, r
 
 
 contests.post('/check_user_eligibility', check_submitter_eligibility_unprotected, async function (req, res, next) {
-
+    console.log(req.body)
     const data = {
         restrictions: req.restrictions_with_results,
         has_already_submitted: req.has_already_submitted,

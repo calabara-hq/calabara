@@ -20,6 +20,7 @@ export const { setUserSession, clearSession } = session.actions;
 export const selectUserSession = state => state.session.userSession;
 export const selectIsConnected = state => state.session.userSession ? true : false;
 export const selectWalletAddress = state => state.session.userSession ? state.session.userSession.address : null;
+export const selectIsAuthenticated = state => state.session.userSession ? 'authenticated' : 'unauthenticated'
 
 
 export default session.reducer;

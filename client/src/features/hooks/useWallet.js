@@ -1,11 +1,10 @@
-import { useAccount } from 'wagmi'
-import { ethers } from 'ethers'
-import useAuthentication from './useAuthentication'
 import { useConnectModal } from '@rainbow-me/rainbowkit'
-import { useEffect } from 'react'
+import { ethers } from 'ethers'
+import { useAccount } from 'wagmi'
+import useAuthentication from './useAuthentication'
 
 
-const provider = new ethers.providers.AlchemyProvider('homestead', process.env.REACT_APP_ALCHEMY_KEY)
+const provider = new ethers.providers.InfuraProvider('homestead', process.env.REACT_APP_INFURA_KEY)
 
 
 

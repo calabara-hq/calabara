@@ -196,24 +196,24 @@ function InfoCard({ info, ens, discordIntegrationProps }) {
 
 
 
-
-  useEffect(() => {
-    let promptDiscord = false
-    if (isConnected) {
-      Object.keys(dashboardRules).map((key) => {
-        if (dashboardRules[key].type === 'discord') {
-          if (!discord_id) {
-            promptDiscord = true;
+  /*
+    useEffect(() => {
+      let promptDiscord = false
+      if (isConnected) {
+        Object.keys(dashboardRules).map((key) => {
+          if (dashboardRules[key].type === 'discord') {
+            if (!discord_id) {
+              promptDiscord = true;
+            }
+            else if (discord_id && isConnected) {
+              promptDiscord = false;
+            }
           }
-          else if (discord_id && isConnected) {
-            promptDiscord = false;
-          }
-        }
-      })
-    }
-    setPromptDiscordLink(promptDiscord)
-  }, [dashboardRules, discord_id])
-
+        })
+      }
+      setPromptDiscordLink(promptDiscord)
+    }, [dashboardRules, discord_id])
+  */
 
 
   useEffect(() => {

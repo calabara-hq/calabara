@@ -44,6 +44,11 @@ const db_init = () => {
 
 const db = new Pool(db_init().db)
 
+/*
+const serialized_query = async () => {
+
+}
+*/
 
 
 module.exports = db;

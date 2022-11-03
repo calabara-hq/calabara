@@ -1,6 +1,6 @@
 const cron = require('node-cron')
 const db = require('../../helpers/db-init.js')
-const { EVERY_30_SECONDS } = require('./schedule')
+const { EVERY_30_SECONDS, EVERY_10_SECONDS } = require('./schedule')
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto')
@@ -41,7 +41,11 @@ const randomId = (length) => {
 
 const pull_unregistered_tweets = async () => {
     let now = new Date().toISOString();
-    return await db.query('select tweets.author_id, json_agg(json_build_object(\'tweet_id\', tweets.tweet_id, \'created\', tweets.created, \'contest_hash\', tweets.contest_hash)) as contests from tweets inner join contests on tweets.contest_hash = contests._hash where registered = false and contests._start < $1 and contests._voting > $1 group by tweets.author_id', [now])
+    return await db.query('with upd as (update tweets set locked = true from \
+                    (select tweets.id from tweets inner join contests on tweets.contest_hash = contests._hash \
+                    where registered = false and contests._start < $1 and contests._voting > $1) as subquery\
+                    returning tweets.author_id, tweets.tweet_id, tweets.contest_hash, tweets.created) \
+                    select author_id, json_agg(json_build_object(\'tweet_id\', tweet_id, \'created\', created, \'contest_hash\', contest_hash)) as contests from upd group by author_id', [now])
         .then(clean)
         .then(asArray)
 }
@@ -116,7 +120,6 @@ const write_media = async (media) => {
 
     return media_url
 }
-
 const parse_tldr = async (head) => {
     const includes = new TwitterV2IncludesHelper(head)
     const media = includes.media
@@ -215,6 +218,7 @@ const create_submission = async (tweet, author_id) => {
 
 
 const write_submission = async (submission, contest_data, address, tweet_id) => {
+    console.log('WRITING')
     let created = new Date().toISOString();
     submission.created = created;
     let submission_hash = crypto.createHash('md5').update(JSON.stringify(submission)).digest('hex').slice(-8);
@@ -231,7 +235,7 @@ const write_submission = async (submission, contest_data, address, tweet_id) => 
 
 
     let url = '/' + submission_url
-    await db.query('insert into contest_submissions (ens, contest_hash, author, created, locked, pinned, _url, meta_data) values ($1, $2, $3, $4, $5, $6, $7, $8) returning id ', [contest_data.ens, contest_data._hash, address, created, false, false, url, { tweet_id: tweet_id }])
+    return await db.query('insert into contest_submissions (ens, contest_hash, author, created, locked, pinned, _url, meta_data) values ($1, $2, $3, $4, $5, $6, $7, $8) returning id ', [contest_data.ens, contest_data._hash, address, created, false, false, url, { tweet_id: tweet_id }])
         .then(clean)
         .then(result => {
             socketSendNewSubmission(contest_data._hash, contest_data.ens, { id: result.id, _url: url, author: address, votes: 0 })
@@ -239,6 +243,13 @@ const write_submission = async (submission, contest_data, address, tweet_id) => 
         .catch(err => console.log(err))
 
 
+}
+
+// unlock and mark all tweets from this user for this contest as registered
+const unlock_and_register = async (author_id, contest_hash) => {
+    try {
+        return await db.query('update tweets set registered = true, locked = false where author_id = $1 and contest_hash = $2', [author_id, contest_hash])
+    } catch (err) { console.log(err) }
 }
 
 
@@ -252,39 +263,72 @@ const write_submission = async (submission, contest_data, address, tweet_id) => 
 
 
 const main_loop = async () => {
+    const start = performance.now()
     const users = await pull_unregistered_tweets();
     if (!users) return
-    for (const user_tweets_obj of users) {
-        // lookup the twitter user in DB
-        let user_addresses = await lookup_twitter_user(user_tweets_obj.author_id)
-        // return if twitter user not registered in DB
-        if (!user_addresses) continue
-        // group user tweets by hash
-        let grouped_by_hash = groupBy(user_tweets_obj.contests, 'contest_hash')
-        // for each user tweet from a particular contest
-        for (const hash of Object.values(grouped_by_hash)) {
-            // get the most recent tweet
-            let latest_tweet = hash.reduce((a, b) => {
-                return new Date(a.created) > new Date(b.created) ? a : b;
-            });
-            let contest_data = await pull_contest(latest_tweet.contest_hash)
-            let has_submitted = await has_already_submitted(latest_tweet, user_addresses)
-            if (has_submitted) continue
-            //let is_eligible_address = await compute_restrictions(contest_data, user_addresses)
-            //if (!is_eligible_address) continue
-            let is_eligible_address = "0xedcC867bc8B5FEBd0459af17a6f134F41f422f0C"
-            let submission = await create_submission(latest_tweet, user_tweets_obj.author_id)
-            await write_submission(submission, contest_data, is_eligible_address, latest_tweet.tweet_id)
-
-        }
-    }
+    setTimeout(() => {
+        (async () => {
+            for (const user_tweets_obj of users) {
+                // lookup the twitter user in DB
+                let user_addresses = await lookup_twitter_user(user_tweets_obj.author_id)
+                // return if twitter user not registered in DB
+                if (!user_addresses) continue
+                // group user tweets by hash
+                let grouped_by_hash = groupBy(user_tweets_obj.contests, 'contest_hash')
+                console.log(grouped_by_hash)
+                // for each user tweet from a particular contest
+                for (const hash of Object.values(grouped_by_hash)) {
+                    // get the most recent tweet
+                    let latest_tweet = hash.reduce((a, b) => {
+                        return new Date(a.created) > new Date(b.created) ? a : b;
+                    });
+                    let contest_data = await pull_contest(latest_tweet.contest_hash)
+                    let has_submitted = await has_already_submitted(latest_tweet, user_addresses)
+                    if (has_submitted) continue
+                    let is_eligible_address = await compute_restrictions(contest_data, user_addresses)
+                    if (!is_eligible_address) continue
+                    //let is_eligible_address = "0xedcC867bc8B5FEBd0459af17a6f134F41f422f0C"
+                    let submission = await create_submission(latest_tweet, user_tweets_obj.author_id)
+                    await write_submission(submission, contest_data, is_eligible_address, latest_tweet.tweet_id)
+                    console.log('AFTER WRITE')
+                    // unlock and mark has registered in db. 
+                    await unlock_and_register(user_tweets_obj.author_id, latest_tweet.contest_hash)
+                    console.log(`took ${(performance.now() - start)} milliseconds`)
+                }
+            }
+        })()
+    }, 0)
 }
+
+const blocking_loop = () => {
+    console.log('started counting')
+    let counter = 0;
+    for (let i = 0; i < 20_000_000_000; i++) {
+        counter++;
+    }
+    console.log('finished counting')
+}
+
+
+const create_serialization_error = async () => {
+    console.log('trying to create error')
+    try {
+        await db.query('begin isolation level repeatable read; \
+        update tweets set created = \'1\' where id = 89; \
+        begin isolation level repeatable read; \
+        update tweets set created = \'1\' where id = 89; \
+        commit')
+    } catch (err) { console.log(err) }
+}
+
 
 
 const register_tweets = () => {
     cron.schedule(EVERY_30_SECONDS, () => {
         console.log('attempting to register tweets')
+        //blocking_loop();
         main_loop();
+        //create_serialization_error();
     })
 }
 

@@ -1,5 +1,7 @@
 import styled from 'styled-components'
 import { fade_in } from '../../../../common/common_styles'
+import { scaleElement } from '../../../../../../../css/scale-element'
+
 
 export const TwitterSubmissionContainer = styled.div`
     display: flex;
@@ -32,7 +34,7 @@ export const CheckpointBottom = styled.div`
       width: 100px;
       color: grey;
       position: absolute;
-      top: 2em;
+      top: 2.5em;
     }
 
     .RSPBprogressBar > .RSPBstep:nth-child(2)::after {
@@ -40,21 +42,49 @@ export const CheckpointBottom = styled.div`
       content: "authorize";
       color: grey;
       position: absolute;
-      top: 2em;
+      top: 2.5em;
     }
 
     .RSPBprogressBar > .RSPBstep:nth-child(3)::after {
       text-align: center;
-      content: "tweet";
+      content: "submit";
       color: grey;
       position: absolute;
-      top: 2em;
+      top: 2.5em;
     }
 `
-
 
 export const ContentWrap = styled.div`
     align-self: flex-start;
     width: 100%;
     margin-left: auto;
+`
+
+export const AuthChoiceWrap = styled.div`
+    display: flex;
+    width: 80%;
+    margin: 0 auto;
+    gap: 20px;
+`
+
+export const AuthChoiceButton = styled.button`
+    width: 50%;
+    height: 200px;
+    border-radius: 10px;
+    background-color: #2a2a2a;
+    border: 2px solid transparent;
+    font-size: 16px;
+    &:hover{
+        background-color: #2f2f2f;
+    }
+    ${scaleElement}
+`
+export const LinkTwitterWrap = styled.div`
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    position: relative;
+    width: 80%;
+    height: 100px;
+    margin: 0 auto;
 `

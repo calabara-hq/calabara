@@ -16,6 +16,8 @@ export default function useSubmissionEngine(submitter_restrictions) {
     const [restrictionResults, setRestrictionResults] = useState(submitter_restrictions)
     const [isUserEligible, setIsUserEligible] = useState(false);
 
+
+
     useEffect(() => {
         if (isConnected) {
             // check if wallet already submitted in this contest
