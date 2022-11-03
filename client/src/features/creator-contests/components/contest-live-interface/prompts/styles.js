@@ -1,4 +1,5 @@
 import styled, { keyframes, css } from "styled-components"
+import { scaleElement } from "../../../../../css/scale-element";
 import { Label, fade_in } from "../../common/common_styles";
 
 const highlight = (props) => keyframes`
@@ -126,13 +127,7 @@ export const ReadMoreButton = styled.button`
     border: 2px solid #4d4d4d;
     background-color: #1e1e1e;
     padding: 5px 10px;
-    &:hover{
-        background-color: #1a1a1a;
-        transition: border-color 0.2s ease-in-out;
-    }
-    &:active{
-        transform: scale(0.9);
-    }
+    ${scaleElement}
     
 `
 

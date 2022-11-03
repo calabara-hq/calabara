@@ -5,7 +5,7 @@ const path = require('path')
 const asyncfs = require('fs').promises;
 const settings = express();
 settings.use(express.json())
-const { authenticateToken } = require('../middlewares/jwt-middleware');
+const { authenticateToken } = require('../middlewares/auth-middleware');
 const { isAdmin } = require('../middlewares/admin-middleware')
 const { clean } = require('../helpers/common')
 
@@ -53,11 +53,8 @@ const prepLogo = async (logo, ens) => {
 
 settings.post('/updateSettings', authenticateToken, isAdmin, async function (req, res, next) {
     const { fields } = req.body
-    const walletAddress = req.user.address;
-    const isAdmin = req.user.isAdmin;
-    const isNewOrganization = req.user.isNewOrganization
-
-    console.log(fields)
+    const walletAddress = req.session.user.address;
+    const isNewOrganization = req.session.user.isNewOrganization
 
     // if it's a new organization, we need to push the users wallet address as well
     if (isNewOrganization) fields.addresses.push(walletAddress)

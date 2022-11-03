@@ -5,6 +5,7 @@ import { useParams, useHistory } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import useCommon from "../hooks/useCommon";
 import useWiki from "../hooks/useWiki";
+import { useWalletContext } from "../../app/WalletContext";
 
 
 
@@ -29,7 +30,7 @@ const DragItem = styled.div`
 
 const ListItem = ({ item, index, setCurrentWikiId }) => {
   const { ens } = useParams();
-  const { authenticated_post } = useCommon()
+  const { authenticated_post } = useWalletContext();
   const { deleteWiki } = useWiki();
 
   const header = item.title;

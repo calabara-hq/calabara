@@ -2,6 +2,10 @@ node_modules/
 *.cert
 *.key
 .env
+*_env
+production_env
+dev_env
+*.env
 *.pem
 server/org-repository/*
 server/creator-contests/*

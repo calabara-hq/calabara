@@ -13,6 +13,7 @@ import {
 } from '../dashboard/dashboard-info-reducer'
 
 import useCommon from '../hooks/useCommon';
+import { useWalletContext } from '../../app/WalletContext';
 
 
 export default function WikiEditor() {
@@ -80,7 +81,7 @@ function ReactEditor({ data }) {
   const [textAreaHeight, setTextAreaHeight] = useState("auto");
   const [parentHeight, setParentHeight] = useState("auto")
   const dispatch = useDispatch();
-  const { authenticated_post } = useCommon();
+  const { authenticated_post } = useWalletContext();
 
   async function publishDocument() {
 

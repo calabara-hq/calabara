@@ -69,10 +69,10 @@ export const VoterRewardDetails = ({ voter_rewards }) => {
 }
 
 export const SubmitterRestrictionDetails = ({ submitter_restrictions }) => {
-    if (Object.values(submitter_restrictions).length > 0) {
+    if (submitter_restrictions.length > 0) {
         return (
             <DetailContainer>
-                {Object.values(submitter_restrictions).map((restriction, idx) => {
+                {submitter_restrictions.map((restriction, idx) => {
                     return (
                         <RewardRow key={idx}>
                             <p>Type: <TagType type={restriction.type}>{restriction.type}</TagType></p>
@@ -89,10 +89,10 @@ export const SubmitterRestrictionDetails = ({ submitter_restrictions }) => {
 }
 
 export const VoterRestrictionDetails = ({ voter_restrictions }) => {
-    if (Object.values(voter_restrictions).length > 0) {
+    if (voter_restrictions.length > 0) {
         return (
             <DetailContainer>
-                {Object.values(voter_restrictions).map((restriction, idx) => {
+                {voter_restrictions.map((restriction, idx) => {
                     return (
                         <RewardRow key={idx}>
                             <p>Type: <TagType type={restriction.type}>{restriction.type}</TagType></p>

@@ -43,9 +43,6 @@ export default function VotingPolicy({ votingStrategy, setVotingStrategy, voting
     const [selectedStrategy, setSelectedStratgey] = useState(null);
     const rewardOptions = useSelector(rewardOptionState.getRewardOptions)
     let availableRules = useSelector(selectDashboardRules)
-    const { populateDashboardRules } = useDashboardRules();
-    const { ens } = useParams()
-
 
 
 
@@ -58,10 +55,6 @@ export default function VotingPolicy({ votingStrategy, setVotingStrategy, voting
     const handlePolicyModalClose = () => {
         setAddPolicyModalOpen(false);
     }
-
-    useEffect(() => {
-        populateDashboardRules(ens)
-    }, [])
 
 
     const creditStrategies = [
@@ -88,8 +81,8 @@ export default function VotingPolicy({ votingStrategy, setVotingStrategy, voting
                 <p>Please select a voting strategy</p>
             </div>}
             <CreditStrategyWrap>
-                {creditStrategies.map(el => {
-                    return <CreditStrategy strategy={el} handlePolicyModalOpen={handlePolicyModalOpen} handlePolicyModalClose={handlePolicyModalClose} votingStrategy={votingStrategy} />
+                {creditStrategies.map((el, idx) => {
+                    return <CreditStrategy key={idx} strategy={el} handlePolicyModalOpen={handlePolicyModalOpen} handlePolicyModalClose={handlePolicyModalClose} votingStrategy={votingStrategy} />
                 })}
             </CreditStrategyWrap>
             {addPolicyModalOpen &&
@@ -128,8 +121,6 @@ const StrategyStyle = styled.div`
         background-color: #1e1e1e;
         transform: scale(1.01);
         transition-duration: .5s;
-
-        
     }
     &::after{
         font-family: 'Font Awesome 5 Free';

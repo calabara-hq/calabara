@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import { scaleElement } from '../../../../css/scale-element'
 import { fade_in } from '../common/common_styles'
 
 export const ContestTag = styled.p`
@@ -103,13 +104,10 @@ export const Contest = styled.div`
     padding: 5px;
     grid-gap: 20px;
     cursor: pointer;
-    transition: visibility 0.2s, max-height 0.3s ease-in-out;
-
+    ${scaleElement}
     &:hover{
         background-color: #1e1e1e;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
-        transform: scale(1.01);
-        transition-duration: 0.5s;
 
     }
 
@@ -140,6 +138,8 @@ export const SplitBottomLeft = styled.div`
     display: flex;
 `
 
+
+
 export const NewContest = styled.button`
     position: absolute;
     right: 10px;
@@ -153,12 +153,10 @@ export const NewContest = styled.button`
     padding: 10px 15px;
     font-weight: bold;
     width: 25em;
-    &:hover{
-        transform: scale(1.01);
-    }
-    &:active{
-        transform: scale(0.9);
-    }
+    ${scaleElement}
+
+
+
     @media screen and (max-width: 800px){
         width: 98%;
         right: 0;

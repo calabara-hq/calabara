@@ -3,17 +3,18 @@ import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { RuleSelect } from '../manage-widgets/gatekeeper-toggle';
+import { RuleSelect } from '../manage-widgets/gatekeeper-toggle.js';
 import '../../css/wiki-modal.css'
 import '../../css/settings-buttons.css'
 import '../../css/wallet-modal.css'
 import Glyphicon from '@strongdm/glyphicon'
 
 
-import { selectWikiList, renameWikiList, addToWikiList } from './wiki-reducer';
-import { selectDashboardRules } from '../gatekeeper/gatekeeper-rules-reducer';
-import useCommon from '../hooks/useCommon';
-import useWiki from '../hooks/useWiki';
+import { selectWikiList, renameWikiList, addToWikiList } from './wiki-reducer.js';
+import { selectDashboardRules } from '../gatekeeper/gatekeeper-rules-reducer.js';
+import useCommon from '../hooks/useCommon.js';
+import useWiki from '../hooks/useWiki.js';
+import { useWalletContext } from '../../app/WalletContext.js';
 
 const style = {
     position: 'absolute',
@@ -55,7 +56,7 @@ export default function WikiModal({ modalOpen, handleClose, groupID }) {
     const { ens } = useParams();
     const dispatch = useDispatch();
     const [appliedRules, setAppliedRules] = useReducer(reducer, {});
-    const { authenticated_post } = useCommon();
+    const { authenticated_post } = useWalletContext();
     const { renameWikiList } = useWiki();
 
     useEffect(() => {

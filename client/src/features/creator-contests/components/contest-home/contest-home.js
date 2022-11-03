@@ -37,8 +37,6 @@ export default function ContestHomepage() {
     const history = useHistory();
     const [homepage_data, set_homepage_data] = useState(nonResolvingPromise)
 
-    console.log(homepage_data)
-
     useEffect(() => {
         set_homepage_data(fetchHomePageData(ens))
     }, [])
@@ -48,7 +46,7 @@ export default function ContestHomepage() {
     }
 
 
-    if (ens === 'sharkdao.eth') {
+    if (ens === 'sharkdao.eth' || ens === 'thenounsquare.eth') {
         return (
             <>
                 <BackButton customWidth={'68%'} link={'/' + ens + '/dashboard'} text={"dashboard"} />
@@ -118,9 +116,9 @@ function ListContests({ homepage_data }) {
 
     return (
         <RoundContainer>
-            {all_contests.map(el => {
+            {all_contests.map((el, id) => {
                 return (
-                    <Contest onClick={() => handleInterface(el._hash)}>
+                    <Contest onClick={() => handleInterface(el._hash)} key={id}>
                         <ContestTag>{el._title}</ContestTag>
                         <Label color={labelColorOptions[el._prompt_label_color]}>{el._prompt_label}</Label>
                         <CalculateState contest_info={el} />

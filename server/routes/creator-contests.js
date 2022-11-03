@@ -4,18 +4,22 @@ const dotenv = require('dotenv')
 const path = require('path')
 const contests = express();
 contests.use(express.json())
-const { authenticateToken } = require('../middlewares/jwt-middleware.js');
+const { authenticateToken } = require('../middlewares/auth-middleware.js');
 const { isAdmin } = require('../middlewares/admin-middleware')
 const { clean, asArray, shuffleArray } = require('../helpers/common')
 const { createContest, isNick } = require('../middlewares/creator-contests/create-contest-middleware');
 const { check_submitter_eligibility_unprotected, check_submitter_eligibility_PROTECTED, createSubmission } = require('../middlewares/creator-contests/submit-middleware');
-const { imageUpload } = require('../middlewares/image-upload-middleware.js');
+const { imageUpload, twitterMediaUpload } = require('../middlewares/image-upload-middleware.js');
 const { calc_sub_vp__unprotected, calc_sub_vp__PROTECTED } = require('../middlewares/creator-contests/vote-middleware.js');
 const logger = require('../logger').child({ component: 'creator-contests' })
 const { sendSocketMessage } = require('../sys/socket/socket-io');
 const { get_winners_as_csv, verifyContestOver } = require('../middlewares/creator-contests/fetch-winners-middleware.js');
 const { fetchSubmissions } = require('../middlewares/creator-contests/fetch-submissions-middleware.js');
 const socketSendNewSubmission = require('../helpers/socket-messages.js');
+const { TwitterApi } = require('twitter-api-v2');
+const { createReadStream } = require('fs');
+const { uploadTwitterMedia } = require('../middlewares/twitter-upload-media.js');
+const { add_stream_rule } = require('../twitter-client/stream.js');
 dotenv.config()
 
 const serverRoot = path.normalize(path.join(__dirname, '../'));
@@ -64,6 +68,9 @@ contests.post('/create_contest', authenticateToken, isAdmin, isNick, createConte
     const { ens, contest_settings, prompt_data } = req.body
     const { start_date, voting_begin, end_date } = contest_settings.date_times
     await db.query('insert into contests (ens, created, _start, _voting, _end, _hash, settings, prompt_data, locked, pinned) values ($1, $2, $3, $4, $5, $6, $7, $8, false, false)', [ens, req.created, start_date, voting_begin, end_date, req.hash, contest_settings, prompt_data])
+    if (contest_settings.twitter_integration) {
+        add_stream_rule({ value: `conversation_id:${contest_settings.twitter_integration.announcementID} is:quote`, tag: req.hash })
+    }
     res.sendStatus(200)
 })
 
@@ -81,10 +88,10 @@ contests.get('/fetch_submission_votes', async function (req, res, next) {
 
 contests.post('/create_submission', authenticateToken, check_submitter_eligibility_PROTECTED, createSubmission, async function (req, res, next) {
     const { ens } = req.body;
-    let result = await db.query('insert into contest_submissions (ens, contest_hash, author, created, locked, pinned, _url) values ($1, $2, $3, $4, $5, $6, $7) returning id ', [ens, req.contest_hash, req.user.address, req.created, false, false, req.url]).then(clean)
+    let result = await db.query('insert into contest_submissions (ens, contest_hash, author, created, locked, pinned, _url) values ($1, $2, $3, $4, $5, $6, $7) returning id ', [ens, req.contest_hash, req.session.user.address, req.created, false, false, req.url]).then(clean)
     res.sendStatus(200)
     //sendSocketMessage(req.contest_hash, 'new_submission', { id: result.id, _url: req.url })
-    socketSendNewSubmission(req.contest_hash, ens, { id: result.id, _url: req.url, author: req.user.address, votes: 0 })
+    socketSendNewSubmission(req.contest_hash, ens, { id: result.id, _url: req.url, author: req.session.user.address, votes: 0 })
 
 })
 
@@ -98,14 +105,14 @@ const getUserSubmissions = async (walletAddress, contest_hash) => {
 contests.post('/get_user_submissions', authenticateToken, async function (req, res, next) {
     let { contest_hash } = req.body
 
-    let subs = await getUserSubmissions(req.user.address, contest_hash)
+    let subs = await getUserSubmissions(req.session.user.address, contest_hash)
     res.send(subs).status(200)
 
 })
 
 
 contests.post('/check_user_eligibility', check_submitter_eligibility_unprotected, async function (req, res, next) {
-
+    console.log(req.body)
     const data = {
         restrictions: req.restrictions_with_results,
         has_already_submitted: req.has_already_submitted,
@@ -140,7 +147,7 @@ contests.post('/user_voting_metrics', calc_sub_vp__unprotected, async function (
 // authenticate user, check restrictions, get strategy, check voting power
 contests.post('/cast_vote', authenticateToken, calc_sub_vp__PROTECTED, async function (req, res, next) {
     let { contest_hash, sub_id, num_votes } = req.body;
-    let walletAddress = req.user.address
+    let walletAddress = req.session.user.address
     let result = await db.query('insert into contest_votes (contest_hash, submission_id, voter, votes_spent)\
                                 values ($1, $2, $3, $4)\
                                 on conflict (voter, submission_id)\
@@ -158,7 +165,7 @@ contests.post('/cast_vote', authenticateToken, calc_sub_vp__PROTECTED, async fun
 
 contests.post('/retract_sub_votes', authenticateToken, async function (req, res, next) {
     let { sub_id } = req.body;
-    db.query('delete from contest_votes where submission_id = $1 and voter = $2', [sub_id, req.user.address])
+    db.query('delete from contest_votes where submission_id = $1 and voter = $2', [sub_id, req.session.user.address])
         .then(() => res.sendStatus(200))
 
 })
@@ -169,7 +176,6 @@ contests.post('/retract_sub_votes', authenticateToken, async function (req, res,
 
 contests.get('/org_contest_stats', async function (req, res, next) {
     const { ens } = req.query
-    console.log('entering')
     await db.query('select settings ->> \'submitter_rewards\' as rewards from contests where ens=$1', [ens])
         .then(clean)
         .then(asArray)
@@ -207,6 +213,27 @@ contests.post('/upload_img', imageUpload.single('image'), async (req, res) => {
     console.log(error)
     res.status(400).send({ error: error.message })
 })
+
+
+
+contests.post('/twitter_contest_upload_img', twitterMediaUpload.single('image'), uploadTwitterMedia, async (req, res) => {
+
+    console.log(req.file.media_id)
+
+
+    let img_data = {
+        success: 1,
+        file: {
+            url: '/' + req.file.path,
+            media_id: req.file.media_id
+        }
+    }
+    res.status(200).send(img_data)
+}, (error, req, res, next) => {
+    console.log(error)
+    res.status(400).send({ error: error.message })
+})
+
 
 
 ///////////////////////// begin dev / test routes ////////////////////////////////////
