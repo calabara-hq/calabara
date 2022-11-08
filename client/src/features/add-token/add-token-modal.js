@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
-import '../../../../css/status-messages.css'
+import '../../css/status-messages.css'
 import styled from 'styled-components'
 import AddNewToken from './add_token';
 
@@ -38,7 +38,7 @@ const ModalHeading = styled.p`
 // tokenType is either erc20 or erc721
 
 
-export default function EditTokenModal({ modalOpen, handleClose, existingRewardData, tokenType, title }) {
+export default function EditTokenModal({ modalOpen, handleClose, existingRewardData, tokenType, title, checkDuplicates }) {
 
     const handleSave = (data) => {
         handleClose({ type: 'save', data: data })
@@ -54,7 +54,7 @@ export default function EditTokenModal({ modalOpen, handleClose, existingRewardD
                         <div>
                             <ModalHeading>{title}</ModalHeading>
                         </div>
-                        <AddNewToken existingRewardData={existingRewardData} type={tokenType} showBackButton={false} handleNextButton={handleSave} />
+                        <AddNewToken existingRewardData={existingRewardData} type={tokenType} showBackButton={false} handleNextButton={handleSave} checkDuplicates={checkDuplicates} />
                     </ModalWrapper>
 
                 </Box>

@@ -6,12 +6,12 @@ const { register_tweets } = require('./register-tweets');
 const { manage_stream } = require('./manage-stream');
 
 const init = () => {
-    contest_garbage_collection();
-    pin_staging_files();
-    pin_prompt_assets();
-    pull_tweets();
-    register_tweets();
-    manage_stream();
+    //contest_garbage_collection();
+    //pin_staging_files();
+    //pin_prompt_assets();
+    //pull_tweets();
+    //register_tweets();
+    //manage_stream();
 }
 
 module.exports = init;

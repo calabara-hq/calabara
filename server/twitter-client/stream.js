@@ -12,14 +12,13 @@ const get_stream_rules = async () => {
         let parsed_rules = rules.data ? rules.data : []
         return parsed_rules
     } catch (err) {
-        console.log(err)
-        console.log('THIS IS THE PROBLEM')
         throw (err)
     }
 }
 
 const delete_stream_rules = async (ids) => {
     try {
+        console.log('deleting stream rule', ids)
         await bearerClient.v2.updateStreamRules({
             delete: {
                 ids: ids

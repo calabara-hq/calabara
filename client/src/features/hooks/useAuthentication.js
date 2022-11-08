@@ -30,7 +30,6 @@ export default function useAuthentication() {
     const authenticated_post = async (endpoint, body) => {
         // just stop them here if they aren't authenticated
         if (!session) {
-            alert('here!')
             showNotification('hint', 'hint', 'please connect your wallet')
             openConnectModal()
             return null

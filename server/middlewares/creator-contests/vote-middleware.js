@@ -48,8 +48,8 @@ const compute_restrictions = async (mode, walletAddress, restrictions, snapshot_
     if (restrictions.length === 0) return true
 
     for (const restriction of restrictions) {
-        if (restriction.type === 'erc20' || restriction.type === 'erc721') {
-            let result = await checkWalletTokenBalance(walletAddress, restriction.address, restriction.decimal, snapshot_block)
+        if (restriction.type === 'erc20' || restriction.type === 'erc721' || restriction.type === 'erc1155') {
+            let result = await checkWalletTokenBalance(walletAddress, restriction.address, restriction.decimal, snapshot_block, restriction.token_id)
             let did_user_pass = result >= restriction.threshold
 
             // return straight away in protected mode. We don't care what the other results are
@@ -170,7 +170,7 @@ const getTotalVotingPower = async (strategy, walletAddress, snapshot_block) => {
         return strategy.hard_cap
     }
     else if (strategy.strategy_type === 'token') {
-        let user_tokens = await checkWalletTokenBalance(walletAddress, strategy.address, strategy.decimal, snapshot_block)
+        let user_tokens = await checkWalletTokenBalance(walletAddress, strategy.address, strategy.decimal, snapshot_block, strategy.token_id)
         return strategy.hard_cap ? Math.min(user_tokens, strategy.hard_cap) : user_tokens
     }
 }

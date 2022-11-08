@@ -155,10 +155,10 @@ function CreditStrategy({ strategy, handlePolicyModalOpen, votingStrategy }) {
     const handleLinkClick = (event, strategy_name) => {
         let link;
         if (strategy_name === 'Arcade') {
-            link = 'xyz'
+            link = 'https://docs.calabara.com/creator-contests/settings#arcade-style'
         }
-        else { link = 'zzz' }
-        alert(link)
+        else { link = 'https://docs.calabara.com/creator-contests/settings#token-voting' }
+        window.open(link)
         event.stopPropagation();
 
     }

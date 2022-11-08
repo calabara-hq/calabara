@@ -46,7 +46,7 @@ export default function ExpandedPrompt({ isCreating, setIsCreating, handleClose 
                     <h2 style={{ marginBottom: '30px', marginTop: '20px' }}>Submission Requirements</h2>
                     <p >Limit 1 submission <RestrictionStatus isConnected={isWalletConnected} status={!alreadySubmittedError} key={`${isWalletConnected}-already-submitted`} /></p>
                     {Object.values(restrictionResults).map((restriction, index) => {
-                        if (restriction.type === 'erc20' || restriction.type === 'erc721') {
+                        if (restriction.type === 'erc20' || restriction.type === 'erc721' || restriction.type === 'erc1155') {
                             return (
                                 <>
                                     <p>

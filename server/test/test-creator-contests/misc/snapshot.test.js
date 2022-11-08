@@ -25,5 +25,15 @@ describe('eth snapshot balance checks', async (done) => {
         expect(balance).to.eq(67.274366)
     })
 
+    it('erc1155 balance check ', async () => {
+        let walletAddress = '0xe9ad38d6E38E0A9970D6ebEc84C73DEA3e025da1'
+        let timestamp = new Date().toISOString()
+        let contract = '0xB48176c8779559f01eff37834fa563be997aE5e6'
+        let decimal = 0
+        let block = await calculateBlock(timestamp)
+        let balance = await checkWalletTokenBalance(walletAddress, contract, decimal, block, '139')
+        expect(balance).to.eq(1)
+    })
+
     done();
 })

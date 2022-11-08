@@ -1,4 +1,5 @@
 import { tokenAbi } from "../wallet/token-abi";
+import { ERC165ABI, ERC1155Interface, ERC712Interface, ERC721Interface } from "../wallet/erc165abi";
 import { ethers } from "ethers";
 
 const provider = new ethers.providers.InfuraProvider('homestead', process.env.INFURA_KEY)
@@ -14,20 +15,34 @@ export default function useContract() {
         let decimal = '0'
         try {
             decimal = await tokenContract.functions.decimals();
-            return [symbol, decimal]
+            return [symbol[0], decimal[0]]
         } catch (e) {
-            return [symbol, decimal]
+            return [symbol[0], decimal[0]]
         }
     }
 
-    // check token for erc721 compliance. erc20's should fail and all erc721's should pass.
-    // Mainly used for UI purposes
-    async function isERC721(contractAddress) {
+    async function getTokenStandard(contractAddress) {
+        try {
+            const tokenContract = new ethers.Contract(contractAddress, ERC165ABI, provider)
+            //await tokenContract.functions.ownerOf(0);
+            let result = await tokenContract.functions.supportsInterface(ERC721Interface)
+            if (result[0]) return 'erc721'
+            else {
+                let result = await tokenContract.functions.supportsInterface(ERC1155Interface)
+                if (result[0]) return 'erc1155'
+            }
+        } catch (e) {
+            console.log(e)
+            return 'erc20'
+        }
+    }
+
+    async function isValidERC1155TokenId(contractAddress, token_id) {
         try {
             const tokenContract = new ethers.Contract(contractAddress, tokenAbi, provider)
-            await tokenContract.functions.ownerOf(0);
+            await tokenContract.functions.uri(token_id)
             return true
-        } catch (e) {
+        } catch (err) {
             return false
         }
     }
@@ -53,8 +68,11 @@ export default function useContract() {
         checkWalletTokenBalance: async (walletAddress, contractAddress, decimal) => {
             return await checkWalletTokenBalance(walletAddress, contractAddress, decimal)
         },
-        isERC721: async (contractAddress) => {
-            return await isERC721(contractAddress)
+        getTokenStandard: async (contractAddress) => {
+            return await getTokenStandard(contractAddress)
+        },
+        isValidERC1155TokenId: async (contractAddress, token_id) => {
+            return await isValidERC1155TokenId(contractAddress, token_id)
         }
 
     }

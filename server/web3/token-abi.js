@@ -19,7 +19,6 @@ module.exports.token_abi = [
         "stateMutability": "view",
         "type": "function"
     },
-
     {
         "constant": true,
         "inputs": [],
@@ -47,4 +46,29 @@ module.exports.token_abi = [
         "payable": false,
         "stateMutability": "view",
         "type": "function"
-    }]
+    },
+    {
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "account",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "id",
+				"type": "uint256"
+			}
+		],
+		"name": "erc1155BalanceOf",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+]

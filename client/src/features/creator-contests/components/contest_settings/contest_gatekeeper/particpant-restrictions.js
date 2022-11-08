@@ -1,12 +1,11 @@
-import React, { useState, useReducer, useEffect } from 'react'
-import styled from 'styled-components'
-import { Contest_h2, Contest_h2_alt, Contest_h3, Contest_h3_alt, ERC20Button_alt, ERC721Button_alt } from '../../common/common_styles'
-import ToggleOption from './toggle-option'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import styled from 'styled-components'
 import { selectDashboardRules } from '../../../../gatekeeper/gatekeeper-rules-reducer'
-import EditRestrictionModal from '../../common/add-token-modal'
+import EditRestrictionModal from '../../../../add-token/add-token-modal'
+import { Contest_h3_alt } from '../../common/common_styles'
 import {
     availableRestrictionsActions,
     submitterRestrictionsActions,
@@ -14,6 +13,8 @@ import {
     voterRestrictionsActions,
     voterRestrictionsState
 } from './reducers/restrictions-reducer'
+import ToggleOption from './toggle-option'
+import { ERC1155Button, ERC20Button, ERC721Button } from '../../../../../css/token-button-styles'
 
 
 const RestrictionsWrap = styled.div`
@@ -56,7 +57,7 @@ const RestrictionOptionWrap = styled.div`
 `
 
 
-const NewRewardContainer = styled.div`
+const NewRestrictionContainer = styled.div`
     margin-top: 2em;
     margin-left: 10px;
     display: flex;
@@ -94,8 +95,7 @@ export default function ContestParticipantRestrictions() {
 
     const handleRestrictionModalClose = (payload) => {
         if (payload.type === 'save') {
-            const obj = { type: payload.data.type, symbol: payload.data.symbol, address: payload.data.address, decimal: payload.data.decimal }
-            dispatch(availableRestrictionsActions.addNewAvailableRule(obj))
+            dispatch(availableRestrictionsActions.addNewAvailableRule(payload.data))
         }
         setEditRestrictionModalOpen(false)
     }
@@ -111,23 +111,25 @@ export default function ContestParticipantRestrictions() {
                     <ToggleOption restriction_errors={submitter_restriction_errors} availableRestrictions={submitter_restrictions} updateAvailableRestrictions={submitterRestrictionsActions.setSubmitterRestrictions} toggle_identifier={"submitter-restrictions"} />
                 </RestrictionOptionWrap>
 
-                <NewRewardContainer>
-                    <ERC20Button_alt onClick={() => handleEditRestriction('erc20')}><FontAwesomeIcon icon={faPlus} /> ERC-20</ERC20Button_alt>
-                    <ERC721Button_alt onClick={() => handleEditRestriction('erc721')}><FontAwesomeIcon icon={faPlus} /> ERC-721</ERC721Button_alt>
-                </NewRewardContainer>
+                <NewRestrictionContainer>
+                    <ERC20Button onClick={() => handleEditRestriction('erc20')}><FontAwesomeIcon icon={faPlus} /> ERC-20</ERC20Button>
+                    <ERC721Button onClick={() => handleEditRestriction('erc721')}><FontAwesomeIcon icon={faPlus} /> ERC-721</ERC721Button>
+                    <ERC1155Button onClick={() => handleEditRestriction('erc1155')}><FontAwesomeIcon icon={faPlus} /> ERC-1155</ERC1155Button>
+                </NewRestrictionContainer>
 
                 <Contest_h3_alt style={{ marginTop: '50px' }}>Voter Restrictions</Contest_h3_alt>
                 <RestrictionOptionWrap>
                     <ToggleOption restriction_errors={voter_restriction_errors} availableRestrictions={voter_restrictions} updateAvailableRestrictions={voterRestrictionsActions.setVoterRestrictions} toggle_identifier={"voter-restrictions"} />
                 </RestrictionOptionWrap>
 
-                <NewRewardContainer>
-                    <ERC20Button_alt onClick={() => handleEditRestriction('erc20')}><FontAwesomeIcon icon={faPlus} /> ERC-20</ERC20Button_alt>
-                    <ERC721Button_alt onClick={() => handleEditRestriction('erc721')}><FontAwesomeIcon icon={faPlus} /> ERC-721</ERC721Button_alt>
-                </NewRewardContainer>
+                <NewRestrictionContainer>
+                    <ERC20Button onClick={() => handleEditRestriction('erc20')}><FontAwesomeIcon icon={faPlus} /> ERC-20</ERC20Button>
+                    <ERC721Button onClick={() => handleEditRestriction('erc721')}><FontAwesomeIcon icon={faPlus} /> ERC-721</ERC721Button>
+                    <ERC1155Button onClick={() => handleEditRestriction('erc1155')}><FontAwesomeIcon icon={faPlus} /> ERC-1155</ERC1155Button>
+                </NewRestrictionContainer>
 
             </RestrictionsContent>
-            <EditRestrictionModal modalOpen={editRestrictionModalOpen} handleClose={handleRestrictionModalClose} existingRewardData={null} tokenType={newTokenType} title={'Add Restriction'} />
+            <EditRestrictionModal modalOpen={editRestrictionModalOpen} handleClose={handleRestrictionModalClose} existingRewardData={null} tokenType={newTokenType} title={'Add Restriction'} checkDuplicates={true} />
         </RestrictionsWrap>
     )
 }

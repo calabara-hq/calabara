@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import useContract from '../../../hooks/useContract';
+import useContract from '../hooks/useContract';
 import styled from 'styled-components'
-import { ConfirmButton, ConfirmButtonAlt, ErrorMessage, TagType } from './common_styles';
+import { ConfirmButton, ConfirmButtonAlt, ErrorMessage, TagType } from '../creator-contests/components/common/common_styles';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 
@@ -18,6 +18,16 @@ const ContractAddressInput = styled.input`
     padding: 10px 15px;
 
     
+`
+
+const TokenIdInput = styled.input`
+    width: 20%;
+    color: #d3d3d3;
+    background-color: #121212;
+    border: 2px solid rgb(83, 155, 245);
+    border-radius: 10px;
+    outline: none;
+    padding: 10px 15px;
 `
 
 const SymbolDecimalInput = styled.div`
@@ -80,10 +90,12 @@ export default function AddNewToken({ existingRewardData, type, showBackButton, 
     const [newContractAddress, setNewContractAddress] = useState(existingRewardData ? existingRewardData.address : null);
     const [newSymbol, setNewSymbol] = useState(null);
     const [newDecimal, setNewDecimal] = useState(null);
+    const [newTokenId, setNewTokenId] = useState(null);
     const [addressError, setAddressError] = useState(false);
     const [typeError, setTypeError] = useState(false);
     const [duplicateAddressError, setDuplicateAddressError] = useState(false);
-    const { tokenGetSymbolAndDecimal, isERC721 } = useContract();
+    const [tokenIdError, setTokenIdError] = useState(false);
+    const { tokenGetSymbolAndDecimal, getTokenStandard, isValidERC1155TokenId } = useContract();
 
     useEffect(() => {
         if (newContractAddress) return fetchContractData(newContractAddress)
@@ -93,29 +105,29 @@ export default function AddNewToken({ existingRewardData, type, showBackButton, 
     const clearErrors = () => {
         setAddressError(false);
         setTypeError(false);
+        setTokenIdError(false);
         setDuplicateAddressError(false);
     }
 
-    const checkForDuplicates = (address) => {
+    const checkForDuplicates = () => {
         for (var i in existingRules) {
-            if ((existingRules[i].address == address) && (existingRules[i].type != 'discord')) {
-                return true
+            if (type !== 'erc1155') {
+                if ((existingRules[i].address == newContractAddress) && (existingRules[i].type != 'discord')) {
+                    return true
+                }
+            }
+            if (type === 'erc1155') {
+                if ((existingRules[i].address == newContractAddress) && (existingRules[i].token_id === newTokenId)) {
+                    return true
+                }
             }
         }
         return false
     }
 
     const fetchContractData = async (address) => {
-        // throw error if:
-        // user entered an erc721 but tried to add an erc20
-        // user entered an erc20 but tried to add an erc721
-        if (checkDuplicates) {
-            let isDuplicate = checkForDuplicates(address);
-            if(isDuplicate) return setDuplicateAddressError(true)
-        }
-        
-        let isTokenERC721 = await isERC721(address);
-        if ((isTokenERC721 && type === 'erc20') || (!isTokenERC721 && type === 'erc721')) return setTypeError(true)
+        let tokenStandard = await getTokenStandard(address);
+        if (tokenStandard !== type) return setTypeError(true);
         try {
             let [symbol, decimal] = await tokenGetSymbolAndDecimal(address);
             setNewSymbol(symbol)
@@ -123,6 +135,7 @@ export default function AddNewToken({ existingRewardData, type, showBackButton, 
         } catch (e) {
             setAddressError(true)
         }
+
     }
 
     const handleRewardAdressChange = (address) => {
@@ -135,9 +148,64 @@ export default function AddNewToken({ existingRewardData, type, showBackButton, 
         }
     }
 
-    const handleConfirm = () => {
-        // error check then proceed with next button
-        handleNextButton({ type: type, address: newContractAddress, symbol: newSymbol, decimal: newDecimal });
+    const handleTokenIdChange = (id) => {
+        setTokenIdError(false);
+        setNewTokenId(id)
+    }
+
+    const handleConfirm = async () => {
+        let token_data = { type: type, address: newContractAddress, symbol: newSymbol, decimal: newDecimal }
+        if (type === 'erc1155') {
+            //check for valid tokenid
+            const isValidTokenId = await isValidERC1155TokenId(newContractAddress, newTokenId)
+            if (!isValidTokenId) return setTokenIdError(true)
+            token_data.token_id = newTokenId
+        }
+        console.log(checkDuplicates)
+        if (checkDuplicates) {
+            let isDuplicate = checkForDuplicates();
+            if (isDuplicate) return setDuplicateAddressError(true)
+        }
+        handleNextButton(token_data);
+    }
+
+
+    if (type === 'erc1155') {
+        return (
+            <CreateRewardWrap>
+                <Row>
+                    <RewardType><b>Type:</b> <TagType type={type}>{type}</TagType></RewardType>
+                </Row>
+                <Row>
+                    <p><b>Contract Address</b></p>
+                    <ContractAddressInput placeholder="0x1234..." value={newContractAddress} onChange={(e) => handleRewardAdressChange(e.target.value)} />
+                    {addressError && <ErrorMessage style={{ maxWidth: '80%' }}><p>could not find address</p></ErrorMessage>}
+                    {typeError && <ErrorMessage style={{ maxWidth: '80%' }}><p>this doesn't look like an {type} token</p></ErrorMessage>}
+                    {duplicateAddressError && <ErrorMessage style={{ maxWidth: '80%' }}><p>it looks like you already added this token</p></ErrorMessage>}
+
+                </Row>
+                <Row>
+                    <p><b>Token ID</b></p>
+                    <TokenIdInput onWheel={(e) => e.target.blur()} placeholder="3" type={"numeric"} value={newTokenId} onChange={(e) => handleTokenIdChange(e.target.value)} />
+                    {tokenIdError && <ErrorMessage style={{ maxWidth: '80%' }}><p>this doesn't look like a valid token id</p></ErrorMessage>}
+                </Row>
+                <Row>
+                    <p><b>Symbol</b></p>
+                    <SymbolDecimalInput >
+                        <p>{newSymbol}</p>
+                    </SymbolDecimalInput>
+                </Row>
+                <Row style={{ marginBottom: '40px' }}>
+                    <p><b>Decimal</b></p>
+                    <SymbolDecimalInput>
+                        <p>{newDecimal}</p>
+                    </SymbolDecimalInput>
+                </Row>
+
+                {showBackButton && <BackButton onClick={handleBackButton}><FontAwesomeIcon icon={faArrowLeft} /></BackButton>}
+                <ConfirmButtonAlt disabled={!newSymbol || !newTokenId} onClick={handleConfirm}>confirm</ConfirmButtonAlt>
+            </CreateRewardWrap>
+        )
     }
 
     return (
@@ -147,7 +215,7 @@ export default function AddNewToken({ existingRewardData, type, showBackButton, 
             </Row>
             <Row>
                 <p><b>Contract Address</b></p>
-                <ContractAddressInput placeholder="0x1234..." value={newContractAddress} onChange={(e) => handleRewardAdressChange(e.target.value)}></ContractAddressInput>
+                <ContractAddressInput placeholder="0x1234..." value={newContractAddress} onChange={(e) => handleRewardAdressChange(e.target.value)} />
                 {addressError && <ErrorMessage style={{ maxWidth: '80%' }}><p>could not find address</p></ErrorMessage>}
                 {typeError && <ErrorMessage style={{ maxWidth: '80%' }}><p>this doesn't look like an {type} token</p></ErrorMessage>}
                 {duplicateAddressError && <ErrorMessage style={{ maxWidth: '80%' }}><p>it looks like you already added this token</p></ErrorMessage>}
@@ -159,7 +227,7 @@ export default function AddNewToken({ existingRewardData, type, showBackButton, 
                     <p>{newSymbol}</p>
                 </SymbolDecimalInput>
             </Row>
-            <Row style={{marginBottom: '40px'}}>
+            <Row style={{ marginBottom: '40px' }}>
                 <p><b>Decimal</b></p>
                 <SymbolDecimalInput>
                     <p>{newDecimal}</p>

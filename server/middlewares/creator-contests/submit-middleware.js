@@ -38,9 +38,9 @@ const compute_restrictions = async (mode, walletAddress, restrictions, snapshot_
     if (restrictions.length === 0) return true
 
     for (const restriction of restrictions) {
-        if (restriction.type === 'erc20' || restriction.type === 'erc721') {
+        if (restriction.type === 'erc20' || restriction.type === 'erc721' || restriction.type === 'erc1155') {
 
-            let result = await checkWalletTokenBalance(walletAddress, restriction.address, restriction.decimal, snapshot_block)
+            let result = await checkWalletTokenBalance(walletAddress, restriction.address, restriction.decimal, snapshot_block, restriction.token_id)
 
             let did_user_pass = result >= restriction.threshold;
 

@@ -3,9 +3,10 @@ import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import '../../../../../css/status-messages.css';
 import styled from 'styled-components'
-import { TagType, fade_in, Contest_h3, ERC20Button, ERC721Button, ConfirmButton, Contest_h3_alt_small, ERC20Button_alt, ERC721Button_alt } from '../../common/common_styles';
-import AddNewToken from '../../common/add_token';
+import { TagType, fade_in, Contest_h3, ConfirmButton, Contest_h3_alt_small } from '../../common/common_styles';
+import AddNewToken from '../../../../add-token/add_token';
 import { ToggleButton } from '../../common/common_components';
+import { ERC1155Button, ERC20Button, ERC721Button } from '../../../../../css/token-button-styles';
 
 
 const style = {
@@ -153,7 +154,6 @@ const ReplaceStrategy = styled.button`
 
 
 
-
 function TokenStrategy({ rewardOptions, availableRules, votingStrategy, setVotingStrategy, handleClose }) {
     const [quickAddOptions, setQuickAddOptions] = useState(null);
     const [quickAddSelection, setQuickAddSelection] = useState(-1);
@@ -165,25 +165,19 @@ function TokenStrategy({ rewardOptions, availableRules, votingStrategy, setVotin
 
     let options = {};
     // squirrel; add reward options to the mix & remove duplicates
-    useEffect(() => { })
     Object.values(availableRules).map((el, index) => {
         // first, strip discord rules
         if (el.type !== 'discord') {
-            let data = {
-                type: el.type,
-                symbol: el.symbol,
-                decimal: el.decimal,
-                address: el.address
-            }
-            options[index] = data
-
+            options[index] = el
+            console.log(options)
 
         }
     })
 
     const handleSaveNewToken = (data) => {
+        console.log(data)
         setTokenData(data);
-        setProgress(1);
+        setProgress(2);
     }
 
     const handleSave = (additional_configs) => {
@@ -225,10 +219,10 @@ function TokenStrategySummary({ votingStrategy, setProgress }) {
     let { hardcap_bool, hardcap_limit, max_per_sub_bool, max_per_sub_limit } = votingStrategy.data.additional_configs;
     return (
         <>
-            <ElementStyle>
+            <TagDiv>
                 <p style={{ margin: 0 }}><b>Symbol: </b>{votingStrategy.data.token_data.symbol} </p>
                 <OptionType><TagType type={type}>{type}</TagType></OptionType>
-            </ElementStyle>
+            </TagDiv>
             <h4><b>1</b> {symbol} equals <b>1</b> voting credit</h4>
             <p><b>Limit per sub:</b> {max_per_sub_bool ? max_per_sub_limit : 'Off'}</p>
             <p><b>Limit per wallet:</b> {hardcap_bool ? hardcap_limit : 'Off'}</p>
@@ -464,12 +458,6 @@ function AdditionalConfig({ tokenData, setProgress, handleSave, handlePrevious }
         <AdditionalConfigWrap>
             {tokenData &&
                 <>
-                    <TopLevelWrap>
-                        {/*<div style={{ width: 'fit-content' }} className='tab-message neutral'>
-                            <h4><b>1</b> {tokenData.symbol} equals <b>1</b> voting credit</h4>
-                        </div>
-            */}
-                    </TopLevelWrap>
                     <MaxPerSub>
                         <SettingDescription>
                             <Contest_h3_alt_small >Submission Hard Cap</Contest_h3_alt_small>
@@ -529,7 +517,7 @@ const QuickAddContainerStyle = styled.div`
     overflow-y: scroll;
 
 `
-const ElementStyle = styled.div`
+const TagDiv = styled.div`
     display: flex;
     align-items: center;
     justify-content: flex-start;
@@ -596,7 +584,7 @@ function TokenVotingChoice({ options, quickAddSelection, setQuickAddSelection, s
 
 const NewTokenChoice = styled.div`
     display: flex;
-    align-items: center;
+    flex-direction: column;
     justify-content: center;
     > * {
         margin: 10px;
@@ -612,8 +600,10 @@ function NewTokenSelectType({ setTriggerNewTokenInputType, setTokenData }) {
     }
     return (
         <NewTokenChoice>
-            <ERC20Button_alt onClick={() => handleSelect('erc20')}>erc-20</ERC20Button_alt>
-            <ERC721Button_alt onClick={() => handleSelect('erc721')}>erc-721</ERC721Button_alt>
+            <h3 style={{ textAlign: 'center' }}>New Token</h3>
+            <ERC20Button onClick={() => handleSelect('erc20')}>erc-20</ERC20Button>
+            <ERC721Button onClick={() => handleSelect('erc721')}>erc-721</ERC721Button>
+            <ERC1155Button onClick={() => handleSelect('erc1155')}>erc-1155</ERC1155Button>
         </NewTokenChoice>
     )
 }
@@ -630,10 +620,10 @@ function QuickAddElements({ elements, quickAddSelection, setQuickAddSelection, s
         <QuickAddContainerStyle>
             {Object.values(elements).map((el, index) => {
                 return (
-                    <ElementStyle selected={quickAddSelection === index} selectable={true} onClick={() => handleSelect(index, el)}>
+                    <TagDiv selected={quickAddSelection === index} selectable={true} onClick={() => handleSelect(index, el)}>
                         <p style={{ margin: 0 }}><b>Symbol: </b>{el.symbol} </p>
                         <OptionType><TagType type={el.type}>{el.type}</TagType></OptionType>
-                    </ElementStyle>
+                    </TagDiv>
                 )
             })}
         </QuickAddContainerStyle>

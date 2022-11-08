@@ -1,11 +1,7 @@
-import React, { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
-import RoleSelectModal from '../../../../manage-widgets/role-select-modal'
-import styled from 'styled-components'
-import {
-    selectDashboardRules,
-} from '../../../../gatekeeper/gatekeeper-rules-reducer';
-import { availableRestrictionsState } from './reducers/restrictions-reducer';
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import styled from 'styled-components';
+import { TagType } from '../../common/common_styles';
 
 
 
@@ -24,7 +20,7 @@ const GkRule = styled.div`
     background-color: #262626;
     padding: 10px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
-    min-height: 150px;
+    //height: 190px;
 
     > p  {
         margin: 0;
@@ -35,27 +31,15 @@ const GkRule = styled.div`
 
 `
 
-const Tag = styled.span`
-
-    background-color: ${props => props.tagtype === 'erc721' ? '#1e1e1e' : props.tagtype === 'erc20' ? '#1e1e1e' : '#1e1e1e'};
-    color: ${props => props.tagtype === 'erc721' ? '#ab6afb' : props.tagtype === 'erc20' ? '#03b09f' : '#f2f2f2'};
-    border: 1px solid ${props => props.tagtype === 'erc721' ? '#ab6afb' : props.tagtype === 'erc20' ? '#03b09f' : '#f2f2f2'};
-    padding: 3px 3px;
-    border-radius: 5px;
-    font-size: 15px;
-    font-weight: 550;
-
-
-
-`
 
 const ToggleFlex = styled.div`
 
-display: flex;
+    display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: flex-end;
     justify-content: flex-start;
     width: 100%;
+    margin-top: auto;
     
 
     > button  {
@@ -103,8 +87,30 @@ const TokenLink = styled.span`
     > i {color: grey};
 
 `
+const OptionType = styled.p`
+    color: lightgrey;
+    margin: 10px 0;
+    margin-left: auto;
 
+    & > span{
+        padding: 3px 3px;
+        border-radius: 4px;
+        font-size: 15px;
+        font-weight: 550;
+    }
+`
 
+const TokenType = styled.p`
+    color: lightgrey;
+    margin: 0;
+
+    > span{
+        padding: 3px 3px;
+        border-radius: 4px;
+        font-size: 15px;
+        font-weight: 550;
+    }
+`
 
 export default function ToggleOption({ availableRestrictions, updateAvailableRestrictions, restriction_errors, toggle_identifier }) {
 
@@ -176,6 +182,44 @@ function Option({ element, option_id, updateAvailableRestrictions, error, toggle
     }
     */
 
+
+    if (element.type === 'erc721' || element.type === 'erc20') {
+        return (
+            <GkRule error={error} >
+                <TokenType><b>Type:</b> <TagType type={element.type}>{element.type}</TagType></TokenType>
+                <p><b>Symbol: </b>
+                    <TokenLink onClick={() => { window.open('https://etherscan.io/address/' + element.address) }}> {element.symbol} <i className="fas fa-external-link-alt"></i></TokenLink>
+                </p>
+                <ToggleFlex>
+                    <ToggleSwitch enableRestriction={enableRestriction} disableRestriction={disableRestriction} option_id={option_id} isGatekeeperOn={isGatekeeperOn} setIsGatekeeperOn={setIsGatekeeperOn} toggle_identifier={toggle_identifier} />
+                    {isGatekeeperOn &&
+                        <GKInput onWheel={(e) => e.target.blur()} type="number" error={error} value={element.threshold} placeholder="threshold" onChange={handleThresholdChange}></GKInput>
+                    }
+                </ToggleFlex>
+            </GkRule>
+        )
+    }
+
+    else if (element.type === 'erc1155') {
+        console.log(element)
+        return (
+            <GkRule error={error} >
+                <TokenType><b>Type:</b> <TagType type={element.type}>{element.type}</TagType></TokenType>
+                <p><b>Symbol: </b>
+                    <TokenLink onClick={() => { window.open('https://etherscan.io/address/' + element.address) }}> {element.symbol} <i className="fas fa-external-link-alt"></i></TokenLink>
+                </p>
+                <p><b>Token ID: </b>{element.token_id}</p>
+                <ToggleFlex>
+                    <ToggleSwitch enableRestriction={enableRestriction} disableRestriction={disableRestriction} option_id={option_id} isGatekeeperOn={isGatekeeperOn} setIsGatekeeperOn={setIsGatekeeperOn} toggle_identifier={toggle_identifier} />
+                    {isGatekeeperOn &&
+                        <GKInput onWheel={(e) => e.target.blur()} type="number" error={error} value={element.threshold} placeholder="threshold" onChange={handleThresholdChange}></GKInput>
+                    }
+                </ToggleFlex>
+            </GkRule>
+        )
+    }
+
+    /*
     return (
         <>
             <GkRule error={error} >
@@ -193,7 +237,7 @@ function Option({ element, option_id, updateAvailableRestrictions, error, toggle
                         </ToggleFlex>
                     </>
                 }
-                {/*(element.type === 'discord') &&
+                {(element.type === 'discord') &&
                     <>
                         <p><b>Type:</b> <Tag tagtype={element.type}>{element.type}</Tag></p>
                         <p><b>Server:</b> {element.serverName}</p>
@@ -207,10 +251,11 @@ function Option({ element, option_id, updateAvailableRestrictions, error, toggle
                             }
                         </ToggleFlex>
                     </>
-                        */}
+                        }
             </GkRule>
         </>
     )
+    */
 }
 
 
