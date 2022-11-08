@@ -1,5 +1,6 @@
 import { tokenAbi } from "../wallet/token-abi";
-import { ERC165ABI, ERC1155Interface, ERC712Interface, ERC721Interface } from "../wallet/erc165abi";
+import { ERC165ABI, ERC1155Interface, ERC721Interface } from "../wallet/erc165abi";
+import { ERC1155_abi } from "../wallet/erc1155-abi";
 import { ethers } from "ethers";
 
 const provider = new ethers.providers.InfuraProvider('homestead', process.env.INFURA_KEY)
@@ -31,10 +32,7 @@ export default function useContract() {
                 let result = await tokenContract.functions.supportsInterface(ERC1155Interface)
                 if (result[0]) return 'erc1155'
             }
-        } catch (e) {
-            console.log(e)
-            return 'erc20'
-        }
+        } catch (e) { return 'erc20' }
     }
 
     async function isValidERC1155TokenId(contractAddress, token_id) {
@@ -47,14 +45,26 @@ export default function useContract() {
         }
     }
 
-    // check balance of token given a wallet address and a contract address and decimal
-    async function checkWalletTokenBalance(walletAddress, contractAddress, decimal) {
+    async function checkWalletTokenBalance(walletAddress, contractAddress, decimal, token_id) {
         try {
-            const tokenContract = new ethers.Contract(contractAddress, tokenAbi, provider)
-            const balance = await tokenContract.functions.balanceOf(walletAddress);
-            const adjusted = balance / 10 ** decimal
-            return adjusted;
-        } catch (err) { return 0 }
+            let balance
+            if (!token_id) {
+                console.log('in hea')
+                let tokenContract = new ethers.Contract(contractAddress, tokenAbi, provider);
+                balance = await tokenContract.functions.balanceOf(walletAddress);
+            }
+            else {
+                console.log(contractAddress)
+                let tokenContract = new ethers.Contract(contractAddress, ERC1155_abi, provider);
+                balance = await tokenContract.functions.balanceOf(walletAddress, token_id);
+
+            };
+            const adjusted = balance / 10 ** decimal;
+            return adjusted
+        } catch (err) {
+            console.log(err)
+            return 0
+        }
 
     }
 
@@ -65,8 +75,8 @@ export default function useContract() {
         tokenGetSymbolAndDecimal: async (contractAddress) => {
             return await tokenGetSymbolAndDecimal(contractAddress)
         },
-        checkWalletTokenBalance: async (walletAddress, contractAddress, decimal) => {
-            return await checkWalletTokenBalance(walletAddress, contractAddress, decimal)
+        checkWalletTokenBalance: async (walletAddress, contractAddress, decimal, token_id) => {
+            return await checkWalletTokenBalance(walletAddress, contractAddress, decimal, token_id)
         },
         getTokenStandard: async (contractAddress) => {
             return await getTokenStandard(contractAddress)

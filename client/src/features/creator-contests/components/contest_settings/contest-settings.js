@@ -439,9 +439,12 @@ function Summary({ contestData, promptData, twitterData, warnings, handleCloseDr
         }
 
         await authenticated_post('/creator_contests/create_contest', { ens: ens, contest_settings: contestData, prompt_data: promptData })
-        setTimeout(() => {
-            handleCloseDrawer('saved')
-        }, 500)
+            .then(() => {
+                setTimeout(() => {
+                    handleCloseDrawer('saved')
+                }, 500)
+            })
+            .catch(err => console.log(err))
 
     }
 

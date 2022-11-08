@@ -17,24 +17,18 @@ export default function useGatekeeper() {
 
     async function queryGatekeeper(walletAddress, rules, ruleResults, discordId) {
         for (const [key, value] of Object.entries(ruleResults)) {
-
-            if (rules[key].type === 'erc20' || rules[key].type === 'erc721') {
-                const balance = await checkWalletTokenBalance(walletAddress, rules[key].address, rules[key].decimal)
-
+            console.log(rules[key].token_id)
+            if (rules[key].type === 'erc20' || rules[key].type === 'erc721' || rules[key].type === 'erc1155') {
+                const balance = await checkWalletTokenBalance(walletAddress, rules[key].address, rules[key].decimal, rules[key].token_id)
                 ruleResults[key] = parseFloat(balance)
-
-
             }
-
             else if (rules[key].type === 'discord') {
-
                 if (discordId) {
                     // fetch the roles that this user has for the server and assign them to the results key
                     const resp = await axios.post('/discord/getUserRoles', { user_id: discordId, guild_id: rules[key].guildId })
                     if (resp.data === 'error') {
                         ruleResults[key] = 'fail'
                     }
-
                     else {
                         // set the response and push @eveyone role (guildId) to the array
                         resp.data.push(rules[key].guildId)
@@ -44,7 +38,6 @@ export default function useGatekeeper() {
                 else {
                     ruleResults[key] = 'fail';
                 }
-
             }
         }
 

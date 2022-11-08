@@ -1,4 +1,4 @@
-module.exports.token_abi = [
+export const ERC1155_abi = [
     {
         "inputs": [
             {

@@ -29,14 +29,12 @@ const checkWalletTokenBalance = async (walletAddress, contractAddress, decimal, 
             balance = await tokenContract.functions.balanceOf(walletAddress, { blockTag: block_num });
         }
         else {
-            console.log(erc1155_abi.token_abi)
             let tokenContract = new ethers.Contract(contractAddress, erc1155_abi.token_abi, provider);
             balance = await tokenContract.functions.balanceOf(walletAddress, token_id, { blockTag: block_num });
-
         };
         const adjusted = balance / 10 ** decimal;
         return adjusted
-    } catch (err) { /*console.log(err)*/ }
+    } catch (err) { return 0 }
 }
 
 

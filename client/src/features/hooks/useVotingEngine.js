@@ -28,7 +28,6 @@ export default function useVotingEngine(sub_id) {
     const walletAddress = useSelector(selectWalletAddress);
     const [is_self_voting_error, set_is_self_voting_error] = useState(true);
     const { authenticated_post } = useWalletContext();
-    console.log(sub_id)
     const { ens, contest_hash } = useParams();
 
     useEffect(() => {
