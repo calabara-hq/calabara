@@ -44,6 +44,11 @@ const serializedLoop = async (arr, callback) => {
   }, Promise.resolve())
 }
 
+const parallelLoop = async (arr, callback) => {
+  await Promise.all(arr.map(async (el) => {
+    return await callback(el)
+  }))
+}
 
 
 
@@ -51,5 +56,6 @@ module.exports = {
   clean,
   asArray,
   shuffleArray,
-  serializedLoop
+  serializedLoop,
+  parallelLoop
 }

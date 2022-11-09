@@ -12,9 +12,9 @@ const socketSendNewSubmission = require('../helpers/socket-messages');
 const { isAdmin } = require('../middlewares/admin-middleware');
 twitter.use(express.json())
 
-
-
 dotenv.config()
+
+let twitter_redirect = process.env === 'production' ? "https://calabara.com/twitter/oauth2" : "https://localhost:3001/twitter/oauth2"
 
 
 /**
@@ -36,7 +36,7 @@ twitter.post('/generateAuthLink', authenticateToken, async function (req, res, n
     const { scope_type } = req.body
     if (!scope_type) return res.sendStatus(400)
     if (!scopes[scope_type]) return res.sendStatus(400)
-    const { url, codeVerifier, state } = requestClient.generateOAuth2AuthLink('https://localhost:3001/twitter/oauth2', { scope: scopes[scope_type] });
+    const { url, codeVerifier, state } = requestClient.generateOAuth2AuthLink(twitter_redirect, { scope: scopes[scope_type] });
     req.session.twitter = {
         codeVerifier: codeVerifier,
         stateVerifier: state,

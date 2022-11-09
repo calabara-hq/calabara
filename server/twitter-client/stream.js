@@ -18,7 +18,6 @@ const get_stream_rules = async () => {
 
 const delete_stream_rules = async (ids) => {
     try {
-        console.log('deleting stream rule', ids)
         await bearerClient.v2.updateStreamRules({
             delete: {
                 ids: ids
@@ -30,15 +29,13 @@ const delete_stream_rules = async (ids) => {
     } catch (err) { console.log(err) }
 }
 
-const add_stream_rule = async (rule) => {
+const add_stream_rules = async (arr) => {
     try {
-        console.log('adding stream rule')
-        console.log(rule);
         let rules = await get_stream_rules()
         if (rules.length === 5) return console.log('stream buffer is full')
-        console.log(rules);
+        console.log(arr);
         await bearerClient.v2.updateStreamRules({
-            add: [rule]
+            add: rules
         });
         if (!stream) return start_stream()
     } catch (err) {
@@ -99,4 +96,4 @@ get_stream_rules()
         if ((rules.length > 0) && (!stream)) start_stream()
     })
 
-module.exports = { add_stream_rule, delete_stream_rules, get_stream_rules }
+module.exports = { add_stream_rules, delete_stream_rules, get_stream_rules }

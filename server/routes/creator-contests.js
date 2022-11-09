@@ -19,7 +19,7 @@ const socketSendNewSubmission = require('../helpers/socket-messages.js');
 const { TwitterApi } = require('twitter-api-v2');
 const { createReadStream } = require('fs');
 const { uploadTwitterMedia } = require('../middlewares/twitter-upload-media.js');
-const { add_stream_rule } = require('../twitter-client/stream.js');
+const { add_stream_rules } = require('../twitter-client/stream.js');
 dotenv.config()
 
 const serverRoot = path.normalize(path.join(__dirname, '../'));
@@ -69,7 +69,7 @@ contests.post('/create_contest', authenticateToken, isAdmin, isNick, createConte
     const { start_date, voting_begin, end_date } = contest_settings.date_times
     await db.query('insert into contests (ens, created, _start, _voting, _end, _hash, settings, prompt_data, locked, pinned) values ($1, $2, $3, $4, $5, $6, $7, $8, false, false)', [ens, req.created, start_date, voting_begin, end_date, req.hash, contest_settings, prompt_data])
     if (contest_settings.twitter_integration) {
-        add_stream_rule({ value: `conversation_id:${contest_settings.twitter_integration.announcementID} is:quote`, tag: req.hash })
+        add_stream_rules([{ value: `conversation_id:${contest_settings.twitter_integration.announcementID} is:quote`, tag: req.hash }])
     }
     res.sendStatus(200)
 })

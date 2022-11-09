@@ -10,6 +10,7 @@ import moment from "moment";
 import { fetchHomePageData, initialize } from "./homepage-data-fetch";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { faDiscord } from "@fortawesome/free-brands-svg-icons";
+import { scaleElement } from "../../../../css/scale-element";
 import {
     ContestHomeWrap,
     SplitTop,
@@ -118,14 +119,14 @@ function ListContests({ homepage_data }) {
         <RoundContainer>
             {all_contests.map((el, id) => {
                 return (
-                    <Contest onClick={() => handleInterface(el._hash)} key={id}>
+                    <Contest scale={true} onClick={() => handleInterface(el._hash)} key={id}>
                         <ContestTag>{el._title}</ContestTag>
                         <Label color={labelColorOptions[el._prompt_label_color]}>{el._prompt_label}</Label>
                         <CalculateState contest_info={el} />
                     </Contest>
                 )
             })}
-        </RoundContainer>
+        </RoundContainer >
     )
 }
 

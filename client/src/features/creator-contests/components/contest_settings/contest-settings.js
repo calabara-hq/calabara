@@ -423,8 +423,8 @@ function Summary({ contestData, promptData, twitterData, warnings, handleCloseDr
 
 
     const sendAnnouncementTweet = async () => {
-        let result = await authenticated_post('/twitter/send_announcement_tweet', { ens: ens, tweet: twitterData.tweets })
-        return result.data
+        return await authenticated_post('/twitter/send_announcement_tweet', { ens: ens, tweet: twitterData.tweets })
+            .then(result => result ? result.data : console.log(result))
     }
 
     const handleConfirm = async () => {
