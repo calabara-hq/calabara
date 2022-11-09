@@ -146,6 +146,27 @@ async function calc_sub_vp__PROTECTED(req, res, next) {
     next();
 }
 
+async function calc_total_vp_UNPROTECTED(req, res, next) {
+    const { ens, walletAddress, contest_hash } = req.body;
+
+    let contest_meta = await db.query('select settings->\'voting_strategy\' as strategy, \
+            settings->\'snapshot_block\' as snapshot_block \
+            from contests where ens = $1 and _hash = $2', [ens, contest_hash])
+        .then(clean)
+
+    let [total_contest_spent, total_contest_vp] = await Promise.all([
+        getTotalSpentVotes(contest_hash, walletAddress),
+        getTotalVotingPower(contest_meta.strategy, walletAddress, contest_meta.snapshot_block)
+    ])
+
+    console.log('total vp', total_contest_vp)
+
+    req.contest_total_vp = total_contest_vp;
+    req.contest_remaining_vp = total_contest_vp - total_contest_spent;
+
+    next();
+}
+
 
 /// helpers 
 
@@ -170,6 +191,7 @@ const getTotalVotingPower = async (strategy, walletAddress, snapshot_block) => {
         return strategy.hard_cap
     }
     else if (strategy.strategy_type === 'token') {
+        console.log('strategy', strategy)
         let user_tokens = await checkWalletTokenBalance(walletAddress, strategy.address, strategy.decimal, snapshot_block, strategy.token_id)
         return strategy.hard_cap ? Math.min(user_tokens, strategy.hard_cap) : user_tokens
     }
@@ -179,5 +201,6 @@ const getTotalVotingPower = async (strategy, walletAddress, snapshot_block) => {
 
 module.exports = {
     calc_sub_vp__unprotected,
-    calc_sub_vp__PROTECTED
+    calc_sub_vp__PROTECTED,
+    calc_total_vp_UNPROTECTED
 };

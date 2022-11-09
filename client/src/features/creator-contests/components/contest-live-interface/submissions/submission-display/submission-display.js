@@ -156,7 +156,6 @@ export default function SubmissionDisplay({ }) {
             <SubmissionHeading>
                 <h2 style={{ color: '#d3d3d3', marginBottom: '30px' }}>Submissions</h2>
                 <DisplayWinners />
-                <CreateSubmission />
             </SubmissionHeading >
             {subs.length > 0 &&
                 <SubmissionWrap>
@@ -166,36 +165,6 @@ export default function SubmissionDisplay({ }) {
         </div >
     )
 }
-
-
-function CreateSubmission({ }) {
-    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-    const [isCreating, setIsCreating] = useState(false);
-    const contest_state = useSelector(selectContestState)
-
-    const handleDrawerOpen = () => {
-        setIsDrawerOpen(true);
-        document.body.style.overflow = 'hidden';
-
-    }
-
-    const handleDrawerClose = () => {
-        setIsDrawerOpen(false);
-        setIsCreating(false);
-        document.body.style.overflow = 'unset';
-
-    }
-    if (contest_state === 0) return (
-        <>
-            <CreateSubmissionButton onClick={handleDrawerOpen}>create submission</CreateSubmissionButton>
-            <ExpandedPromptComponent isDrawerOpen={isDrawerOpen} handleDrawerClose={handleDrawerClose} isCreating={isCreating} setIsCreating={setIsCreating} />
-        </>
-    )
-
-    return null
-}
-
-
 
 function MapSubmissions({ subs }) {
 

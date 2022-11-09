@@ -126,7 +126,7 @@ const mainLoop = async () => {
 
 
 const pin_staging_files = () => {
-    cron.schedule(EVERY_10_SECONDS, async () => {
+    cron.schedule(EVERY_30_SECONDS, async () => {
         console.log('pinning submissions')
         mainLoop();
     })

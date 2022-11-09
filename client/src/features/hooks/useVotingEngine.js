@@ -11,13 +11,11 @@ import { selectIsConnected, selectWalletAddress } from '../../app/sessionReducer
 
 
 
-const calculateVotingPower = async (ens, sub_id, walletAddress, contest_hash) => {
+const calculateSubmissionVotingPower = async (ens, sub_id, walletAddress, contest_hash) => {
     let res = await axios.post('/creator_contests/user_voting_metrics', { ens: ens, contest_hash: contest_hash, sub_id: sub_id, walletAddress: walletAddress });
     return res.data
 
 }
-
-
 
 export default function useVotingEngine(sub_id) {
     const [remaining_vp, set_remaining_vp] = useState(0);
@@ -33,7 +31,7 @@ export default function useVotingEngine(sub_id) {
     useEffect(() => {
         if (isConnected) {
 
-            calculateVotingPower(ens, sub_id, walletAddress, contest_hash).then(result => {
+            calculateSubmissionVotingPower(ens, sub_id, walletAddress, contest_hash).then(result => {
                 console.log(result)
                 if (!result.is_self_voting_error) {
                     set_is_self_voting_error(false);

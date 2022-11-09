@@ -10,7 +10,7 @@ const { clean, asArray, shuffleArray } = require('../helpers/common')
 const { createContest, isNick } = require('../middlewares/creator-contests/create-contest-middleware');
 const { check_submitter_eligibility_unprotected, check_submitter_eligibility_PROTECTED, createSubmission } = require('../middlewares/creator-contests/submit-middleware');
 const { imageUpload, twitterMediaUpload } = require('../middlewares/image-upload-middleware.js');
-const { calc_sub_vp__unprotected, calc_sub_vp__PROTECTED } = require('../middlewares/creator-contests/vote-middleware.js');
+const { calc_sub_vp__unprotected, calc_sub_vp__PROTECTED, calc_total_vp_UNPROTECTED } = require('../middlewares/creator-contests/vote-middleware.js');
 const logger = require('../logger').child({ component: 'creator-contests' })
 const { sendSocketMessage } = require('../sys/socket/socket-io');
 const { get_winners_as_csv, verifyContestOver } = require('../middlewares/creator-contests/fetch-winners-middleware.js');
@@ -139,6 +139,16 @@ contests.post('/user_voting_metrics', calc_sub_vp__unprotected, async function (
         },
         restrictions_with_results: req.restrictions_with_results,
         is_self_voting_error: req.is_self_voting_error
+    }
+    res.send(result).status(200)
+})
+
+contests.post('/user_total_voting_metrics', calc_total_vp_UNPROTECTED, async function (req, res, next) {
+    let result = {
+        metrics: {
+            contest_total_vp: req.contest_total_vp,
+            contest_remaining_vp: req.contest_remaining_vp,
+        }
     }
     res.send(result).status(200)
 })

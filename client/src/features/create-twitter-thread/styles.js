@@ -174,7 +174,7 @@ export const LinkedAccount = styled.div`
 `
 
 export const ThreadBar = styled.div`
-    background-color: white;
+    background-color: #a3a3a3;
     width: 3px;
     height: 60em;
     visibility: ${props => props.visible ? 'visible' : 'hidden'};

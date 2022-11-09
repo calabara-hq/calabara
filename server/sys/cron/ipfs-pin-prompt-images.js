@@ -53,7 +53,7 @@ const mainLoop = async () => {
 
 
 const pin_prompt_assets = () => {
-    cron.schedule(EVERY_10_SECONDS, () => {
+    cron.schedule(EVERY_30_SECONDS, () => {
         console.log('pinning prompt images')
         mainLoop();
     })

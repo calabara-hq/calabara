@@ -297,7 +297,7 @@ const main_loop = async () => {
 
 
 const register_tweets = () => {
-    cron.schedule(EVERY_10_SECONDS, () => {
+    cron.schedule(EVERY_30_SECONDS, () => {
         console.log('attempting to register tweets')
         main_loop();
     })

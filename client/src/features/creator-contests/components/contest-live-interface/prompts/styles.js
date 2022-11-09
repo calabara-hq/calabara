@@ -22,7 +22,6 @@ const highlight = (props) => keyframes`
 
 export const DefaultContainerWrap = styled.div`
     display: flex;
-    flex: 1 0 70%;
     flex-direction: column;
     background-color: #1e1e1e;
     border-radius: 10px;

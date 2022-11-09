@@ -19,6 +19,9 @@ import {
 } from './styles';
 import { LinkTwitterButton } from "../../../../../../twitter-link-account/styles";
 import { fade_in } from "../../../../common/common_styles";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faExclamation, faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
+import { faTwitter } from "@fortawesome/free-brands-svg-icons";
 
 
 export default function TwitterSubmissionBuilder({ handleExitSubmission, isUserEligible, handleCloseDrawer }) {
@@ -42,6 +45,7 @@ export default function TwitterSubmissionBuilder({ handleExitSubmission, isUserE
                     </CheckpointBottom>
                 </CheckpointWrap>
                 <ContentWrap>
+                    <TwitterDescription builderData={builderData} />
                     <ActionsController
                         builderData={builderData}
                         setBuilderData={setBuilderData}
@@ -58,6 +62,41 @@ export default function TwitterSubmissionBuilder({ handleExitSubmission, isUserE
             </TwitterSubmissionContainer>
         </CreateSubmissionContainer>
     )
+}
+
+const DescriptionBox = styled.div`
+    background-color: #2a2a2a;
+    border-radius: 10px;
+    border: 3px solid #141416;
+    color: #d3d3d3;
+    padding: 10px;
+    position: relative;
+    font-size: 16px;
+    > span{
+        position: absolute;
+        right: 10px;
+        top: 10px;
+    }
+    > li {
+        margin-left: 20px;
+        margin-bottom: 10px;
+    }
+
+`
+
+function TwitterDescription(props) {
+    if (props.builderData.stage === 0) {
+        return (
+            <DescriptionBox style={{ width: '80%', margin: '0 auto' }}>
+                <span><FontAwesomeIcon icon={faExclamationCircle} style={{ color: '#6673ff', fontSize: '20px' }} /></span>
+                <p> This is a twitter contest </p>
+                <p>To submit, you must link your twitter and quote tweet the announcement tweet with your submission</p>
+                <p>Pick a submission method to continue</p>
+                <li><i style={{fontWeight: 'bold'}}>Tweet for me ~</i> link my twitter and tweet my submission for me</li>
+                <li><i style={{fontWeight: 'bold'}}>Generate link ~</i> link my twitter and I'll tweet it myself</li>
+            </DescriptionBox>
+        )
+    }
 }
 
 
@@ -141,8 +180,8 @@ function AuthChoice(props) {
 
     return (
         <AuthChoiceWrap>
-            <AuthChoiceButton onClick={() => handleChoice('privileged')}>tweet for me</AuthChoiceButton>
-            <AuthChoiceButton onClick={() => handleChoice('standard')}>gen link</AuthChoiceButton>
+            <AuthChoiceButton onClick={() => handleChoice('privileged')}>Tweet for me</AuthChoiceButton>
+            <AuthChoiceButton onClick={() => handleChoice('standard')}>Generate a link</AuthChoiceButton>
         </AuthChoiceWrap>
     )
 }
