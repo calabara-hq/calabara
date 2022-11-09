@@ -45,7 +45,7 @@ const ModalHeading = styled.p`
 
 
 
-export default function AddPolicyModal({ modalOpen, handleClose, selectedStrategy, rewardOptions, availableRules, votingStrategy, setVotingStrategy }) {
+export default function AddPolicyModal({ modalOpen, handleClose, selectedStrategy, availableRules, votingStrategy, setVotingStrategy }) {
 
 
     return (
@@ -58,7 +58,7 @@ export default function AddPolicyModal({ modalOpen, handleClose, selectedStrateg
                     <ModalWrapper>
                         <div>
                             <ModalHeading>{selectedStrategy === 0x1 ? 'Token' : 'Arcade'} Voting Strategy</ModalHeading>
-                            {selectedStrategy === 0x1 && <TokenStrategy rewardOptions={rewardOptions} availableRules={availableRules} votingStrategy={votingStrategy} setVotingStrategy={setVotingStrategy} handleClose={handleClose} />}
+                            {selectedStrategy === 0x1 && <TokenStrategy availableRules={availableRules} votingStrategy={votingStrategy} setVotingStrategy={setVotingStrategy} handleClose={handleClose} />}
                             {selectedStrategy === 0x2 && <ArcadeStrategy votingStrategy={votingStrategy} setVotingStrategy={setVotingStrategy} handleClose={handleClose} />}
                         </div>
                     </ModalWrapper>
@@ -154,7 +154,7 @@ const ReplaceStrategy = styled.button`
 
 
 
-function TokenStrategy({ rewardOptions, availableRules, votingStrategy, setVotingStrategy, handleClose }) {
+function TokenStrategy({ availableRules, votingStrategy, setVotingStrategy, handleClose }) {
     const [quickAddOptions, setQuickAddOptions] = useState(null);
     const [quickAddSelection, setQuickAddSelection] = useState(-1);
     const [triggerNewTokenInputType, setTriggerNewTokenInputType] = useState(null);
@@ -189,7 +189,7 @@ function TokenStrategy({ rewardOptions, availableRules, votingStrategy, setVotin
                 additional_configs: additional_configs
             }
         }
-
+        console.log('OBJ', obj)
         setVotingStrategy({ type: 'update_all', payload: obj });
         handleClose();
     }

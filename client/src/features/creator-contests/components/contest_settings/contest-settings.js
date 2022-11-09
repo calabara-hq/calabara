@@ -358,13 +358,14 @@ function SaveSettings(props) {
         }
 
         if (votingStrategy.strategy_type === 'token') {
-            let { type, symbol, address, decimal } = votingStrategy.data.token_data
+            let { type, symbol, address, decimal, token_id } = votingStrategy.data.token_data
             strategy = {
                 strategy_type: votingStrategy.strategy_type,
                 type: type,
                 symbol: symbol,
                 address: address,
                 decimal: decimal,
+                ...token_id && { token_id: token_id },
                 hard_cap: votingStrategy.data.additional_configs.hardcap_limit,
                 sub_cap: votingStrategy.data.additional_configs.max_per_sub_limit
             }
@@ -421,6 +422,7 @@ function Summary({ contestData, promptData, twitterData, warnings, handleCloseDr
     const isWalletConnected = useSelector(selectIsConnected)
     const [isSaving, setIsSaving] = useState(false);
 
+    console.log(contestData)
 
     const sendAnnouncementTweet = async () => {
         return await authenticated_post('/twitter/send_announcement_tweet', { ens: ens, tweet: twitterData.tweets })

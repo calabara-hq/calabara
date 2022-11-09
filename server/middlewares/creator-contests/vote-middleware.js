@@ -159,7 +159,6 @@ async function calc_total_vp_UNPROTECTED(req, res, next) {
         getTotalVotingPower(contest_meta.strategy, walletAddress, contest_meta.snapshot_block)
     ])
 
-    console.log('total vp', total_contest_vp)
 
     req.contest_total_vp = total_contest_vp;
     req.contest_remaining_vp = total_contest_vp - total_contest_spent;
@@ -191,7 +190,6 @@ const getTotalVotingPower = async (strategy, walletAddress, snapshot_block) => {
         return strategy.hard_cap
     }
     else if (strategy.strategy_type === 'token') {
-        console.log('strategy', strategy)
         let user_tokens = await checkWalletTokenBalance(walletAddress, strategy.address, strategy.decimal, snapshot_block, strategy.token_id)
         return strategy.hard_cap ? Math.min(user_tokens, strategy.hard_cap) : user_tokens
     }
