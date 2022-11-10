@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, Suspense } from 'react'
 import styled from "styled-components";
 import { useParams } from "react-router-dom";
-import ContestInfo from "../contest_info/contest-info2";
+import ContestInfo from "../contest_info/contest-info";
 import PromptDisplay from '../prompts/prompt-display';
 import { useSelector } from "react-redux";
 import { ContestDurationCheckpointBar, ContestSubmissionCheckpointFallback } from "../../../../checkpoint-bar/checkpoint-bar";
@@ -13,7 +13,7 @@ import BackButton from '../../../../back-button/back-button';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import SubmissionDisplay from '../submissions/submission-display/submission-display';
 import { selectDurations, selectProgressRatio } from './contest-interface-reducer';
-import Qualifications from '../qualifications/qualifications';
+import ContestStateInfo from '../contest-state-info/state-info-display';
 
 const ContestInterfaceWrap = styled.div`
     display: flex;
@@ -128,7 +128,7 @@ export default function ContestInterface() {
                     </InterfaceTopLeft>
                     <InterfaceTopRight>
                         <ContestInfo />
-                        <Qualifications />
+                        <ContestStateInfo />
                     </InterfaceTopRight>
                 </InterfaceTopSplit>
                 <SubmissionDisplay />

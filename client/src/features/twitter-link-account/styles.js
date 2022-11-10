@@ -24,3 +24,10 @@ export const RetryWrap = styled.div`
     justify-content: center;
     align-items: center;
 `
+
+export const MinimalLinkTwitterButton = styled.button`
+    background-color: rgba(29, 155, 240, 0.8);
+    border: none;
+    border-radius: 4px;
+    padding: 3px 5px;
+`

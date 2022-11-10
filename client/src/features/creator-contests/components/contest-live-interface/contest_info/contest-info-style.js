@@ -1,169 +1,65 @@
 import styled from 'styled-components'
 import { fade_in } from '../../common/common_styles'
 
-const InterfaceHeading = styled.div`
+
+
+export const DetailElement = styled.div`
     display: flex;
     flex-direction: column;
-    flex-wrap: wrap;
-    align-content: center;
-    color: #d3d3d3;
-    margin-bottom: 70px;
-    //margin-top: 50px;
-`
-
-
-
-const OrgImg = styled.img`
-    max-width: 10em;
-    border: none;
-    border-radius: 100px;
-`
-
-const ContestDetailWrapper = styled.div`
-    color: #bfbfbf;
-    width: 100%;
-    animation: ${fade_in} 0.2s ease-in-out;
-
-`
-const ContestDetails = styled.div`
-    display: flex;
-    flex-wrap: wrap;
-    margin: -10px;
-
-
-    > div:nth-child(2){
-        &:hover{
-            cursor: pointer;
-            background-color: #262626;
-        }
-    }
-
-    @media screen and (max-width: 700px){
-        flex-direction: column;
-    }
-
-`
-
-const DetailBox = styled.div`
-    flex: 1 0 31%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
     background-color: #1e1e1e;
     border-radius: 10px;
-    margin: 10px;
-
+    padding: 10px;
+    position: relative;
+    > span{
+        position: absolute;
+        top: 10px;
+        right: 20px;
+        font-size: 20px;
+        cursor: pointer;
+        color: #6673ff;
+    }
+    @media screen and (max-width: 800px){
+        width: 50%;
+    }
+    @media screen and (max-width: 600px){
+        width: 100%;
+    }
 
 `
-const DetailItem = styled.div`
+export const DetailGrid = styled.div`
     display: flex;
-    align-items: center;
-    > p {
+    flex-direction: column;
+    padding: 5px 10px;
+    gap: 15px;
+    > * p {
         margin: 0;
     }
-
-    > button {
-        cursor: pointer;
-        border: none;
-        color: rgb(191, 191, 191, .5);
-        background-color: transparent;
-        font-size: 1.5em;
-        padding: 0px 0px;
-        font: none;
-
-        &:hover{
-            color: rgb(191, 191, 191);
-        }
-    }
-
 `
 
-const DetailRow = styled.div`
+export const GridElement = styled.div`
     display: flex;
-    align-items: center;
-    margin: 10px;
-
-    ${DetailItem}:first-child{
-        font-weight: bold;
-    }
-    ${DetailItem}:nth-child(2){
-        margin-left: auto;
-        text-align: right;
-    }
-
-
-`
-
-
-const SubRewardDetails = styled.div` 
-        visibility: hidden;
-        position: absolute;
-        display: grid;
-        grid-template-columns: 3fr auto;
-        align-content: center;
-        justify-items: center;
-        height: 100px;
-        transform: translate(360px, -80px);
-        background-color: #4d4d4d;
-        border-radius: 10px;
-        padding: 10px;
-        column-gap: 50px;
-
-`
-
-const VoteRewardDetails = styled.div` 
-        visibility: hidden;
-        position: absolute;
+    > div:first-child{
+        width: 50%;
         display: flex;
-        flex-direction: row;
         align-items: center;
-        height: 100px;
-        transform: translate(100%, 100%);
-        background-color: #4d4d4d;
-        border-radius: 10px;
-        padding: 10px;
+        font-weight: 500;
+        color: #a3a3a3;
+    }
+    > div:nth-child(2){
+        width: 50%;
+        display: flex;
+        color: #c3c3c3;
+        font-weight: 550;
 
+        > * {
+            margin-left: auto;
+        }
 
+    }
 `
 
 
-const DetailRowHover = styled.div`
-    position: relative;
-    display: grid;
-    grid-template-columns: 5fr auto;
-    //width: 100%;
-    //justify-items: center;
-    justify-content: center;
-    justify-items: start;
-    //font-weight: bold;
-    text-align: left;
-    align-items: center;
-    //margin-left: 10px;
-  
-
-    &:hover{
-
-        border-radius: 10px;
-
-    }
-
-    &:hover ${SubRewardDetails}{
-        visibility: visible;
-
-    }
-    p {
-        //margin: auto;
-        padding: 5px 0;
-        font-weight: bold;
-        
-
-    }
-
-`
-
-
-
-const CheckpointWrap = styled.div`
+export const CheckpointWrap = styled.div`
     margin-top: 70px;
     display: flex;
     flex-direction: column;
@@ -171,7 +67,7 @@ const CheckpointWrap = styled.div`
 
 `
 
-const CheckpointTop = styled.div`
+export const CheckpointTop = styled.div`
     margin: 0 auto;
     background-color: pink;
     height: fit-content;
@@ -214,14 +110,14 @@ const CheckpointTop = styled.div`
     }
 `
 
-const CheckpointBottomTag = styled.p`
+export const CheckpointBottomTag = styled.p`
     color: ${props => props.status === 'active' ? '#539bf5' : (props.status === 'complete' ? 'grey' : '')};
     animation: ${fade_in} 0.2s ease-in;
 
 
 `
 
-const CheckpointBottom = styled.div`
+export const CheckpointBottom = styled.div`
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     width: 100%;
@@ -246,11 +142,10 @@ const CheckpointBottom = styled.div`
 `
 
 
-const label_status = [
-    { status: 'submitting', text: 'rgb(138, 128, 234)', background: 'rgba(138, 128, 234, 0.3)' },
+export const label_status = [
+    { status: 'accepting submissions', text: 'rgb(138, 128, 234)', background: 'rgba(138, 128, 234, 0.3)' },
     { status: 'voting', text: 'rgb(211, 151, 39)', background: 'rgba(211, 151, 39, 0.3)' },
     { status: 'end', text: 'rgb(178, 31, 71)', background: 'rgba(178, 31, 71, 0.3)' }
 
 ]
 
-export { InterfaceHeading, OrgImg, ContestDetails, ContestDetailWrapper, DetailBox, DetailItem, DetailRow, DetailRowHover, SubRewardDetails, CheckpointWrap, CheckpointTop, CheckpointBottomTag, CheckpointBottom, label_status }

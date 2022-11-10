@@ -16,8 +16,6 @@ export default function useSubmissionEngine(submitter_restrictions) {
     const [restrictionResults, setRestrictionResults] = useState(submitter_restrictions)
     const [isUserEligible, setIsUserEligible] = useState(false);
     const [submissionStatus, setSubmissionStatus] = useState('pending');
-    //const contest_settings = use
-
 
 
     useEffect(() => {

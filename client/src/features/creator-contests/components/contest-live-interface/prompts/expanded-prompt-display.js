@@ -1,23 +1,14 @@
-import { ParseBlocks } from "../block-parser";
-import { Label } from "../../common/common_styles";
-import { labelColorOptions } from "../../common/common_styles";
-import useSubmissionEngine from "../../../../hooks/useSubmissionEngine";
-import { useWalletContext } from "../../../../../app/WalletContext";
-import { selectContestSettings, selectPromptData } from "../interface/contest-interface-reducer";
-import SubmissionBuilderInterfaceController from "../submissions/submission-builder/submission-builder-interface-ctr";
 import { useSelector } from "react-redux";
+import { useWalletContext } from "../../../../../app/WalletContext";
+import useSubmissionEngine from "../../../../hooks/useSubmissionEngine";
+import { Label, labelColorOptions } from "../../common/common_styles";
+import { ParseBlocks } from "../block-parser";
+import SubmissionQualifications from "../contest-state-info/submission-qualifications";
+import { selectContestSettings, selectContestState, selectPromptData } from "../interface/contest-interface-reducer";
+import SubmissionBuilderInterfaceController from "../submissions/submission-builder/submission-builder-interface-ctr";
 import {
-    PromptWrap,
-    PromptTop,
-    PromptContent,
-    PromptCoverImage,
-    SubmissionRequirements,
-    RestrictionStatus,
-    RestrictionStatusNotConnected,
-    SubButton,
-    ConnectWalletButton,
-    AltSubmissionButton,
-    FadeDiv
+    FadeDiv, PromptContent,
+    PromptCoverImage, PromptTop, PromptWrap, QualificationsWrap
 } from "./styles";
 
 
@@ -27,6 +18,7 @@ export default function ExpandedPrompt({ isCreating, setIsCreating, handleClose 
     const prompt_data = useSelector(selectPromptData)
     const contest_settings = useSelector(selectContestSettings)
     const { isWalletConnected, alreadySubmittedError, restrictionResults, isUserEligible } = useSubmissionEngine(contest_settings.submitter_restrictions);
+    const contest_state = useSelector(selectContestState)
 
     const handleCreateSubmission = () => {
         setIsCreating(true);
@@ -36,37 +28,12 @@ export default function ExpandedPrompt({ isCreating, setIsCreating, handleClose 
         setIsCreating(false);
     }
 
-    console.log(restrictionResults)
-
     if (!isCreating) {
         return (
             <>
-                <SubmissionRequirements>
-
-                    <h2 style={{ marginBottom: '30px', marginTop: '20px' }}>Submission Requirements</h2>
-                    <p >Limit 1 submission <RestrictionStatus isConnected={isWalletConnected} status={!alreadySubmittedError} key={`${isWalletConnected}-already-submitted`} /></p>
-                    {Object.values(restrictionResults).map((restriction, index) => {
-                        if (restriction.type === 'erc20' || restriction.type === 'erc721' || restriction.type === 'erc1155') {
-                            return (
-                                <>
-                                    <p>
-                                        {restriction.threshold} {restriction.symbol}
-                                        {isWalletConnected && <RestrictionStatus index={index + 1} isConnected={isWalletConnected} status={restriction.user_result} key={`${isWalletConnected}-${restriction.user_result}`} />}
-                                        {!isWalletConnected && <RestrictionStatusNotConnected />}
-                                    </p>
-                                    {index !== Object.entries(restrictionResults).length - 1 && <p>or</p>}
-                                </>
-                            )
-                        }
-                    })}
-
-
-                    <SubButton>
-                        {!isWalletConnected && <ConnectWalletButton onClick={walletConnect}>Connect Wallet</ConnectWalletButton>}
-                        <AltSubmissionButton disabled={!isUserEligible} onClick={handleCreateSubmission}>Create Submission</AltSubmissionButton>
-                    </SubButton>
-
-                </SubmissionRequirements>
+                <QualificationsWrap>
+                    {contest_state === 1 && <SubmissionQualifications submitOnClick={handleCreateSubmission} />}
+                </QualificationsWrap>
                 <PromptWrap>
                     <PromptTop>
                         <h3>{prompt_data.title}</h3>

@@ -20,7 +20,7 @@ const highlight = (props) => keyframes`
 `;
 
 
-export const QualificationsContainer = styled.div`
+export const Container = styled.div`
     background-color: #262626;
     border-radius: 10px;
     padding: 10px;
@@ -185,11 +185,16 @@ export const TwitterWrap = styled.div`
     position: relative;
     align-items: center;
 `
-
-export const SmallLinkTwitterButton = styled.button`
-    background-color: rgba(29, 155, 240, 0.8);
-    border: none;
-    border-radius: 4px;
-    padding: 3px 5px;
-
+export const WinnersButton = styled.button`
+    margin-left: auto;
+    font-size: 15px;
+    border: 2px solid #539bf5;
+    border-radius: 10px;
+    background-color: #1e1e1e;
+    color: #d3d3d3;
+    padding: 10px 15px;
+    ${scaleElement};
+    @media screen and (max-width: 408px){
+        margin-left: 0;
+    }
 `

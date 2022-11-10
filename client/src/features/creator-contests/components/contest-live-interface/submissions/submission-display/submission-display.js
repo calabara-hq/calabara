@@ -1,14 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import styled, { keyframes, css } from 'styled-components'
-import ExpandSubmissionDrawer from './expand-submission-drawer';
-import { useParams } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useEffect, useState } from 'react';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
+import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import styled, { css } from 'styled-components';
 import { socket } from '../../../../../../service/socket';
 import { selectContestState } from '../../interface/contest-interface-reducer';
-import DisplayWinners from '../../winners/contest-winners';
-import { ExpandedPromptComponent } from '../../prompts/prompt-display';
-import { VoteTotals, SubmissionMeta, Author, SubmissionBottomBlur } from './submission-display-styles';
+import ExpandSubmissionDrawer from './expand-submission-drawer';
+import { Author, SubmissionBottomBlur, SubmissionMeta, VoteTotals } from './submission-display-styles';
 
 
 const SubmissionWrap = styled.div`
@@ -155,7 +153,6 @@ export default function SubmissionDisplay({ }) {
         <div>
             <SubmissionHeading>
                 <h2 style={{ color: '#d3d3d3', marginBottom: '30px' }}>Submissions</h2>
-                <DisplayWinners />
             </SubmissionHeading >
             {subs.length > 0 &&
                 <SubmissionWrap>

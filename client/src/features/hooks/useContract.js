@@ -8,24 +8,40 @@ const provider = new ethers.providers.InfuraProvider('homestead', process.env.IN
 export default function useContract() {
 
 
-    // use this function for both erc721 and erc20. If decimal call fails but we have a symbol, use decimal of 0
-
-    async function tokenGetSymbolAndDecimal(contractAddress) {
+    async function tokenGetSymbolAndDecimal(contractAddress, tokenStandard) {
+        console.log('getting symbol and decimal')
         const tokenContract = new ethers.Contract(contractAddress, tokenAbi, provider)
-        const symbol = await tokenContract.functions.symbol();
-        let decimal = '0'
-        try {
-            decimal = await tokenContract.functions.decimals();
-            return [symbol[0], decimal[0]]
-        } catch (e) {
-            return [symbol[0], decimal[0]]
-        }
+        let symbol = await tokenContract.functions.symbol()
+            .then(data => data[0])
+            .catch(err => {
+                console.log(tokenStandard)
+                if (tokenStandard === 'erc1155') return ''
+            })
+
+
+        let decimal = await tokenContract.functions.decimals()
+            .then(data => data[0])
+            .catch(err => {
+                if (tokenStandard !== 'erc20') return '0'
+            })
+
+        console.log(symbol, decimal)
+        return [symbol, decimal]
+        /*
+    //let decimal = '0'
+    try {
+        decimal = await tokenContract.functions.decimals();
+        return [symbol[0], decimal[0]]
+    } catch (e) {
+        //console.log(e)
+        return [symbol[0], decimal[0]]
+    }
+    */
     }
 
     async function getTokenStandard(contractAddress) {
         try {
             const tokenContract = new ethers.Contract(contractAddress, ERC165ABI, provider)
-            //await tokenContract.functions.ownerOf(0);
             let result = await tokenContract.functions.supportsInterface(ERC721Interface)
             if (result[0]) return 'erc721'
             else {
@@ -38,8 +54,11 @@ export default function useContract() {
     async function isValidERC1155TokenId(contractAddress, token_id) {
         try {
             const tokenContract = new ethers.Contract(contractAddress, tokenAbi, provider)
-            await tokenContract.functions.uri(token_id)
-            return true
+            let uri = await tokenContract.functions.uri(token_id)
+                .then(data => data[0])
+            // check if uri looks like a uri -- some implementations will just return the token_id instead of erroring ):
+            if (uri.split(':/').length > 1) return true
+            return false
         } catch (err) {
             return false
         }
@@ -71,8 +90,8 @@ export default function useContract() {
 
 
     return {
-        tokenGetSymbolAndDecimal: async (contractAddress) => {
-            return await tokenGetSymbolAndDecimal(contractAddress)
+        tokenGetSymbolAndDecimal: async (contractAddress, tokenStandard) => {
+            return await tokenGetSymbolAndDecimal(contractAddress, tokenStandard)
         },
         checkWalletTokenBalance: async (walletAddress, contractAddress, decimal, token_id) => {
             return await checkWalletTokenBalance(walletAddress, contractAddress, decimal, token_id)

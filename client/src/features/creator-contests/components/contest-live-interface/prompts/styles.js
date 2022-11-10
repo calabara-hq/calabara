@@ -42,7 +42,7 @@ export const PromptContainer = styled.div`
     transition: visibility 0.2s, max-height 0.3s ease-in-out;
     color: #d3d3d3;
     overflow: hidden;
-
+    
     > p {
         font-size: 16px;
     }
@@ -53,7 +53,6 @@ export const PromptContainer = styled.div`
 
 `
 
-
 // prompt sidebar styling
 
 
@@ -63,6 +62,7 @@ export const PromptWrap = styled.div`
     border-radius: 10px;
     padding: 10px;
     padding-bottom: 100px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
 
     > p {
         font-size: 15px;
@@ -176,113 +176,11 @@ export const AltSubmissionButton = styled.button`
     }
 `
 
-export const CreateSubmissionButtonContainer = styled.div`
-    position: absolute;
-    bottom: 10px;
-    right: 25px;
-
-
-`
-export const SubmissionRequirements = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+export const QualificationsWrap = styled.div`
     background-color: #1e1e1e;
-    //box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
     border: 1px solid #4d4d4d;
     border-radius: 10px;
     padding: 5px;
     margin-top: 20px;
-
-    > h2 {
-        text-align: center;
-        font-size: 18px;
-        font-weight: 500;
-    }
-
-    > p {
-        font-size: 16px;
-    }
-`
-
-export const EligibilityCheck = styled.div`
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-    > p {
-        margin: 0;
-        margin-right: 20px;
-    }
-    > button {
-        border: double 2px transparent;
-        border-radius: 10px;
-        background-image: linear-gradient(#141416,#141416), linear-gradient(to right,#e00f8e,#2d66dc);
-        background-origin: border-box;
-        background-clip: padding-box,border-box;
-        box-shadow: 0 10px 30px rgb(0 0 0 / 30%), 0 15px 12px rgb(0 0 0 / 22%);
-        padding: 3px 5px;
-    }
-`
-
-
-export const RestrictionStatus = styled.span`
-    display: inline-block;
-    &::after{
-        font-family: 'Font Awesome 5 Free';
-        margin-left: 20px;
-        content: '${props => props.status ? "\f058" : "\f057"}';
-        color: ${props => props.status ? 'rgb(6, 214, 160)' : 'grey'};
-        font-weight: 900;
-    }
-
-    animation: ${highlight} 1s ease-in;
-    animation-delay: ${props => props.index * 0.3}s;
-
-`
-
-export const RestrictionStatusNotConnected = styled.span`
-    display: inline-block;
-    &::after{
-        font-family: 'Font Awesome 5 Free';
-        margin-left: 20px;
-        content:  "\f057";
-        color:  grey;
-        font-weight: 900;
-    }
-`
-
-export const SubButton = styled.div`
-    display:flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    //margin-left: auto;
-    margin-top: 2em;
-    margin-right: 10px;
-    margin-bottom: 10px;
-    margin-left: auto;
-    grid-gap: 10px;
-`
-
-export const ConnectWalletButton = styled.button`
-    height: 40px;
-    //width: 12em;
-    font-size: 15px;
-    //font-weight: 550;
-    color: #f2f2f2;
-    background-image: linear-gradient(#262626, #262626),linear-gradient(90deg,#e00f8e,#2d66dc);
-    background-origin: border-box;
-    background-clip: padding-box,border-box;
-    border: 2px double transparent;
-    border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
-    padding: 5px 20px;
-    cursor: pointer;
-    overflow: hidden;
-    &:hover{
-        background-color: #1e1e1e;
-        background-image: linear-gradient(#141416, #141416),
-        linear-gradient(to right, #e00f8e, #2d66dc);
-    }
-
 `

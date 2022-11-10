@@ -20,8 +20,9 @@ const ContractAddressInput = styled.input`
     
 `
 
-const TokenIdInput = styled.input`
-    width: 20%;
+const EditableInput = styled.input`
+    min-width: 20%;
+    width: fit-content;
     color: #d3d3d3;
     background-color: #121212;
     border: 2px solid rgb(83, 155, 245);
@@ -30,10 +31,13 @@ const TokenIdInput = styled.input`
     padding: 10px 15px;
 `
 
+
+
 const SymbolDecimalInput = styled.div`
     color: darkgrey;
     border: 2px solid #4d4d4d;
-    width: 20%;
+    min-width: 20%;
+    width: fit-content;
     height: 44px;
     border-radius: 10px;
     padding: 10px 15px;
@@ -95,6 +99,7 @@ export default function AddNewToken({ existingRewardData, type, showBackButton, 
     const [typeError, setTypeError] = useState(false);
     const [duplicateAddressError, setDuplicateAddressError] = useState(false);
     const [tokenIdError, setTokenIdError] = useState(false);
+    const [tokenSymbolError, setTokenSymbolError] = useState(false);
     const { tokenGetSymbolAndDecimal, getTokenStandard, isValidERC1155TokenId } = useContract();
 
     useEffect(() => {
@@ -129,7 +134,7 @@ export default function AddNewToken({ existingRewardData, type, showBackButton, 
         let tokenStandard = await getTokenStandard(address);
         if (tokenStandard !== type) return setTypeError(true);
         try {
-            let [symbol, decimal] = await tokenGetSymbolAndDecimal(address);
+            let [symbol, decimal] = await tokenGetSymbolAndDecimal(address, tokenStandard);
             setNewSymbol(symbol)
             setNewDecimal(decimal)
         } catch (e) {
@@ -153,12 +158,18 @@ export default function AddNewToken({ existingRewardData, type, showBackButton, 
         setNewTokenId(id)
     }
 
+    const handleTokenSymbolChange = (val) => {
+        setTokenSymbolError(false);
+        setNewSymbol(val)
+    }
+
     const handleConfirm = async () => {
         let token_data = { type: type, address: newContractAddress, symbol: newSymbol, decimal: newDecimal }
         if (type === 'erc1155') {
             //check for valid tokenid
             const isValidTokenId = await isValidERC1155TokenId(newContractAddress, newTokenId)
             if (!isValidTokenId) return setTokenIdError(true)
+            if (newSymbol === '') return setTokenSymbolError(true);
             token_data.token_id = newTokenId
         }
         console.log(checkDuplicates)
@@ -186,14 +197,14 @@ export default function AddNewToken({ existingRewardData, type, showBackButton, 
                 </Row>
                 <Row>
                     <p><b>Token ID</b></p>
-                    <TokenIdInput onWheel={(e) => e.target.blur()} placeholder="3" type={"numeric"} value={newTokenId} onChange={(e) => handleTokenIdChange(e.target.value)} />
+                    <EditableInput onWheel={(e) => e.target.blur()} placeholder="3" type={"number"} value={newTokenId} onChange={(e) => handleTokenIdChange(e.target.value)} />
                     {tokenIdError && <ErrorMessage style={{ maxWidth: '80%' }}><p>this doesn't look like a valid token id</p></ErrorMessage>}
                 </Row>
                 <Row>
                     <p><b>Symbol</b></p>
-                    <SymbolDecimalInput >
-                        <p>{newSymbol}</p>
-                    </SymbolDecimalInput>
+                    <EditableInput onWheel={(e) => e.target.blur()} maxLength={"15"} value={newSymbol} onChange={(e) => handleTokenSymbolChange(e.target.value)} />
+                    {tokenSymbolError && <ErrorMessage style={{ maxWidth: '80%' }}><p>please define a token symbol</p></ErrorMessage>}
+
                 </Row>
                 <Row style={{ marginBottom: '40px' }}>
                     <p><b>Decimal</b></p>

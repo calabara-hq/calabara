@@ -150,7 +150,7 @@ function ActionsController(props) {
                     onOpen={props.onOpen}
                     auth_error={props.auth_error}
                     auth_type={props.builderData.auth_type}
-                    setTwitterData={props.setBuilderData}
+                    clearErrors={() => props.setBuilderData({ type: 'update_single', payload: { error: null } })}
                 />
             </LinkTwitterWrap>
         )
