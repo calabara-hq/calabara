@@ -29,7 +29,6 @@ export default function useContestVotes() {
                 if (!result.is_self_voting_error) {
                     set_remaining_vp(result.metrics.contest_remaining_vp)
                     set_total_available_vp(result.metrics.contest_total_vp)
-                    //set_votes_spent(result.metrics.sub_votes_spent)
                 }
             })
         }

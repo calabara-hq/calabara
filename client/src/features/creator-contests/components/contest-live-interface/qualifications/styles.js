@@ -1,4 +1,5 @@
 import styled, { keyframes } from 'styled-components'
+import { scaleElement } from '../../../../../css/scale-element';
 import { fade_in } from '../../common/common_styles';
 
 const highlight = (props) => keyframes`
@@ -33,6 +34,15 @@ export const QualificationsContainer = styled.div`
 
 export const DataWrap = styled.div`
     padding: 5px 10px;
+    position: relative;
+    > span{
+        position: absolute;
+        top: 0;
+        right: 15px;
+        font-size: 20px;
+        cursor: pointer;
+        color: #6673ff;
+    }
 `
 
 export const DataGrid = styled.div`
@@ -40,7 +50,7 @@ export const DataGrid = styled.div`
     flex-direction: column;
     padding: 5px 10px;
     gap: 15px;
-    margin-top: 10px;
+    margin-top: 15px;
     > * p {
         margin: 0;
     }
@@ -68,6 +78,7 @@ export const GridElement = styled.div`
 
     }
 `
+
 export const RestrictionStatus = styled.span`
     display: inline-block;
     &::after{
@@ -75,13 +86,37 @@ export const RestrictionStatus = styled.span`
         margin-left: 20px;
         content: '${props => props.status ? "\f058" : "\f057"}';
         color: ${props => props.status ? 'rgb(6, 214, 160)' : 'grey'};
+
         font-weight: 900;
     }
 
-    animation: ${highlight} 1s ease-in;
-    animation-delay: ${props => props.index * 0.3}s;
+    animation: ${fade_in} 0.3s ease-in;
 
 `
+
+export const SubmissionStatus = styled.span`
+    display: inline-block;
+    margin-left: 10px;
+    &::after{
+        font-family: 'Font Awesome 5 Free';
+        font-weight: 900;
+        content: '${props => props.status === 'pass' ? "\f058" : (props.status === 'fail' ? "\f057" : "\f111")}';
+
+        ${props => props.status === 'pass' && ({
+        color: 'rgb(6, 214, 160)',
+    })}
+        ${props => props.status === 'loading' && ({
+        color: 'orange',
+    })}
+        ${props => props.status === 'fail' && ({
+        color: 'grey',
+    })}
+    }
+
+    animation: ${fade_in} 0.3s ease-in;
+
+`
+
 
 export const RestrictionStatusNotConnected = styled.span`
     display: inline-block;
@@ -142,4 +177,19 @@ export const AltSubmissionButton = styled.button`
     background-color: #262626;
 
     }
+`
+
+export const TwitterWrap = styled.div`
+    display: flex;
+    flex-direction: row;
+    position: relative;
+    align-items: center;
+`
+
+export const SmallLinkTwitterButton = styled.button`
+    background-color: rgba(29, 155, 240, 0.8);
+    border: none;
+    border-radius: 4px;
+    padding: 3px 5px;
+
 `

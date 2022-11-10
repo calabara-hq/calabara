@@ -34,12 +34,9 @@ const calculateDuration = (t0, t1, t2) => {
 
 const calculateProgressRatio = (cc_state, t0, t1, t2) => {
     if (cc_state === 0) {
-
-        //return (((moment().format('x') - moment(t0).format('x')) / ((moment(t1).format('x') - moment(t0).format('x'))) / 2) * 100)
         return (((moment().format('x') - moment(t0).format('x')) / (moment(t1).format('x') - moment(t0).format('x'))) / 2 * 100)
     }
     else if (cc_state === 1) {
-        //return barProgress + ((moment().format('x') - moment(t1).format('x')) / ((moment(t2).format('x') - moment(t1).format('x')))* 100)
         return (((moment().format('x') - moment(t1).format('x')) / (moment(t2).format('x') - moment(t1).format('x'))) / 2 * 100 + 50)
     }
     else return 100
@@ -55,7 +52,6 @@ export default function ContestInterfaceController() {
     const timerRef = useRef(null);
     const isLoading = useSelector(selectIsLoading);
     const history = useHistory();
-
 
     const updateContestState = (t0, t1, t2) => {
         let time_state = calculateDuration(t0, t1, t2);
@@ -96,7 +92,9 @@ export default function ContestInterfaceController() {
 
         socket.on('connect', () => {
             console.log('connected to socket')
-            socket.emit('subscribe', contest_hash)
+            // connect to submission channel
+            socket.emit('contest-subscribe', contest_hash)
+
         })
 
 
@@ -105,6 +103,7 @@ export default function ContestInterfaceController() {
             dispatch(stateReset())
             clearInterval(timerRef.current)
             disconnectSocket();
+            document.body.style.overflow = 'unset';
         }
     }, [])
 

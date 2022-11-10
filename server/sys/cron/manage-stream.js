@@ -31,7 +31,7 @@ const remove_stale_rules = async (twitter_contests, stream_rules) => {
         let found = twitter_contests.some(contest => contest.hash === rule.tag)
         if (!found) to_delete.push(rule.id)
     }
-    if (to_delete.length > 0) await delete_stream_rules(to_delete)
+    if (to_delete.length > 0) return await delete_stream_rules(to_delete)
     return
 }
 
@@ -42,12 +42,13 @@ const add_missing_rules = async (twitter_contests, stream_rules) => {
         const found = stream_rules.some(rule => rule.tag === contest.hash)
         if (!found) to_add.push({ value: `conversation_id:${contest.announcementID} is:quote`, tag: contest.hash })
     }
-    if (to_add.length > 0) await add_stream_rules(to_add)
+    if(to_add.length > 0) return await add_stream_rules(to_add)
 }
 
 const main = async () => {
     try {
         let stream_rules = await get_stream_rules();
+        console.log('STREAM RULES', stream_rules)
         let twitter_contests = await pull_active_twitter_contests();
         await remove_stale_rules(twitter_contests, stream_rules)
         await add_missing_rules(twitter_contests, stream_rules)

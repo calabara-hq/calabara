@@ -10,7 +10,7 @@ export const session = createSlice({
     initialState,
     reducers: {
         setUserSession: (state, data) => {
-            state.userSession = data.payload;
+        state.userSession = data.payload;
         },
         clearSession: () => initialState
     },

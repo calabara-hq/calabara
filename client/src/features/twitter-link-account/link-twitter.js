@@ -13,7 +13,6 @@ export default function LinkTwitter(props) {
     const handleClick = () => {
         props.setTwitterData({ type: 'update_single', payload: { error: null } })
         setLoading(true);
-        console.log(props.auth_type)
         props.onOpen(props.auth_type)
     }
 

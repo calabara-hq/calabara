@@ -15,7 +15,7 @@ const logger = require('../logger').child({ component: 'creator-contests' })
 const { sendSocketMessage } = require('../sys/socket/socket-io');
 const { get_winners_as_csv, verifyContestOver } = require('../middlewares/creator-contests/fetch-winners-middleware.js');
 const { fetchSubmissions } = require('../middlewares/creator-contests/fetch-submissions-middleware.js');
-const socketSendNewSubmission = require('../helpers/socket-messages.js');
+const { socketSendNewSubmission, socketSendUserSubmissionStatus } = require('../helpers/socket-messages.js');
 const { TwitterApi } = require('twitter-api-v2');
 const { createReadStream } = require('fs');
 const { uploadTwitterMedia } = require('../middlewares/twitter-upload-media.js');
@@ -92,6 +92,7 @@ contests.post('/create_submission', authenticateToken, check_submitter_eligibili
     res.sendStatus(200)
     //sendSocketMessage(req.contest_hash, 'new_submission', { id: result.id, _url: req.url })
     socketSendNewSubmission(req.contest_hash, ens, { id: result.id, _url: req.url, author: req.session.user.address, votes: 0 })
+    socketSendUserSubmissionStatus(req.session.user.address, req.contest_hash, 'submitted')
 
 })
 

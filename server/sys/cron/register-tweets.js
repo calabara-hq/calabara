@@ -9,7 +9,7 @@ const { clean, asArray, serializedLoop, parallelLoop } = require('../../helpers/
 const { get_thread, get_tweet } = require('../../twitter-client/helpers.js');
 const { checkWalletTokenBalance } = require('../../web3/web3.js');
 const fetch = require('node-fetch');
-const socketSendNewSubmission = require('../../helpers/socket-messages.js');
+const {socketSendNewSubmission, socketSendUserSubmissionStatus} = require('../../helpers/socket-messages.js');
 
 const serverBasePath = path.normalize(path.join(__dirname, '../../'))
 
@@ -240,6 +240,7 @@ const write_submission = async (submission, contest_data, address, tweet_id) => 
         .then(clean)
         .then(result => {
             socketSendNewSubmission(contest_data._hash, contest_data.ens, { id: result.id, _url: url, author: address, votes: 0 })
+            socketSendUserSubmissionStatus(address, contest_data._hash, 'submitted')
         })
         .catch(err => { })
 

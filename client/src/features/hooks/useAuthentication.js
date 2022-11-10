@@ -1,19 +1,26 @@
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useAccount, useDisconnect, useSignMessage } from 'wagmi';
+import { useAccount, useConnect, useDisconnect, useSignMessage } from 'wagmi';
 import { showNotification } from "../notifications/notifications";
 
 import { useDispatch, useSelector } from "react-redux";
 import { selectUserSession, selectWalletAddress } from "../../app/sessionReducer";
+import { destroyTwitter, setUserTwitter } from "../user/user-reducer";
 
 
 export default function useAuthentication() {
     const { openConnectModal } = useConnectModal()
     const connectedAddress = useSelector(selectWalletAddress)
     const session = useSelector(selectUserSession)
-    const { disconnect } = useDisconnect();
-    const { address } = useAccount()
+    const { disconnect } = useDisconnect({
+        onSuccess() {
+            dispatch(destroyTwitter())
+        }
+    });
+    const { address } = useAccount();
+    const dispatch = useDispatch()
+
 
     useEffect(() => {
         if (connectedAddress && (connectedAddress !== address)) {
@@ -24,7 +31,15 @@ export default function useAuthentication() {
 
     useEffect(() => {
         if (!session) return disconnect()
+        fetchUserTwitter()
     }, [session])
+
+    const fetchUserTwitter = async () => {
+        let twitter_data = await axios.get('/twitter/user_account')
+            .then(res => res.data)
+            .then(res => res ? res.twitter : null)
+        if (twitter_data) dispatch(setUserTwitter(twitter_data))
+    }
 
 
     const authenticated_post = async (endpoint, body) => {

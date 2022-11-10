@@ -49,7 +49,6 @@ export default function useContract() {
         try {
             let balance
             if (!token_id) {
-                console.log('in hea')
                 let tokenContract = new ethers.Contract(contractAddress, tokenAbi, provider);
                 balance = await tokenContract.functions.balanceOf(walletAddress);
             }

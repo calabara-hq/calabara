@@ -11,7 +11,7 @@ const init = () => {
     pin_prompt_assets();
     pull_tweets();
     register_tweets();
-    manage_stream();
+    //manage_stream();
 }
 
 module.exports = init;

@@ -1,17 +1,16 @@
-import React, { useContext, createContext, useMemo, useEffect, useState } from 'react';
+import { createAuthenticationAdapter, darkTheme, getDefaultWallets, RainbowKitAuthenticationProvider, RainbowKitProvider } from '@rainbow-me/rainbowkit';
 import '@rainbow-me/rainbowkit/styles.css';
-import { getDefaultWallets, RainbowKitProvider, darkTheme, createAuthenticationAdapter, RainbowKitAuthenticationProvider } from '@rainbow-me/rainbowkit';
-import { chain, configureChains, createClient, WagmiConfig, useAccount } from 'wagmi';
-import { infuraProvider } from 'wagmi/providers/infura'
+import axios from 'axios';
+import merge from 'lodash.merge';
+import React, { createContext, useContext } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { SiweMessage } from 'siwe';
+import { chain, configureChains, createClient, useAccount, WagmiConfig } from 'wagmi';
+import { infuraProvider } from 'wagmi/providers/infura';
 import { publicProvider } from 'wagmi/providers/public';
 import useWallet from '../features/hooks/useWallet.js';
-import { ethers } from "ethers";
-import { SiweMessage } from 'siwe'
-import axios from 'axios'
-import merge from 'lodash.merge'
-import { useDispatch, useSelector } from 'react-redux';
-import { clearSession, selectIsAuthenticated, setUserSession } from './sessionReducer.js';
 import { showNotification } from '../features/notifications/notifications.js';
+import { clearSession, selectIsAuthenticated, setUserSession } from './sessionReducer.js';
 
 const { chains, provider } = configureChains(
     [chain.mainnet],
@@ -61,8 +60,6 @@ export const WalletProvider = ({ children, initial_session }) => {
             connectors,
             provider,
         }), [])
-
-    console.log(wagmiClient)
 
     return (
         <WagmiConfig client={wagmiClient}>

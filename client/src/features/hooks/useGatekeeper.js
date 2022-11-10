@@ -17,7 +17,6 @@ export default function useGatekeeper() {
 
     async function queryGatekeeper(walletAddress, rules, ruleResults, discordId) {
         for (const [key, value] of Object.entries(ruleResults)) {
-            console.log(rules[key].token_id)
             if (rules[key].type === 'erc20' || rules[key].type === 'erc721' || rules[key].type === 'erc1155') {
                 const balance = await checkWalletTokenBalance(walletAddress, rules[key].address, rules[key].decimal, rules[key].token_id)
                 ruleResults[key] = parseFloat(balance)

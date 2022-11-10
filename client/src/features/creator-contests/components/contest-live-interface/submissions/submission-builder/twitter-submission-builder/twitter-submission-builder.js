@@ -92,8 +92,8 @@ function TwitterDescription(props) {
                 <p> This is a twitter contest </p>
                 <p>To submit, you must link your twitter and quote tweet the announcement tweet with your submission</p>
                 <p>Pick a submission method to continue</p>
-                <li><i style={{fontWeight: 'bold'}}>Tweet for me ~</i> link my twitter and tweet my submission for me</li>
-                <li><i style={{fontWeight: 'bold'}}>Generate link ~</i> link my twitter and I'll tweet it myself</li>
+                <li><i style={{ fontWeight: 'bold' }}>Tweet for me ~</i> link my twitter and tweet my submission for me</li>
+                <li><i style={{ fontWeight: 'bold' }}>Generate link ~</i> link my twitter and I'll tweet it myself</li>
             </DescriptionBox>
         )
     }
@@ -212,6 +212,7 @@ function TwitterRedirect(props) {
             .then(res => res.data)
             .catch(err => console.log(err))
         window.open(intent)
+        props.handleCloseDrawer();
     }
 
     return (

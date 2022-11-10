@@ -3,8 +3,8 @@ const { ETwitterStreamEvent, TweetStream, TwitterApi, ETwitterApiError } = requi
 const { handle_fetched_tweet } = require('./helpers');
 
 
-
 let stream = null
+
 
 const get_stream_rules = async () => {
     try {
@@ -32,10 +32,11 @@ const delete_stream_rules = async (ids) => {
 const add_stream_rules = async (arr) => {
     try {
         let rules = await get_stream_rules()
+        console.log('current stream rules', rules)
         if (rules.length === 5) return console.log('stream buffer is full')
-        console.log(arr);
+        console.log('attempting to add rules', arr)
         await bearerClient.v2.updateStreamRules({
-            add: rules
+            add: arr
         });
         if (!stream) return start_stream()
     } catch (err) {
@@ -53,6 +54,7 @@ const start_stream = async () => {
 
 
 const close_stream = () => {
+    console.log('CLOSING STREAM')
     try {
         stream.close()
         stream = null
@@ -93,6 +95,7 @@ const stream_listen = () => {
 
 get_stream_rules()
     .then(rules => {
+        console.log('initial stream rules!!', rules)
         if ((rules.length > 0) && (!stream)) start_stream()
     })
 

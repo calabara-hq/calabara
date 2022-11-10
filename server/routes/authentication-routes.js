@@ -41,7 +41,7 @@ authentication.post('/generate_session', async function (req, res, next) {
         // update the nonce
 
         const new_nonce = randomNonce(25);
-        await db.query('update users set nonce = $2 where address = $1', [fields.address, new_nonce]);
+        await db.query('update users set nonce = $2 where address = $1 returning twitter', [fields.address, new_nonce]);
 
         // generate a token
 
