@@ -64,7 +64,6 @@ export default function ContestInterfaceController() {
 
         if (cc_state === 2) return clearInterval(timerRef.current);
     }
-    console.log('re rendering')
 
     useEffect(() => {
         let ignore = false;

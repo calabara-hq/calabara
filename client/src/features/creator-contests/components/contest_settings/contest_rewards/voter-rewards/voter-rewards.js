@@ -73,15 +73,12 @@ export default function VoterRewardsBlock({ theme }) {
 
 
 function VotingRewardsRow({ selectedRewards, possible_ranks, possible_rewards, index, theme, handleToggle }) {
-    console.log(selectedRewards)
     const [rank, setRank] = useState(0);
     const [reward_type, setRewardType] = useState(possible_rewards[0].value)
     const [reward, setReward] = useState(0)
     const dispatch = useDispatch();
     const numVoterRewards = useSelector(voterRewardState.getNumVoterWinners)
     const errorMatrix = useSelector(voterRewardState.getVoterErrors)
-
-    console.log(errorMatrix)
 
     useEffect(() => {
         dispatch(voterRewardActions.updateVoterRewards(

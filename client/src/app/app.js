@@ -7,7 +7,6 @@ import { useDispatch } from 'react-redux';
 import { clearSession, setUserSession } from './sessionReducer.js';
 
 const fetchSession = () => {
-  console.log('re fetching session')
   const promise = fetch('/authentication/isAuthenticated', { credentials: 'include' })
     .then(res => res.json())
     .then(res => res.authenticated ? res.user : false)

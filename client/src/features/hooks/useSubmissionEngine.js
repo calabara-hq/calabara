@@ -30,7 +30,6 @@ export default function useSubmissionEngine(submitter_restrictions) {
                 eligibility.is_pending ? setSubmissionStatus('registering') : (
                     eligibility.has_already_submitted ? setSubmissionStatus('submitted') : setSubmissionStatus('not submitted')
                 )
-                console.log(eligibility.restrictions)
                 setRestrictionResults(eligibility.restrictions);
 
                 // error if not in submit window

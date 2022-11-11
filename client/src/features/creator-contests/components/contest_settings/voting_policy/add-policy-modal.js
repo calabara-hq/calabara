@@ -169,13 +169,11 @@ function TokenStrategy({ availableRules, votingStrategy, setVotingStrategy, hand
         // first, strip discord rules
         if (el.type !== 'discord') {
             options[index] = el
-            console.log(options)
 
         }
     })
 
     const handleSaveNewToken = (data) => {
-        console.log(data)
         setTokenData(data);
         setProgress(2);
     }
@@ -189,7 +187,6 @@ function TokenStrategy({ availableRules, votingStrategy, setVotingStrategy, hand
                 additional_configs: additional_configs
             }
         }
-        console.log('OBJ', obj)
         setVotingStrategy({ type: 'update_all', payload: obj });
         handleClose();
     }

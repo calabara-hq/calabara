@@ -24,7 +24,6 @@ export const useTwitterAuth = () => {
     }
 
     const pollAuthState = () => {
-        console.log('polling')
         return fetch('/twitter/poll_auth_status', { credentials: 'include' })
             .then(data => data.json())
             .then(data => {

@@ -138,7 +138,6 @@ export default function SubmissionDisplay({ }) {
         console.log('socket update!!!')
 
         const submissionListener = (submission) => {
-            console.log(submission)
             set_subs((prev_subs) => {
                 const new_subs = [...prev_subs]
                 new_subs.push(submission);

@@ -422,8 +422,6 @@ function Summary({ contestData, promptData, twitterData, warnings, handleCloseDr
     const isWalletConnected = useSelector(selectIsConnected)
     const [isSaving, setIsSaving] = useState(false);
 
-    console.log(contestData)
-
     const sendAnnouncementTweet = async () => {
         return await authenticated_post('/twitter/send_announcement_tweet', { ens: ens, tweet: twitterData.tweets })
             .then(result => result ? result.data : console.log(result))

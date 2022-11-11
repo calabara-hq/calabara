@@ -143,7 +143,7 @@ export const CheckpointBottom = styled.div`
 
 
 export const label_status = [
-    { status: 'accepting submissions', text: 'rgb(138, 128, 234)', background: 'rgba(138, 128, 234, 0.3)' },
+    { status: 'submitting', text: 'rgb(138, 128, 234)', background: 'rgba(138, 128, 234, 0.3)' },
     { status: 'voting', text: 'rgb(211, 151, 39)', background: 'rgba(211, 151, 39, 0.3)' },
     { status: 'end', text: 'rgb(178, 31, 71)', background: 'rgba(178, 31, 71, 0.3)' }
 

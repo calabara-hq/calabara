@@ -45,8 +45,6 @@ export default function VotingPolicy({ votingStrategy, setVotingStrategy, voting
     let availableRules = useSelector(selectDashboardRules)
 
 
-    console.log(availableRules)
-
     const handlePolicyModalOpen = (strategy_name) => {
         setSelectedStratgey(strategy_name)
         setAddPolicyModalOpen(true);

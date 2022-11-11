@@ -201,7 +201,6 @@ function Option({ element, option_id, updateAvailableRestrictions, error, toggle
     }
 
     else if (element.type === 'erc1155') {
-        console.log(element)
         return (
             <GkRule error={error} >
                 <TokenType><b>Type:</b> <TagType type={element.type}>{element.type}</TagType></TokenType>

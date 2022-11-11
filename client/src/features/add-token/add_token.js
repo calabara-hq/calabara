@@ -172,7 +172,6 @@ export default function AddNewToken({ existingRewardData, type, showBackButton, 
             if (newSymbol === '') return setTokenSymbolError(true);
             token_data.token_id = newTokenId
         }
-        console.log(checkDuplicates)
         if (checkDuplicates) {
             let isDuplicate = checkForDuplicates();
             if (isDuplicate) return setDuplicateAddressError(true)

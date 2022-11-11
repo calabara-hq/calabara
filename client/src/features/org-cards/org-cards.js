@@ -42,7 +42,6 @@ export default function Cards() {
   const [organizations, setOrganizations] = useState(resource.read())
 
   useEffect(() => {
-    console.log('running this')
 
     // check for new orgs + check session
     fetch('/organizations/organizations')

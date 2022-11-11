@@ -82,7 +82,6 @@ function CreateTweet(props) {
 
 
     const handleMediaUpload = (e) => {
-        console.log('handling media upload!!!')
         if (e.target.files.length === 0) return
         const img = {
             preview: URL.createObjectURL(e.target.files[0]),
@@ -101,7 +100,6 @@ function CreateTweet(props) {
             url: '/creator_contests/twitter_contest_upload_img',
             data: formData
         }).then((response) => {
-            console.log(response.data.file)
             props.setTwitterData({ type: 'update_tweet_media_phase_2', payload: { index: props.tweet_id, value: response.data.file } })
         })
 

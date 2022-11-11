@@ -83,7 +83,6 @@ const AuthenticationProvider = ({ children }) => {
         createAuthenticationAdapter({
 
             getNonce: async () => {
-                console.log('ADDRESS IS', address)
                 const nonce_from_server = await axios.post('/authentication/generate_nonce', { address: address })
                 return nonce_from_server.data.nonce
             },

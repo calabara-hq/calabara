@@ -9,12 +9,10 @@ export default function useContract() {
 
 
     async function tokenGetSymbolAndDecimal(contractAddress, tokenStandard) {
-        console.log('getting symbol and decimal')
         const tokenContract = new ethers.Contract(contractAddress, tokenAbi, provider)
         let symbol = await tokenContract.functions.symbol()
             .then(data => data[0])
             .catch(err => {
-                console.log(tokenStandard)
                 if (tokenStandard === 'erc1155') return ''
             })
 
@@ -25,7 +23,6 @@ export default function useContract() {
                 if (tokenStandard !== 'erc20') return '0'
             })
 
-        console.log(symbol, decimal)
         return [symbol, decimal]
     }
 
@@ -62,7 +59,6 @@ export default function useContract() {
                 balance = await tokenContract.functions.balanceOf(walletAddress);
             }
             else {
-                console.log(contractAddress)
                 let tokenContract = new ethers.Contract(contractAddress, ERC1155_abi, provider);
                 balance = await tokenContract.functions.balanceOf(walletAddress, token_id);
 
@@ -70,7 +66,6 @@ export default function useContract() {
             const adjusted = balance / 10 ** decimal;
             return adjusted
         } catch (err) {
-            console.log(err)
             return 0
         }
 
