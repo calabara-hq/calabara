@@ -1,14 +1,20 @@
+import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import axios from 'axios';
 import { useEffect, useReducer, useState } from "react";
+import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import styled from 'styled-components';
 import { TwitterSubmissionCheckpointBar } from "../../../../../../checkpoint-bar/checkpoint-bar";
 import CreateThread from "../../../../../../create-twitter-thread/create-thread";
 import useTweet from "../../../../../../hooks/useTweet";
 import useTwitterAuth from "../../../../../../hooks/useTwitterAuth";
 import TwitterThreadReducer, { twitter_initial_state } from "../../../../../../reducers/twitter-thread-reducer";
 import LinkTwitter from "../../../../../../twitter-link-account/link-twitter";
+import { LinkTwitterButton } from "../../../../../../twitter-link-account/styles";
+import { selectIsTwitterLinked } from "../../../../../../user/user-reducer";
+import { fade_in } from "../../../../common/common_styles";
 import Placeholder from '../../../../common/spinner';
-import axios from 'axios'
-import styled from 'styled-components'
 import {
     CreateSubmissionContainer,
     SavingSubmissionDiv,
@@ -17,16 +23,9 @@ import {
 import {
     AuthChoiceButton, AuthChoiceWrap, CheckpointBottom, CheckpointWrap, ContentWrap, LinkTwitterWrap, TwitterSubmissionContainer
 } from './styles';
-import { LinkTwitterButton } from "../../../../../../twitter-link-account/styles";
-import { fade_in } from "../../../../common/common_styles";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamation, faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
-import { faTwitter } from "@fortawesome/free-brands-svg-icons";
-import { useSelector } from "react-redux";
-import { selectIsTwitterLinked } from "../../../../../../user/user-reducer";
 
 
-export default function TwitterSubmissionBuilder({ handleExitSubmission, isUserEligible, handleCloseDrawer }) {
+export default function TwitterSubmissionBuilder({ handleCloseDrawer }) {
     const { authState, auth_error, authLink, accountInfo, getAuthLink, onOpen, destroySession } = useTwitterAuth()
     const [builderData, setBuilderData] = useReducer(TwitterThreadReducer, twitter_initial_state)
 

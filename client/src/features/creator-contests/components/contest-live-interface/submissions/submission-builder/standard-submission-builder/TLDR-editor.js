@@ -72,7 +72,7 @@ const TLDRWrap = styled.div`
     }
 `
 
-export default function TLDR({ isUserEligible, setShowWarning, TLDRimage, setTLDRImage, TLDRText, setTLDRText }) {
+export default function TLDR({ TLDRimage, setTLDRImage, TLDRText, setTLDRText }) {
 
     const tldr_max_length = {
         with_img: "280",
@@ -106,9 +106,6 @@ export default function TLDR({ isUserEligible, setShowWarning, TLDRimage, setTLD
 
     const updateTLDRText = (e) => {
         setTLDRText(e.target.value);
-        if (!isUserEligible) {
-            setShowWarning(true)
-        }
     }
 
     const handleDeleteMedia = () => {

@@ -29,6 +29,9 @@ async function verifyTwitterAuth(req, res, next) {
 
 // keep track of the user account for future reference
 const update_user_twitter = async (address, data) => {
+    // flush the db of any addresses linked to this same twitter account. Want only 1 twitter linked to 1 address at a time (for now)
+
+    await db.query('update users set twitter = null where twitter->>\'id\' = $1', [data.id])
     return db.query('insert into users (address, twitter) values ($1, $2) on conflict (address) do update set twitter = $2', [address, data])
         .catch(err => console.log(err))
 }

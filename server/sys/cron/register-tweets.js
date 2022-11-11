@@ -39,18 +39,19 @@ const randomId = (length) => {
 const getDate = () => {
     const now = new Date()
     return new Date(now.getTime() + 30 * 1000).toISOString()
+    return new Date().toISOString();
 }
 
 
 // select unregistered tweets. group by author id
 
 const pull_unregistered_tweets = async () => {
-    let now = getDate();
-    return await db.query('with upd as (update tweets set locked = true from \
-                    (select tweets.id from tweets inner join contests on tweets.contest_hash = contests._hash \
-                    where registered = false and contests._start < $1 and contests._voting > $1) as subquery\
-                    returning tweets.author_id, tweets.tweet_id, tweets.contest_hash, tweets.created) \
-                    select author_id, json_agg(json_build_object(\'tweet_id\', tweet_id, \'created\', created, \'contest_hash\', contest_hash)) as contests from upd group by author_id', [now])
+    let date = getDate();
+
+    return await db.query('select author_id, json_agg(json_build_object(\'tweet_id\', tweets.tweet_id, \'created\', tweets.created, \'contest_hash\', tweets.contest_hash)) as contests \
+                        from tweets inner join contests on tweets.contest_hash = contests._hash \
+                        where registered = false and contests._start < $1 and contests._voting > $1 \
+                        group by author_id', [date])
         .then(clean)
         .then(asArray)
 }
@@ -58,9 +59,7 @@ const pull_unregistered_tweets = async () => {
 const lookup_twitter_user = async (twitter_user_id) => {
     return await db.query('select address from users where twitter->>\'id\' = $1', [twitter_user_id])
         .then(clean)
-        .then(asArray)
-        // it's possible for there to be multiple addresses linked to the same twitter account
-        .then(data => data.length > 0 ? data : null)
+        .then(data => data ? data.address : null)
 }
 
 
@@ -72,28 +71,25 @@ const pull_contest = async (contest_hash) => {
 
 // users can have multiple addresses linked to the same account. 
 // we'll loop over addresses and determine if they have already submitted or not
-const has_already_submitted = async (tweet, user_addresses) => {
-    for (const address_el of user_addresses) {
-        let submission = await db.query('select id from contest_submissions where contest_hash=$1 and author=$2', [tweet.contest_hash, address_el.address])
-            .then(clean)
-        if (submission) return true
-    }
-    return false
+const has_already_submitted = async (tweet, user_address) => {
+    return await db.query('select id from contest_submissions where contest_hash=$1 and author=$2', [tweet.contest_hash, user_address])
+        .then(clean)
+        .then(sub => sub ? true : false)
 }
 
 // users can have multiple addresses linked to the same account. 
 // we'll loop over addresses and determine if any are eligible for the contest
 // if one of them is eligible, return the address
-const compute_restrictions = async (contest_data, user_addresses) => {
-    for (const address_el of user_addresses) {
-        if (contest_data.restrictions.length === 0) return address_el.address
-        for (const restriction of contest_data.restrictions) {
-            if (restriction.type === 'erc20' || restriction.type === 'erc721' || restriction.type === 'erc1155') {
-                let result = await checkWalletTokenBalance(address_el.address, restriction.address, restriction.decimal, contest_data.snapshot_block, restriction.token_id)
-                if (result >= restriction.threshold) return address_el.address
-            }
+const compute_restrictions = async (contest_data, user_address) => {
+
+    if (contest_data.restrictions.length === 0) return true
+    for (const restriction of contest_data.restrictions) {
+        if (restriction.type === 'erc20' || restriction.type === 'erc721' || restriction.type === 'erc1155') {
+            let result = await checkWalletTokenBalance(user_address, restriction.address, restriction.decimal, contest_data.snapshot_block, restriction.token_id)
+            if (result >= restriction.threshold) return true
         }
     }
+
     return false // if we made it this far, address does not qualify to submit
 }
 
@@ -253,9 +249,9 @@ const write_submission = async (submission, contest_data, address, tweet_id) => 
 }
 
 // unlock and mark all tweets from this user for this contest as registered
-const unlock_and_register = async (author_id, contest_hash) => {
+const cleanup = async (author_id, contest_hash) => {
     try {
-        return await db.query('update tweets set registered = true, locked = false where author_id = $1 and contest_hash = $2', [author_id, contest_hash])
+        return await db.query('update tweets set registered = true where author_id = $1 and contest_hash = $2', [author_id, contest_hash])
     } catch (err) { console.log(err) }
 }
 
@@ -279,9 +275,9 @@ const main_loop = async () => {
     if (!users) return
     await parallelLoop(users, async (user_tweets_obj) => {
         // lookup the twitter user in DB
-        let user_addresses = await lookup_twitter_user(user_tweets_obj.author_id)
+        let user_address = await lookup_twitter_user(user_tweets_obj.author_id)
         // return if twitter user not registered in DB
-        if (!user_addresses) return
+        if (!user_address) return // dont cleanup here, we can add them when they come back
         // group user tweets by hash
         let grouped_by_hash = groupBy(user_tweets_obj.contests, 'contest_hash')
         // for each user tweet from a particular contest
@@ -289,14 +285,14 @@ const main_loop = async () => {
             // get the most recent tweet
             let latest_tweet = get_latest(hash)
             let contest_data = await pull_contest(latest_tweet.contest_hash)
-            let has_submitted = await has_already_submitted(latest_tweet, user_addresses)
-            if (has_submitted) return
-            let is_eligible_address = await compute_restrictions(contest_data, user_addresses)
-            if (!is_eligible_address) return
+            let has_submitted = await has_already_submitted(latest_tweet, user_address)
+            if (has_submitted) return cleanup(user_tweets_obj.author_id, latest_tweet.contest_hash) // cleanup if user already submitted
+            let is_eligible = await compute_restrictions(contest_data, user_address)
+            if (!is_eligible) return cleanup(user_tweets_obj.author_id, latest_tweet.contest_hash) // cleanup if user doesnt have an eligible wallet
             let submission = await create_submission(latest_tweet, user_tweets_obj.author_id)
-            await write_submission(submission, contest_data, is_eligible_address, latest_tweet.tweet_id)
+            await write_submission(submission, contest_data, user_address, latest_tweet.tweet_id)
             // unlock and mark has registered in db. 
-            await unlock_and_register(user_tweets_obj.author_id, latest_tweet.contest_hash)
+            cleanup(user_tweets_obj.author_id, latest_tweet.contest_hash)
         })
     })
 }

@@ -2,7 +2,7 @@ import { createAuthenticationAdapter, darkTheme, getDefaultWallets, RainbowKitAu
 import '@rainbow-me/rainbowkit/styles.css';
 import axios from 'axios';
 import merge from 'lodash.merge';
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { SiweMessage } from 'siwe';
 import { chain, configureChains, createClient, useAccount, WagmiConfig } from 'wagmi';
@@ -77,11 +77,13 @@ export const WalletProvider = ({ children, initial_session }) => {
 const AuthenticationProvider = ({ children }) => {
     const { address, isConnected } = useAccount();
     const isAuthenticated = useSelector(selectIsAuthenticated)
-    const dispatch = useDispatch()
+    const dispatch = useDispatch();
+
     const authenticationAdapter = React.useMemo(() =>
         createAuthenticationAdapter({
 
             getNonce: async () => {
+                console.log('ADDRESS IS', address)
                 const nonce_from_server = await axios.post('/authentication/generate_nonce', { address: address })
                 return nonce_from_server.data.nonce
             },
@@ -115,7 +117,7 @@ const AuthenticationProvider = ({ children }) => {
                 fetch('/authentication/signOut', { credentials: 'include' })
                     .then(dispatch(clearSession()))
             },
-        }), [])
+        }), [address])
 
 
     return (

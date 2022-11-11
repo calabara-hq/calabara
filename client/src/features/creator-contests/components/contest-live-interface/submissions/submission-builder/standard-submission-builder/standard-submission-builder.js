@@ -19,10 +19,9 @@ import {
     EditorWrap
 } from '../submission-builder-styles'
 
-export default function StandardSubmissionBuilder({ handleExitSubmission, isUserEligible, handleCloseDrawer }) {
+export default function StandardSubmissionBuilder({ handleExitSubmission, handleCloseDrawer }) {
     const [TLDRImage, setTLDRImage] = useState(null)
     const [TLDRText, setTLDRText] = useState('')
-    const [longFormValue, setLongFormValue] = useState(null)
     const { ens, contest_hash } = useParams();
     const ReactEditorJS = createReactEditorJS();
     const editorCore = useRef(null);
@@ -84,8 +83,8 @@ export default function StandardSubmissionBuilder({ handleExitSubmission, isUser
                             <SubmitButton onClick={handleSubmit}><FontAwesomeIcon icon={faCheck} /></SubmitButton>
                         </SubmissionActionButtons>
                         <h2 style={{ textAlign: 'center', color: '#d3d3d3', marginBottom: '30px' }}>Create Submission</h2>
-                        <EditTLDR isUserEligible={isUserEligible} TLDRimage={TLDRImage} setTLDRImage={setTLDRImage} TLDRText={TLDRText} setTLDRText={setTLDRText} />
-                        <EditLongForm longFormValue={longFormValue} setLongFormValue={setLongFormValue} ReactEditorJS={ReactEditorJS} editorCore={editorCore} />
+                        <EditTLDR TLDRimage={TLDRImage} setTLDRImage={setTLDRImage} TLDRText={TLDRText} setTLDRText={setTLDRText} />
+                        <EditLongForm  ReactEditorJS={ReactEditorJS} editorCore={editorCore} />
                     </>
 
                 }
@@ -109,12 +108,12 @@ function EditTLDR({ isUserEligible, TLDRimage, setTLDRImage, TLDRText, setTLDRTe
                 <p style={{ color: 'grey' }}>This is what visitors will see on the submission section</p>
             </div>
             {showWarning && <WarningMessage style={{ marginBottom: '10px' }}>You may not be eligible to submit</WarningMessage>}
-            <TLDR setShowWarning={setShowWarning} isUserEligible={isUserEligible} TLDRimage={TLDRimage} setTLDRImage={setTLDRImage} TLDRText={TLDRText} setTLDRText={setTLDRText} />
+            <TLDR TLDRimage={TLDRimage} setTLDRImage={setTLDRImage} TLDRText={TLDRText} setTLDRText={setTLDRText} />
         </>
     )
 }
 
-function EditLongForm({ longFormValue, setLongFormValue, ReactEditorJS, editorCore }) {
+function EditLongForm({ ReactEditorJS, editorCore }) {
 
     return (
         <div>
@@ -122,7 +121,7 @@ function EditLongForm({ longFormValue, setLongFormValue, ReactEditorJS, editorCo
                 <h2 style={{ textAlign: 'left', color: '#d3d3d3' }}>Submission</h2>
                 <p style={{ color: 'grey' }}>What a visitor sees when your content is expanded</p>
             </div>
-            <SubmissionEdit longFormValue={longFormValue} setLongFormValue={setLongFormValue} ReactEditorJS={ReactEditorJS} editorCore={editorCore} />
+            <SubmissionEdit ReactEditorJS={ReactEditorJS} editorCore={editorCore} />
         </div>
 
     )
@@ -130,7 +129,7 @@ function EditLongForm({ longFormValue, setLongFormValue, ReactEditorJS, editorCo
 
 
 
-function SubmissionEdit({ ReactEditorJS, editorCore, longFormValue, setLongFormValue }) {
+function SubmissionEdit({ ReactEditorJS, editorCore }) {
 
     const handleInitialize = useCallback(async (instance) => {
         editorCore.current = instance;
@@ -140,7 +139,7 @@ function SubmissionEdit({ ReactEditorJS, editorCore, longFormValue, setLongFormV
 
     return (
         <EditorWrap>
-            <ReactEditorJS defaultValue={longFormValue} ref={editorCore} onInitialize={handleInitialize} tools={EDITOR_JS_TOOLS} />
+            <ReactEditorJS defaultValue={null} ref={editorCore} onInitialize={handleInitialize} tools={EDITOR_JS_TOOLS} />
         </EditorWrap>
     )
 }

@@ -12,7 +12,7 @@ import { AltSubmissionButton, ConnectWalletButton, DataGrid, DataWrap, GridEleme
 export default function SubmissionQualifications({ showTwitter, submitOnClick }) {
     const contest_settings = useSelector(selectContestSettings)
     const { walletConnect } = useWalletContext();
-    const { isWalletConnected, alreadySubmittedError, restrictionResults, isUserEligible, submissionStatus } = useSubmissionEngine(contest_settings.submitter_restrictions);
+    const { isWalletConnected, alreadySubmittedError, restrictionResults, isUserEligible, submissionStatus, processEligibility } = useSubmissionEngine(contest_settings.submitter_restrictions);
 
 
     return (
@@ -38,7 +38,7 @@ export default function SubmissionQualifications({ showTwitter, submitOnClick })
                             )
                         }
                     })}
-                    {(contest_settings.twitter_integration && showTwitter) ? <TwitterStatus /> : null}
+                    {(contest_settings.twitter_integration && showTwitter) ? <TwitterStatus processEligibility={processEligibility} /> : null}
                     <GridElement>
                         <div><p>Status</p></div>
                         <ComputeStatus submissionStatus={submissionStatus} isUserEligible={isUserEligible} />
@@ -57,14 +57,20 @@ export default function SubmissionQualifications({ showTwitter, submitOnClick })
     )
 }
 
-function TwitterStatus({ }) {
+function TwitterStatus({ processEligibility }) {
     const isTwitterLinked = useSelector(selectIsTwitterLinked)
     const twitterAccount = useSelector(selectUserTwitter)
     const { onOpen, auth_error, accountInfo } = useTwitterAuth();
     const [error, setError] = useState(null)
     const dispatch = useDispatch();
 
+    // check submission status once account is linked
 
+    useEffect(() => {
+        if (accountInfo) {
+            processEligibility();
+        }
+    }, [accountInfo])
 
     if (isTwitterLinked) {
         return (

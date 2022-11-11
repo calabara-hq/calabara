@@ -23,6 +23,7 @@ const randomNonce = (length) => {
 authentication.post('/generate_nonce', async function (req, res, next) {
     const { address } = req.body;
     let nonce = randomNonce(25)
+    console.log(address)
     await db.query('insert into users (address, nonce) values ($1, $2) on conflict (address) do update set nonce = $2', [address, nonce]);
     res.send({ nonce: nonce });
     res.status(200);
@@ -41,7 +42,7 @@ authentication.post('/generate_session', async function (req, res, next) {
         // update the nonce
 
         const new_nonce = randomNonce(25);
-        await db.query('update users set nonce = $2 where address = $1 returning twitter', [fields.address, new_nonce]);
+        await db.query('update users set nonce = $2 where address = $1', [fields.address, new_nonce]);
 
         // generate a token
 

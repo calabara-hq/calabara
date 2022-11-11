@@ -44,8 +44,8 @@ export default function ContestInfo() {
     const contest_settings = useSelector(selectContestSettings)
     const contest_state = useSelector(selectContestState)
 
-    let vote_date = moment.utc(contest_settings.date_times.vote_date).local().format('M/D hh:mm A').toString()
-    let end_date = moment.utc(contest_settings.date_times.end_date).local().format('M/D hh:mm A').toString()
+    let vote_date = moment(contest_settings.date_times.voting_begin).local().format('M/D hh:mm A').toString()
+    let end_date = moment(contest_settings.date_times.end_date).local().format('M/D hh:mm A').toString()
     let processed_rewards = processSubmitterRewards(contest_settings);
 
     const handleDrawerOpen = () => {
