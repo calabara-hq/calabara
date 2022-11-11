@@ -18,7 +18,6 @@ export default function DiscordRedirect() {
 
             // fragment is for the bot addition
             const target = `${window.location.origin}`
-            console.log(target)
             const urlParams = new URLSearchParams(window.location.search);
             const [guild_id, code, error, errorDescription] = [
                 urlParams.get('guild_id'),

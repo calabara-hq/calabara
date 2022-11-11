@@ -243,7 +243,6 @@ export default function PromptBuilder({ promptBuilderData, setPromptBuilderData,
     } = promptBuilderData
 
     const handleInitialize = useCallback((instance) => {
-        console.log('initializing')
         promptEditorCore.current = instance;
     }, [])
 
@@ -258,7 +257,6 @@ export default function PromptBuilder({ promptBuilderData, setPromptBuilderData,
     }
 
     const handleLabelColorChange = (color) => {
-        console.log(color)
         setPromptBuilderData({ type: "update_single", payload: { prompt_label_color: color } })
     }
 
@@ -291,7 +289,6 @@ export default function PromptBuilder({ promptBuilderData, setPromptBuilderData,
     }
 
     const clearEditorErrors = () => {
-        console.log('change')
         if (promptBuilderData.prompt_content_error) return setPromptBuilderData({ type: "update_single", payload: { prompt_content_error: false } })
     }
 

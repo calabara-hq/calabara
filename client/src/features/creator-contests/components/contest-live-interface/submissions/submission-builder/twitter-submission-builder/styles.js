@@ -58,6 +58,9 @@ export const ContentWrap = styled.div`
     align-self: flex-start;
     width: 100%;
     margin-left: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 `
 
 export const AuthChoiceWrap = styled.div`
@@ -72,10 +75,10 @@ export const AuthChoiceButton = styled.button`
     height: 200px;
     border-radius: 10px;
     background-color: #2a2a2a;
-    border: 2px solid transparent;
+    border: 1px solid #6673ff;
     font-size: 16px;
     &:hover{
-        background-color: #2f2f2f;
+        //background-color: #2f2f2f;
     }
     ${scaleElement}
 `

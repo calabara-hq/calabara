@@ -2,6 +2,7 @@ const { expect } = require('chai');
 const { pull_unregistered_tweets, main_loop, parse_tldr, create_submission } = require('../../sys/cron/register-tweets');
 const { get_tweet } = require('../../twitter-client/helpers');
 const { expectThrowsAsync } = require('../test-helpers');
+const db = require('../../helpers/db-init')
 
 // announcement ID = 1587435933066051586
 // simple text submission = 1587591713341718529
@@ -42,13 +43,17 @@ describe('register tweets job', async (done) => {
     })
 
     it('submission object media thread', async () => {
-        let tweet = { tweet_id: "1587460907357147136" }
+        let tweet = { tweet_id: "1590030047494406145" }
         let submission_obj = await create_submission(tweet, "1539985534327595008")
-        expect(submission_obj.submission_body.blocks.length).to.eql(3)
-        expect(submission_obj.submission_body.blocks[0].type).to.eql('paragraph')
-        expect(submission_obj.submission_body.blocks[1].type).to.eql('paragraph')
+        expect(submission_obj.submission_body.blocks.length).to.eql(4)
+        expect(submission_obj.submission_body.blocks[0].type).to.eql('image')
+        expect(submission_obj.submission_body.blocks[1].type).to.eql('image')
         expect(submission_obj.submission_body.blocks[2].type).to.eql('image')
+        expect(submission_obj.submission_body.blocks[3].type).to.eql('image')
+
     })
+
+
 
     done()
 })

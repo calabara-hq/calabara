@@ -39,5 +39,11 @@ const socketSendNewSubmission = async (contest_hash, ens, submission_fields) => 
     } catch (err) { console.log(err) }
 }
 
+const socketSendUserSubmissionStatus = async (walletAddress, contest_hash, data) => {
+    const room = `${contest_hash}-${walletAddress}`
+    try {
+        return sendSocketMessage(room, 'user_twitter_submission', data)
+    } catch (err) { console.log(err) }
+}
 
-module.exports = socketSendNewSubmission
+module.exports = { socketSendNewSubmission, socketSendUserSubmissionStatus }

@@ -7,7 +7,7 @@ function clean(data) {
 }
 
 // adjust db result to make sure we always get data in an array or null.
-function asArray(data) {
+const asArray = (data) => {
   if (Array.isArray(data)) {
     return data
   }
@@ -18,7 +18,7 @@ function asArray(data) {
 
 }
 
-function shuffleArray(array) {
+const shuffleArray = (array) => {
   let currentIndex = array.length, randomIndex;
 
   // While there remain elements to shuffle.
@@ -36,12 +36,26 @@ function shuffleArray(array) {
   return array;
 }
 
+// asynchronously "loop" an array and apply callback to each item in order
+const serializedLoop = async (arr, callback) => {
+  await arr.reduce(async (previousPromise, item) => {
+    await previousPromise
+    return callback(item)
+  }, Promise.resolve())
+}
 
+const parallelLoop = async (arr, callback) => {
+  await Promise.all(arr.map(async (el) => {
+    return await callback(el)
+  }))
+}
 
 
 
 module.exports = {
   clean,
   asArray,
-  shuffleArray
+  shuffleArray,
+  serializedLoop,
+  parallelLoop
 }

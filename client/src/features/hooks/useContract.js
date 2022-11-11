@@ -1,4 +1,6 @@
 import { tokenAbi } from "../wallet/token-abi";
+import { ERC165ABI, ERC1155Interface, ERC721Interface } from "../wallet/erc165abi";
+import { ERC1155_abi } from "../wallet/erc1155-abi";
 import { ethers } from "ethers";
 
 const provider = new ethers.providers.InfuraProvider('homestead', process.env.INFURA_KEY)
@@ -6,40 +8,66 @@ const provider = new ethers.providers.InfuraProvider('homestead', process.env.IN
 export default function useContract() {
 
 
-    // use this function for both erc721 and erc20. If decimal call fails but we have a symbol, use decimal of 0
-
-    async function tokenGetSymbolAndDecimal(contractAddress) {
+    async function tokenGetSymbolAndDecimal(contractAddress, tokenStandard) {
         const tokenContract = new ethers.Contract(contractAddress, tokenAbi, provider)
-        const symbol = await tokenContract.functions.symbol();
-        let decimal = '0'
-        try {
-            decimal = await tokenContract.functions.decimals();
-            return [symbol, decimal]
-        } catch (e) {
-            return [symbol, decimal]
-        }
+        let symbol = await tokenContract.functions.symbol()
+            .then(data => data[0])
+            .catch(err => {
+                if (tokenStandard === 'erc1155') return ''
+            })
+
+
+        let decimal = await tokenContract.functions.decimals()
+            .then(data => data[0])
+            .catch(err => {
+                if (tokenStandard !== 'erc20') return '0'
+            })
+
+        return [symbol, decimal]
     }
 
-    // check token for erc721 compliance. erc20's should fail and all erc721's should pass.
-    // Mainly used for UI purposes
-    async function isERC721(contractAddress) {
+    async function getTokenStandard(contractAddress) {
+        try {
+            const tokenContract = new ethers.Contract(contractAddress, ERC165ABI, provider)
+            let result = await tokenContract.functions.supportsInterface(ERC721Interface)
+            if (result[0]) return 'erc721'
+            else {
+                let result = await tokenContract.functions.supportsInterface(ERC1155Interface)
+                if (result[0]) return 'erc1155'
+            }
+        } catch (e) { return 'erc20' }
+    }
+
+    async function isValidERC1155TokenId(contractAddress, token_id) {
         try {
             const tokenContract = new ethers.Contract(contractAddress, tokenAbi, provider)
-            await tokenContract.functions.ownerOf(0);
-            return true
-        } catch (e) {
+            let uri = await tokenContract.functions.uri(token_id)
+                .then(data => data[0])
+            // check if uri looks like a uri -- some implementations will just return the token_id instead of erroring ):
+            if (uri.split(':/').length > 1) return true
+            return false
+        } catch (err) {
             return false
         }
     }
 
-    // check balance of token given a wallet address and a contract address and decimal
-    async function checkWalletTokenBalance(walletAddress, contractAddress, decimal) {
+    async function checkWalletTokenBalance(walletAddress, contractAddress, decimal, token_id) {
         try {
-            const tokenContract = new ethers.Contract(contractAddress, tokenAbi, provider)
-            const balance = await tokenContract.functions.balanceOf(walletAddress);
-            const adjusted = balance / 10 ** decimal
-            return adjusted;
-        } catch (err) { return 0 }
+            let balance
+            if (!token_id) {
+                let tokenContract = new ethers.Contract(contractAddress, tokenAbi, provider);
+                balance = await tokenContract.functions.balanceOf(walletAddress);
+            }
+            else {
+                let tokenContract = new ethers.Contract(contractAddress, ERC1155_abi, provider);
+                balance = await tokenContract.functions.balanceOf(walletAddress, token_id);
+
+            };
+            const adjusted = balance / 10 ** decimal;
+            return adjusted
+        } catch (err) {
+            return 0
+        }
 
     }
 
@@ -47,14 +75,17 @@ export default function useContract() {
 
 
     return {
-        tokenGetSymbolAndDecimal: async (contractAddress) => {
-            return await tokenGetSymbolAndDecimal(contractAddress)
+        tokenGetSymbolAndDecimal: async (contractAddress, tokenStandard) => {
+            return await tokenGetSymbolAndDecimal(contractAddress, tokenStandard)
         },
-        checkWalletTokenBalance: async (walletAddress, contractAddress, decimal) => {
-            return await checkWalletTokenBalance(walletAddress, contractAddress, decimal)
+        checkWalletTokenBalance: async (walletAddress, contractAddress, decimal, token_id) => {
+            return await checkWalletTokenBalance(walletAddress, contractAddress, decimal, token_id)
         },
-        isERC721: async (contractAddress) => {
-            return await isERC721(contractAddress)
+        getTokenStandard: async (contractAddress) => {
+            return await getTokenStandard(contractAddress)
+        },
+        isValidERC1155TokenId: async (contractAddress, token_id) => {
+            return await isValidERC1155TokenId(contractAddress, token_id)
         }
 
     }

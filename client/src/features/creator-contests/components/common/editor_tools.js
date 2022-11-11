@@ -51,7 +51,6 @@ export const EDITOR_JS_TOOLS = {
                         url: '/creator_contests/upload_img',
                         data: formData
                     }).then(response => {
-                        console.log(response)
                         return response.data
                     }).catch(error => {
                         showNotification('error', 'error', 'File type not allowed. Accepted image types: png, jpg, jpeg, svg, gif')

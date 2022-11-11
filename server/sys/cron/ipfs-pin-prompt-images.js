@@ -1,5 +1,5 @@
 const cron = require('node-cron');
-const { clean, asArray } = require('../../helpers/common.js');
+const { clean, asArray, parallelLoop, serializedLoop } = require('../../helpers/common.js');
 const db = require('../../helpers/db-init.js');
 const { EVERY_10_SECONDS, EVERY_30_SECONDS } = require('./schedule');
 const { pinFromFs, pinFileStream } = require('../../helpers/ipfs-api.js');
@@ -26,20 +26,20 @@ const updateDB = async (prompt) => {
 
 
 const parseBlocks = async (blocks) => {
-    console.log(blocks)
-    for (block of blocks) {
+    await serializedLoop(blocks, async (block) => {
         if (block.type === 'image') {
             let hash = await pinFromFs(block.data.file.url)
             block.data.file.url = hash
         }
-    }
+    })
     return blocks
 }
 
 
 
-const mainLoop = async (prompts) => {
-    for (prompt of prompts) {
+const mainLoop = async () => {
+    let prompts = await getPrompts();
+    await parallelLoop(prompts, async (prompt) => {
         if (prompt.prompt_data.coverImage) {
             let hash = await pinFromFs(prompt.prompt_data.coverImage);
             prompt.prompt_data.coverImage = hash;
@@ -47,16 +47,15 @@ const mainLoop = async (prompts) => {
         let parsedBlocks = await parseBlocks(prompt.prompt_data.editorData.blocks)
         prompt.prompt_data.editorData.blocks = parsedBlocks
         await updateDB(prompt)
-    }
+    })
 }
 
 
 
-const pin_prompt_assets = async () => {
-    cron.schedule(EVERY_30_SECONDS, async () => {
-        console.log('running')
-        let prompts = await getPrompts();
-        await mainLoop(prompts);
+const pin_prompt_assets = () => {
+    cron.schedule(EVERY_30_SECONDS, () => {
+        console.log('pinning prompt images')
+        mainLoop();
     })
 }
 

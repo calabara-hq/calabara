@@ -1,32 +1,22 @@
-import { Suspense, useEffect, useState } from "react";
-import { useParams, useHistory } from "react-router-dom";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import BackButton from "../../../back-button/back-button";
-import { Label, labelColorOptions, Contest_h2_alt, Contest_h3_alt, TagType } from "../common/common_styles";
-import { label_status } from "../contest-live-interface/contest_info/contest-info-style";
-import CC_Logo from "../../../../img/logo-cc-shark.png"
-import moment from "moment";
-import { fetchHomePageData, initialize } from "./homepage-data-fetch";
-import { LazyLoadImage } from "react-lazy-load-image-component";
 import { faDiscord } from "@fortawesome/free-brands-svg-icons";
+import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import moment from "moment";
+import { Suspense, useEffect, useState } from "react";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import { useHistory, useParams } from "react-router-dom";
+import CC_Logo from "../../../../img/logo-cc-shark.png";
+import BackButton from "../../../back-button/back-button";
+import { Contest_h2_alt, Contest_h3_alt, Label, labelColorOptions, TagType } from "../common/common_styles";
+import { label_status } from "../contest-live-interface/contest_info/contest-info-style";
 import {
-    ContestHomeWrap,
-    SplitTop,
-    AboutCC,
-    NewContest,
-    SplitBottom,
+    AboutCC, CC_notFound,
+    Contest, ContestHomeWrap, ContestTag, NewContest, OptionType,
+    OrgCard, RoundContainer, SplitBottom,
     SplitBottomLeft,
-    SplitBottomRight,
-    RoundContainer,
-    StatContainer,
-    CC_notFound,
-    Contest,
-    ContestTag,
-    Stats,
-    OptionType,
-    OrgCard
+    SplitBottomRight, SplitTop, StatContainer, Stats
 } from "./contest-home-style";
+import { fetchHomePageData, initialize } from "./homepage-data-fetch";
 
 let compact_formatter = Intl.NumberFormat('en', { notation: 'compact' })
 const nonResolvingPromise = initialize();
@@ -125,7 +115,7 @@ function ListContests({ homepage_data }) {
                     </Contest>
                 )
             })}
-        </RoundContainer>
+        </RoundContainer >
     )
 }
 

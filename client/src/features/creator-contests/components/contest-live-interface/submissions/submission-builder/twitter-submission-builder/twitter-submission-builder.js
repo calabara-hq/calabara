@@ -1,14 +1,20 @@
+import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import axios from 'axios';
 import { useEffect, useReducer, useState } from "react";
+import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
+import styled from 'styled-components';
 import { TwitterSubmissionCheckpointBar } from "../../../../../../checkpoint-bar/checkpoint-bar";
 import CreateThread from "../../../../../../create-twitter-thread/create-thread";
 import useTweet from "../../../../../../hooks/useTweet";
 import useTwitterAuth from "../../../../../../hooks/useTwitterAuth";
 import TwitterThreadReducer, { twitter_initial_state } from "../../../../../../reducers/twitter-thread-reducer";
 import LinkTwitter from "../../../../../../twitter-link-account/link-twitter";
+import { LinkTwitterButton } from "../../../../../../twitter-link-account/styles";
+import { selectIsTwitterLinked } from "../../../../../../user/user-reducer";
+import { fade_in } from "../../../../common/common_styles";
 import Placeholder from '../../../../common/spinner';
-import axios from 'axios'
-import styled from 'styled-components'
 import {
     CreateSubmissionContainer,
     SavingSubmissionDiv,
@@ -17,11 +23,9 @@ import {
 import {
     AuthChoiceButton, AuthChoiceWrap, CheckpointBottom, CheckpointWrap, ContentWrap, LinkTwitterWrap, TwitterSubmissionContainer
 } from './styles';
-import { LinkTwitterButton } from "../../../../../../twitter-link-account/styles";
-import { fade_in } from "../../../../common/common_styles";
 
 
-export default function TwitterSubmissionBuilder({ handleExitSubmission, isUserEligible, handleCloseDrawer }) {
+export default function TwitterSubmissionBuilder({ handleCloseDrawer }) {
     const { authState, auth_error, authLink, accountInfo, getAuthLink, onOpen, destroySession } = useTwitterAuth()
     const [builderData, setBuilderData] = useReducer(TwitterThreadReducer, twitter_initial_state)
 
@@ -42,6 +46,7 @@ export default function TwitterSubmissionBuilder({ handleExitSubmission, isUserE
                     </CheckpointBottom>
                 </CheckpointWrap>
                 <ContentWrap>
+                    <TwitterDescription builderData={builderData} />
                     <ActionsController
                         builderData={builderData}
                         setBuilderData={setBuilderData}
@@ -58,6 +63,41 @@ export default function TwitterSubmissionBuilder({ handleExitSubmission, isUserE
             </TwitterSubmissionContainer>
         </CreateSubmissionContainer>
     )
+}
+
+const DescriptionBox = styled.div`
+    background-color: #2a2a2a;
+    border-radius: 10px;
+    border: 3px solid #141416;
+    color: #d3d3d3;
+    padding: 10px;
+    position: relative;
+    font-size: 16px;
+    > span{
+        position: absolute;
+        right: 10px;
+        top: 10px;
+    }
+    > li {
+        margin-left: 20px;
+        margin-bottom: 10px;
+    }
+
+`
+
+function TwitterDescription(props) {
+    if (props.builderData.stage === 0) {
+        return (
+            <DescriptionBox style={{ width: '80%', margin: '0 auto' }}>
+                <span><FontAwesomeIcon icon={faExclamationCircle} style={{ color: '#6673ff', fontSize: '20px' }} /></span>
+                <p> This is a twitter contest </p>
+                <p>To submit, you must link your twitter and quote tweet the announcement tweet with your submission</p>
+                <p>Pick a submission method to continue</p>
+                <li><i style={{ fontWeight: 'bold' }}>Tweet for me ~</i> link my twitter and tweet my submission for me</li>
+                <li><i style={{ fontWeight: 'bold' }}>Generate link ~</i> link my twitter and I'll tweet it myself</li>
+            </DescriptionBox>
+        )
+    }
 }
 
 
@@ -111,7 +151,7 @@ function ActionsController(props) {
                     onOpen={props.onOpen}
                     auth_error={props.auth_error}
                     auth_type={props.builderData.auth_type}
-                    setTwitterData={props.setBuilderData}
+                    clearErrors={() => props.setBuilderData({ type: 'update_single', payload: { error: null } })}
                 />
             </LinkTwitterWrap>
         )
@@ -133,16 +173,20 @@ function ActionsController(props) {
 }
 
 function AuthChoice(props) {
+    const isTwitterConnected = useSelector(selectIsTwitterLinked)
 
     const handleChoice = (choice) => {
-        props.setBuilderData({ type: 'update_single', payload: { auth_type: choice, stage: 1 } })
+        let stage = 1
+        // dont ask them to connect again if their twitter is already hooked up and simple auth is chosen
+        if ((choice === 'standard') && isTwitterConnected) stage = 2
+        props.setBuilderData({ type: 'update_single', payload: { auth_type: choice, stage: stage } })
     }
 
 
     return (
         <AuthChoiceWrap>
-            <AuthChoiceButton onClick={() => handleChoice('privileged')}>tweet for me</AuthChoiceButton>
-            <AuthChoiceButton onClick={() => handleChoice('standard')}>gen link</AuthChoiceButton>
+            <AuthChoiceButton onClick={() => handleChoice('privileged')}>Tweet for me</AuthChoiceButton>
+            <AuthChoiceButton onClick={() => handleChoice('standard')}>Generate a link</AuthChoiceButton>
         </AuthChoiceWrap>
     )
 }
@@ -173,6 +217,7 @@ function TwitterRedirect(props) {
             .then(res => res.data)
             .catch(err => console.log(err))
         window.open(intent)
+        props.handleCloseDrawer();
     }
 
     return (

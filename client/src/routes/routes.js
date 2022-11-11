@@ -4,7 +4,6 @@ import { HomepageNav, ApplicationNav } from '../features/navbar/navbar.js'
 import Homepage from '../features/homepage/homepage.js'
 import { WalletProvider } from '../app/WalletContext.js'
 import LazyLoader from '../features/lazy-loader/lazy-loader.js'
-import Test from './test'
 import { clearSession } from '../app/sessionReducer'
 import { useDispatch } from 'react-redux'
 const Cards = lazy(() => import('../features/org-cards/org-cards.js'))
@@ -102,9 +101,6 @@ function ApplicationRoutes({ initial_session }) {
 
       <Route path="/:ens/contest_settings">
         <ContestSettings />
-      </Route>
-      <Route path="/:ens/test_path">
-        <Test />
       </Route>
 
       <Route exact path="/:ens/creator_contests">

@@ -2,6 +2,7 @@ const ethers = require('ethers')
 const EthDater = require('ethereum-block-by-date')
 const dotenv = require('dotenv')
 const abi = require('./token-abi')
+const erc1155_abi = require('./erc1155-abi')
 dotenv.config();
 
 /*
@@ -20,11 +21,20 @@ let dater = new EthDater(
 )
 
 
-const checkWalletTokenBalance = async (walletAddress, contractAddress, decimal, block_num) => {
-    const tokenContract = new ethers.Contract(contractAddress, abi.token_abi, provider);
-    const balance = await tokenContract.functions.balanceOf(walletAddress, { blockTag: block_num });
-    const adjusted = balance / 10 ** decimal;
-    return adjusted
+const checkWalletTokenBalance = async (walletAddress, contractAddress, decimal, block_num, token_id) => {
+    try {
+        let balance
+        if (!token_id) {
+            let tokenContract = new ethers.Contract(contractAddress, abi.token_abi, provider);
+            balance = await tokenContract.functions.balanceOf(walletAddress, { blockTag: block_num });
+        }
+        else {
+            let tokenContract = new ethers.Contract(contractAddress, erc1155_abi.token_abi, provider);
+            balance = await tokenContract.functions.balanceOf(walletAddress, token_id, { blockTag: block_num });
+        };
+        const adjusted = balance / 10 ** decimal;
+        return adjusted
+    } catch (err) { return 0 }
 }
 
 

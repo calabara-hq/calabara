@@ -10,9 +10,14 @@ export const LinkTwitterButton = styled.button`
     padding: 10px 20px;
     font-weight: bold;
     animation: ${fade_in} 0.3s ease-in-out;
-    ${scaleElement}
+    &:enabled{
+        ${scaleElement}
+    }
     &:hover{
         //background-color: rgba(29, 155, 240)
+    }
+    &:disabled{
+        background-color: grey;
     }
 `
 
@@ -23,4 +28,11 @@ export const RetryWrap = styled.div`
     gap: 20px;
     justify-content: center;
     align-items: center;
+`
+
+export const MinimalLinkTwitterButton = styled.button`
+    background-color: rgba(29, 155, 240, 0.8);
+    border: none;
+    border-radius: 4px;
+    padding: 3px 5px;
 `

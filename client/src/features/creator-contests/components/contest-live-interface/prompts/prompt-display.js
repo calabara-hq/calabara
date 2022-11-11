@@ -30,7 +30,6 @@ export default function PromptDisplay({ }) {
     }
 
     const handleDrawerClose = () => {
-        console.log('closing!!')
         document.body.style.overflow = 'unset';
         setIsDrawerOpen(false);
         setIsCreating(false);

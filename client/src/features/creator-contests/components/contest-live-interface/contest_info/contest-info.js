@@ -1,18 +1,16 @@
-import { useState, useEffect, useContext } from "react";
+import { faCheckCircle, faQuestionCircle, faTimesCircle } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import moment from "moment";
+import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
-import * as WebWorker from '../../../../../app/worker-client.js'
-import moment from "moment";
-import { Label, labelColorOptions, fade_in } from "../../common/common_styles";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheckCircle, faTimesCircle, faTimes, faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
-import { InterfaceHeading, ContestDetails, DetailRow, DetailRowHover, CheckpointWrap, CheckpointBottomTag, CheckpointBottom, label_status, DetailBox, DetailItem, ContestDetailWrapper } from './contest-info-style'
+import { Contest_h4, Label } from "../../common/common_styles";
 import { selectContestSettings, selectContestState } from "../interface/contest-interface-reducer";
+import { DetailElement, DetailGrid, GridElement, label_status } from './contest-info-style';
 
 import DrawerComponent from "../../../../drawer/drawer.js";
-import { SummaryWrap } from "../../contest-details/detail-style.js";
 import ContestSummaryComponent from "../../contest-details/detail-components.js";
-
+import { SummaryWrap } from "../../contest-details/detail-style.js";
 
 
 const processSubmitterRewards = (contest_settings) => {
@@ -38,14 +36,16 @@ const processSubmitterRewards = (contest_settings) => {
 }
 
 
+
+
 export default function ContestInfo() {
     const [drawerOpen, setDrawerOpen] = useState(false)
     const { ens } = useParams();
     const contest_settings = useSelector(selectContestSettings)
     const contest_state = useSelector(selectContestState)
 
-    let start_date = moment.utc(contest_settings.date_times.start_date).local().format('M/D hh:mm A').toString()
-    let end_date = moment.utc(contest_settings.date_times.end_date).local().format('M/D hh:mm A').toString()
+    let vote_date = moment(contest_settings.date_times.voting_begin).local().format('M/D hh:mm A').toString()
+    let end_date = moment(contest_settings.date_times.end_date).local().format('M/D hh:mm A').toString()
     let processed_rewards = processSubmitterRewards(contest_settings);
 
     const handleDrawerOpen = () => {
@@ -63,64 +63,55 @@ export default function ContestInfo() {
 
     return (
         <>
-            <ContestDetailWrapper>
-                <ContestDetails>
-                    <DetailBox>
-                        <DetailRow>
-                            <DetailItem>
-                                <p>Starts:</p>
-                            </DetailItem>
-                            <DetailItem>
-                                <p>{start_date}</p>
-                            </DetailItem>
-                        </DetailRow>
-                        <DetailRow>
-                            <DetailItem>
-                                <p>Ends:</p>
-                            </DetailItem>
-                            <DetailItem>
-                                <p>{end_date}</p>
-                            </DetailItem>
-                        </DetailRow>
-                    </DetailBox>
-                    <DetailBox onClick={handleDrawerOpen}>
-                        <DetailRow>
-                            <DetailItem> <p>Submitter Rewards:</p></DetailItem>
-                            <DetailItem>
-                                {processed_rewards.length === 0 && <FontAwesomeIcon icon={faTimesCircle} style={{ color: 'rgba(178,31,71)', fontSize: '1.5em' }} />}
-                                {processed_rewards.length === 1 && <p>{processed_rewards[0].sum} {processed_rewards[0].symbol}</p>}
-                                {processed_rewards.length > 1 && <FontAwesomeIcon icon={faCheckCircle} style={{ color: 'rgb(6, 214, 160)', fontSize: '1.5em' }} />}
-                            </DetailItem>
-                        </DetailRow>
-                        <DetailRow>
-                            <DetailItem><p>Voter Rewards:</p></DetailItem>
-                            <DetailItem>
-                                {Object.values(contest_settings.voter_rewards).length === 0 && <FontAwesomeIcon icon={faTimesCircle} style={{ color: 'rgba(178,31,71)', fontSize: '1.5em' }} />}
-                                {Object.values(contest_settings.voter_rewards).length > 0 && <FontAwesomeIcon icon={faCheckCircle} style={{ color: 'rgb(6, 214, 160)', fontSize: '1.5em' }} />}
-                            </DetailItem>
-                        </DetailRow>
-                    </DetailBox>
-                    <DetailBox >
-                        <DetailRow>
-                            <DetailItem>
-                                <p>Contest Details:</p>
-                            </DetailItem>
-                            <DetailItem shouldHover={true}>
-                                <button onClick={handleDrawerOpen}><FontAwesomeIcon icon={faQuestionCircle} /></button>
-                            </DetailItem>
-                        </DetailRow>
-                        <DetailRow>
-                            <DetailItem>
-                                <p>Status:</p>
-                            </DetailItem>
-                            <DetailItem>
-                                <Label color={label_status[contest_state]}>{label_status[contest_state].status}</Label>
-                            </DetailItem>
-                        </DetailRow>
-                    </DetailBox>
-                </ContestDetails>
-            </ContestDetailWrapper>
-            {/*<ContestInfoDrawer contest_settings={contest_settings} handleClose={handleDrawerClose} drawerOpen={drawerOpen} />*/}
+            <DetailElement>
+                <span onClick={handleDrawerOpen}><FontAwesomeIcon icon={faQuestionCircle} /></span>
+                <DetailGrid>
+                    <Contest_h4>Details</Contest_h4>
+                    <GridElement>
+                        <div>
+                            <p>Status</p>
+                        </div>
+                        <div>
+                            <Label color={label_status[contest_state]}>{label_status[contest_state].status}</Label>
+                        </div>
+                    </GridElement>
+                    <GridElement>
+                        <div>
+                            <p>Voting Begins</p>
+                        </div>
+                        <div>
+                            <p>{vote_date}</p>
+                        </div>
+                    </GridElement>
+                    <GridElement>
+                        <div>
+                            <p>Ends</p>
+                        </div>
+                        <div>
+                            <p>{end_date}</p>
+                        </div>
+                    </GridElement>
+                    <GridElement>
+                        <div>
+                            <p>Submitter Rewards</p>
+                        </div>
+                        <div>
+                            {processed_rewards.length === 0 && <FontAwesomeIcon icon={faTimesCircle} style={{ color: 'rgba(178,31,71)', fontSize: '1.5em' }} />}
+                            {processed_rewards.length === 1 && <p>{processed_rewards[0].sum} {processed_rewards[0].symbol}</p>}
+                            {processed_rewards.length > 1 && <FontAwesomeIcon icon={faCheckCircle} style={{ color: 'rgb(6, 214, 160)', fontSize: '1.5em' }} />}
+                        </div>
+                    </GridElement>
+                    <GridElement>
+                        <div>
+                            <p>Voter Rewards</p>
+                        </div>
+                        <div>
+                            {Object.values(contest_settings.voter_rewards).length === 0 && <FontAwesomeIcon icon={faTimesCircle} style={{ color: 'rgba(178,31,71)', fontSize: '1.5em' }} />}
+                            {Object.values(contest_settings.voter_rewards).length > 0 && <FontAwesomeIcon icon={faCheckCircle} style={{ color: 'rgb(6, 214, 160)', fontSize: '1.5em' }} />}
+                        </div>
+                    </GridElement>
+                </DetailGrid>
+            </DetailElement>
             <DrawerComponent drawerOpen={drawerOpen} handleClose={handleDrawerClose} showExit={true}>
                 <SummaryWrap>
                     <ContestSummaryComponent contest_settings={contest_settings} />
@@ -129,49 +120,3 @@ export default function ContestInfo() {
         </>
     )
 }
-
-/*
-const DrawerWrapper = styled.div`
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    width: 95%;
-    margin: 0 auto;
-    margin-left: 20px;
-    margin-top: 20px;
-    height: 100%;
-    color: #d3d3d3;
-    animation: ${fade_in} 0.5s ease-in-out;
-
-    > * {
-        margin-bottom: 30px;
-    }
-`
-
-
-const DrawerStyle = styled.div`
-    background-color: #1e1e1e;
-    overflow-y: scroll;
-    width: 50vw;
-`
-
-
-
-function ContestInfoDrawer({ contest_settings, drawerOpen, handleClose }) {
-
-    return (
-        <Drawer
-            open={drawerOpen}
-            onClose={handleClose}
-            direction='right'
-            className='prompt-expand'
-        >
-            {drawerOpen &&
-                <DrawerWrapper>
-                    <ContestMoreDetails contest_settings={contest_settings} mode={0} />
-                </DrawerWrapper>
-            }
-        </Drawer>
-    )
-}
-*/

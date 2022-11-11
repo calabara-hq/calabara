@@ -74,7 +74,6 @@ function RewardGridRow({ theme, idx, selectedRewards, errorMatrix }) {
         const { name, value } = e.target;
         switch (name) {
             case 'rank':
-                console.log('here')
                 dispatch(submitterRewardActions.updateSubmitterRewards({ index: idx, type: 'rank', value: Math.round(Math.abs(value)) || '' }))
                 break;
             case 'eth':

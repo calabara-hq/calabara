@@ -10,16 +10,16 @@ const { clean, asArray, shuffleArray } = require('../helpers/common')
 const { createContest, isNick } = require('../middlewares/creator-contests/create-contest-middleware');
 const { check_submitter_eligibility_unprotected, check_submitter_eligibility_PROTECTED, createSubmission } = require('../middlewares/creator-contests/submit-middleware');
 const { imageUpload, twitterMediaUpload } = require('../middlewares/image-upload-middleware.js');
-const { calc_sub_vp__unprotected, calc_sub_vp__PROTECTED } = require('../middlewares/creator-contests/vote-middleware.js');
+const { calc_sub_vp__unprotected, calc_sub_vp__PROTECTED, calc_total_vp_UNPROTECTED } = require('../middlewares/creator-contests/vote-middleware.js');
 const logger = require('../logger').child({ component: 'creator-contests' })
 const { sendSocketMessage } = require('../sys/socket/socket-io');
 const { get_winners_as_csv, verifyContestOver } = require('../middlewares/creator-contests/fetch-winners-middleware.js');
 const { fetchSubmissions } = require('../middlewares/creator-contests/fetch-submissions-middleware.js');
-const socketSendNewSubmission = require('../helpers/socket-messages.js');
+const { socketSendNewSubmission, socketSendUserSubmissionStatus } = require('../helpers/socket-messages.js');
 const { TwitterApi } = require('twitter-api-v2');
 const { createReadStream } = require('fs');
 const { uploadTwitterMedia } = require('../middlewares/twitter-upload-media.js');
-const { add_stream_rule } = require('../twitter-client/stream.js');
+const { add_stream_rules } = require('../twitter-client/stream.js');
 dotenv.config()
 
 const serverRoot = path.normalize(path.join(__dirname, '../'));
@@ -69,7 +69,7 @@ contests.post('/create_contest', authenticateToken, isAdmin, isNick, createConte
     const { start_date, voting_begin, end_date } = contest_settings.date_times
     await db.query('insert into contests (ens, created, _start, _voting, _end, _hash, settings, prompt_data, locked, pinned) values ($1, $2, $3, $4, $5, $6, $7, $8, false, false)', [ens, req.created, start_date, voting_begin, end_date, req.hash, contest_settings, prompt_data])
     if (contest_settings.twitter_integration) {
-        add_stream_rule({ value: `conversation_id:${contest_settings.twitter_integration.announcementID} is:quote`, tag: req.hash })
+        add_stream_rules([{ value: `conversation_id:${contest_settings.twitter_integration.announcementID} is:quote`, tag: req.hash }])
     }
     res.sendStatus(200)
 })
@@ -92,6 +92,7 @@ contests.post('/create_submission', authenticateToken, check_submitter_eligibili
     res.sendStatus(200)
     //sendSocketMessage(req.contest_hash, 'new_submission', { id: result.id, _url: req.url })
     socketSendNewSubmission(req.contest_hash, ens, { id: result.id, _url: req.url, author: req.session.user.address, votes: 0 })
+    socketSendUserSubmissionStatus(req.session.user.address, req.contest_hash, 'submitted')
 
 })
 
@@ -112,8 +113,8 @@ contests.post('/get_user_submissions', authenticateToken, async function (req, r
 
 
 contests.post('/check_user_eligibility', check_submitter_eligibility_unprotected, async function (req, res, next) {
-    console.log(req.body)
     const data = {
+        is_pending: req.is_pending,
         restrictions: req.restrictions_with_results,
         has_already_submitted: req.has_already_submitted,
         is_submit_window: req.is_submit_window
@@ -139,6 +140,16 @@ contests.post('/user_voting_metrics', calc_sub_vp__unprotected, async function (
         },
         restrictions_with_results: req.restrictions_with_results,
         is_self_voting_error: req.is_self_voting_error
+    }
+    res.send(result).status(200)
+})
+
+contests.post('/user_total_voting_metrics', calc_total_vp_UNPROTECTED, async function (req, res, next) {
+    let result = {
+        metrics: {
+            contest_total_vp: req.contest_total_vp,
+            contest_remaining_vp: req.contest_remaining_vp,
+        }
     }
     res.send(result).status(200)
 })

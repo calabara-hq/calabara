@@ -12,12 +12,12 @@ function isAdmin(req, res, next) {
 
     if (err) return res.sendStatus(401)
     let admins = clean(result)
-    
+
     // if !admins, it's a new organization
     if (admins) {
       let is_admin = admins.addresses.includes(req.session.user.address);
-
-      if (!is_admin) return res.status(403).send('error')
+      console.log('IS ADMIN', is_admin)
+      if (!is_admin) return res.sendStatus(403)
 
       req.session.user.isAdmin = is_admin;
     }

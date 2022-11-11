@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import '../../css/gatekeeper-toggle.css'
+import '../../css/status-messages.css'
+import '../../css/manage-widgets.css'
 import { useSelector } from 'react-redux';
 import RoleSelectModal from './role-select-modal';
 
@@ -7,6 +9,7 @@ import RoleSelectModal from './role-select-modal';
 import {
   selectDashboardRules,
 } from '../../features/gatekeeper/gatekeeper-rules-reducer';
+import { TagType, TokenType } from '../../css/token-button-styles';
 
 function RuleSelect({ appliedRules, setAppliedRules, ruleError, setRuleError, toggle_identifier }) {
   // fetch available rules
@@ -16,7 +19,7 @@ function RuleSelect({ appliedRules, setAppliedRules, ruleError, setRuleError, to
     <div className="apply-gatekeeper-rules">
       {Object.entries(availableRules).map(([rule_id, value]) => {
         return (
-          <GatekeeperRule ruleError={ruleError} key={rule_id} setRuleError={setRuleError} element={value} rule_id={rule_id} appliedRules={appliedRules} setAppliedRules={setAppliedRules} toggle_identifier={toggle_identifier}/>
+          <GatekeeperRule ruleError={ruleError} key={rule_id} setRuleError={setRuleError} element={value} rule_id={rule_id} appliedRules={appliedRules} setAppliedRules={setAppliedRules} toggle_identifier={toggle_identifier} />
         )
       })}
     </div>
@@ -25,7 +28,7 @@ function RuleSelect({ appliedRules, setAppliedRules, ruleError, setRuleError, to
 
 
 
-function GatekeeperRule({ element, rule_id, appliedRules, setAppliedRules, ruleError, setRuleError, toggle_identifier}) {
+function GatekeeperRule({ element, rule_id, appliedRules, setAppliedRules, ruleError, setRuleError, toggle_identifier }) {
 
   const [isGatekeeperOn, setIsGatekeeperOn] = useState(appliedRules[rule_id] != undefined)
   const [roleModalOpen, setRoleModalOpen] = useState(false)
@@ -69,14 +72,14 @@ function GatekeeperRule({ element, rule_id, appliedRules, setAppliedRules, ruleE
   return (
     <>
       <div className={'gk-rule ' + (ruleError.id == rule_id ? 'error' : 'undefined')}>
-        {(element.type === 'erc721' || element.type === 'erc20') &&
+        {(element.type === 'erc721' || element.type === 'erc20' || element.type === 'erc1155') &&
           <>
-            <p><b>Type:</b> <span className={element.type}>{element.type}</span></p>
+            <TokenType><b>Type:</b> <TagType type={element.type}>{element.type}</TagType></TokenType>
             <p><b>Symbol: </b>
               <span onClick={() => { window.open('https://etherscan.io/address/' + element.type) }} className='gatekeeper-symbol'>{element.symbol}  <i className="fas fa-external-link-alt"></i></span>
             </p>
             <div className="toggle-flex">
-              <ToggleSwitch setRuleError={setRuleError} ruleError={ruleError} addRule={addRule} deleteRule={deleteRule} rule_id={rule_id} isGatekeeperOn={isGatekeeperOn} setIsGatekeeperOn={setIsGatekeeperOn} appliedRules={appliedRules} setAppliedRules={setAppliedRules} toggle_identifier={toggle_identifier}/>
+              <ToggleSwitch setRuleError={setRuleError} ruleError={ruleError} addRule={addRule} deleteRule={deleteRule} rule_id={rule_id} isGatekeeperOn={isGatekeeperOn} setIsGatekeeperOn={setIsGatekeeperOn} appliedRules={appliedRules} setAppliedRules={setAppliedRules} toggle_identifier={toggle_identifier} />
               {isGatekeeperOn &&
                 <>
                   <input type="number" value={appliedRules[rule_id]} placeholder="threshold" onChange={handleThresholdChange}></input>
@@ -86,7 +89,7 @@ function GatekeeperRule({ element, rule_id, appliedRules, setAppliedRules, ruleE
             </div>
           </>
         }
-        {(element.type === 'discord') &&
+        {/*(element.type === 'discord') &&
           <>
             <p><b>Type:</b> <span className={element.type}>{element.type}</span></p>
             <p><b>Server:</b> {element.serverName}</p>
@@ -100,7 +103,7 @@ function GatekeeperRule({ element, rule_id, appliedRules, setAppliedRules, ruleE
               }
             </div>
           </>
-        }
+            */}
       </div>
 
       {ruleError.id == rule_id &&
