@@ -31,9 +31,11 @@ export default function ExpandedPrompt({ isCreating, setIsCreating, handleClose 
     if (!isCreating) {
         return (
             <>
-                <QualificationsWrap>
-                    {contest_state === 1 && <SubmissionQualifications submitOnClick={handleCreateSubmission} />}
-                </QualificationsWrap>
+                {contest_state === 0 &&
+                    <QualificationsWrap>
+                        <SubmissionQualifications submitOnClick={handleCreateSubmission} />
+                    </QualificationsWrap>
+                }
                 <PromptWrap>
                     <PromptTop>
                         <h3>{prompt_data.title}</h3>

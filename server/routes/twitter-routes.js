@@ -66,7 +66,7 @@ twitter.get('/oauth2', authenticateToken, async function (req, res, next) {
     }
 
 
-    requestClient.loginWithOAuth2({ code, codeVerifier, redirectUri: 'https://localhost:3001/twitter/oauth2' })
+    requestClient.loginWithOAuth2({ code, codeVerifier, redirectUri: twitter_redirect })
         .then(async ({ client: loggedClient, accessToken, refreshToken, expiresIn }) => {
 
             req.session.twitter.accessToken = accessToken

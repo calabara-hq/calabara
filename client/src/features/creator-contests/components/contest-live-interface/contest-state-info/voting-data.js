@@ -1,24 +1,27 @@
 import { faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import axios from 'axios';
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { selectWalletAddress } from "../../../../../app/sessionReducer";
 import DrawerComponent from "../../../../drawer/drawer";
-import useContestVotes from "../../../../hooks/useContestVotes";
 import { Contest_h4 } from "../../common/common_styles";
 import ContestSummaryComponent from "../../contest-details/detail-components";
 import { SummaryWrap } from "../../contest-details/detail-style";
-import { selectContestSettings } from "../interface/contest-interface-reducer";
+import { selectContestSettings, selectRemainingVotingPower, selectTotalVotingPower, setRemainingVotingPower, setTotalVotingPower } from "../interface/contest-interface-reducer";
 import { DataGrid, DataWrap, GridElement } from "./styles";
 let compact_formatter = Intl.NumberFormat('en', { notation: 'compact' })
 
 
 export default function VotingData() {
-    const contest_settings = useSelector(selectContestSettings)
+    const contest_settings = useSelector(selectContestSettings);
     const [drawerOpen, setDrawerOpen] = useState(false);
-    const {
-        remaining_vp,
-        total_available_vp,
-    } = useContestVotes();
+    const dispatch = useDispatch();
+    const remaining_vp = useSelector(selectRemainingVotingPower);
+    const total_available_vp = useSelector(selectTotalVotingPower);
+    const walletAddress = useSelector(selectWalletAddress);
+    const { contest_hash, ens } = useParams();
 
     const handleDrawerOpen = () => {
         setDrawerOpen(true);
@@ -31,6 +34,14 @@ export default function VotingData() {
         document.body.style.overflow = 'unset';
     }
 
+    useEffect(() => {
+        axios.post('/creator_contests/user_total_voting_metrics', { ens: ens, contest_hash: contest_hash, walletAddress: walletAddress })
+            .then(res => res.data)
+            .then(result => {
+                dispatch(setTotalVotingPower(result.metrics.contest_total_vp))
+                dispatch(setRemainingVotingPower(result.metrics.contest_remaining_vp))
+            })
+    }, [])
 
     return (
         <DataWrap>

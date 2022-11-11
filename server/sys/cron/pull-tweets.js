@@ -48,7 +48,7 @@ const main_loop = async () => {
 }
 // run this every 5 minutes
 const pull_tweets = () => {
-    cron.schedule(EVERY_30_SECONDS, () => {
+    cron.schedule(EVERY_5_MINUTES, () => {
         console.log('pulling contest tweets')
         main_loop()
     })

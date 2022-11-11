@@ -9,7 +9,7 @@ const { clean, asArray, serializedLoop, parallelLoop } = require('../../helpers/
 const { get_thread, get_tweet } = require('../../twitter-client/helpers.js');
 const { checkWalletTokenBalance } = require('../../web3/web3.js');
 const fetch = require('node-fetch');
-const {socketSendNewSubmission, socketSendUserSubmissionStatus} = require('../../helpers/socket-messages.js');
+const { socketSendNewSubmission, socketSendUserSubmissionStatus } = require('../../helpers/socket-messages.js');
 
 const serverBasePath = path.normalize(path.join(__dirname, '../../'))
 
@@ -35,12 +35,17 @@ const randomId = (length) => {
     return text;
 }
 
+// add 30 seconds since this loop only runs every 30 secs
+const getDate = () => {
+    const now = new Date()
+    return new Date(now.getTime() + 30 * 1000).toISOString()
+}
 
 
 // select unregistered tweets. group by author id
 
 const pull_unregistered_tweets = async () => {
-    let now = new Date().toISOString();
+    let now = getDate();
     return await db.query('with upd as (update tweets set locked = true from \
                     (select tweets.id from tweets inner join contests on tweets.contest_hash = contests._hash \
                     where registered = false and contests._start < $1 and contests._voting > $1) as subquery\

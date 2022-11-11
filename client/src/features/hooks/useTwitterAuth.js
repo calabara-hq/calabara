@@ -1,18 +1,20 @@
 import axios from "axios";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { setUserTwitter } from "../user/user-reducer";
 
 export const useTwitterAuth = () => {
     const [authState, setAuthState] = useState(0);
     const [accountInfo, setAccountInfo] = useState(null);
     const [error, setError] = useState(false);
-
+    const dispatch = useDispatch();
     const openWindow = (uri) => {
         return window.open(uri, "_blank", "height=750,width=600,scrollbars")
     }
 
     // on initial open, we check if user is already authed
     const handleOpenAuth = (scope_type) => {
-        if(error) setError(false)
+        if (error) setError(false)
         axios.post('/twitter/generateAuthLink', { scope_type: scope_type }, { withCredentials: true })
             .then(res => {
                 openWindow(res.data)
@@ -39,6 +41,7 @@ export const useTwitterAuth = () => {
                     case 'ready':
                         console.log('ready')
                         setAccountInfo(data.user)
+                        dispatch(setUserTwitter(data.user))
                         setError(false)
                         setAuthState(2)
                 }

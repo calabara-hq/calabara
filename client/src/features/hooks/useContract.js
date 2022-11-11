@@ -27,16 +27,6 @@ export default function useContract() {
 
         console.log(symbol, decimal)
         return [symbol, decimal]
-        /*
-    //let decimal = '0'
-    try {
-        decimal = await tokenContract.functions.decimals();
-        return [symbol[0], decimal[0]]
-    } catch (e) {
-        //console.log(e)
-        return [symbol[0], decimal[0]]
-    }
-    */
     }
 
     async function getTokenStandard(contractAddress) {

@@ -22,6 +22,8 @@ import { fade_in } from "../../../../common/common_styles";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamation, faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import { faTwitter } from "@fortawesome/free-brands-svg-icons";
+import { useSelector } from "react-redux";
+import { selectIsTwitterLinked } from "../../../../../../user/user-reducer";
 
 
 export default function TwitterSubmissionBuilder({ handleExitSubmission, isUserEligible, handleCloseDrawer }) {
@@ -172,9 +174,13 @@ function ActionsController(props) {
 }
 
 function AuthChoice(props) {
+    const isTwitterConnected = useSelector(selectIsTwitterLinked)
 
     const handleChoice = (choice) => {
-        props.setBuilderData({ type: 'update_single', payload: { auth_type: choice, stage: 1 } })
+        let stage = 1
+        // dont ask them to connect again if their twitter is already hooked up and simple auth is chosen
+        if ((choice === 'standard') && isTwitterConnected) stage = 2
+        props.setBuilderData({ type: 'update_single', payload: { auth_type: choice, stage: stage } })
     }
 
 

@@ -1,14 +1,12 @@
-import { useHistory, useParams } from "react-router-dom";
-import React, { useState, useEffect, Suspense, useRef, useCallback } from "react";
-import axios from 'axios';
-import { useDispatch, useSelector } from "react-redux";
-import { setContestSettings, setPromptData, stateReset, updateState, selectIsLoading } from "./contest-interface-reducer";
-import Placeholder from "../../common/spinner";
-import { socket, initializeSocketConnection, disconnectSocket } from "../../../../../service/socket";
-import { selectContestState } from "./contest-interface-reducer";
-import ContestInterface from './interface'
-import styled from 'styled-components'
 import moment from 'moment';
+import React, { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useHistory, useParams } from "react-router-dom";
+import styled from 'styled-components';
+import { disconnectSocket, initializeSocketConnection, socket } from "../../../../../service/socket";
+import Placeholder from "../../common/spinner";
+import { selectIsLoading, setContestSettings, setPromptData, stateReset, updateState } from "./contest-interface-reducer";
+import ContestInterface from './interface';
 
 const FallbackInterface = styled.div`
     width: 70vw;
@@ -66,7 +64,7 @@ export default function ContestInterfaceController() {
 
         if (cc_state === 2) return clearInterval(timerRef.current);
     }
-
+    console.log('re rendering')
 
     useEffect(() => {
         let ignore = false;
@@ -106,6 +104,7 @@ export default function ContestInterfaceController() {
             document.body.style.overflow = 'unset';
         }
     }, [])
+
 
 
     if (isLoading) {

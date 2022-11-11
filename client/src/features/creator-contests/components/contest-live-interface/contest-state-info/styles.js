@@ -185,6 +185,29 @@ export const TwitterWrap = styled.div`
     position: relative;
     align-items: center;
 `
+
+export const TwitterAccountBox = styled.div`
+    display: flex;
+    align-items: center;
+`
+
+export const TwitterSwitchAccount = styled.span`
+    font-size: 14px;
+    margin-left: 5px;
+    color: grey;
+    align-self: flex-end;
+    cursor: pointer;
+    background-color: transparent;
+    border-radius: 4px;
+    padding: 3px;
+    ${scaleElement};
+
+    &:hover{
+        background-color: #1e1e1e;
+    }
+`
+
+
 export const WinnersButton = styled.button`
     margin-left: auto;
     font-size: 15px;

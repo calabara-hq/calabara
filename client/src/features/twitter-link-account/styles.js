@@ -10,9 +10,14 @@ export const LinkTwitterButton = styled.button`
     padding: 10px 20px;
     font-weight: bold;
     animation: ${fade_in} 0.3s ease-in-out;
-    ${scaleElement}
+    &:enabled{
+        ${scaleElement}
+    }
     &:hover{
         //background-color: rgba(29, 155, 240)
+    }
+    &:disabled{
+        background-color: grey;
     }
 `
 

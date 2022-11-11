@@ -7,7 +7,7 @@ import LinkTwitter from "../../../../twitter-link-account/link-twitter";
 import { selectIsTwitterLinked, selectUserTwitter, setUserTwitter } from "../../../../user/user-reducer";
 import { Contest_h4 } from "../../common/common_styles";
 import { selectContestSettings } from "../interface/contest-interface-reducer";
-import { AltSubmissionButton, ConnectWalletButton, DataGrid, DataWrap, GridElement, RestrictionStatus, RestrictionStatusNotConnected, SubmissionStatus, TwitterWrap } from "./styles";
+import { AltSubmissionButton, ConnectWalletButton, DataGrid, DataWrap, GridElement, RestrictionStatus, RestrictionStatusNotConnected, SubmissionStatus, TwitterAccountBox, TwitterSwitchAccount, TwitterWrap } from "./styles";
 
 export default function SubmissionQualifications({ showTwitter, submitOnClick }) {
     const contest_settings = useSelector(selectContestSettings)
@@ -60,32 +60,26 @@ export default function SubmissionQualifications({ showTwitter, submitOnClick })
 function TwitterStatus({ }) {
     const isTwitterLinked = useSelector(selectIsTwitterLinked)
     const twitterAccount = useSelector(selectUserTwitter)
+    const { onOpen, auth_error, accountInfo } = useTwitterAuth();
+    const [error, setError] = useState(null)
+    const dispatch = useDispatch();
+
+
 
     if (isTwitterLinked) {
         return (
             <GridElement>
                 <div><p>Twitter</p></div>
-                <div><p><img style={{ borderRadius: '100px', maxWidth: '30px' }} src={twitterAccount.profile_image_url} /><SubmissionStatus status={'pass'} key={`twitter-eligibility`} /></p></div>
+                <div>
+                    <TwitterAccountBox>
+                        <img style={{ borderRadius: '100px', maxWidth: '30px' }} src={twitterAccount.profile_image_url} />
+                        <TwitterSwitchAccount onClick={() => onOpen('standard')}>edit</TwitterSwitchAccount>
+                        <SubmissionStatus status={'pass'} key={`twitter-eligibility`} />
+                    </TwitterAccountBox>
+                </div>
             </GridElement>
         )
     }
-
-    return (
-        <LinkTwitterAccount />
-    )
-}
-
-
-function LinkTwitterAccount({ }) {
-    const { onOpen, auth_error, accountInfo } = useTwitterAuth();
-    const [error, setError] = useState(null)
-    const dispatch = useDispatch();
-    useEffect(() => {
-        if (accountInfo) {
-            console.log(accountInfo)
-            dispatch(setUserTwitter(accountInfo))
-        }
-    }, [accountInfo])
 
     return (
         <GridElement>
@@ -99,7 +93,6 @@ function LinkTwitterAccount({ }) {
         </GridElement>
     )
 }
-
 
 
 function ComputeStatus({ submissionStatus, isUserEligible }) {

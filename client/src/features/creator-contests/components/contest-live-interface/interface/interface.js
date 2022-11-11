@@ -1,19 +1,19 @@
-import React, { useState, useEffect, useRef, Suspense } from 'react'
-import styled from "styled-components";
-import { useParams } from "react-router-dom";
-import ContestInfo from "../contest_info/contest-info";
-import PromptDisplay from '../prompts/prompt-display';
+import React, { useEffect } from 'react';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { useSelector } from "react-redux";
-import { ContestDurationCheckpointBar, ContestSubmissionCheckpointFallback } from "../../../../checkpoint-bar/checkpoint-bar";
-import { CheckpointWrap, CheckpointTop, CheckpointBottomTag, CheckpointBottom } from '../contest_info/contest-info-style';
+import { useParams } from "react-router-dom";
+import styled from "styled-components";
+import BackButton from '../../../../back-button/back-button';
+import { ContestDurationCheckpointBar } from "../../../../checkpoint-bar/checkpoint-bar";
 import { selectDashboardInfo } from "../../../../dashboard/dashboard-info-reducer";
 import useCommon from "../../../../hooks/useCommon";
-import { Contest_h2_alt, fade_in } from '../../common/common_styles';
-import BackButton from '../../../../back-button/back-button';
-import { LazyLoadImage } from 'react-lazy-load-image-component';
+import { Contest_h2_alt } from '../../common/common_styles';
+import ContestStateInfo from '../contest-state-info/state-info-display';
+import ContestInfo from "../contest_info/contest-info";
+import { CheckpointBottom, CheckpointBottomTag, CheckpointTop, CheckpointWrap } from '../contest_info/contest-info-style';
+import PromptDisplay from '../prompts/prompt-display';
 import SubmissionDisplay from '../submissions/submission-display/submission-display';
 import { selectDurations, selectProgressRatio } from './contest-interface-reducer';
-import ContestStateInfo from '../contest-state-info/state-info-display';
 
 const ContestInterfaceWrap = styled.div`
     display: flex;

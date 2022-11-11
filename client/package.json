@@ -133,7 +133,7 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "https://127.0.0.1:3001/",
+  "proxy": "https://localhost:3001",
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.17.7",
     "@testing-library/react-hooks": "^8.0.1"
