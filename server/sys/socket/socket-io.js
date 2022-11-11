@@ -6,7 +6,13 @@ const socketConnection = (server) => {
         console.info(`Client connected [id=${socket.id}]`);
 
 
-        socket.on('subscribe', (room) => {
+        socket.on('contest-subscribe', (room) => {
+            // add subscription
+            console.info(`Client joining [room=${room}]`);
+            socket.join(room)
+        })
+
+        socket.on('user-subscribe', (room) => {
             // add subscription
             console.info(`Client joining [room=${room}]`);
             socket.join(room)

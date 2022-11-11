@@ -12,7 +12,7 @@ const { checkWalletTokenBalance } = require('../../web3/web3')
 
 // return restrictions, submit_window, and whether this user already submitted or not
 const pre_process = async (ens, walletAddress, contest_hash) => {
-    const query1 = 'select settings->\'submitter_restrictions\' as restrictions, settings->\'snapshot_block\' as snapshot_block, _start, _voting from contests where ens = $1 and _hash = $2';
+    const query1 = 'select settings->\'submitter_restrictions\' as restrictions, settings->\'snapshot_block\' as snapshot_block, settings->\'twitter_integration\' as twitter_integration ,_start, _voting from contests where ens = $1 and _hash = $2';
     const query2 = 'select id from contest_submissions where ens = $1 and contest_hash=$2 and author=$3'
 
     let [contest_meta, user_subs] = await Promise.all(
@@ -26,6 +26,7 @@ const pre_process = async (ens, walletAddress, contest_hash) => {
 
     return {
         restrictions: contest_meta.restrictions,
+        is_twitter: contest_meta.twitter_integration,
         is_submit_window: ((contest_meta._start < curr_time) && (curr_time < contest_meta._voting)),
         has_already_submitted: user_subs.length > 0,
         snapshot_block: contest_meta.snapshot_block
@@ -38,9 +39,9 @@ const compute_restrictions = async (mode, walletAddress, restrictions, snapshot_
     if (restrictions.length === 0) return true
 
     for (const restriction of restrictions) {
-        if (restriction.type === 'erc20' || restriction.type === 'erc721') {
+        if (restriction.type === 'erc20' || restriction.type === 'erc721' || restriction.type === 'erc1155') {
 
-            let result = await checkWalletTokenBalance(walletAddress, restriction.address, restriction.decimal, snapshot_block)
+            let result = await checkWalletTokenBalance(walletAddress, restriction.address, restriction.decimal, snapshot_block, restriction.token_id)
 
             let did_user_pass = result >= restriction.threshold;
 
@@ -64,6 +65,18 @@ const compute_restrictions = async (mode, walletAddress, restrictions, snapshot_
 
 }
 
+// if twitter contest, check db for tweets that are not yet registered
+const checkPendingSubmissions = async (walletAddress, contest_hash, is_twitter) => {
+    if (!is_twitter) return false
+
+    return await db.query('select tweets.id from users inner join tweets on users.twitter ->> \'id\' = tweets.author_id where tweets.registered = false and users.address = $1 and tweets.contest_hash = $2', [walletAddress, contest_hash])
+        .then(clean)
+        .then(data => data ? true : false)
+
+}
+
+
+
 // unprotected eligibility check.
 async function check_submitter_eligibility_unprotected(req, res, next) {
     const { ens, walletAddress, contest_hash } = req.body;
@@ -71,8 +84,10 @@ async function check_submitter_eligibility_unprotected(req, res, next) {
 
     let contest_meta = await pre_process(ens, walletAddress, contest_hash);
     let restriction_results = await compute_restrictions(mode, walletAddress, contest_meta.restrictions, contest_meta.snapshot_block);
+    let isSubmissionPending = await checkPendingSubmissions(walletAddress, contest_hash, contest_meta.is_twitter)
 
-
+    console.log('IS PENDING', isSubmissionPending)
+    req.is_pending = isSubmissionPending;
     req.restrictions_with_results = restriction_results;
     req.has_already_submitted = contest_meta.has_already_submitted;
     req.is_submit_window = contest_meta.is_submit_window;

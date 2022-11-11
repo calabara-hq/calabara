@@ -73,7 +73,7 @@ function ActionController(props) {
                 {props.twitterData.error === "invalid_auth" && <div className="tab-message error"><p>please authenticate your twitter account</p></div>}
                 <LinkTwitterWrap>
                     {!isWalletConnected ? <ConnectWalletButton onClick={walletConnect}>Connect</ConnectWalletButton> : null}
-                    <LinkTwitter onOpen={props.onOpen} accountInfo={props.accountInfo} twitterData={props.twitterData} setTwitterData={props.setTwitterData} auth_error={props.auth_error} auth_type={'privileged'} />
+                    <LinkTwitter onOpen={props.onOpen} accountInfo={props.accountInfo} clearErrors={() => props.setTwitterData({ type: 'update_single', payload: { error: null } })} auth_error={props.auth_error} auth_type={'privileged'} />
                 </LinkTwitterWrap>
             </>
         )

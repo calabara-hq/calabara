@@ -1,14 +1,13 @@
-import React, { useEffect, useState, useReducer, useContext } from 'react'
-import autoMergeLevel1 from 'redux-persist/es/stateReconciler/autoMergeLevel1'
-import styled from 'styled-components'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faPencil, faPlus } from '@fortawesome/free-solid-svg-icons';
-import ethLogo from '../../../../../img/eth.png'
-import EditRewardsModal from '../../common/add-token-modal';
-import { Contest_h3_alt, ERC20Button_alt, TagType } from '../../common/common_styles';
-import { ERC20Button, ERC721Button_alt } from '../../common/common_styles';
-import { rewardOptionActions, rewardOptionState } from './reducers/rewards-reducer';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import styled from 'styled-components';
+import { ERC1155Button, ERC20Button, ERC721Button } from '../../../../../css/token-button-styles';
+import ethLogo from '../../../../../img/eth.png';
+import EditRewardsModal from '../../../../add-token/add-token-modal';
+import { Contest_h3_alt, ERC20Button_alt, ERC721Button_alt, TagType } from '../../common/common_styles';
+import { rewardOptionActions, rewardOptionState } from './reducers/rewards-reducer';
 
 const Wrap = styled.div`
     display: flex;
@@ -147,10 +146,11 @@ export default function RewardSelector({ }) {
                         </RewardOption>
                     )
                 })}
+
             </AvailableRewards>
             <NewRewardContainer>
-                {!rewardOptions.erc20 && <ERC20Button_alt onClick={() => handleEditRewardOption('erc20')}><FontAwesomeIcon icon={faPlus} /> ERC-20</ERC20Button_alt>}
-                {!rewardOptions.erc721 && <ERC721Button_alt onClick={() => handleEditRewardOption('erc721')}><FontAwesomeIcon icon={faPlus} /> ERC-721</ERC721Button_alt>}
+                {!rewardOptions.erc20 && <ERC20Button onClick={() => handleEditRewardOption('erc20')}><FontAwesomeIcon icon={faPlus} /> ERC-20</ERC20Button>}
+                {!rewardOptions.erc721 && <ERC721Button onClick={() => handleEditRewardOption('erc721')}><FontAwesomeIcon icon={faPlus} /> ERC-721</ERC721Button>}
             </NewRewardContainer>
             <EditRewardsModal modalOpen={editRewardsModalOpen} handleClose={handleRewardsModalClose} existingRewardData={rewardOptions[tokenType]} tokenType={tokenType} title={"Add Reward Option"} />
         </Wrap>

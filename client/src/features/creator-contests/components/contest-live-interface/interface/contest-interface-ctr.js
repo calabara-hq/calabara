@@ -1,14 +1,12 @@
-import { useHistory, useParams } from "react-router-dom";
-import React, { useState, useEffect, Suspense, useRef, useCallback } from "react";
-import axios from 'axios';
-import { useDispatch, useSelector } from "react-redux";
-import { setContestSettings, setPromptData, stateReset, updateState, selectIsLoading } from "./contest-interface-reducer";
-import Placeholder from "../../common/spinner";
-import { socket, initializeSocketConnection, disconnectSocket } from "../../../../../service/socket";
-import { selectContestState } from "./contest-interface-reducer";
-import ContestInterface from './interface'
-import styled from 'styled-components'
 import moment from 'moment';
+import React, { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useHistory, useParams } from "react-router-dom";
+import styled from 'styled-components';
+import { disconnectSocket, initializeSocketConnection, socket } from "../../../../../service/socket";
+import Placeholder from "../../common/spinner";
+import { selectIsLoading, setContestSettings, setPromptData, stateReset, updateState } from "./contest-interface-reducer";
+import ContestInterface from './interface';
 
 const FallbackInterface = styled.div`
     width: 70vw;
@@ -34,12 +32,9 @@ const calculateDuration = (t0, t1, t2) => {
 
 const calculateProgressRatio = (cc_state, t0, t1, t2) => {
     if (cc_state === 0) {
-
-        //return (((moment().format('x') - moment(t0).format('x')) / ((moment(t1).format('x') - moment(t0).format('x'))) / 2) * 100)
         return (((moment().format('x') - moment(t0).format('x')) / (moment(t1).format('x') - moment(t0).format('x'))) / 2 * 100)
     }
     else if (cc_state === 1) {
-        //return barProgress + ((moment().format('x') - moment(t1).format('x')) / ((moment(t2).format('x') - moment(t1).format('x')))* 100)
         return (((moment().format('x') - moment(t1).format('x')) / (moment(t2).format('x') - moment(t1).format('x'))) / 2 * 100 + 50)
     }
     else return 100
@@ -56,7 +51,6 @@ export default function ContestInterfaceController() {
     const isLoading = useSelector(selectIsLoading);
     const history = useHistory();
 
-
     const updateContestState = (t0, t1, t2) => {
         let time_state = calculateDuration(t0, t1, t2);
         let index = time_state.indexOf('active');
@@ -70,7 +64,6 @@ export default function ContestInterfaceController() {
 
         if (cc_state === 2) return clearInterval(timerRef.current);
     }
-
 
     useEffect(() => {
         let ignore = false;
@@ -96,7 +89,9 @@ export default function ContestInterfaceController() {
 
         socket.on('connect', () => {
             console.log('connected to socket')
-            socket.emit('subscribe', contest_hash)
+            // connect to submission channel
+            socket.emit('contest-subscribe', contest_hash)
+
         })
 
 
@@ -105,8 +100,10 @@ export default function ContestInterfaceController() {
             dispatch(stateReset())
             clearInterval(timerRef.current)
             disconnectSocket();
+            document.body.style.overflow = 'unset';
         }
     }, [])
+
 
 
     if (isLoading) {

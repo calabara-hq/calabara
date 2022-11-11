@@ -21,7 +21,6 @@ export default function useTweet() {
      */
 
     const sendQuoteTweet = (ens, contest_hash, tweet) => {
-        console.log(tweet)
         return authenticated_post('/twitter/sendQuoteTweet', { ens: ens, contest_hash: contest_hash, tweet: tweet })
             .then(res => {
                 if (!res) throw (new Error())

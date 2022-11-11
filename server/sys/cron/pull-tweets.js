@@ -1,8 +1,9 @@
 const cron = require('node-cron')
 const db = require('../../helpers/db-init.js')
-const { EVERY_5_MINUTES, EVERY_10_SECONDS } = require('./schedule')
-const { clean, asArray } = require('../../helpers/common.js');
-const { fetch_quote_tweets } = require('../../twitter-client/helpers.js');
+const { EVERY_5_MINUTES, EVERY_10_SECONDS, EVERY_30_SECONDS } = require('./schedule')
+const { clean, asArray, parallelLoop } = require('../../helpers/common.js');
+const { fetch_quote_tweets, register_tweet } = require('../../twitter-client/helpers.js');
+const { TwitterV2IncludesHelper } = require('twitter-api-v2');
 
 
 // get twitter contests that are in the submit window -- done
@@ -35,24 +36,16 @@ const pull_active_twitter_contests = async () => {
         })
 }
 
-
-const register_tweet = async (contest, quote) => {
-    return await db.query('insert into tweets (tweet_id, author_id, created, contest_hash, locked, registered) values ($1, $2, $3, $4, $5, $6)', [quote.id, quote.author_id, quote.created_at, contest.hash, false, false])
-        .catch(err => { return (err) })
-}
-
-
 const main_loop = async () => {
     const contests = await pull_active_twitter_contests()
-    for (const contest of contests) {
+    await parallelLoop(contests, async (contest) => {
         let quotes = await fetch_quote_tweets(contest.tweet_id)
         if (!quotes) return
         for (const quote of quotes) {
             await register_tweet(contest, quote)
         }
-    }
+    })
 }
-
 // run this every 5 minutes
 const pull_tweets = () => {
     cron.schedule(EVERY_5_MINUTES, () => {

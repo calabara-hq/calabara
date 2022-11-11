@@ -1,5 +1,5 @@
 const cron = require('node-cron');
-const { clean, asArray } = require('../../helpers/common.js');
+const { clean, asArray, serializedLoop, parallelLoop } = require('../../helpers/common.js');
 const db = require('../../helpers/db-init.js');
 const { EVERY_10_SECONDS, EVERY_30_SECONDS } = require('./schedule');
 const fs = require('fs');
@@ -51,6 +51,7 @@ const deleteFromFs = (url) => {
 
 
 const parseBody = async (chunk) => {
+
     for (block of chunk.submission_body.blocks) {
         if (block.type === 'image') {
             let hash = await pinFromFs(block.data.file.url)
@@ -76,8 +77,10 @@ const parseSubmission = async (chunk) => {
 
 }
 
-const mainLoop = async (unpinned_files) => {
-    for (unpinned_body of unpinned_files) {
+const mainLoop = async () => {
+
+    let unpinned_files = await getFileUrls();
+    await parallelLoop(unpinned_files, async (unpinned_body) => {
         try {
             const datasource = fs.createReadStream(fs_path.normalize(fs_path.join(serverBasePath, unpinned_body._url)))
 
@@ -117,15 +120,15 @@ const mainLoop = async (unpinned_files) => {
             ])
 
         } catch (err) { console.log(err) }
-    }
+    })
     return
 }
 
 
 const pin_staging_files = () => {
     cron.schedule(EVERY_30_SECONDS, async () => {
-        let unpinned_files = await getFileUrls();
-        await mainLoop(unpinned_files);
+        console.log('pinning submissions')
+        mainLoop();
     })
 }
 

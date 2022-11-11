@@ -1,14 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
-import useVotingEngine from "../../../../hooks/useVotingEngine";
+import { faCheckToSlot, faCircleCheck } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useWalletContext } from "../../../../../app/WalletContext";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheckToSlot, faCircleCheck, faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
-import { ErrorMessage, fade_in } from "../../common/common_styles";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import '../../../../../css/manage-widgets.css'
-import '../../../../../css/gatekeeper-toggle.css'
+import '../../../../../css/gatekeeper-toggle.css';
+import '../../../../../css/manage-widgets.css';
+import useVotingEngine from "../../../../hooks/useVotingEngine";
 import { showNotification } from "../../../../notifications/notifications";
+import { fade_in } from "../../common/common_styles";
 let compact_formatter = Intl.NumberFormat('en', { notation: 'compact' })
 let round_formatter = Intl.NumberFormat('en', { maximumFractionDigits: 0 })
 
@@ -321,4 +320,4 @@ function SubmissionVotingBox({ sub_id }) {
     )
 }
 
-export { SubmissionVotingBox }
+export { SubmissionVotingBox };

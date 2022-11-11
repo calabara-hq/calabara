@@ -23,6 +23,7 @@ const randomNonce = (length) => {
 authentication.post('/generate_nonce', async function (req, res, next) {
     const { address } = req.body;
     let nonce = randomNonce(25)
+    console.log(address)
     await db.query('insert into users (address, nonce) values ($1, $2) on conflict (address) do update set nonce = $2', [address, nonce]);
     res.send({ nonce: nonce });
     res.status(200);

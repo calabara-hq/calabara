@@ -17,9 +17,10 @@ import { useDiscordAuth } from '../hooks/useDiscordAuth'
 import useDashboardRules from '../hooks/useDashboardRules'
 import useDashboard from '../hooks/useDashboard'
 import useOrganization from '../hooks/useOrganization'
-import AddNewToken from '../creator-contests/components/common/add_token'
+import AddNewToken from '../add-token/add_token'
 import { useWalletContext } from '../../app/WalletContext'
 import { selectIsConnected, selectWalletAddress } from '../../app/sessionReducer'
+import { ERC1155Button, ERC20Button, ERC721Button, TagType, TokenType } from '../../css/token-button-styles'
 
 
 export default function SettingsManager() {
@@ -535,10 +536,10 @@ function OrganizationGatekeeperComponent({ standardProps }) {
                             return (
                                 <>
                                     <div className="gatekeeper-option" key={idx}>
-                                        {(el.type === 'erc721' || el.type === 'erc20') &&
+                                        {(el.type === 'erc721' || el.type === 'erc20' || el.type === 'erc1155') &&
                                             <>
                                                 <button className="remove-gatekeeper-rule exit-btn" onClick={() => { setModalOpen(true); setDeleteModalIndex(idx) }}><Glyphicon glyph="trash" /></button>
-                                                <p><b>Type:</b> <span className={el.type}>{el.type}</span></p>
+                                                <TokenType><b>Type:</b> <TagType type={el.type}>{el.type}</TagType></TokenType>
                                                 <p><b>Symbol:</b> {el.symbol}</p>
                                                 <button onClick={() => { window.open('https://etherscan.io/address/' + el.address) }} className="gatekeeper-config">{el.address.substring(0, 6)}...{el.address.substring(38, 42)} <i className="fas fa-external-link-alt"></i></button>
                                             </>
@@ -560,9 +561,10 @@ function OrganizationGatekeeperComponent({ standardProps }) {
                     </div>
                     {modalOpen && <DeleteGkRuleModal modalOpen={modalOpen} handleClose={handleModalClose} handleDeleteGkRule={handleDeleteGkRule} idx={deleteModalIndex} />}
                     <div className="gatekeeper-option-buttons">
-                        <button className="erc20-option" onClick={() => { handleAddGatekeeperClick('erc20') }}>erc20</button>
-                        <button className="erc721-option" onClick={() => { handleAddGatekeeperClick('erc721') }}>erc721</button>
-                        {!doesDiscordExist && <button className="discord-roles-option" onClick={() => { handleAddGatekeeperClick('discord-roles') }}>discord</button>}
+                        <ERC20Button onClick={() => { handleAddGatekeeperClick('erc20') }}>erc20</ERC20Button>
+                        <ERC721Button onClick={() => { handleAddGatekeeperClick('erc721') }}>erc721</ERC721Button>
+                        <ERC1155Button onClick={() => { handleAddGatekeeperClick('erc1155') }}>erc1155</ERC1155Button>
+                        {/*!doesDiscordExist && <button className="discord-roles-option" onClick={() => { handleAddGatekeeperClick('discord-roles') }}>discord</button>*/}
 
                     </div>
                 </>

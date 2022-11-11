@@ -19,8 +19,6 @@ import useCommon from '../hooks/useCommon';
 import { useWalletContext } from '../../app/WalletContext';
 
 
-
-
 export default function ManageInstalledWidgetsTab({ setFunctionality, setTabHeader }) {
   const installedWidgets = useSelector(selectInstalledWidgets)
   const [selected, setSelected] = useState('')

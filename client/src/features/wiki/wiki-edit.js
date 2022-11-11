@@ -24,8 +24,8 @@ export default function WikiEditor() {
   const [filedata, setFileData] = useState([]);
   const [redirect, setRedirect] = useState(true);
 
-  useEffect(async () => {
 
+  useEffect(() => {
     if (info.name == "") {
       // don't allow direct url access. direct the user to the wiki-display screen first.
       history.push('/' + ens + '/docs')
@@ -40,9 +40,12 @@ export default function WikiEditor() {
       }
       else {
         // load data from server
-        const wiki = await axios.get('/wiki/readWiki/' + file)
-        setFileData(wiki.data);
-        setIsLoaded(true);
+        axios.get('/wiki/readWiki/' + file)
+          .then(res => {
+            setFileData(res.data);
+            setIsLoaded(true);
+          })
+
       }
     }
   }, [])

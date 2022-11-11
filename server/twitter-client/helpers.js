@@ -1,6 +1,8 @@
 const { TwitterApi } = require("twitter-api-v2");
 const { client } = require("../discord-bot/discord-bot");
+const { clean, asArray } = require("../helpers/common");
 const db = require("../helpers/db-init");
+const { socketSendUserSubmissionStatus } = require("../helpers/socket-messages");
 const { appClient } = require("./config");
 
 
@@ -53,11 +55,40 @@ const fetch_quote_tweets = async (tweet_id) => {
     }
 }
 
+// should only set registering message if they havent already submitted
+// already submitted means that this wallet + twitter account has already made a sub in the contest
+
+const sendUserMessage = async (contest, quote) => {
+    // get the user addresses that have submitted for this contest with this twitter account (could be more than 1)
+    let has_submitted = await db.query('select contest_submissions.id from contest_submissions inner join users on users.address = contest_submissions.author where users.twitter->>\'id\' = $1', [quote.author_id])
+        .then(clean)
+
+    if (!has_submitted) {
+        db.query('select address from users where twitter->>\'id\' = $1', [quote.author_id])
+            .then(clean)
+            .then(data => {
+                // if user exists in the DB, send a pending message to all linked addresses for the account
+                if (data) {
+                    console.log('attempting to send socket message to address', data.address)
+                    socketSendUserSubmissionStatus(data.address, contest.hash, 'registering')
+                }
+            })
+    }
+}
+
+const register_tweet = async (contest, quote) => {
+    return await db.query('insert into tweets (tweet_id, author_id, created, contest_hash, locked, registered) values ($1, $2, $3, $4, $5, $6)', [quote.id, quote.author_id, quote.created_at, contest.hash, false, false])
+        .then(() => {
+            sendUserMessage(contest, quote)
+        })
+        .catch(err => { return err })
+}
 
 const handle_fetched_tweet = async (tweet) => {
+    console.log('handling streamed tweet')
     console.log(tweet)
-    let contest_hash = tweet.matching_rules[0].tag
-    await db.query('insert into tweets (tweet_id, author_id, created, contest_hash, locked, registered) values ($1, $2, $3, $4, $5, $6)', [tweet.data.id, tweet.data.author_id, tweet.data.created_at, contest_hash, false, false])
+    let contest = { hash: tweet.matching_rules[0].tag }
+    return await register_tweet(contest, tweet.data)
 }
 
 
@@ -82,4 +113,4 @@ const get_thread = async (tweet_id, author_id) => {
     }
 }
 
-module.exports = { twitter_send_tweet, twitter_delete_tweet, fetch_quote_tweets, handle_fetched_tweet, get_tweet, get_thread }
+module.exports = { twitter_send_tweet, twitter_delete_tweet, fetch_quote_tweets, handle_fetched_tweet, get_tweet, get_thread, register_tweet }

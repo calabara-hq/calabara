@@ -108,7 +108,6 @@ export const Contest = styled.div`
     &:hover{
         background-color: #1e1e1e;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
-
     }
 
 `

@@ -34,7 +34,7 @@ export default function useWallet() {
         isConnected: isConnected,
         walletConnect: openConnectModal,
         walletDisconnect: () => { return disconnect() },
-        validAddress: (address) => { return validAddress(address) },
+        validAddress: async (address) => { return await validAddress(address) },
         authenticated_post: async (endpoint, body) => { return await authenticated_post(endpoint, body) },
 
     }

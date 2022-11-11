@@ -1,14 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import styled, { keyframes, css } from 'styled-components'
-import ExpandSubmissionDrawer from './expand-submission-drawer';
-import { useParams } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useEffect, useState } from 'react';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
+import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import styled, { css } from 'styled-components';
 import { socket } from '../../../../../../service/socket';
 import { selectContestState } from '../../interface/contest-interface-reducer';
-import DisplayWinners from '../../winners/contest-winners';
-import { ExpandedPromptComponent } from '../../prompts/prompt-display';
-import { VoteTotals, SubmissionMeta, Author, SubmissionBottomBlur } from './submission-display-styles';
+import ExpandSubmissionDrawer from './expand-submission-drawer';
+import { Author, SubmissionBottomBlur, SubmissionMeta, VoteTotals } from './submission-display-styles';
 
 
 const SubmissionWrap = styled.div`
@@ -140,7 +138,6 @@ export default function SubmissionDisplay({ }) {
         console.log('socket update!!!')
 
         const submissionListener = (submission) => {
-            console.log(submission)
             set_subs((prev_subs) => {
                 const new_subs = [...prev_subs]
                 new_subs.push(submission);
@@ -155,8 +152,6 @@ export default function SubmissionDisplay({ }) {
         <div>
             <SubmissionHeading>
                 <h2 style={{ color: '#d3d3d3', marginBottom: '30px' }}>Submissions</h2>
-                <DisplayWinners />
-                <CreateSubmission />
             </SubmissionHeading >
             {subs.length > 0 &&
                 <SubmissionWrap>
@@ -166,36 +161,6 @@ export default function SubmissionDisplay({ }) {
         </div >
     )
 }
-
-
-function CreateSubmission({ }) {
-    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-    const [isCreating, setIsCreating] = useState(false);
-    const contest_state = useSelector(selectContestState)
-
-    const handleDrawerOpen = () => {
-        setIsDrawerOpen(true);
-        document.body.style.overflow = 'hidden';
-
-    }
-
-    const handleDrawerClose = () => {
-        setIsDrawerOpen(false);
-        setIsCreating(false);
-        document.body.style.overflow = 'unset';
-
-    }
-    if (contest_state === 0) return (
-        <>
-            <CreateSubmissionButton onClick={handleDrawerOpen}>create submission</CreateSubmissionButton>
-            <ExpandedPromptComponent isDrawerOpen={isDrawerOpen} handleDrawerClose={handleDrawerClose} isCreating={isCreating} setIsCreating={setIsCreating} />
-        </>
-    )
-
-    return null
-}
-
-
 
 function MapSubmissions({ subs }) {
 

@@ -358,13 +358,14 @@ function SaveSettings(props) {
         }
 
         if (votingStrategy.strategy_type === 'token') {
-            let { type, symbol, address, decimal } = votingStrategy.data.token_data
+            let { type, symbol, address, decimal, token_id } = votingStrategy.data.token_data
             strategy = {
                 strategy_type: votingStrategy.strategy_type,
                 type: type,
                 symbol: symbol,
                 address: address,
                 decimal: decimal,
+                ...token_id && { token_id: token_id },
                 hard_cap: votingStrategy.data.additional_configs.hardcap_limit,
                 sub_cap: votingStrategy.data.additional_configs.max_per_sub_limit
             }
@@ -421,10 +422,9 @@ function Summary({ contestData, promptData, twitterData, warnings, handleCloseDr
     const isWalletConnected = useSelector(selectIsConnected)
     const [isSaving, setIsSaving] = useState(false);
 
-
     const sendAnnouncementTweet = async () => {
-        let result = await authenticated_post('/twitter/send_announcement_tweet', { ens: ens, tweet: twitterData.tweets })
-        return result.data
+        return await authenticated_post('/twitter/send_announcement_tweet', { ens: ens, tweet: twitterData.tweets })
+            .then(result => result ? result.data : console.log(result))
     }
 
     const handleConfirm = async () => {
@@ -439,9 +439,12 @@ function Summary({ contestData, promptData, twitterData, warnings, handleCloseDr
         }
 
         await authenticated_post('/creator_contests/create_contest', { ens: ens, contest_settings: contestData, prompt_data: promptData })
-        setTimeout(() => {
-            handleCloseDrawer('saved')
-        }, 500)
+            .then(() => {
+                setTimeout(() => {
+                    handleCloseDrawer('saved')
+                }, 500)
+            })
+            .catch(err => console.log(err))
 
     }
 
