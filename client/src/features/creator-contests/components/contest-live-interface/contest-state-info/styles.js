@@ -95,6 +95,13 @@ export const RestrictionStatus = styled.span`
 
 `
 
+export const StatusDiv = styled.div`
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+`
+
 export const SubmissionStatus = styled.span`
     display: inline-block;
     margin-left: 10px;

@@ -7,13 +7,13 @@ import LinkTwitter from "../../../../twitter-link-account/link-twitter";
 import { selectIsTwitterLinked, selectUserTwitter, setUserTwitter } from "../../../../user/user-reducer";
 import { Contest_h4 } from "../../common/common_styles";
 import { selectContestSettings } from "../interface/contest-interface-reducer";
-import { AltSubmissionButton, ConnectWalletButton, DataGrid, DataWrap, GridElement, RestrictionStatus, RestrictionStatusNotConnected, SubmissionStatus, TwitterAccountBox, TwitterSwitchAccount, TwitterWrap } from "./styles";
+import { AltSubmissionButton, ConnectWalletButton, DataGrid, DataWrap, GridElement, RestrictionStatus, RestrictionStatusNotConnected, StatusDiv, SubmissionStatus, TwitterAccountBox, TwitterSwitchAccount, TwitterWrap } from "./styles";
 
 export default function SubmissionQualifications({ showTwitter, submitOnClick }) {
     const contest_settings = useSelector(selectContestSettings)
     const { walletConnect } = useWalletContext();
-    const { isWalletConnected, alreadySubmittedError, restrictionResults, isUserEligible, submissionStatus, processEligibility } = useSubmissionEngine(contest_settings.submitter_restrictions);
-
+    const { isWalletConnected, alreadySubmittedError, restrictionResults, isUserEligible, processEligibility } = useSubmissionEngine(contest_settings.submitter_restrictions);
+    const submissionStatus = 'registering'
 
     return (
         <DataWrap>
@@ -104,14 +104,14 @@ function TwitterStatus({ processEligibility }) {
 function ComputeStatus({ submissionStatus, isUserEligible }) {
 
     if (submissionStatus === 'not submitted') {
-        if (isUserEligible) return <div><p>eligible<SubmissionStatus status={'pass'} key={`${submissionStatus}-eligibility`} /></p></div>
-        else return <div><p>not eligible<SubmissionStatus status={'fail'} key={`${submissionStatus}-eligibility`} /></p></div>
+        if (isUserEligible) return <div><p>eligible</p><SubmissionStatus status={'pass'} key={`${submissionStatus}-eligibility`} /></div>
+        else return <StatusDiv><p>not eligible</p><SubmissionStatus status={'fail'} key={`${submissionStatus}-eligibility`} /></StatusDiv>
     }
 
     else if (submissionStatus === 'submitted') {
-        return <div><p>submitted<SubmissionStatus status={'pass'} key={`${submissionStatus}-eligibility`} /></p></div>
+        return <StatusDiv><p>submitted</p><SubmissionStatus status={'pass'} key={`${submissionStatus}-eligibility`} /></StatusDiv>
     }
     else if (submissionStatus === 'registering') {
-        return <div><p>registering submission<SubmissionStatus status={'loading'} key={`${submissionStatus}-eligibility`} /></p></div>
+        return <StatusDiv><p>registering submission</p><SubmissionStatus status={'loading'} key={`${submissionStatus}-eligibility`} /></StatusDiv>
     }
 }
