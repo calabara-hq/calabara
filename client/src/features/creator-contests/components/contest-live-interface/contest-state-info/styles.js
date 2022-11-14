@@ -48,8 +48,9 @@ export const DataWrap = styled.div`
 export const DataGrid = styled.div`
     display: flex;
     flex-direction: column;
-    padding: 5px 10px;
-    gap: 15px;
+    > * {
+        margin: 10px 5px;
+    }
     margin-top: 15px;
     > * p {
         margin: 0;

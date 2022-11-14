@@ -30,7 +30,9 @@ export const DetailGrid = styled.div`
     display: flex;
     flex-direction: column;
     padding: 5px 10px;
-    gap: 15px;
+    > * {
+        margin: 10px 5px;
+    }
     > * p {
         margin: 0;
     }
@@ -69,7 +71,6 @@ export const CheckpointWrap = styled.div`
 
 export const CheckpointTop = styled.div`
     margin: 0 auto;
-    background-color: pink;
     height: fit-content;
     width: 95%;
     color: #d3d3d3;
