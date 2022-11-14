@@ -12,8 +12,7 @@ import { AltSubmissionButton, ConnectWalletButton, DataGrid, DataWrap, GridEleme
 export default function SubmissionQualifications({ showTwitter, submitOnClick }) {
     const contest_settings = useSelector(selectContestSettings)
     const { walletConnect } = useWalletContext();
-    const { isWalletConnected, alreadySubmittedError, restrictionResults, isUserEligible, processEligibility } = useSubmissionEngine(contest_settings.submitter_restrictions);
-    const submissionStatus = 'registering'
+    const { isWalletConnected, alreadySubmittedError, restrictionResults, isUserEligible, submissionStatus, processEligibility } = useSubmissionEngine(contest_settings.submitter_restrictions);
 
     return (
         <DataWrap>
@@ -80,7 +79,7 @@ function TwitterStatus({ processEligibility }) {
                     <TwitterAccountBox>
                         <img style={{ borderRadius: '100px', maxWidth: '30px' }} src={twitterAccount.profile_image_url} />
                         <TwitterSwitchAccount onClick={() => onOpen('standard')}>edit</TwitterSwitchAccount>
-                        <SubmissionStatus status={'pass'} key={`twitter-eligibility`} />
+                        <RestrictionStatus status={'pass'} key={`twitter-eligibility`} />
                     </TwitterAccountBox>
                 </div>
             </GridElement>
@@ -93,7 +92,7 @@ function TwitterStatus({ processEligibility }) {
             <div>
                 <TwitterWrap>
                     <LinkTwitter minimal setError={setError} auth_type={'standard'} auth_error={auth_error} onOpen={onOpen} customButton={true} clearErrors={() => setError(null)} />
-                    <SubmissionStatus status={'fail'} key={`twitter-eligibility`} />
+                    <RestrictionStatus status={'fail'} key={`twitter-eligibility`} />
                 </TwitterWrap>
             </div>
         </GridElement>
@@ -104,14 +103,14 @@ function TwitterStatus({ processEligibility }) {
 function ComputeStatus({ submissionStatus, isUserEligible }) {
 
     if (submissionStatus === 'not submitted') {
-        if (isUserEligible) return <div><p>eligible</p><SubmissionStatus status={'pass'} key={`${submissionStatus}-eligibility`} /></div>
-        else return <StatusDiv><p>not eligible</p><SubmissionStatus status={'fail'} key={`${submissionStatus}-eligibility`} /></StatusDiv>
+        if (isUserEligible) return <div><p>eligible<SubmissionStatus status={'pass'} key={`${submissionStatus}-eligibility`} /></p></div>
+        else return <div><p>not eligible<SubmissionStatus status={'fail'} key={`${submissionStatus}-eligibility`} /></p></div>
     }
 
     else if (submissionStatus === 'submitted') {
-        return <StatusDiv><p>submitted</p><SubmissionStatus status={'pass'} key={`${submissionStatus}-eligibility`} /></StatusDiv>
+        return <div><p>submitted<SubmissionStatus status={'pass'} key={`${submissionStatus}-eligibility`} /></p></div>
     }
     else if (submissionStatus === 'registering') {
-        return <StatusDiv><p>registering submission</p><SubmissionStatus status={'loading'} key={`${submissionStatus}-eligibility`} /></StatusDiv>
+        return <div><p><SubmissionStatus status={'loading'} key={`${submissionStatus}-eligibility`} /></p></div>
     }
 }

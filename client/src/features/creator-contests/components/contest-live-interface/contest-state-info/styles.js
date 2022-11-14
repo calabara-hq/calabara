@@ -72,7 +72,7 @@ export const GridElement = styled.div`
         display: flex;
         color: #c3c3c3;
         font-weight: 550;
-
+        text-align: right;
         > * {
             margin-left: auto;
         }
@@ -99,12 +99,18 @@ export const StatusDiv = styled.div`
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: flex-end;
+    justify-content: flex-end; 
+    text-align: right;
+    > p {margin-right: 10px;}
 `
 
 export const SubmissionStatus = styled.span`
     display: inline-block;
     margin-left: 10px;
+    &:before{
+        content: '${props => props.status === 'loading' ? 'registering submission' : null}';
+        margin-right: 5px;
+    }
     &::after{
         font-family: 'Font Awesome 5 Free';
         font-weight: 900;
