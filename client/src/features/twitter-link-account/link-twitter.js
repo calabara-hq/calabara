@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { selectIsConnected } from "../../app/sessionReducer";
 import Placeholder from "../creator-contests/components/common/spinner";

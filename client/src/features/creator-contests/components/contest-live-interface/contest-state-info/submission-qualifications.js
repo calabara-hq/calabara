@@ -59,7 +59,7 @@ export default function SubmissionQualifications({ showTwitter, submitOnClick })
 function TwitterStatus({ processEligibility }) {
     const isTwitterLinked = useSelector(selectIsTwitterLinked)
     const twitterAccount = useSelector(selectUserTwitter)
-    const { onOpen, auth_error, accountInfo } = useTwitterAuth();
+    const { onOpen, auth_error, accountInfo } = useTwitterAuth('standard');
     const [error, setError] = useState(null)
     const dispatch = useDispatch();
 

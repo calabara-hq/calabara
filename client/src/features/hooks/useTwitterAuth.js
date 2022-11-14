@@ -1,26 +1,41 @@
 import axios from "axios";
-import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { selectWalletAddress } from "../../app/sessionReducer";
 import { setUserTwitter } from "../user/user-reducer";
 
-export const useTwitterAuth = () => {
+export const useTwitterAuth = (authType) => {
     const [authState, setAuthState] = useState(0);
     const [accountInfo, setAccountInfo] = useState(null);
     const [error, setError] = useState(false);
+    const [authenticationType, setAuthenticationType] = useState(authType);
+    const walletAddress = useSelector(selectWalletAddress)
+    const [authURI, setAuthURI] = useState(null);
     const dispatch = useDispatch();
-    const openWindow = (uri) => {
-        return window.open(uri, "_blank", "height=750,width=600,scrollbars")
+
+
+    useEffect(() => {
+        if (authenticationType) {
+            generateAuthLink(authenticationType)
+        }
+    }, [authenticationType, walletAddress])
+
+    const generateAuthLink = (scope_type) => {
+        axios.post('/twitter/generateAuthLink', { scope_type: scope_type }, { withCredentials: true })
+            .then(res => {
+                setAuthURI(res.data)
+            })
     }
 
     // on initial open, we check if user is already authed
-    const handleOpenAuth = (scope_type) => {
+    const handleOpenAuth = () => {
+        console.log('here')
+        console.log(authURI)
         if (error) setError(false)
-        axios.post('/twitter/generateAuthLink', { scope_type: scope_type }, { withCredentials: true })
-            .then(res => {
-                openWindow(res.data)
-                setAuthState(1);
-                setTimeout(pollAuthState, 3000)
-            })
+        if (!authURI) return
+        window.open(authURI, "_blank", "height=750,width=600,scrollbars")
+        setAuthState(1);
+        setTimeout(pollAuthState, 3000)
     }
 
     const pollAuthState = () => {
@@ -73,9 +88,9 @@ export const useTwitterAuth = () => {
     return {
         authState: authState,
         accountInfo,
-        onOpen: (scope_type) => {
-            handleOpenAuth(scope_type)
-        },
+        authenticationType,
+        setAuthenticationType,
+        onOpen: () => handleOpenAuth(),
         destroySession: () => destroySession(),
         auth_error: error,
 
