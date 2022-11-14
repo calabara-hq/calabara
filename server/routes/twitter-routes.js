@@ -14,7 +14,7 @@ twitter.use(express.json())
 
 dotenv.config()
 
-let twitter_redirect = process.env === 'production' ? "https://calabara.com/twitter/oauth2" : "https://localhost:3001/twitter/oauth2"
+let twitter_redirect = process.env.NODE_ENV === 'production' ? "https://calabara.com/twitter/oauth2" : "https://localhost:3001/twitter/oauth2"
 
 
 /**
@@ -91,11 +91,13 @@ twitter.get('/poll_auth_status', authenticateToken, poll_auth_status)
 twitter.post('/sendQuoteTweet', authenticateToken, check_submitter_eligibility_PROTECTED, verifyTwitterContest, sendQuoteTweet, convertTweet, createSubmission, async function (req, res, next) {
     const { ens } = req.body
     let meta_data = { tweet_id: req.tweet_id }
+    console.log(req.tweet_id)
+    //res.sendStatus(442) // TEMPORARY
+
     let result = await db.query('insert into contest_submissions (ens, contest_hash, author, created, locked, pinned, _url, meta_data) values ($1, $2, $3, $4, $5, $6, $7, $8) returning id ', [ens, req.contest_hash, req.session.user.address, req.created, false, false, req.url, { tweet_id: JSON.parse(req.tweet_id) }]).then(clean)
     res.sendStatus(200)
     socketSendNewSubmission(req.contest_hash, ens, { id: result.id, _url: req.url, author: req.session.user.address, votes: 0 })
     socketSendUserSubmissionStatus(req.session.user.address, req.contest_hash, 'submitted')
-
 })
 
 // attempt to tweet, then return the announcementID

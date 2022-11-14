@@ -84,9 +84,9 @@ async function check_submitter_eligibility_unprotected(req, res, next) {
 
     let contest_meta = await pre_process(ens, walletAddress, contest_hash);
     let restriction_results = await compute_restrictions(mode, walletAddress, contest_meta.restrictions, contest_meta.snapshot_block);
-    let isSubmissionPending = await checkPendingSubmissions(walletAddress, contest_hash, contest_meta.is_twitter)
+    // only check pending if user hasn't already submitted
+    let isSubmissionPending = contest_meta.has_already_submitted ? false : await checkPendingSubmissions(walletAddress, contest_hash, contest_meta.is_twitter)
 
-    console.log('IS PENDING', isSubmissionPending)
     req.is_pending = isSubmissionPending;
     req.restrictions_with_results = restriction_results;
     req.has_already_submitted = contest_meta.has_already_submitted;

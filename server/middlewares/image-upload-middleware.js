@@ -19,7 +19,7 @@ const imageStorage = multer.diskStorage({
 const imageUpload = multer({
   storage: imageStorage,
   limits: {
-    fileSize: 10000000 // 1000000 Bytes = 1 MB
+    fileSize: 10000000 // 10 MB
   },
   fileFilter(req, file, cb) {
     if (!file.originalname.match(/\.(png|jpg|jpeg|svg|gif)$/)) {
@@ -33,15 +33,26 @@ const imageUpload = multer({
 const twitterMediaUpload = multer({
   storage: imageStorage,
   limits: {
-    fileSize: 10000000 // 1000000 Bytes = 1 MB
+    fileSize: 10000000 // 10 MB
   },
   fileFilter(req, file, cb) {
+    console.log('file too large', file.size)
     if (!file.originalname.match(/\.(png|jpg|jpeg|gif)$/)) {
       return cb(new Error('Please upload a Image'))
     }
+
     cb(undefined, true)
   }
 })
 
+const fileSizeLimitErrorHandler = (err, req, res, next) => {
+  if (err) {
+    res.sendStatus(413)
+  }
+  else {
+    next()
+  }
+}
 
-module.exports = { imageUpload, twitterMediaUpload }
+
+module.exports = { imageUpload, twitterMediaUpload, fileSizeLimitErrorHandler }

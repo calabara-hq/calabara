@@ -54,6 +54,16 @@ export default function TwitterThreadReducer(state, action) {
                 ]
             }
 
+        case 'update_tweet_media':
+            return {
+                ...state,
+                tweets: [
+                    ...state.tweets.slice(0, action.payload.index),
+                    { ...state.tweets[action.payload.index], media: { ...state.tweets[action.payload.index].media, ...action.payload.value } },
+                    ...state.tweets.slice(action.payload.index + 1)
+                ]
+            }
+
         case 'delete_tweet_media':
             return {
                 ...state,

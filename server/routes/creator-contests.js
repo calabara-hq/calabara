@@ -9,7 +9,7 @@ const { isAdmin } = require('../middlewares/admin-middleware')
 const { clean, asArray, shuffleArray } = require('../helpers/common')
 const { createContest, isNick } = require('../middlewares/creator-contests/create-contest-middleware');
 const { check_submitter_eligibility_unprotected, check_submitter_eligibility_PROTECTED, createSubmission } = require('../middlewares/creator-contests/submit-middleware');
-const { imageUpload, twitterMediaUpload } = require('../middlewares/image-upload-middleware.js');
+const { imageUpload, twitterMediaUpload, fileSizeLimitErrorHandler } = require('../middlewares/image-upload-middleware.js');
 const { calc_sub_vp__unprotected, calc_sub_vp__PROTECTED, calc_total_vp_UNPROTECTED } = require('../middlewares/creator-contests/vote-middleware.js');
 const logger = require('../logger').child({ component: 'creator-contests' })
 const { sendSocketMessage } = require('../sys/socket/socket-io');
@@ -227,10 +227,7 @@ contests.post('/upload_img', imageUpload.single('image'), async (req, res) => {
 
 
 
-contests.post('/twitter_contest_upload_img', twitterMediaUpload.single('image'), uploadTwitterMedia, async (req, res) => {
-
-    console.log(req.file.media_id)
-
+contests.post('/twitter_contest_upload_img', twitterMediaUpload.single('image'), fileSizeLimitErrorHandler, uploadTwitterMedia, async (req, res) => {
 
     let img_data = {
         success: 1,

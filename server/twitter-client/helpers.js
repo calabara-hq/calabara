@@ -16,6 +16,7 @@ const twitter_send_tweet = async (accessToken, data) => {
             const result = await client.v2.tweetThread(data)
             return JSON.stringify(result[0].data.id)
         } catch (err) {
+            //console.log('there was a problem')
             if ((err.code === 503) && (retries < 5)) {
                 retries += 1
                 return main()
@@ -62,6 +63,9 @@ const sendUserMessage = async (contest, quote) => {
     // get the user addresses that have submitted for this contest with this twitter account (could be more than 1)
     let has_submitted = await db.query('select contest_submissions.id from contest_submissions inner join users on users.address = contest_submissions.author where users.twitter->>\'id\' = $1', [quote.author_id])
         .then(clean)
+
+    console.log('HAS SUBMITTED', has_submitted)
+
 
     if (!has_submitted) {
         db.query('select address from users where twitter->>\'id\' = $1', [quote.author_id])
