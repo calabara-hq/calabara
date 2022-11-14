@@ -13,7 +13,7 @@ export const useTwitterAuth = (authType) => {
     const [authURI, setAuthURI] = useState(null);
     const dispatch = useDispatch();
 
-
+    
     useEffect(() => {
         if (authenticationType) {
             generateAuthLink(authenticationType)
@@ -29,8 +29,6 @@ export const useTwitterAuth = (authType) => {
 
     // on initial open, we check if user is already authed
     const handleOpenAuth = () => {
-        console.log('here')
-        console.log(authURI)
         if (error) setError(false)
         if (!authURI) return
         window.open(authURI, "_blank", "height=750,width=600,scrollbars")

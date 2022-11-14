@@ -23,7 +23,7 @@ export default function ContestStateInfo() {
 
 
 function StateController() {
-    const contest_state = 0//useSelector(selectContestState)
+    const contest_state = useSelector(selectContestState)
     const isWalletConnected = useSelector(selectIsConnected)
     const walletAddress = useSelector(selectWalletAddress)
     const [isCreating, setIsCreating] = useState(false);
