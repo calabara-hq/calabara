@@ -1,6 +1,5 @@
 const express = require('express');
 const db = require('../helpers/db-init.js')
-const dotenv = require('dotenv')
 const path = require('path')
 const asyncfs = require('fs').promises;
 const settings = express();
@@ -125,8 +124,6 @@ settings.post('/deleteOrganization', authenticateToken, isAdmin, async function 
     const { ens } = req.body;
 
     await db.query('delete from organizations where ens = $1', [ens]);
-
-
     try {
         await asyncfs.rm(path.normalize(path.join(serverRoot, '/org-repository/', ens)), { recursive: true });
     } catch (e) {

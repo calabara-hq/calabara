@@ -21,7 +21,6 @@ export const CheckpointWrap = styled.div`
 `
 export const CheckpointBottom = styled.div`
     margin: 0 auto;
-    background-color: pink;
     height: fit-content;
     width: 95%;
     color: #d3d3d3;

@@ -3,6 +3,7 @@ const EthDater = require('ethereum-block-by-date')
 const dotenv = require('dotenv')
 const abi = require('./token-abi')
 const erc1155_abi = require('./erc1155-abi')
+const logger = require('../logger').child({ service: 'ethereum' })
 dotenv.config();
 
 /*
@@ -34,7 +35,10 @@ const checkWalletTokenBalance = async (walletAddress, contractAddress, decimal, 
         };
         const adjusted = balance / 10 ** decimal;
         return adjusted
-    } catch (err) { return 0 }
+    } catch (err) {
+        logger.log({ level: 'error', message: `check wallet token balance failed with error: ${JSON.stringify(err)}` })
+        return 0
+    }
 }
 
 

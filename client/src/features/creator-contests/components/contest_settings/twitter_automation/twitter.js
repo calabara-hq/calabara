@@ -19,8 +19,7 @@ import {
 
 
 export default function Twitter(props) {
-    const { authState, auth_error, accountInfo, onOpen, destroySession } = useTwitterAuth()
-
+    const { authState, auth_error, accountInfo, generateAuthLink, onOpen, destroySession } = useTwitterAuth('privileged')
 
     const destroy_session = () => {
         destroySession()

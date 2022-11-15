@@ -21,8 +21,6 @@ const ContestInterfaceWrap = styled.div`
     width: 90vw;
     margin: 0 auto;
     padding-bottom: 100px;
-    gap: 20px;
-
 
 `
 const InterfaceTopSplit = styled.div`
@@ -66,7 +64,9 @@ const InterfaceTopLeft = styled.div`
     border-radius: 10px;
     padding: 10px;
     position: relative;
-    gap: 20px;
+    > * {
+       margin-bottom: 20px;
+    }
 `
 
 const InterfaceTopRight = styled.div`
@@ -74,7 +74,9 @@ const InterfaceTopRight = styled.div`
     flex-direction: column;
     flex: 0 0 40%;
     margin-left: auto;
-    gap: 10px;
+    > * {
+        margin: 5px;
+    }
     @media screen and (max-width: 800px){
         align-items: flex-start;
         flex-direction: row;

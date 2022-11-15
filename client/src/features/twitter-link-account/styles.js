@@ -35,4 +35,5 @@ export const MinimalLinkTwitterButton = styled.button`
     border: none;
     border-radius: 4px;
     padding: 3px 5px;
+    ${scaleElement}
 `

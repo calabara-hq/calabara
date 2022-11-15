@@ -1,8 +1,8 @@
 const cron = require('node-cron')
 const db = require('../../helpers/db-init.js')
-const { EVERY_30_SECONDS, EVERY_5_MINUTES, EVERY_10_SECONDS } = require('./schedule')
-const { clean, asArray } = require('../../helpers/common.js');;
+const { clean, asArray } = require('../../helpers/common.js');
 const { get_stream_rules, delete_stream_rules, add_stream_rules } = require('../../twitter-client/stream.js');
+const logger = require('../../logger.js').child({ service: 'cron:twitter_stream_manager' })
 
 
 const pull_active_twitter_contests = async () => {
@@ -42,23 +42,25 @@ const add_missing_rules = async (twitter_contests, stream_rules) => {
         const found = stream_rules.some(rule => rule.tag === contest.hash)
         if (!found) to_add.push({ value: `conversation_id:${contest.announcementID} is:quote`, tag: contest.hash })
     }
-    if(to_add.length > 0) return await add_stream_rules(to_add)
+    if (to_add.length > 0) return await add_stream_rules(to_add)
 }
 
 const main = async () => {
     try {
         let stream_rules = await get_stream_rules();
-        console.log('STREAM RULES', stream_rules)
+        logger.log({ level: 'info', message: `listening to twitter stream with rules: ${JSON.stringify(stream_rules)}` })
         let twitter_contests = await pull_active_twitter_contests();
         await remove_stale_rules(twitter_contests, stream_rules)
         await add_missing_rules(twitter_contests, stream_rules)
-    } catch (err) { console.log(err) }
+    } catch (err) {
+        logger.log({ level: 'error', message: `stream rule listener failed with error: ${JSON.stringify(err)}` })
+    }
 }
 
 
-const manage_stream = () => {
-    cron.schedule(EVERY_5_MINUTES, () => {
-        console.log('managing stream')
+const manage_stream = (frequency) => {
+    cron.schedule(frequency, () => {
+        logger.log({ level: 'info', message: 'managing twitter stream' })
         main();
     })
 }

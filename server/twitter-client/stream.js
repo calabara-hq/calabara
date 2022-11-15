@@ -1,6 +1,7 @@
 const { bearerClient } = require('./config')
 const { ETwitterStreamEvent, TweetStream, TwitterApi, ETwitterApiError } = require('twitter-api-v2');
 const { handle_fetched_tweet } = require('./helpers');
+const logger = require('../logger').child({ service: 'twitter_stream_ingestor' })
 
 
 let stream = null
@@ -12,6 +13,7 @@ const get_stream_rules = async () => {
         let parsed_rules = rules.data ? rules.data : []
         return parsed_rules
     } catch (err) {
+        logger.log({ level: 'error', message: `get twitter stream rules failed with error: ${err}` })
         throw (err)
     }
 }
@@ -26,21 +28,22 @@ const delete_stream_rules = async (ids) => {
 
         let rules = await get_stream_rules()
         if ((rules.length === 0) && (stream)) return close_stream()
-    } catch (err) { console.log(err) }
+    } catch (err) {
+        logger.log({ level: 'error', message: `delete twitter stream rules failed with error: ${err}` })
+    }
 }
 
 const add_stream_rules = async (arr) => {
     try {
         let rules = await get_stream_rules()
-        console.log('current stream rules', rules)
-        if (rules.length === 5) return console.log('stream buffer is full')
-        console.log('attempting to add rules', arr)
+        if (rules.length === 5) return logger.log({ level: 'error', message: `twitter stream buffer is full` })
+        logger.log({ level: 'error', message: `attempting to add stream rules: ${JSON.stringify(arr)}` })
         await bearerClient.v2.updateStreamRules({
             add: arr
         });
         if (!stream) return start_stream()
     } catch (err) {
-        console.log(err)
+        logger.log({ level: 'error', message: `add twitter stream rules failed with error: ${err}` })
     }
 }
 
@@ -49,16 +52,19 @@ const start_stream = async () => {
     try {
         stream = await bearerClient.v2.searchStream({ expansions: "author_id", "tweet.fields": "created_at" });
         stream_listen();
-    } catch (err) { console.log(err) }
+    } catch (err) {
+        logger.log({ level: 'error', message: `Start twitter stream failed with error: ${err}` })
+    }
 }
 
 
 const close_stream = () => {
-    console.log('CLOSING STREAM')
     try {
         stream.close()
         stream = null
-    } catch (err) { console.log(err) }
+    } catch (err) {
+        logger.log({ level: 'error', message: `Close twitter stream failed with error: ${err}` })
+    }
 }
 
 
@@ -67,13 +73,13 @@ const stream_listen = () => {
     stream.on(
         // Emitted when Node.js {response} emits a 'error' event (contains its payload).
         ETwitterStreamEvent.ConnectionError,
-        err => console.log('Connection error!', err),
+        err => logger.log({ level: 'error', message: `Twitter stream failed with error: ${err}` }),
     );
 
     stream.on(
         // Emitted when Node.js {response} is closed by remote or using .close().
         ETwitterStreamEvent.ConnectionClosed,
-        () => console.log('Connection has been closed.'),
+        () => logger.log({ level: 'info', message: `Twitter stream has been closed` }),
     );
 
     stream.on(
@@ -85,7 +91,7 @@ const stream_listen = () => {
     stream.on(
         // Emitted when a Twitter sent a signal to maintain connection active
         ETwitterStreamEvent.DataKeepAlive,
-        () => console.log('Twitter has a keep-alive packet.'),
+        () => logger.log({ level: 'info', message: `Twitter has a keep-alive packet` }),
     );
 
     // Enable reconnect feature
@@ -95,7 +101,7 @@ const stream_listen = () => {
 
 get_stream_rules()
     .then(rules => {
-        console.log('initial stream rules!!', rules)
+        logger.log({ level: 'info', message: `initial stream rules: ${JSON.stringify(rules)}` })
         if ((rules.length > 0) && (!stream)) start_stream()
     })
 

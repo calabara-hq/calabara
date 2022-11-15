@@ -3,6 +3,7 @@ const { clean } = require('../helpers/common')
 const { TwitterApi } = require('twitter-api-v2')
 const dotenv = require('dotenv')
 const { twitter_send_tweet } = require('../twitter-client/helpers')
+const logger = require('../logger').child({ service: 'middleware:twitter' })
 dotenv.config()
 
 
@@ -22,6 +23,7 @@ async function verifyTwitterAuth(req, res, next) {
         await client.v2.me();
         next();
     } catch (err) {
+        logger.log({ level: 'info', message: 'user twitter session is not active' })
         return res.sendStatus(440)
     }
 }
@@ -95,6 +97,7 @@ const process_thread = (thread) => {
             return el
         })
     } catch (e) {
+        logger.log({ level: 'error', message: `failed processing twitter thread with error: ${e}` })
         return null
     }
 }
@@ -109,6 +112,7 @@ async function verifyTwitterContest(req, res, next) {
         req.announcementID = announcementID
         next()
     } catch (e) {
+        logger.log({ level: 'error', message: 'attempted service for non-twitter contest' })
         return res.send('not a twitter contest').status(439)
     }
 }
@@ -129,6 +133,7 @@ async function sendTweet(req, res, next) {
         next();
     }
     catch (err) {
+        logger.log({ level: 'error', message: `send tweet failed with error: ${JSON.stringify(err)}` })
         if (err.data.title === 'Unsupported Authentication') return res.sendStatus(440)
         if (err.data.title === 'Forbidden') return res.sendStatus(441)
         if (err.code === 503) return res.sendStatus(444)
@@ -149,7 +154,6 @@ async function sendQuoteTweet(req, res, next) {
 
     processed_thread[0].quote_tweet_id = announcementID
 
-
     try {
         let tweet_id = await twitter_send_tweet(accessToken, processed_thread)
         req.tweet_id = tweet_id
@@ -157,7 +161,7 @@ async function sendQuoteTweet(req, res, next) {
 
     }
     catch (err) {
-        console.log(err)
+        logger.log({ level: 'error', message: `send quote tweet failed with error: ${JSON.stringify(err)}` })
         if (err.data.title === 'Unsupported Authentication') return res.sendStatus(440)
         if (err.data.title === 'Forbidden') return res.sendStatus(441)
         if (err.code === 503) return res.sendStatus(444)
