@@ -9,15 +9,12 @@ const { isAdmin } = require('../middlewares/admin-middleware')
 const { clean, asArray, shuffleArray } = require('../helpers/common')
 const { createContest, isNick } = require('../middlewares/creator-contests/create-contest-middleware');
 const { check_submitter_eligibility_unprotected, check_submitter_eligibility_PROTECTED, createSubmission } = require('../middlewares/creator-contests/submit-middleware');
-const { imageUpload, twitterMediaUpload } = require('../middlewares/image-upload-middleware.js');
+const { imageUpload, twitterMediaUpload, fileSizeLimitErrorHandler } = require('../middlewares/image-upload-middleware.js');
 const { calc_sub_vp__unprotected, calc_sub_vp__PROTECTED, calc_total_vp_UNPROTECTED } = require('../middlewares/creator-contests/vote-middleware.js');
-const logger = require('../logger').child({ component: 'creator-contests' })
-const { sendSocketMessage } = require('../sys/socket/socket-io');
+const logger = require('../logger').child({ service: 'contest_api' })
 const { get_winners_as_csv, verifyContestOver } = require('../middlewares/creator-contests/fetch-winners-middleware.js');
 const { fetchSubmissions } = require('../middlewares/creator-contests/fetch-submissions-middleware.js');
 const { socketSendNewSubmission, socketSendUserSubmissionStatus } = require('../helpers/socket-messages.js');
-const { TwitterApi } = require('twitter-api-v2');
-const { createReadStream } = require('fs');
 const { uploadTwitterMedia } = require('../middlewares/twitter-upload-media.js');
 const { add_stream_rules } = require('../twitter-client/stream.js');
 dotenv.config()
@@ -43,7 +40,10 @@ contests.get('/fetch_contest', async function (req, res, next) {
     let data = await db.query('select settings, prompt_data from contests where ens = $1 and _hash = $2', [ens, contest_hash])
         .then(clean)
 
-    if (data === null) return res.sendStatus(404)
+    if (data === null) {
+        logger.log({ level: 'error', message: 'attmpt to access non-existing contest' })
+        return res.sendStatus(404)
+    }
     res.send(data).status(200)
 })
 
@@ -90,7 +90,6 @@ contests.post('/create_submission', authenticateToken, check_submitter_eligibili
     const { ens } = req.body;
     let result = await db.query('insert into contest_submissions (ens, contest_hash, author, created, locked, pinned, _url) values ($1, $2, $3, $4, $5, $6, $7) returning id ', [ens, req.contest_hash, req.session.user.address, req.created, false, false, req.url]).then(clean)
     res.sendStatus(200)
-    //sendSocketMessage(req.contest_hash, 'new_submission', { id: result.id, _url: req.url })
     socketSendNewSubmission(req.contest_hash, ens, { id: result.id, _url: req.url, author: req.session.user.address, votes: 0 })
     socketSendUserSubmissionStatus(req.session.user.address, req.contest_hash, 'submitted')
 
@@ -221,16 +220,13 @@ contests.post('/upload_img', imageUpload.single('image'), async (req, res) => {
     }
     res.status(200).send(img_data)
 }, (error, req, res, next) => {
-    console.log(error)
+    logger.log({ level: 'error', message: `failed to upload media with error: ${error.message}` })
     res.status(400).send({ error: error.message })
 })
 
 
 
-contests.post('/twitter_contest_upload_img', twitterMediaUpload.single('image'), uploadTwitterMedia, async (req, res) => {
-
-    console.log(req.file.media_id)
-
+contests.post('/twitter_contest_upload_img', twitterMediaUpload.single('image'), fileSizeLimitErrorHandler, uploadTwitterMedia, async (req, res) => {
 
     let img_data = {
         success: 1,
@@ -241,7 +237,7 @@ contests.post('/twitter_contest_upload_img', twitterMediaUpload.single('image'),
     }
     res.status(200).send(img_data)
 }, (error, req, res, next) => {
-    console.log(error)
+    logger.log({ level: 'error', message: `failed to upload twitter media with error: ${error.message}` })
     res.status(400).send({ error: error.message })
 })
 

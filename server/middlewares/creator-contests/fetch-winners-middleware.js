@@ -1,10 +1,6 @@
-const path = require('path')
-const crypto = require('crypto')
-const serverRoot = path.normalize(path.join(__dirname, '../../'));
-const asyncfs = require('fs').promises;
-const fs = require('fs');
 const db = require('../../helpers/db-init.js');
-const { clean, asArray } = require('../../helpers/common')
+const { clean, asArray } = require('../../helpers/common');
+const logger = require('../../logger.js').child({ service: 'middleware:fetch_contest_winners' })
 
 
 
@@ -28,7 +24,10 @@ async function verifyContestOver(req, res, next) {
     let result = await db.query('select _end from contests where ens = $1 and _hash = $2', [ens, contest_hash])
         .then(clean)
     let now = new Date().toISOString();
-    if (now < result._end) return res.sendStatus(438)
+    if (now < result._end) {
+        logger.log({ level: 'error', message: 'attempted to fetch winners before contest was over' })
+        return res.sendStatus(438)
+    }
     next()
 
 }
@@ -41,39 +40,43 @@ async function get_winners_as_csv(req, res, next) {
 
     let csvContent = "data:text/csv;charset=utf-8,token_type,token_address,receiver,amount,id\r\n";
 
-    if (submissions.length > 0) {
-        console.log(submissions)
-        rewards.sub_rewards.map((reward, index) => {
-            console.log(reward.rank)
-            let winner = submissions[reward.rank - 1]
-            //sub_winners.push({ rank: reward.rank, reward, winner })
-            if (winner) { // in case rewards.length > winners.length
-                reward.eth ? csvContent += `native,,${winner.author},${reward.eth.amount},\r\n` : null
-                reward.erc20 ? csvContent += `erc20,${reward.erc20.address},${winner.author}, ${reward.erc20.amount},\r\n` : null
-                reward.erc721 ? csvContent += `erc721,${reward.erc721.address},${winner.author},,${reward.erc721.token_id}\r\n` : null
-            }
-        })
+    try {
+        if (submissions.length > 0) {
+            console.log(submissions)
+            rewards.sub_rewards.map((reward, index) => {
+                console.log(reward.rank)
+                let winner = submissions[reward.rank - 1]
+                //sub_winners.push({ rank: reward.rank, reward, winner })
+                if (winner) { // in case rewards.length > winners.length
+                    reward.eth ? csvContent += `native,,${winner.author},${reward.eth.amount},\r\n` : null
+                    reward.erc20 ? csvContent += `erc20,${reward.erc20.address},${winner.author}, ${reward.erc20.amount},\r\n` : null
+                    reward.erc721 ? csvContent += `erc721,${reward.erc721.address},${winner.author},,${reward.erc721.token_id}\r\n` : null
+                }
+            })
 
-        // map over voter rewards
-        // map over voters at the voter reward index
-        // divide votes by reward
-        // push object to vote_winners
-        // console.log(sub_winners)
+            // map over voter rewards
+            // map over voters at the voter reward index
+            // divide votes by reward
+            // push object to vote_winners
+            // console.log(sub_winners)
 
-        rewards.voter_rewards.map((reward, index) => {
-            let winner = submissions[reward.rank - 1]
-            if (winner) { // in case rewards.length > winners.length
-                winner.voters.map(voter => {
-                    if (voter.f1 != null) {
-                        reward.eth ? csvContent += `native,,${voter.f1},${reward.eth.amount * (voter.f2 / winner.votes)},\r\n` : null
-                        reward.erc20 ? csvContent += `erc20,${reward.erc20.address},${voter.f1}, ${reward.erc20.amount * (voter.f2 / winner.votes)},\r\n` : null
-                    }
-                })
-            }
-        })
+            rewards.voter_rewards.map((reward, index) => {
+                let winner = submissions[reward.rank - 1]
+                if (winner) { // in case rewards.length > winners.length
+                    winner.voters.map(voter => {
+                        if (voter.f1 != null) {
+                            reward.eth ? csvContent += `native,,${voter.f1},${reward.eth.amount * (voter.f2 / winner.votes)},\r\n` : null
+                            reward.erc20 ? csvContent += `erc20,${reward.erc20.address},${voter.f1}, ${reward.erc20.amount * (voter.f2 / winner.votes)},\r\n` : null
+                        }
+                    })
+                }
+            })
+        }
+        req.csvContent = csvContent
+        next()
+    } catch (err) {
+        logger.log({ level: 'error', message: `generating winners csv failed with error: ${err}` })
     }
-    req.csvContent = csvContent
-    next()
 
 }
 

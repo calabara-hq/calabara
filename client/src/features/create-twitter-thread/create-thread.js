@@ -1,28 +1,14 @@
-import { useRef } from "react";
-import { useWalletContext } from "../../app/WalletContext";
-import { useParams } from "react-router-dom";
-import useAutosizeTextArea from "../hooks/useAutosizeTextArea";
-import useTweet from "../hooks/useTweet";
-import { faTimes, faTrash, faImage, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faImage, faPlus, faTimes, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import axios from 'axios'
+import axios from 'axios';
+import { useEffect, useRef, useState } from "react";
+import Placeholder from '../creator-contests/components/common/spinner';
+import useAutosizeTextArea from "../hooks/useAutosizeTextArea";
+import { showNotification } from '../notifications/notifications'
 import {
-    ThreadWrap,
-    TextAreaWrap,
-    TextArea,
-    TextAreaBottom,
-    AddImageButton,
-    RightAlignButtons,
-    DeleteTweetButton,
-    AddTweetButton,
-    TweetButton,
-    MediaContainer,
-    TweetMedia,
-    RemoveMediaButton,
-    LinkedAccount,
-    ThreadBar
-
-} from './styles'
+    AddImageButton, AddTweetButton, DeleteTweetButton, LinkedAccount, MediaContainer, RemoveMediaButton, RightAlignButtons, TextArea,
+    TextAreaBottom, TextAreaWrap, ThreadBar, ThreadWrap, TweetButton, TweetMedia
+} from './styles';
 
 
 /** props
@@ -39,7 +25,7 @@ export default function CreateThread(props) {
     return (
         <ThreadWrap>
             {props.twitterData.tweets.map((tweet, index) => {
-                return <CreateTweet key={index} tweet_id={index} authState={props.authState} accountInfo={props.accountInfo} twitterData={props.twitterData} setTwitterData={props.setTwitterData} showTweetButton={props.showTweetButton} showTweetButton={props.showTweetButton} handleSubmit={props.handleSubmit}/>
+                return <CreateTweet key={index} tweet_id={index} authState={props.authState} accountInfo={props.accountInfo} twitterData={props.twitterData} setTwitterData={props.setTwitterData} showTweetButton={props.showTweetButton} showTweetButton={props.showTweetButton} handleSubmit={props.handleSubmit} />
             })}
         </ThreadWrap>
     )
@@ -47,6 +33,7 @@ export default function CreateThread(props) {
 
 
 function CreateTweet(props) {
+    const [isMediaLoading, setIsMediaLoading] = useState(false);
 
     const mediaUploader = useRef(null);
     const textAreaRef = useRef(null);
@@ -82,13 +69,13 @@ function CreateTweet(props) {
 
 
     const handleMediaUpload = (e) => {
+        setIsMediaLoading(true);
         if (e.target.files.length === 0) return
         const img = {
             preview: URL.createObjectURL(e.target.files[0]),
             data: e.target.files[0],
             url: null
         }
-        props.setTwitterData({ type: 'update_tweet_media_preview', payload: { index: props.tweet_id, value: img.preview } })
         const formData = new FormData();
         formData.append(
             "image",
@@ -100,8 +87,26 @@ function CreateTweet(props) {
             url: '/creator_contests/twitter_contest_upload_img',
             data: formData
         }).then((response) => {
-            props.setTwitterData({ type: 'update_tweet_media_phase_2', payload: { index: props.tweet_id, value: response.data.file } })
+            console.log(response)
+            let img_obj = {
+                preview: img.preview,
+                ...response.data.file
+            }
+            setIsMediaLoading(false);
+            props.setTwitterData({ type: 'update_tweet_media', payload: { index: props.tweet_id, value: img_obj } })
+
         })
+            .catch(err => {
+                switch (err.response.status) {
+                    case 400:
+                        showNotification('error', 'error', 'File type not allowed. Accepted image types: png, jpg, jpeg, gif');
+                        break;
+                    case 413:
+                        showNotification('error', 'error', 'File too large. Please keep files under 10 MB')
+                        break;
+                }
+                setIsMediaLoading(false);
+            })
 
     }
 
@@ -111,7 +116,7 @@ function CreateTweet(props) {
         <TextAreaWrap onClick={focusTweet} focused={props.twitterData.focus_tweet === props.tweet_id}>
             <RenderAccount authState={props.authState} accountInfo={props.accountInfo} twitterData={props.twitterData} tweet_id={props.tweet_id} />
             <TextArea ref={textAreaRef} onChange={updateTweet} value={props.twitterData.tweets[props.tweet_id].text} placeholder="What's happening?" focused={props.twitterData.focus_tweet === props.tweet_id} />
-            <RenderMedia tweet={props.twitterData.tweets[props.tweet_id]} tweet_id={props.tweet_id} setTwitterData={props.setTwitterData} mediaUploader={mediaUploader} />
+            <RenderMedia tweet={props.twitterData.tweets[props.tweet_id]} tweet_id={props.tweet_id} setTwitterData={props.setTwitterData} mediaUploader={mediaUploader} isMediaLoading={isMediaLoading} />
             <TextAreaBottom focused={props.twitterData.focus_tweet === props.tweet_id}>
                 <input placeholder="Logo" type="file" accept="image/*" style={{ display: 'none' }} onChange={handleMediaUpload} ref={mediaUploader} />
                 <AddImageButton disabled={props.twitterData.tweets[props.tweet_id].media?.preview} onClick={() => mediaUploader.current.click()}><FontAwesomeIcon icon={faImage} /></AddImageButton>
@@ -132,6 +137,15 @@ function RenderMedia(props) {
     const removeMedia = () => {
         props.setTwitterData({ type: 'delete_tweet_media', payload: props.tweet_id })
         props.mediaUploader.current.value = null
+    }
+
+
+    if (props.isMediaLoading) {
+        return (
+            <MediaContainer style={{ height: '200px' }}>
+                <Placeholder />
+            </MediaContainer>
+        )
     }
 
 

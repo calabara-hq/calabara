@@ -7,11 +7,12 @@ const initialize_cron = require('./sys/cron/main')
 dotenv.config();
 const initialize_discord_bot = require('./discord-bot/deploy-commands.js')
 const { socketConnection } = require('./sys/socket/socket-io')
-const twitterStream = require('./twitter-client/stream')
+const twitterStream = require('./twitter-client/stream'); // keep this
+const logger = require('./logger').child({ service: 'index' })
 
 
 if (!process.env.NODE_ENV) {
-    console.log('please pass NODE_ENV. Available options are dev and prod')
+    console.error('Please pass NODE_ENV. Available options are development | production | testing')
 }
 
 
@@ -29,20 +30,11 @@ if (process.env.NODE_ENV === 'development') {
         socketConnection(secureServer)
         initialize_cron();
         initialize_discord_bot()
-            .then(res => console.log(res))
-            .then(console.log('Running at Port 3001'))
+            .then(res => logger.log({ level: 'info', message: res }))
+            .then(logger.log({ level: 'info', message: 'Running on port 3001' }))
             .then(() => secureServer.emit('app_started'))
     })
 }
-
-/*
-else if (process.env.NODE_ENV === 'test') {
-    secureServer.listen(3002, () => {
-        console.log('running at port 3002')
-        secureServer.emit('app_started')
-    })
-}
-*/
 
 else if (process.env.NODE_ENV === 'production') {
     server.listen(80)
@@ -50,8 +42,8 @@ else if (process.env.NODE_ENV === 'production') {
     secureServer.listen(443, () => {
         initialize_cron();
         initialize_discord_bot()
-            .then(res => console.log(res))
-            .then(console.log('Running at Port 3001'))
+            .then(res => logger.log({ level: 'info', message: res }))
+            .then(logger.log({ level: 'info', message: 'Running on port 443' }))
             .then(() => secureServer.emit('app_started'))
     })
 }

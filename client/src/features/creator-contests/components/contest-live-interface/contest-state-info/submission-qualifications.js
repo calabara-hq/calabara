@@ -7,13 +7,12 @@ import LinkTwitter from "../../../../twitter-link-account/link-twitter";
 import { selectIsTwitterLinked, selectUserTwitter, setUserTwitter } from "../../../../user/user-reducer";
 import { Contest_h4 } from "../../common/common_styles";
 import { selectContestSettings } from "../interface/contest-interface-reducer";
-import { AltSubmissionButton, ConnectWalletButton, DataGrid, DataWrap, GridElement, RestrictionStatus, RestrictionStatusNotConnected, SubmissionStatus, TwitterAccountBox, TwitterSwitchAccount, TwitterWrap } from "./styles";
+import { AltSubmissionButton, ConnectWalletButton, DataGrid, DataWrap, GridElement, RestrictionStatus, RestrictionStatusNotConnected, StatusDiv, SubmissionStatus, TwitterAccountBox, TwitterSwitchAccount, TwitterWrap } from "./styles";
 
 export default function SubmissionQualifications({ showTwitter, submitOnClick }) {
     const contest_settings = useSelector(selectContestSettings)
     const { walletConnect } = useWalletContext();
     const { isWalletConnected, alreadySubmittedError, restrictionResults, isUserEligible, submissionStatus, processEligibility } = useSubmissionEngine(contest_settings.submitter_restrictions);
-
 
     return (
         <DataWrap>
@@ -60,7 +59,7 @@ export default function SubmissionQualifications({ showTwitter, submitOnClick })
 function TwitterStatus({ processEligibility }) {
     const isTwitterLinked = useSelector(selectIsTwitterLinked)
     const twitterAccount = useSelector(selectUserTwitter)
-    const { onOpen, auth_error, accountInfo } = useTwitterAuth();
+    const { onOpen, auth_error, accountInfo } = useTwitterAuth('standard');
     const [error, setError] = useState(null)
     const dispatch = useDispatch();
 
@@ -80,7 +79,7 @@ function TwitterStatus({ processEligibility }) {
                     <TwitterAccountBox>
                         <img style={{ borderRadius: '100px', maxWidth: '30px' }} src={twitterAccount.profile_image_url} />
                         <TwitterSwitchAccount onClick={() => onOpen('standard')}>edit</TwitterSwitchAccount>
-                        <SubmissionStatus status={'pass'} key={`twitter-eligibility`} />
+                        <RestrictionStatus status={'pass'} key={`twitter-eligibility`} />
                     </TwitterAccountBox>
                 </div>
             </GridElement>
@@ -93,7 +92,7 @@ function TwitterStatus({ processEligibility }) {
             <div>
                 <TwitterWrap>
                     <LinkTwitter minimal setError={setError} auth_type={'standard'} auth_error={auth_error} onOpen={onOpen} customButton={true} clearErrors={() => setError(null)} />
-                    <SubmissionStatus status={'fail'} key={`twitter-eligibility`} />
+                    <RestrictionStatus status={'fail'} key={`twitter-eligibility`} />
                 </TwitterWrap>
             </div>
         </GridElement>
@@ -112,6 +111,6 @@ function ComputeStatus({ submissionStatus, isUserEligible }) {
         return <div><p>submitted<SubmissionStatus status={'pass'} key={`${submissionStatus}-eligibility`} /></p></div>
     }
     else if (submissionStatus === 'registering') {
-        return <div><p>registering submission<SubmissionStatus status={'loading'} key={`${submissionStatus}-eligibility`} /></p></div>
+        return <div><p><SubmissionStatus status={'loading'} key={`${submissionStatus}-eligibility`} /></p></div>
     }
 }

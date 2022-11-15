@@ -10,6 +10,7 @@ const { get_thread, get_tweet } = require('../../twitter-client/helpers.js');
 const { checkWalletTokenBalance } = require('../../web3/web3.js');
 const fetch = require('node-fetch');
 const { socketSendNewSubmission, socketSendUserSubmissionStatus } = require('../../helpers/socket-messages.js');
+const logger = require('../../logger.js').child({ service: 'cron:register_tweets' })
 
 const serverBasePath = path.normalize(path.join(__dirname, '../../'))
 
@@ -39,7 +40,6 @@ const randomId = (length) => {
 const getDate = () => {
     const now = new Date()
     return new Date(now.getTime() + 30 * 1000).toISOString()
-    return new Date().toISOString();
 }
 
 
@@ -47,7 +47,6 @@ const getDate = () => {
 
 const pull_unregistered_tweets = async () => {
     let date = getDate();
-
     return await db.query('select author_id, json_agg(json_build_object(\'tweet_id\', tweets.tweet_id, \'created\', tweets.created, \'contest_hash\', tweets.contest_hash)) as contests \
                         from tweets inner join contests on tweets.contest_hash = contests._hash \
                         where registered = false and contests._start < $1 and contests._voting > $1 \
@@ -243,7 +242,9 @@ const write_submission = async (submission, contest_data, address, tweet_id) => 
             socketSendNewSubmission(contest_data._hash, contest_data.ens, { id: result.id, _url: url, author: address, votes: 0 })
             socketSendUserSubmissionStatus(address, contest_data._hash, 'submitted')
         })
-        .catch(err => { })
+        .catch(err => {
+            logger.log({ level: 'error', message: `failed writing submission for tweet_id: ${tweet_id}` })
+        })
 
 
 }
@@ -252,7 +253,9 @@ const write_submission = async (submission, contest_data, address, tweet_id) => 
 const cleanup = async (author_id, contest_hash) => {
     try {
         return await db.query('update tweets set registered = true where author_id = $1 and contest_hash = $2', [author_id, contest_hash])
-    } catch (err) { console.log(err) }
+    } catch (err) {
+        logger.log({ level: 'error', message: `failed setting register for author_id: ${author_id} and contest: ${contest_hash}` })
+    }
 }
 
 
@@ -291,6 +294,7 @@ const main_loop = async () => {
             if (!is_eligible) return cleanup(user_tweets_obj.author_id, latest_tweet.contest_hash) // cleanup if user doesnt have an eligible wallet
             let submission = await create_submission(latest_tweet, user_tweets_obj.author_id)
             await write_submission(submission, contest_data, user_address, latest_tweet.tweet_id)
+            logger.log({ level: 'info', message: `successfully registered submission for tweet_id: ${latest_tweet.tweet_id}` })
             // unlock and mark has registered in db. 
             cleanup(user_tweets_obj.author_id, latest_tweet.contest_hash)
         })
@@ -298,9 +302,9 @@ const main_loop = async () => {
 }
 
 
-const register_tweets = () => {
-    cron.schedule(EVERY_30_SECONDS, () => {
-        console.log('attempting to register tweets')
+const register_tweets = (frequency) => {
+    cron.schedule(frequency, () => {
+        logger.log({ level: 'info', message: 'attempting to register tweets' })
         main_loop();
     })
 }

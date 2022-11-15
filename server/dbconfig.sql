@@ -10,15 +10,10 @@ create table wikis (id serial, ens text, title text, location text, grouping ser
 create table discord_guilds (id serial, ens text UNIQUE, guild_id text, primary key (id), foreign key(ens) references organizations(ens) on delete cascade);
 create table users (id serial, address text UNIQUE, discord jsonb, twitter jsonb, nonce text, primary key(id));
 create table whitelist (id serial, address text, primary key (id));
-
-
-
 create table contests (id serial, ens text, created text, _start text, _voting text, _end text, _hash text UNIQUE, settings jsonb, locked boolean, pinned boolean, prompt_data jsonb, primary key (id));
 create table contest_submissions (id serial, ens text, contest_hash text, created text, author text, locked boolean, pinned boolean, _url text, meta_data jsonb, primary key(id), foreign key(contest_hash) references contests(_hash) on delete cascade);
 create table contest_votes (id serial, voter text, created text, contest_hash text, submission_id int, votes_spent double precision, primary key (id), unique(voter, submission_id), foreign key(contest_hash) references contests(_hash) on delete cascade, foreign key (submission_id) references contest_submissions(id) on delete cascade);
-
 create table session (sid varchar NOT NULL COLLATE "default", sess json NOT NULL, expire timestamp(6) NOT NULL) WITH (OIDS=FALSE);
 alter table session ADD CONSTRAINT session_pkey PRIMARY KEY (sid) NOT DEFERRABLE INITIALLY IMMEDIATE;
 create index IDX_session_expire ON session (expire);
-
 create table tweets (id serial, tweet_id text, author_id text, created text, contest_hash text, locked boolean, registered boolean, unique(tweet_id))

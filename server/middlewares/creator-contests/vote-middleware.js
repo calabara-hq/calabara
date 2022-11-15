@@ -6,7 +6,8 @@ const fs = require('fs');
 const { pinFromFs, pinJSON } = require('../../helpers/ipfs-api');
 const db = require('../../helpers/db-init.js');
 const { clean, asArray } = require('../../helpers/common')
-const { checkWalletTokenBalance } = require('../../web3/web3')
+const { checkWalletTokenBalance } = require('../../web3/web3');
+const logger = require('../../logger').child({service: 'middleware:contest_vote'})
 
 
 // return restrictions and voting_strategy
@@ -119,12 +120,21 @@ async function calc_sub_vp__PROTECTED(req, res, next) {
 
     let contest_params = await pre_process(ens, contest_hash, sub_id, walletAddress);
 
-    if (contest_params.is_self_voting_error) return res.sendStatus(435);
-    if (!contest_params.is_voting_window) return res.sendStatus(433);
+    if (contest_params.is_self_voting_error) {
+        logger.log({ level: 'error', message: 'user self voting error' })
+        return res.sendStatus(435);
+    }
+    if (!contest_params.is_voting_window) {
+        logger.log({ level: 'error', message: 'user attempted to vote outside of the voting window' })
+        return res.sendStatus(433);
+    }
 
     let restriction_results = await compute_restrictions(mode, walletAddress, contest_params.restrictions, contest_params.snapshot_block);
 
-    if (!restriction_results) return res.sendStatus(434)
+    if (!restriction_results) {
+        logger.log({ level: 'error', message: 'user failed voting requirement check' })
+        return res.sendStatus(434)
+    }
 
     let [total_contest_spent, sub_spent, total_contest_vp] = await Promise.all([
         getTotalSpentVotes(contest_hash, walletAddress),
@@ -136,7 +146,10 @@ async function calc_sub_vp__PROTECTED(req, res, next) {
     let total_votes_available = total_contest_vp - (total_contest_spent - sub_spent)
     let submission_votes_available = Math.min(total_votes_available, contest_params.strategy.sub_cap || total_votes_available)
 
-    if (num_votes > submission_votes_available) return res.sendStatus(436)
+    if (num_votes > submission_votes_available) {
+        logger.log({ level: 'error', message: 'user has insufficient votes' })
+        return res.sendStatus(436)
+    }
 
 
     req.sub_total_vp = submission_votes_available;

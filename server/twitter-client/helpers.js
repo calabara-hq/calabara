@@ -1,8 +1,8 @@
 const { TwitterApi } = require("twitter-api-v2");
-const { client } = require("../discord-bot/discord-bot");
 const { clean, asArray } = require("../helpers/common");
 const db = require("../helpers/db-init");
 const { socketSendUserSubmissionStatus } = require("../helpers/socket-messages");
+const logger = require("../logger").child({ service: "twitter_api" })
 const { appClient } = require("./config");
 
 
@@ -16,11 +16,16 @@ const twitter_send_tweet = async (accessToken, data) => {
             const result = await client.v2.tweetThread(data)
             return JSON.stringify(result[0].data.id)
         } catch (err) {
+            logger.log({ level: 'error', message: `send tweet failed with error: ${JSON.stringify(err)}` })
             if ((err.code === 503) && (retries < 5)) {
+                logger.log({ level: 'error', message: `send tweet failed with error 503. Retrying with ${retries + 1} remaining retries` })
                 retries += 1
                 return main()
             }
-            else throw (err)
+            else {
+                logger.log({ level: 'error', message: `send tweet failed with an irreversible error. Ran out of retries and gave up` })
+                throw (err)
+            }
         }
     }
     return main()
@@ -28,17 +33,23 @@ const twitter_send_tweet = async (accessToken, data) => {
 
 
 const twitter_delete_tweet = async (accessToken, tweet_id) => {
+    let retries = 0
     const main = async () => {
         try {
             const client = new TwitterApi(accessToken)
             const { data: { deleted } } = await client.v2.deleteTweet(tweet_id)
             return deleted
         } catch (err) {
+            logger.log({ level: 'error', message: `delete tweet failed with error: ${JSON.stringify(err)}` })
             if ((err.code === 503) && (retries < 5)) {
+                logger.log({ level: 'error', message: `delete tweet failed with error 503. Retrying with ${retries + 1} remaining retries` })
                 retries += 1
                 return main()
             }
-            else throw (err)
+            else {
+                logger.log({ level: 'error', message: `delete tweet failed with an irreversible error. Ran out of retries and gave up` })
+                throw (err)
+            }
         }
     }
     return main()
@@ -47,10 +58,10 @@ const twitter_delete_tweet = async (accessToken, tweet_id) => {
 
 const fetch_quote_tweets = async (tweet_id) => {
     try {
-        return await appClient.v2.quotes(tweet_id, { expansions: ['author_id', 'attachments.media_keys'], 'user.fields': ['username', 'url'], "tweet.fields": "created_at", max_results: 100 },)
+        return await appClient.v2.quotes(tweet_id, { expansions: ['author_id', 'attachments.media_keys'], 'user.fields': ['username', 'url'], "tweet.fields": "created_at", max_results: 100 })
     } catch (err) {
         const errors = TwitterApi.getErrors(err)
-        console.log(errors)
+        logger.log({ level: 'error', message: `fetch quote tweet failed with error: ${JSON.stringify(errors)}` })
         return null
     }
 }
@@ -69,7 +80,6 @@ const sendUserMessage = async (contest, quote) => {
             .then(data => {
                 // if user exists in the DB, send a pending message to all linked addresses for the account
                 if (data) {
-                    console.log('attempting to send socket message to address', data.address)
                     socketSendUserSubmissionStatus(data.address, contest.hash, 'registering')
                 }
             })
@@ -81,7 +91,9 @@ const register_tweet = async (contest, quote) => {
         .then(() => {
             sendUserMessage(contest, quote)
         })
-        .catch(err => { return err })
+        .catch(err => {
+            logger.log({ level: 'error', message: `register tweet failed with error: ${JSON.stringify(err)}` })
+        })
 }
 
 const handle_fetched_tweet = async (tweet) => {
@@ -97,7 +109,7 @@ const get_tweet = async (tweet_id) => {
         return await appClient.v2.singleTweet(tweet_id, { expansions: ['attachments.media_keys'], "media.fields": ["url", "preview_image_url"], "tweet.fields": ["text"] })
     } catch (err) {
         const errors = TwitterApi.getErrors(err)
-        console.log(errors)
+        logger.log({ level: 'error', message: `get tweet failed with error: ${JSON.stringify(errors)}` })
         return null
     }
 
@@ -108,7 +120,7 @@ const get_thread = async (tweet_id, author_id) => {
         return await appClient.v2.search(`conversation_id:${tweet_id} from:${author_id} to:${author_id}`, { expansions: ['attachments.media_keys'], "media.fields": ["url", "preview_image_url"], "tweet.fields": ["text"], max_results: 100 })
     } catch (err) {
         const errors = TwitterApi.getErrors(err)
-        console.log(errors)
+        logger.log({ level: 'error', message: `get thread failed with error: ${JSON.stringify(errors)}` })
         return null
     }
 }

@@ -26,7 +26,7 @@ import {
 
 
 export default function TwitterSubmissionBuilder({ handleCloseDrawer }) {
-    const { authState, auth_error, authLink, accountInfo, getAuthLink, onOpen, destroySession } = useTwitterAuth()
+    const { authState, auth_error, authLink, accountInfo, setAuthenticationType, getAuthLink, onOpen, destroySession } = useTwitterAuth(null)
     const [builderData, setBuilderData] = useReducer(TwitterThreadReducer, twitter_initial_state)
 
     const destroy_session = () => {
@@ -52,6 +52,7 @@ export default function TwitterSubmissionBuilder({ handleCloseDrawer }) {
                         setBuilderData={setBuilderData}
                         authState={authState}
                         authLink={authLink}
+                        setAuthenticationType={setAuthenticationType}
                         accountInfo={accountInfo}
                         getAuthLink={getAuthLink}
                         onOpen={onOpen}
@@ -142,6 +143,7 @@ function ActionsController(props) {
         return <AuthChoice
             builderData={props.builderData}
             setBuilderData={props.setBuilderData}
+            setAuthenticationType={props.setAuthenticationType}
             onOpen={props.onOpen} />
     }
     else if (props.builderData.stage === 1) {
@@ -178,6 +180,7 @@ function AuthChoice(props) {
     const handleChoice = (choice) => {
         let stage = 1
         // dont ask them to connect again if their twitter is already hooked up and simple auth is chosen
+        props.setAuthenticationType(choice)
         if ((choice === 'standard') && isTwitterConnected) stage = 2
         props.setBuilderData({ type: 'update_single', payload: { auth_type: choice, stage: stage } })
     }

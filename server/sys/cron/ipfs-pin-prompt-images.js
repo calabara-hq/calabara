@@ -1,8 +1,8 @@
 const cron = require('node-cron');
 const { clean, asArray, parallelLoop, serializedLoop } = require('../../helpers/common.js');
 const db = require('../../helpers/db-init.js');
-const { EVERY_10_SECONDS, EVERY_30_SECONDS } = require('./schedule');
-const { pinFromFs, pinFileStream } = require('../../helpers/ipfs-api.js');
+const { pinFromFs } = require('../../helpers/ipfs-api.js');
+const logger = require('../../logger.js').child({ service: 'cron:ipfs_pin_prompt_assets' })
 
 
 
@@ -12,7 +12,9 @@ const getPrompts = async () => {
             .then(clean)
             .then(asArray)
         return result
-    } catch (e) { console.log(e) }
+    } catch (err) {
+        logger.log({ level: 'error', message: `issue fetching prompts with error: ${err}` })
+    }
 }
 
 
@@ -20,7 +22,9 @@ const updateDB = async (prompt) => {
     try {
         let result = await db.query('update contests set locked = false, pinned = true, prompt_data = $1 where id = $2', [prompt.prompt_data, prompt.id])
         return result
-    } catch (e) { console.log(e) }
+    } catch (err) {
+        logger.log({ level: 'error', message: `issue fetching prompts with error: ${err}` })
+    }
 }
 
 
@@ -52,9 +56,9 @@ const mainLoop = async () => {
 
 
 
-const pin_prompt_assets = () => {
-    cron.schedule(EVERY_30_SECONDS, () => {
-        console.log('pinning prompt images')
+const pin_prompt_assets = (frequency) => {
+    cron.schedule(frequency, () => {
+        logger.log({ level: 'info', message: 'pinning prompt images' })
         mainLoop();
     })
 }

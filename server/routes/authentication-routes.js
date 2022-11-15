@@ -4,7 +4,8 @@ const dotenv = require('dotenv')
 const authentication = express();
 authentication.use(express.json())
 const { clean } = require('../helpers/common')
-const { SiweMessage } = require('siwe')
+const { SiweMessage } = require('siwe');
+const logger = require('../logger.js').child({ service: 'authentication' })
 dotenv.config();
 
 
@@ -23,7 +24,6 @@ const randomNonce = (length) => {
 authentication.post('/generate_nonce', async function (req, res, next) {
     const { address } = req.body;
     let nonce = randomNonce(25)
-    console.log(address)
     await db.query('insert into users (address, nonce) values ($1, $2) on conflict (address) do update set nonce = $2', [address, nonce]);
     res.send({ nonce: nonce });
     res.status(200);
@@ -48,9 +48,11 @@ authentication.post('/generate_session', async function (req, res, next) {
 
         req.session.user = { address: fields.address }
         res.send({ user: req.session.user }).status(200)
+        logger.log({ level: 'info', message: 'successfully authenticated user' })
 
-    } catch (e) {
-        console.log(e)
+
+    } catch (err) {
+        logger.log({ level: 'info', message: `problem authenticating with error: ${err}` })
         res.sendStatus(401)
     }
 })
@@ -58,6 +60,7 @@ authentication.post('/generate_session', async function (req, res, next) {
 authentication.get('/signOut', async function (req, res, next) {
     req.session.destroy()
     res.sendStatus(200)
+    logger.log({ level: 'info', message: 'user successfully signed out' })
 })
 
 

@@ -1,9 +1,8 @@
 const cron = require('node-cron')
-const db = require('../../helpers/db-init.js')
-const { EVERY_10_SECONDS, EVERY_HOUR, EVERY_5_MINUTES } = require('./schedule')
 const fs = require('fs');
 const path = require('path');
 const { parallelLoop } = require('../../helpers/common.js');
+const logger = require('../../logger.js').child({ service: 'cron:contest_garbage_collection' })
 
 // grab file list from cron table and lock it
 
@@ -36,15 +35,15 @@ const image_garbage_collection = async () => {
     let current_time = new Date()
     fs.readdir(mediaBasePath, async (err, images) => {
         if (err) return console.log(err);
-        if (images.length === 0) return console.log('no potentially stale images')
-        console.log(`found ${images.length} potentially stale images`)
+        if (images.length === 0) return logger.log({ level: 'info', message: 'no stale images found' })
+        logger.log({ level: 'info', message: `found ${images.length} potentially stale images` })
         await parallelLoop(images, async (image) => {
             let image_time = image.split('_')[1];
             if (checkStale(current_time, image_time)) {
                 // image is stale. delete it
                 fs.unlink(path.normalize(path.join(mediaBasePath, image)), (err) => {
                     if (err) return console.log(err)
-                    return console.log(`delete stale image with name ${image}`)
+                    return logger.log({ level: 'info', message: `delete stale image with name ${image}` })
                 })
             }
         })
@@ -53,9 +52,9 @@ const image_garbage_collection = async () => {
 
 
 
-const garbage_collection = () => {
-    cron.schedule(EVERY_HOUR, () => {
-        console.log('running contest garbage collection')
+const garbage_collection = (frequency) => {
+    cron.schedule(frequency, () => {
+        logger.log({ level: 'info', message: 'running contest garbage collection' })
         image_garbage_collection();
     })
 }
