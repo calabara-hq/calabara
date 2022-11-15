@@ -70,7 +70,7 @@ function CreateTweet(props) {
 
     const handleMediaUpload = (e) => {
         setIsMediaLoading(true);
-        if (e.target.files.length === 0) return
+        if (e.target.files.length === 0) return setIsMediaLoading(false)
         const img = {
             preview: URL.createObjectURL(e.target.files[0]),
             data: e.target.files[0],

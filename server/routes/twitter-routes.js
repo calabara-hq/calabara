@@ -60,6 +60,10 @@ twitter.post('/generateAuthLink', authenticateToken, async function (req, res, n
  * 
  *  */
 
+/**
+ * There are known issues with twitter Oauth2 on mobile devices see here: https://twittercommunity.com/t/web-oauth-2-0-is-broken-on-android-if-twitter-app-is-installed/169698
+ */
+
 twitter.get('/oauth2', authenticateToken, async function (req, res, next) {
     const { state, code } = req.query;
     req.session.twitter.state = state;
