@@ -1,4 +1,4 @@
-import { faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
+import { faExclamationCircle, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from 'axios';
 import { useEffect, useReducer, useState } from "react";
@@ -16,6 +16,7 @@ import { selectIsTwitterLinked } from "../../../../../../user/user-reducer";
 import { fade_in } from "../../../../common/common_styles";
 import Placeholder from '../../../../common/spinner';
 import {
+    CancelButton,
     CreateSubmissionContainer,
     SavingSubmissionDiv,
     SubmissionActionButtons
@@ -37,6 +38,7 @@ export default function TwitterSubmissionBuilder({ handleCloseDrawer }) {
     return (
         <CreateSubmissionContainer>
             <SubmissionActionButtons>
+                <CancelButton onClick={handleCloseDrawer}><FontAwesomeIcon icon={faTimes} /></CancelButton>
             </SubmissionActionButtons>
             <h2 style={{ textAlign: 'center', color: '#d3d3d3', marginBottom: '30px' }}>Create Submission</h2>
             <TwitterSubmissionContainer>
@@ -74,6 +76,7 @@ const DescriptionBox = styled.div`
     padding: 10px;
     position: relative;
     font-size: 16px;
+
     > span{
         position: absolute;
         right: 10px;
@@ -89,7 +92,7 @@ const DescriptionBox = styled.div`
 function TwitterDescription(props) {
     if (props.builderData.stage === 0) {
         return (
-            <DescriptionBox style={{ width: '80%', margin: '0 auto' }}>
+            <DescriptionBox>
                 <span><FontAwesomeIcon icon={faExclamationCircle} style={{ color: '#6673ff', fontSize: '20px' }} /></span>
                 <p> This is a twitter contest </p>
                 <p>To submit, you must link your twitter and quote tweet the announcement tweet with your submission</p>
@@ -225,7 +228,7 @@ function TwitterRedirect(props) {
 
     return (
         <RedirectWrap>
-            <p style={{ marginBottom: '20px' }}>All set! Head to twitter and quote tweet the contest announcement with your submission. </p>
+            <p style={{ marginBottom: '20px', textAlign: 'center' }}>All set! Head to twitter and quote tweet the contest announcement with your submission. </p>
             <LinkTwitterButton onClick={handleClick}>take me there</LinkTwitterButton>
         </RedirectWrap>
     )

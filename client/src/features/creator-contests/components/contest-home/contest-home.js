@@ -110,7 +110,7 @@ function ListContests({ homepage_data }) {
                 return (
                     <Contest onClick={() => handleInterface(el._hash)} key={id}>
                         <ContestTag>{el._title}</ContestTag>
-                        <Label color={labelColorOptions[el._prompt_label_color]}>{el._prompt_label}</Label>
+                        <Label style={{ marginLeft: 'auto' }} color={labelColorOptions[el._prompt_label_color]}>{el._prompt_label}</Label>
                         <CalculateState contest_info={el} />
                     </Contest>
                 )
@@ -164,7 +164,7 @@ function CalculateState({ contest_info }) {
 
 
     return (
-        <Label style={{ marginLeft: 'auto' }} color={label_status[contestState]}>{label_status[contestState].status}</Label>
+        <Label style={{ marginLeft: '3px' }} color={label_status[contestState]}>{label_status[contestState].status}</Label>
     )
 }
 

@@ -37,7 +37,7 @@ const add_stream_rules = async (arr) => {
     try {
         let rules = await get_stream_rules()
         if (rules.length === 5) return logger.log({ level: 'error', message: `twitter stream buffer is full` })
-        logger.log({ level: 'error', message: `attempting to add stream rules: ${JSON.stringify(arr)}` })
+        logger.log({ level: 'info', message: `attempting to add stream rules: ${JSON.stringify(arr)}` })
         await bearerClient.v2.updateStreamRules({
             add: arr
         });
