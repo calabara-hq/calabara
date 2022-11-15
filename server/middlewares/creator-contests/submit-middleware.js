@@ -1,12 +1,11 @@
 const path = require('path')
 const crypto = require('crypto')
 const serverRoot = path.normalize(path.join(__dirname, '../../'));
-const asyncfs = require('fs').promises;
 const fs = require('fs');
-const { pinFromFs, pinJSON } = require('../../helpers/ipfs-api');
 const db = require('../../helpers/db-init.js');
 const { clean, asArray } = require('../../helpers/common')
-const { checkWalletTokenBalance } = require('../../web3/web3')
+const { checkWalletTokenBalance } = require('../../web3/web3');
+const logger = require('../../logger').child({ service: 'middleware:contest_submit' })
 
 
 
@@ -106,13 +105,22 @@ async function check_submitter_eligibility_PROTECTED(req, res, next) {
     let restriction_results = await compute_restrictions(mode, walletAddress, contest_meta.restrictions, contest_meta.snapshot_block);
 
     // if we failed the requirements check, return an error
-    if (!restriction_results) return res.sendStatus(419)
+    if (!restriction_results) {
+        logger.log({ level: 'error', message: 'user failed restriction checks' })
+        return res.sendStatus(419)
+    }
 
     // if user already submitted, return an error
-    if (contest_meta.has_already_submitted) return res.sendStatus(420)
+    if (contest_meta.has_already_submitted) {
+        logger.log({ level: 'error', message: 'user has already submitted' })
+        return res.sendStatus(420)
+    }
 
     // if not in submission window, return an error
-    if (!contest_meta.is_submit_window) return res.sendStatus(432)
+    if (!contest_meta.is_submit_window) {
+        logger.log({ level: 'error', message: 'user attempted to submit outside of the submission window' })
+        return res.sendStatus(432)
+    }
 
     next();
 }
@@ -133,7 +141,7 @@ async function createSubmission(req, res, next) {
 
     const writestream = fs.createWriteStream(path.join(serverRoot, submission_url))
     writestream.write(JSON.stringify(submission), err => {
-        if (err) console.log(err, 'submission write failure');
+        if (err) logger.log({ level: 'error', message: `submission write failed with error: ${err}` })
         req.contest_hash = contest_hash;
         req.url = '/' + submission_url;
         req.created = created;

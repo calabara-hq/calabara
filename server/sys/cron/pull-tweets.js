@@ -1,9 +1,8 @@
 const cron = require('node-cron')
 const db = require('../../helpers/db-init.js')
-const { EVERY_5_MINUTES, EVERY_10_SECONDS, EVERY_30_SECONDS } = require('./schedule')
 const { clean, asArray, parallelLoop } = require('../../helpers/common.js');
 const { fetch_quote_tweets, register_tweet } = require('../../twitter-client/helpers.js');
-const { TwitterV2IncludesHelper } = require('twitter-api-v2');
+const logger = require('../../logger.js').child({ service: 'cron:pull_tweets' })
 
 
 // get twitter contests that are in the submit window -- done
@@ -41,15 +40,16 @@ const main_loop = async () => {
     await parallelLoop(contests, async (contest) => {
         let quotes = await fetch_quote_tweets(contest.tweet_id)
         if (!quotes) return
+        logger.log({ level: 'info', message: `processing ${quotes.length} tweets for contest ${contest.hash}` })
         for (const quote of quotes) {
             await register_tweet(contest, quote)
         }
     })
 }
 // run this every 5 minutes
-const pull_tweets = () => {
-    cron.schedule(EVERY_5_MINUTES, () => {
-        console.log('pulling contest tweets')
+const pull_tweets = (frequency) => {
+    cron.schedule(frequency, () => {
+        logger.log({ level: 'info', message: 'pulling contest tweets' })
         main_loop()
     })
 }

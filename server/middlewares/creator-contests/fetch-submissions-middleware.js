@@ -3,8 +3,7 @@ const { clean, asArray, shuffleArray } = require('../../helpers/common')
 
 /**
  * decide how to return submissions based on implemented contest settings
- * 
- */
+ **/
 
 
 /*anon_subs, self_voting, visible_votes,*/

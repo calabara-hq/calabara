@@ -1,10 +1,8 @@
 const path = require('path')
 const crypto = require('crypto')
-const serverRoot = path.normalize(path.join(__dirname, '../'));
-const asyncfs = require('fs').promises;
-const fs = require('fs');
 const dotenv = require('dotenv');
 const { calculateBlock } = require('../../web3/web3');
+const { logger } = require('../../logger').child('middleware:create_contest')
 
 dotenv.config();
 
@@ -17,7 +15,10 @@ dotenv.config();
 
 async function isNick(req, res, next) {
 
-    if (((req.session.user.address != '0xedcC867bc8B5FEBd0459af17a6f134F41f422f0C') && (req.session.user.address != '0xe9ad38d6E38E0A9970D6ebEc84C73DEA3e025da1'))) return res.sendStatus(437)
+    if (((req.session.user.address != '0xedcC867bc8B5FEBd0459af17a6f134F41f422f0C') && (req.session.user.address != '0xe9ad38d6E38E0A9970D6ebEc84C73DEA3e025da1'))) {
+        logger.log({ level: 'error', message: 'attempted to create a contest from non-admin wallet' })
+        return res.sendStatus(437);
+    }
     next()
 }
 

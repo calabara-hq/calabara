@@ -10,6 +10,7 @@ const { check_submitter_eligibility_PROTECTED, createSubmission } = require('../
 const { clean } = require('../helpers/common');
 const { socketSendNewSubmission, socketSendUserSubmissionStatus } = require('../helpers/socket-messages');
 const { isAdmin } = require('../middlewares/admin-middleware');
+const logger = require('../logger').child({ service: 'twitter_api' })
 twitter.use(express.json())
 
 dotenv.config()
@@ -34,8 +35,14 @@ let scopes = {
 
 twitter.post('/generateAuthLink', authenticateToken, async function (req, res, next) {
     const { scope_type } = req.body
-    if (!scope_type) return res.sendStatus(400)
-    if (!scopes[scope_type]) return res.sendStatus(400)
+    if (!scope_type) {
+        logger.log({ level: 'error', message: 'scope not passed for twitter auth link generation' })
+        return res.sendStatus(400)
+    }
+    if (!scopes[scope_type]) {
+        logger.log({ level: 'error', message: 'invalid scope passed for twitter auth link generation' })
+        return res.sendStatus(400)
+    }
     const { url, codeVerifier, state } = requestClient.generateOAuth2AuthLink(twitter_redirect, { scope: scopes[scope_type] });
     req.session.twitter = {
         codeVerifier: codeVerifier,
@@ -75,10 +82,12 @@ twitter.get('/oauth2', authenticateToken, async function (req, res, next) {
 
             // Example request
             const { data: userObject } = await loggedClient.v2.me();
+            logger.log({ level: 'info', message: `twitter auth suceeded after ${retries} retries` })
             return res.status(200).send('<script>window.close()</script>')
         })
         .catch((err) => {
-            res.status(200).send('<script>window.close()</script>')
+            logger.log({ level: 'error', message: `twitter auth timed out after ${retries} retries` })
+            return res.status(200).send('<script>window.close()</script>')
         });
 
 })
@@ -96,13 +105,14 @@ twitter.post('/sendQuoteTweet', authenticateToken, check_submitter_eligibility_P
 
     let result = await db.query('insert into contest_submissions (ens, contest_hash, author, created, locked, pinned, _url, meta_data) values ($1, $2, $3, $4, $5, $6, $7, $8) returning id ', [ens, req.contest_hash, req.session.user.address, req.created, false, false, req.url, { tweet_id: JSON.parse(req.tweet_id) }]).then(clean)
     res.sendStatus(200)
+    logger.log({ level: 'info', message: `successfully processed platform twitter submission` })
     socketSendNewSubmission(req.contest_hash, ens, { id: result.id, _url: req.url, author: req.session.user.address, votes: 0 })
     socketSendUserSubmissionStatus(req.session.user.address, req.contest_hash, 'submitted')
 })
 
 // attempt to tweet, then return the announcementID
 twitter.post('/send_announcement_tweet', authenticateToken, isAdmin, sendTweet, async function (req, res, next) {
-    console.log(req.announcementID)
+    logger.log({ level: 'info', message: `successfully processed announcement tweet with ID: ${announcementID}` })
     res.send(req.announcementID).status(200)
 })
 

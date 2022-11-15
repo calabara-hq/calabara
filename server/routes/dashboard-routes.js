@@ -1,6 +1,5 @@
 const express = require('express');
 const db = require('../helpers/db-init.js')
-const dotenv = require('dotenv')
 const path = require('path')
 const dashboard = express();
 dashboard.use(express.json())
@@ -10,34 +9,9 @@ const { isAdmin } = require('../middlewares/admin-middleware')
 const { clean, asArray } = require('../helpers/common')
 const { getGuildRoles } = require('./discord-routes')
 const googleCalendar = require('../helpers/google-calendar');
-const { default: axios } = require('axios');
 
 
 const serverRoot = path.normalize(path.join(__dirname, '../'));
-
-
-
-// remove key
-// update gatekeeper_rules set rule = rule #- '{hehe}' where rule_id = 74;
-
-let orgs = ['calabara.eth', 'sharkdao.eth', 'yungweez.eth'];
-let rules = [
-    {"type": "erc20", "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"},
-    {"type": "discord", "guildId": "892877917762244680", "serverName": "Calabara"},
-    {"type": "erc20", "gatekeeperSymbol": "SHARK", "gatekeeperAddress": "0x232AFcE9f1b3AAE7cb408e482E847250843DB931", "gatekeeperDecimal": "18"},
-    {"type": "discord", "guildId": "892877917762244680", "serverName": "Calabara"},
-    {"type": "erc20", "gatekeeperSymbol": "KRAUSE", "gatekeeperAddress": "0x9F6F91078A5072A8B54695DAfA2374Ab3cCd603b", "gatekeeperDecimal": "18"},
-    {"type": "erc721", "symbol": "0", "gatekeeperSymbol": "MFER", "gatekeeperAddress": "0x79FCDEF22feeD20eDDacbB2587640e45491b757f"},
-    {"type": "erc721", "symbol": "0", "gatekeeperSymbol": "NOUN", "gatekeeperAddress": "0x9C8fF314C9Bc7F6e59A9d9225Fb22946427eDC03"},
-]
-
-const refill_GK_DB = async() => {
-    for (i in rules){
-        await db.query('insert into gatekeeper_rules (ens, rule) values ($1, $2)', [orgs[0], rules[i]])
-    }
-}
-
-
 
 const getDashboardInfo = async (ens) => {
     var orgInfo = await db.query('select name, ens, logo, members, website, discord, verified, addresses from organizations where ens = $1', [ens.toLowerCase()]).then(clean);

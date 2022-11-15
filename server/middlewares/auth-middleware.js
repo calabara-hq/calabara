@@ -1,9 +1,13 @@
 const dotenv = require('dotenv');
+const logger = require('../logger').child({ service: 'middleware:authentication' })
 dotenv.config();
 
 
 function authenticateToken(req, res, next) {
-  if (!(req.sessionID && req.session.user)) return res.sendStatus(401)
+  if (!(req.sessionID && req.session.user)) {
+    logger.log({ level: 'info', message: 'user authentication timed out' })
+    return res.sendStatus(401)
+  }
 
   next();
 }

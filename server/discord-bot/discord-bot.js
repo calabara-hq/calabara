@@ -1,10 +1,11 @@
-const { Client, Intents } = require('discord.js')
+const { Client, Intents } = require('discord.js');
+const logger = require('../logger').child({ service: 'discord' })
 const client = new Client({ intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_MEMBERS] }); //create new client
 
 
 
 client.on('ready', () => {
-  console.log(`Logged in as ${client.user.tag}!`);
+  logger.log({ level: 'info', message: `Logged discord bot in as ${client.user.tag}` })
 });
 
 client.on('interactionCreate', async interaction => {
@@ -30,7 +31,6 @@ client.on('interactionCreate', async interaction => {
 async function getServerRoles(guildId) {
 
   const res = await client.guilds.fetch();
-  console.log(res)
   const guild = await client.guilds.fetch(res.first().id)
   const roles = await guild.roles.fetch();
   roles.forEach((val) => console.log(val.name, val.id))

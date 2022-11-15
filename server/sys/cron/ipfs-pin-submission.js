@@ -1,7 +1,6 @@
 const cron = require('node-cron');
-const { clean, asArray, serializedLoop, parallelLoop } = require('../../helpers/common.js');
+const { clean, asArray, parallelLoop } = require('../../helpers/common.js');
 const db = require('../../helpers/db-init.js');
-const { EVERY_10_SECONDS, EVERY_30_SECONDS } = require('./schedule');
 const fs = require('fs');
 const fs_path = require('path');
 const { parser } = require('stream-json/Parser');
@@ -9,8 +8,7 @@ const { streamValues } = require('stream-json/streamers/StreamValues');
 const { chain } = require('stream-chain');
 const Stringer = require('stream-json/jsonl/Stringer');
 const { pinFromFs, pinFileStream } = require('../../helpers/ipfs-api.js');
-const ndjson = require('ndjson');
-const FormData = require('form-data')
+const logger = require('../../logger.js').child({ service: 'cron:ipfs_pin_submission_assets' })
 
 // grab file list from cron table and lock rows
 
@@ -27,24 +25,26 @@ const serverBasePath = fs_path.normalize(fs_path.join(__dirname, '../../'))
 
 const getFileUrls = async () => {
     try {
-        // CHANGE THIS BACK TO TRUE
         let result = await db.query('update contest_submissions set locked = true where pinned = false and locked = false returning id, _url').then(clean).then(asArray);
         return result
-    } catch (e) { console.log(e) }
+    } catch (err) {
+        logger.log({ level: 'error', message: `failed pulling file urls with error: ${asset_url}` })
+    }
 }
 
 const updateFileUrl = async (id, new_url) => {
     try {
-        let result = await db.query('update contest_submissions set locked = false, pinned = true, _url = $1 where id = $2', [new_url, id])
-        return
-    } catch (e) { console.log(e) }
+        return await db.query('update contest_submissions set locked = false, pinned = true, _url = $1 where id = $2', [new_url, id])
+    } catch (err) {
+        logger.log({ level: 'error', message: `failed updating file urls with error: ${asset_url}` })
+    }
 }
 
 
 const deleteFromFs = (url) => {
     fs.unlink(fs_path.normalize(fs_path.join(serverBasePath, url)), (err) => {
         if (err) return console.log(err)
-        return console.log(`delete stale submission from fs`)
+        return logger.log({ level: 'info', message: `successfully deleted stale submission from fs` })
     })
 }
 
@@ -112,22 +112,23 @@ const mainLoop = async () => {
 
             const asset_url = await data;
             const stream_end = await end;
-            console.log(stream_end)
-            console.log('FINAL ASSET URL --> ', asset_url);
+            logger.log({ level: 'info', message: `successfully pinned submission with url: ${asset_url}` })
             await Promise.all([
                 updateFileUrl(unpinned_body.id, asset_url),
                 deleteFromFs(unpinned_body._url)
             ])
 
-        } catch (err) { console.log(err) }
+        } catch (err) {
+            logger.log({ level: 'error', message: `failed pinning submission with error: ${asset_url}` })
+        }
     })
     return
 }
 
 
-const pin_staging_files = () => {
-    cron.schedule(EVERY_30_SECONDS, async () => {
-        console.log('pinning submissions')
+const pin_staging_files = (frequency) => {
+    cron.schedule(frequency, async () => {
+        logger.log({ level: 'info', message: `pinning contest submissions` })
         mainLoop();
     })
 }
