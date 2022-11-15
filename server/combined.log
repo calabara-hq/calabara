@@ -7120,3 +7120,596 @@
 {"level":"error","message":"send tweet failed with error: {\"type\":\"response\",\"code\":403,\"error\":{\"detail\":\"You are not allowed to create a Tweet with duplicate content.\",\"type\":\"about:blank\",\"title\":\"Forbidden\",\"status\":403},\"rateLimit\":{\"limit\":200,\"remaining\":194,\"reset\":1668524443},\"headers\":{\"date\":\"Tue, 15 Nov 2022 14:45:44 UTC\",\"perf\":\"7626143928\",\"server\":\"tsa_b\",\"set-cookie\":[\"guest_id_marketing=v1%3A166852354481306123; Max-Age=63072000; Expires=Thu, 14 Nov 2024 14:45:44 GMT; Path=/; Domain=.twitter.com; Secure; SameSite=None\",\"guest_id_ads=v1%3A166852354481306123; Max-Age=63072000; Expires=Thu, 14 Nov 2024 14:45:44 GMT; Path=/; Domain=.twitter.com; Secure; SameSite=None\",\"personalization_id=\\\"v1_/7NqovtQPiZ7bvhvdUmmWw==\\\"; Max-Age=63072000; Expires=Thu, 14 Nov 2024 14:45:44 GMT; Path=/; Domain=.twitter.com; Secure; SameSite=None\",\"guest_id=v1%3A166852354481306123; Max-Age=63072000; Expires=Thu, 14 Nov 2024 14:45:44 GMT; Path=/; Domain=.twitter.com; Secure; SameSite=None\"],\"api-version\":\"2.55\",\"content-type\":\"application/json; charset=utf-8\",\"cache-control\":\"no-cache, no-store, max-age=0\",\"content-length\":\"131\",\"x-access-level\":\"read-write\",\"x-frame-options\":\"SAMEORIGIN\",\"content-encoding\":\"gzip\",\"x-transaction-id\":\"97ba091a92ceff83\",\"x-xss-protection\":\"0\",\"x-rate-limit-limit\":\"200\",\"x-rate-limit-reset\":\"1668524443\",\"content-disposition\":\"attachment; filename=json.json\",\"x-content-type-options\":\"nosniff\",\"x-rate-limit-remaining\":\"194\",\"strict-transport-security\":\"max-age=631138519\",\"x-response-time\":\"42\",\"x-connection-hash\":\"c061ee41db45adc524e0d58135d7f71ece0801c167e00743f3933a3e6a5400ab\",\"connection\":\"close\"}}","service":"middleware:twitter","timestamp":"2022-11-15 09:45:44"}
 {"level":"info","message":"user twitter session is not active","service":"middleware:twitter","timestamp":"2022-11-15 09:45:44"}
 {"level":"info","message":"user twitter session is not active","service":"middleware:twitter","timestamp":"2022-11-15 09:45:45"}
+{"level":"info","message":"Running on port 3001","service":"index","timestamp":"2022-11-15 10:57:23"}
+{"level":"info","message":"initial stream rules: [{\"id\":\"1592513014758006784\",\"value\":\"conversation_id:1592513012556075008 is:quote\",\"tag\":\"b2608824\"},{\"id\":\"1592513494750044160\",\"value\":\"conversation_id:1592513493147783170 is:quote\",\"tag\":\"9198e519\"}]","service":"twitter_stream_ingestor","timestamp":"2022-11-15 10:57:23"}
+{"level":"info","message":"Successfully registered application commands.","service":"index","timestamp":"2022-11-15 10:57:23"}
+{"level":"info","message":"Logged discord bot in as calabara bot#7664","service":"discord","timestamp":"2022-11-15 10:57:23"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 10:57:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 10:57:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 10:57:30"}
+{"level":"info","message":"Client connected [id=82cSODSN16t8KtFeAAAB]","service":"socket","timestamp":"2022-11-15 10:57:42"}
+{"level":"info","message":"Client joining [room=9198e519]","service":"socket","timestamp":"2022-11-15 10:57:43"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 10:57:43"}
+{"level":"info","message":"Client joining [room=9198e519-0xedcC867bc8B5FEBd0459af17a6f134F41f422f0C]","service":"socket","timestamp":"2022-11-15 10:57:44"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 10:58:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 10:58:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 10:58:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 10:58:03"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 10:58:23"}
+{"level":"info","message":"Client disconnected [id=82cSODSN16t8KtFeAAAB]","service":"socket","timestamp":"2022-11-15 10:58:27"}
+{"level":"info","message":"Client connected [id=vuc_7YJfs4SMVfLhAAAD]","service":"socket","timestamp":"2022-11-15 10:58:27"}
+{"level":"info","message":"Client joining [room=9198e519]","service":"socket","timestamp":"2022-11-15 10:58:28"}
+{"level":"info","message":"Client joining [room=9198e519-0xedcC867bc8B5FEBd0459af17a6f134F41f422f0C]","service":"socket","timestamp":"2022-11-15 10:58:29"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 10:58:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 10:58:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 10:58:30"}
+{"level":"info","message":"user successfully signed out","service":"authentication","timestamp":"2022-11-15 10:58:37"}
+{"level":"info","message":"user authentication timed out","service":"middleware:authentication","timestamp":"2022-11-15 10:58:38"}
+{"level":"info","message":"successfully authenticated user","service":"authentication","timestamp":"2022-11-15 10:58:43"}
+{"level":"info","message":"Client joining [room=9198e519-0xedcC867bc8B5FEBd0459af17a6f134F41f422f0C]","service":"socket","timestamp":"2022-11-15 10:58:43"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 10:58:43"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 10:59:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 10:59:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 10:59:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 10:59:03"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 10:59:23"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 10:59:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 10:59:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 10:59:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 10:59:43"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:00:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:00:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:00:00"}
+{"level":"info","message":"managing twitter stream","service":"cron:twitter_stream_manager","timestamp":"2022-11-15 11:00:00"}
+{"level":"info","message":"pulling contest tweets","service":"cron:pull_tweets","timestamp":"2022-11-15 11:00:00"}
+{"level":"info","message":"running contest garbage collection","service":"cron:contest_garbage_collection","timestamp":"2022-11-15 11:00:00"}
+{"level":"info","message":"found 59 potentially stale images","service":"cron:contest_garbage_collection","timestamp":"2022-11-15 11:00:00"}
+{"level":"info","message":"delete stale image with name _2022-11-14T14:59:43.057Z_.png","service":"cron:contest_garbage_collection","timestamp":"2022-11-15 11:00:00"}
+{"level":"info","message":"delete stale image with name _2022-11-14T15:01:10.400Z_.png","service":"cron:contest_garbage_collection","timestamp":"2022-11-15 11:00:00"}
+{"level":"info","message":"delete stale image with name _2022-11-14T14:59:14.033Z_.png","service":"cron:contest_garbage_collection","timestamp":"2022-11-15 11:00:00"}
+{"level":"info","message":"delete stale image with name _2022-11-14T15:02:42.588Z_.png","service":"cron:contest_garbage_collection","timestamp":"2022-11-15 11:00:00"}
+{"level":"info","message":"delete stale image with name _2022-11-14T15:03:31.010Z_.png","service":"cron:contest_garbage_collection","timestamp":"2022-11-15 11:00:00"}
+{"level":"info","message":"delete stale image with name _2022-11-14T15:04:07.549Z_.png","service":"cron:contest_garbage_collection","timestamp":"2022-11-15 11:00:00"}
+{"level":"info","message":"delete stale image with name _2022-11-14T15:08:38.967Z_.png","service":"cron:contest_garbage_collection","timestamp":"2022-11-15 11:00:00"}
+{"level":"info","message":"delete stale image with name _2022-11-14T15:00:41.051Z_.png","service":"cron:contest_garbage_collection","timestamp":"2022-11-15 11:00:00"}
+{"level":"info","message":"delete stale image with name _2022-11-14T15:11:49.556Z_.png","service":"cron:contest_garbage_collection","timestamp":"2022-11-15 11:00:00"}
+{"level":"info","message":"delete stale image with name _2022-11-14T15:12:03.278Z_.png","service":"cron:contest_garbage_collection","timestamp":"2022-11-15 11:00:00"}
+{"level":"info","message":"delete stale image with name _2022-11-14T15:01:36.349Z_.png","service":"cron:contest_garbage_collection","timestamp":"2022-11-15 11:00:00"}
+{"level":"info","message":"delete stale image with name _2022-11-14T15:12:34.086Z_.gif","service":"cron:contest_garbage_collection","timestamp":"2022-11-15 11:00:00"}
+{"level":"info","message":"delete stale image with name _2022-11-14T15:16:35.720Z_.jpg","service":"cron:contest_garbage_collection","timestamp":"2022-11-15 11:00:00"}
+{"level":"info","message":"delete stale image with name _2022-11-14T15:16:14.119Z_.png","service":"cron:contest_garbage_collection","timestamp":"2022-11-15 11:00:00"}
+{"level":"info","message":"delete stale image with name _2022-11-14T15:16:41.654Z_.png","service":"cron:contest_garbage_collection","timestamp":"2022-11-15 11:00:00"}
+{"level":"info","message":"delete stale image with name _2022-11-14T15:17:02.170Z_.png","service":"cron:contest_garbage_collection","timestamp":"2022-11-15 11:00:00"}
+{"level":"info","message":"delete stale image with name _2022-11-14T15:17:14.774Z_.png","service":"cron:contest_garbage_collection","timestamp":"2022-11-15 11:00:00"}
+{"level":"info","message":"delete stale image with name _2022-11-14T15:20:18.455Z_.png","service":"cron:contest_garbage_collection","timestamp":"2022-11-15 11:00:00"}
+{"level":"info","message":"delete stale image with name _2022-11-14T15:22:44.849Z_.gif","service":"cron:contest_garbage_collection","timestamp":"2022-11-15 11:00:00"}
+{"level":"info","message":"delete stale image with name _2022-11-14T15:24:40.812Z_.jpg","service":"cron:contest_garbage_collection","timestamp":"2022-11-15 11:00:00"}
+{"level":"info","message":"delete stale image with name _2022-11-14T15:33:08.658Z_.png","service":"cron:contest_garbage_collection","timestamp":"2022-11-15 11:00:00"}
+{"level":"info","message":"delete stale image with name _2022-11-14T15:51:14.240Z_.png","service":"cron:contest_garbage_collection","timestamp":"2022-11-15 11:00:00"}
+{"level":"info","message":"delete stale image with name _2022-11-14T15:22:02.947Z_.png","service":"cron:contest_garbage_collection","timestamp":"2022-11-15 11:00:00"}
+{"level":"info","message":"delete stale image with name _2022-11-14T15:16:52.521Z_.png","service":"cron:contest_garbage_collection","timestamp":"2022-11-15 11:00:00"}
+{"level":"info","message":"delete stale image with name _2022-11-14T15:11:36.210Z_.png","service":"cron:contest_garbage_collection","timestamp":"2022-11-15 11:00:00"}
+{"level":"info","message":"listening to twitter stream with rules: [{\"id\":\"1592513014758006784\",\"value\":\"conversation_id:1592513012556075008 is:quote\",\"tag\":\"b2608824\"},{\"id\":\"1592513494750044160\",\"value\":\"conversation_id:1592513493147783170 is:quote\",\"tag\":\"9198e519\"}]","service":"cron:twitter_stream_manager","timestamp":"2022-11-15 11:00:00"}
+{"level":"info","message":"processing undefined tweets for contest 9198e519","service":"cron:pull_tweets","timestamp":"2022-11-15 11:00:00"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592516328002580482) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:00:00"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592515928843251713) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:00:00"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592515552354131969) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:00:00"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592514807613521920) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:00:00"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592514406415757315) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:00:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:00:03"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:00:23"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:00:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:00:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:00:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:00:43"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:01:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:01:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:01:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:01:03"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:01:23"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:01:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:01:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:01:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:01:43"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:02:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:02:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:02:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:02:03"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:02:23"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:02:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:02:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:02:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:02:43"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:03:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:03:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:03:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:03:03"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:03:23"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:03:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:03:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:03:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:03:43"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:04:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:04:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:04:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:04:03"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:04:23"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:04:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:04:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:04:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:04:43"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:05:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:05:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:05:00"}
+{"level":"info","message":"managing twitter stream","service":"cron:twitter_stream_manager","timestamp":"2022-11-15 11:05:00"}
+{"level":"info","message":"pulling contest tweets","service":"cron:pull_tweets","timestamp":"2022-11-15 11:05:00"}
+{"level":"info","message":"listening to twitter stream with rules: [{\"id\":\"1592513494750044160\",\"value\":\"conversation_id:1592513493147783170 is:quote\",\"tag\":\"9198e519\"}]","service":"cron:twitter_stream_manager","timestamp":"2022-11-15 11:05:00"}
+{"level":"info","message":"processing undefined tweets for contest 9198e519","service":"cron:pull_tweets","timestamp":"2022-11-15 11:05:00"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592516328002580482) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:05:00"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592515928843251713) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:05:00"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592515552354131969) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:05:00"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592514807613521920) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:05:00"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592514406415757315) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:05:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:05:03"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:05:23"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:05:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:05:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:05:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:05:43"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:06:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:06:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:06:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:06:03"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:06:23"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:06:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:06:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:06:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:06:43"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:07:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:07:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:07:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:07:03"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:07:23"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:07:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:07:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:07:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:07:43"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:08:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:08:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:08:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:08:03"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:08:23"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:08:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:08:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:08:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:08:43"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:09:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:09:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:09:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:09:03"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:09:23"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:09:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:09:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:09:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:09:43"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:10:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:10:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:10:00"}
+{"level":"info","message":"managing twitter stream","service":"cron:twitter_stream_manager","timestamp":"2022-11-15 11:10:00"}
+{"level":"info","message":"pulling contest tweets","service":"cron:pull_tweets","timestamp":"2022-11-15 11:10:00"}
+{"level":"info","message":"listening to twitter stream with rules: [{\"id\":\"1592513494750044160\",\"value\":\"conversation_id:1592513493147783170 is:quote\",\"tag\":\"9198e519\"}]","service":"cron:twitter_stream_manager","timestamp":"2022-11-15 11:10:00"}
+{"level":"info","message":"processing undefined tweets for contest 9198e519","service":"cron:pull_tweets","timestamp":"2022-11-15 11:10:00"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592516328002580482) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:10:00"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592515928843251713) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:10:00"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592515552354131969) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:10:00"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592514807613521920) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:10:00"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592514406415757315) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:10:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:10:03"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:10:23"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:10:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:10:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:10:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:10:43"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:11:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:11:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:11:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:11:03"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:11:23"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:11:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:11:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:11:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:11:43"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:12:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:12:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:12:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:12:03"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:12:23"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:12:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:12:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:12:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:12:43"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:13:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:13:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:13:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:13:03"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:13:23"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:13:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:13:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:13:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:13:43"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:14:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:14:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:14:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:14:03"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:14:23"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:14:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:14:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:14:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:14:43"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:15:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:15:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:15:00"}
+{"level":"info","message":"managing twitter stream","service":"cron:twitter_stream_manager","timestamp":"2022-11-15 11:15:00"}
+{"level":"info","message":"pulling contest tweets","service":"cron:pull_tweets","timestamp":"2022-11-15 11:15:00"}
+{"level":"info","message":"listening to twitter stream with rules: [{\"id\":\"1592513494750044160\",\"value\":\"conversation_id:1592513493147783170 is:quote\",\"tag\":\"9198e519\"}]","service":"cron:twitter_stream_manager","timestamp":"2022-11-15 11:15:01"}
+{"level":"info","message":"processing undefined tweets for contest 9198e519","service":"cron:pull_tweets","timestamp":"2022-11-15 11:15:01"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592516328002580482) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:15:01"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592515928843251713) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:15:01"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592515552354131969) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:15:01"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592514807613521920) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:15:01"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592514406415757315) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:15:01"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:15:03"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:15:23"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:15:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:15:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:15:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:15:43"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:16:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:16:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:16:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:16:03"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:16:23"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:16:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:16:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:16:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:16:43"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:17:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:17:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:17:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:17:03"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:17:23"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:17:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:17:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:17:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:17:43"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:18:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:18:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:18:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:18:03"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:18:24"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:18:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:18:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:18:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:18:44"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:19:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:19:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:19:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:19:04"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:19:24"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:19:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:19:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:19:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:19:44"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:20:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:20:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:20:00"}
+{"level":"info","message":"managing twitter stream","service":"cron:twitter_stream_manager","timestamp":"2022-11-15 11:20:00"}
+{"level":"info","message":"pulling contest tweets","service":"cron:pull_tweets","timestamp":"2022-11-15 11:20:00"}
+{"level":"info","message":"listening to twitter stream with rules: [{\"id\":\"1592513494750044160\",\"value\":\"conversation_id:1592513493147783170 is:quote\",\"tag\":\"9198e519\"}]","service":"cron:twitter_stream_manager","timestamp":"2022-11-15 11:20:00"}
+{"level":"info","message":"processing undefined tweets for contest 9198e519","service":"cron:pull_tweets","timestamp":"2022-11-15 11:20:00"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592516328002580482) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:20:00"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592515928843251713) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:20:00"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592515552354131969) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:20:00"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592514807613521920) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:20:00"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592514406415757315) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:20:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:20:04"}
+{"level":"info","message":"Client disconnected [id=vuc_7YJfs4SMVfLhAAAD]","service":"socket","timestamp":"2022-11-15 11:20:07"}
+{"level":"info","message":"Client connected [id=Uu9_1rjY2vrDIKfbAAAF]","service":"socket","timestamp":"2022-11-15 11:20:08"}
+{"level":"info","message":"Client joining [room=9198e519]","service":"socket","timestamp":"2022-11-15 11:20:08"}
+{"level":"info","message":"Client joining [room=9198e519-0xedcC867bc8B5FEBd0459af17a6f134F41f422f0C]","service":"socket","timestamp":"2022-11-15 11:20:10"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:20:24"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:20:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:20:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:20:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:20:44"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:21:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:21:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:21:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:21:04"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:21:24"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:21:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:21:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:21:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:21:44"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:22:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:22:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:22:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:22:04"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:22:24"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:22:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:22:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:22:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:22:44"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:23:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:23:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:23:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:23:04"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:23:24"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:23:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:23:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:23:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:23:44"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:24:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:24:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:24:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:24:04"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:24:24"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:24:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:24:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:24:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:24:44"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:25:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:25:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:25:00"}
+{"level":"info","message":"managing twitter stream","service":"cron:twitter_stream_manager","timestamp":"2022-11-15 11:25:00"}
+{"level":"info","message":"pulling contest tweets","service":"cron:pull_tweets","timestamp":"2022-11-15 11:25:00"}
+{"level":"info","message":"listening to twitter stream with rules: [{\"id\":\"1592513494750044160\",\"value\":\"conversation_id:1592513493147783170 is:quote\",\"tag\":\"9198e519\"}]","service":"cron:twitter_stream_manager","timestamp":"2022-11-15 11:25:00"}
+{"level":"info","message":"processing undefined tweets for contest 9198e519","service":"cron:pull_tweets","timestamp":"2022-11-15 11:25:00"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592516328002580482) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:25:00"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592515928843251713) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:25:00"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592515552354131969) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:25:00"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592514807613521920) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:25:00"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592514406415757315) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:25:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:25:04"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:25:24"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:25:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:25:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:25:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:25:44"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:26:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:26:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:26:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:26:04"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:26:24"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:26:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:26:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:26:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:26:44"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:27:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:27:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:27:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:27:04"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:27:24"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:27:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:27:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:27:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:27:44"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:28:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:28:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:28:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:28:04"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:28:24"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:28:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:28:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:28:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:28:44"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:29:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:29:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:29:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:29:04"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:29:24"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:29:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:29:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:29:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:29:44"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:30:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:30:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:30:00"}
+{"level":"info","message":"managing twitter stream","service":"cron:twitter_stream_manager","timestamp":"2022-11-15 11:30:00"}
+{"level":"info","message":"pulling contest tweets","service":"cron:pull_tweets","timestamp":"2022-11-15 11:30:00"}
+{"level":"info","message":"listening to twitter stream with rules: [{\"id\":\"1592513494750044160\",\"value\":\"conversation_id:1592513493147783170 is:quote\",\"tag\":\"9198e519\"}]","service":"cron:twitter_stream_manager","timestamp":"2022-11-15 11:30:00"}
+{"level":"info","message":"processing undefined tweets for contest 9198e519","service":"cron:pull_tweets","timestamp":"2022-11-15 11:30:01"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592516328002580482) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:30:01"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592515928843251713) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:30:01"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592515552354131969) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:30:01"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592514807613521920) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:30:01"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592514406415757315) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:30:01"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:30:04"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:30:24"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:30:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:30:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:30:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:30:44"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:31:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:31:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:31:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:31:04"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:31:24"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:31:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:31:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:31:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:31:44"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:32:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:32:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:32:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:32:04"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:32:24"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:32:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:32:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:32:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:32:44"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:33:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:33:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:33:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:33:04"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:33:24"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:33:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:33:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:33:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:33:44"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:34:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:34:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:34:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:34:04"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:34:24"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:34:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:34:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:34:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:34:44"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:35:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:35:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:35:00"}
+{"level":"info","message":"managing twitter stream","service":"cron:twitter_stream_manager","timestamp":"2022-11-15 11:35:00"}
+{"level":"info","message":"pulling contest tweets","service":"cron:pull_tweets","timestamp":"2022-11-15 11:35:00"}
+{"level":"info","message":"listening to twitter stream with rules: [{\"id\":\"1592513494750044160\",\"value\":\"conversation_id:1592513493147783170 is:quote\",\"tag\":\"9198e519\"}]","service":"cron:twitter_stream_manager","timestamp":"2022-11-15 11:35:00"}
+{"level":"info","message":"processing undefined tweets for contest 9198e519","service":"cron:pull_tweets","timestamp":"2022-11-15 11:35:00"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592516328002580482) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:35:00"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592515928843251713) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:35:00"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592515552354131969) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:35:00"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592514807613521920) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:35:00"}
+{"level":"error","message":"register tweet failed with error: {\"length\":223,\"name\":\"error\",\"severity\":\"ERROR\",\"code\":\"23505\",\"detail\":\"Key (tweet_id)=(1592514406415757315) already exists.\",\"schema\":\"public\",\"table\":\"tweets\",\"constraint\":\"tweets_tweet_id_key\",\"file\":\"nbtinsert.c\",\"line\":\"563\",\"routine\":\"_bt_check_unique\"}","service":"twitter_api","timestamp":"2022-11-15 11:35:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:35:04"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:35:24"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:35:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:35:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:35:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:35:44"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:36:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:36:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:36:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:36:04"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:36:24"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:36:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:36:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:36:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:36:44"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:37:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:37:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:37:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:37:04"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:37:24"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:37:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:37:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:37:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:37:44"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:38:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:38:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:38:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:38:04"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:38:24"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:38:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:38:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:38:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:38:44"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:39:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:39:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:39:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:39:04"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:39:24"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:39:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:39:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:39:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:39:44"}
+{"level":"info","message":"Client disconnected [id=Uu9_1rjY2vrDIKfbAAAF]","service":"socket","timestamp":"2022-11-15 11:39:48"}
+{"level":"info","message":"Client connected [id=749vIahBapFgf_FoAAAH]","service":"socket","timestamp":"2022-11-15 11:39:49"}
+{"level":"info","message":"Client joining [room=9198e519]","service":"socket","timestamp":"2022-11-15 11:39:49"}
+{"level":"info","message":"Client joining [room=9198e519-0xedcC867bc8B5FEBd0459af17a6f134F41f422f0C]","service":"socket","timestamp":"2022-11-15 11:39:50"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:40:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:40:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:40:00"}
+{"level":"info","message":"managing twitter stream","service":"cron:twitter_stream_manager","timestamp":"2022-11-15 11:40:00"}
+{"level":"info","message":"pulling contest tweets","service":"cron:pull_tweets","timestamp":"2022-11-15 11:40:00"}
+{"level":"info","message":"listening to twitter stream with rules: [{\"id\":\"1592513494750044160\",\"value\":\"conversation_id:1592513493147783170 is:quote\",\"tag\":\"9198e519\"}]","service":"cron:twitter_stream_manager","timestamp":"2022-11-15 11:40:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:40:04"}
+{"level":"info","message":"Client disconnected [id=749vIahBapFgf_FoAAAH]","service":"socket","timestamp":"2022-11-15 11:40:24"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:40:24"}
+{"level":"info","message":"Client connected [id=wqWiyRHby6-LIGFzAAAJ]","service":"socket","timestamp":"2022-11-15 11:40:25"}
+{"level":"info","message":"Client joining [room=9198e519]","service":"socket","timestamp":"2022-11-15 11:40:25"}
+{"level":"info","message":"Client joining [room=9198e519-0xedcC867bc8B5FEBd0459af17a6f134F41f422f0C]","service":"socket","timestamp":"2022-11-15 11:40:26"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:40:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:40:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:40:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:40:44"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:41:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:41:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:41:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:41:04"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:41:24"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:41:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:41:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:41:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:41:44"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:42:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:42:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:42:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:42:04"}
+{"level":"info","message":"Running on port 3001","service":"index","timestamp":"2022-11-15 11:45:25"}
+{"level":"info","message":"initial stream rules: [{\"id\":\"1592513494750044160\",\"value\":\"conversation_id:1592513493147783170 is:quote\",\"tag\":\"9198e519\"}]","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:45:25"}
+{"level":"info","message":"Successfully registered application commands.","service":"index","timestamp":"2022-11-15 11:45:26"}
+{"level":"info","message":"Logged discord bot in as calabara bot#7664","service":"discord","timestamp":"2022-11-15 11:45:26"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:45:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:45:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:45:30"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:45:45"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:46:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:46:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:46:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:46:05"}
+{"level":"info","message":"twitter auth suceeded","service":"twitter_api","timestamp":"2022-11-15 11:46:16"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:46:25"}
+{"level":"info","message":"successfully processed announcement tweet with ID: \"1592559677031780352\"","service":"twitter_api","timestamp":"2022-11-15 11:46:30"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:46:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:46:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:46:30"}
+{"level":"info","message":"attempting to add stream rules: [{\"value\":\"conversation_id:1592559677031780352 is:quote\",\"tag\":\"bebe20e5\"}]","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:46:30"}
+{"level":"info","message":"Client connected [id=gRAYWwaN0pyk4EdrAAAB]","service":"socket","timestamp":"2022-11-15 11:46:32"}
+{"level":"info","message":"Client joining [room=bebe20e5]","service":"socket","timestamp":"2022-11-15 11:46:32"}
+{"level":"info","message":"Client joining [room=bebe20e5-0xedcC867bc8B5FEBd0459af17a6f134F41f422f0C]","service":"socket","timestamp":"2022-11-15 11:46:33"}
+{"level":"info","message":"twitter auth suceeded","service":"twitter_api","timestamp":"2022-11-15 11:46:44"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:46:45"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:47:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:47:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:47:00"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:47:05"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:47:25"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:47:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:47:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:47:30"}
+{"level":"info","message":"twitter auth suceeded","service":"twitter_api","timestamp":"2022-11-15 11:47:45"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:47:45"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:48:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:48:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:48:00"}
+{"level":"error","message":"media file is too large","service":"middleware:image_upload","timestamp":"2022-11-15 11:48:03"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:48:05"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:48:25"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:48:30"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:48:30"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:48:30"}
+{"level":"info","message":"successfully processed platform twitter submission","service":"twitter_api","timestamp":"2022-11-15 11:48:31"}
+{"level":"info","message":"Client disconnected [id=gRAYWwaN0pyk4EdrAAAB]","service":"socket","timestamp":"2022-11-15 11:48:39"}
+{"level":"info","message":"Client connected [id=qF45nXzKkKaXJqrqAAAD]","service":"socket","timestamp":"2022-11-15 11:48:40"}
+{"level":"info","message":"Client joining [room=bebe20e5]","service":"socket","timestamp":"2022-11-15 11:48:40"}
+{"level":"info","message":"Client joining [room=bebe20e5-0xedcC867bc8B5FEBd0459af17a6f134F41f422f0C]","service":"socket","timestamp":"2022-11-15 11:48:41"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:48:45"}
+{"level":"info","message":"pinning contest submissions","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:49:00"}
+{"level":"info","message":"pinning prompt images","service":"cron:ipfs_pin_prompt_assets","timestamp":"2022-11-15 11:49:00"}
+{"level":"info","message":"attempting to register tweets","service":"cron:register_tweets","timestamp":"2022-11-15 11:49:00"}
+{"level":"info","message":"successfully pinned submission with url: https://calabara.mypinata.cloud/ipfs/QmeU3bjQggEjthSN2BoZc17VEEWhMh4BZtCGzrgT2xW1Ss","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:49:04"}
+{"level":"info","message":"successfully deleted stale submission from fs","service":"cron:ipfs_pin_submission_assets","timestamp":"2022-11-15 11:49:04"}
+{"level":"info","message":"Twitter has a keep-alive packet","service":"twitter_stream_ingestor","timestamp":"2022-11-15 11:49:05"}
+{"level":"info","message":"Client disconnected [id=qF45nXzKkKaXJqrqAAAD]","service":"socket","timestamp":"2022-11-15 11:49:08"}
+{"level":"info","message":"Client connected [id=F6pzMQCjscgKvGZPAAAF]","service":"socket","timestamp":"2022-11-15 11:49:09"}
+{"level":"info","message":"Client joining [room=bebe20e5]","service":"socket","timestamp":"2022-11-15 11:49:09"}
+{"level":"info","message":"Client joining [room=bebe20e5-0xedcC867bc8B5FEBd0459af17a6f134F41f422f0C]","service":"socket","timestamp":"2022-11-15 11:49:10"}
+{"level":"info","message":"twitter auth suceeded","service":"twitter_api","timestamp":"2022-11-15 11:49:18"}
