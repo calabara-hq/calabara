@@ -71,8 +71,9 @@ const fetch_quote_tweets = async (tweet_id) => {
 
 const sendUserMessage = async (contest, quote) => {
     // get the user addresses that have submitted for this contest with this twitter account (could be more than 1)
-    let has_submitted = await db.query('select contest_submissions.id from contest_submissions inner join users on users.address = contest_submissions.author where users.twitter->>\'id\' = $1', [quote.author_id])
+    let has_submitted = await db.query('select contest_submissions.id from contest_submissions inner join users on users.address = contest_submissions.author where contest_submissions.contest_hash = $1 and users.twitter->>\'id\' = $2', [contest.hash, quote.author_id])
         .then(clean)
+
 
     if (!has_submitted) {
         db.query('select address from users where twitter->>\'id\' = $1', [quote.author_id])

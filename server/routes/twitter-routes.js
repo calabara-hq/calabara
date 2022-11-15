@@ -82,11 +82,11 @@ twitter.get('/oauth2', authenticateToken, async function (req, res, next) {
 
             // Example request
             const { data: userObject } = await loggedClient.v2.me();
-            logger.log({ level: 'info', message: `twitter auth suceeded after ${retries} retries` })
+            logger.log({ level: 'info', message: `twitter auth suceeded` })
             return res.status(200).send('<script>window.close()</script>')
         })
         .catch((err) => {
-            logger.log({ level: 'error', message: `twitter auth timed out after ${retries} retries` })
+            logger.log({ level: 'error', message: `twitter auth failed with error: ${err}` })
             return res.status(200).send('<script>window.close()</script>')
         });
 
@@ -112,7 +112,7 @@ twitter.post('/sendQuoteTweet', authenticateToken, check_submitter_eligibility_P
 
 // attempt to tweet, then return the announcementID
 twitter.post('/send_announcement_tweet', authenticateToken, isAdmin, sendTweet, async function (req, res, next) {
-    logger.log({ level: 'info', message: `successfully processed announcement tweet with ID: ${announcementID}` })
+    logger.log({ level: 'info', message: `successfully processed announcement tweet with ID: ${req.announcementID}` })
     res.send(req.announcementID).status(200)
 })
 

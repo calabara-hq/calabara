@@ -12,7 +12,7 @@ const logger = require('./logger').child({ service: 'index' })
 
 
 if (!process.env.NODE_ENV) {
-    console.error('Please pass NODE_ENV. Available options are development | production | testing')
+    console.error('Please pass NODE_ENV. Available options are development | production | test')
 }
 
 

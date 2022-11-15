@@ -40,6 +40,7 @@ export const DetailGrid = styled.div`
 
 export const GridElement = styled.div`
     display: flex;
+    font-size: 16px;
     > div:first-child{
         width: 50%;
         display: flex;
@@ -140,6 +141,21 @@ export const CheckpointBottom = styled.div`
         text-align: right;
 
     }
+`
+
+
+export const RestrictionStatus = styled.span`
+    display: inline-block;
+    &::after{
+        font-family: 'Font Awesome 5 Free';
+        margin-left: 20px;
+        content: '${props => props.status ? "\f058" : "\f057"}';
+        color: ${props => props.status ? 'rgb(6, 214, 160)' : 'grey'};
+        font-weight: 900;
+    }
+
+    animation: ${fade_in} 0.3s ease-in;
+
 `
 
 

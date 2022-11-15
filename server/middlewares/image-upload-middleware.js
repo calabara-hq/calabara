@@ -38,7 +38,6 @@ const twitterMediaUpload = multer({
     fileSize: 10000000 // 10 MB
   },
   fileFilter(req, file, cb) {
-    console.log('file too large', file.size)
     if (!file.originalname.match(/\.(png|jpg|jpeg|gif)$/)) {
       logger.log({ level: 'error', message: 'user attempted to upload unsupported media type' })
       return cb(new Error('Please upload a Image'))

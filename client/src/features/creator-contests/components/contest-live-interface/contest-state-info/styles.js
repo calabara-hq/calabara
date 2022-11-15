@@ -87,7 +87,6 @@ export const RestrictionStatus = styled.span`
         margin-left: 20px;
         content: '${props => props.status ? "\f058" : "\f057"}';
         color: ${props => props.status ? 'rgb(6, 214, 160)' : 'grey'};
-
         font-weight: 900;
     }
 
