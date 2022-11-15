@@ -6,8 +6,11 @@ import { scaleElement } from '../../../../../../../css/scale-element'
 export const TwitterSubmissionContainer = styled.div`
     display: flex;
     flex-direction: column;
-    gap: 50px;
     width: 100%;
+    margin: -20px;
+    > * {
+        margin: 50px;
+    }
 
 `
 
@@ -16,7 +19,7 @@ export const CheckpointWrap = styled.div`
     border-radius: 10px;
     width: 90%;
     margin: 0 auto;
-    padding: 10px 0px;
+    padding: 10px 10px;
 
 `
 export const CheckpointBottom = styled.div`
@@ -54,19 +57,24 @@ export const CheckpointBottom = styled.div`
 `
 
 export const ContentWrap = styled.div`
-    align-self: flex-start;
-    width: 100%;
-    margin-left: auto;
+   //align-self: flex-start;
+    width: 90%;
+    //margin-left: auto;
+    margin: 50px auto;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    > * {
+        width: 100%;
+    }
+
 `
 
 export const AuthChoiceWrap = styled.div`
     display: flex;
-    width: 80%;
-    margin: 0 auto;
-    gap: 20px;
+    margin: 20px auto;
+    > * {
+        margin: 10px;
+    }
 `
 
 export const AuthChoiceButton = styled.button`
@@ -86,7 +94,6 @@ export const LinkTwitterWrap = styled.div`
     align-items: flex-end;
     justify-content: center;
     position: relative;
-    width: 80%;
     height: 100px;
     margin: 0 auto;
 `

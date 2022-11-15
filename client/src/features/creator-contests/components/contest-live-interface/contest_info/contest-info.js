@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { Contest_h4, Label } from "../../common/common_styles";
 import { selectContestSettings, selectContestState } from "../interface/contest-interface-reducer";
-import { DetailElement, DetailGrid, GridElement, label_status } from './contest-info-style';
+import { DetailElement, DetailGrid, GridElement, label_status, RestrictionStatus } from './contest-info-style';
 
 import DrawerComponent from "../../../../drawer/drawer.js";
 import ContestSummaryComponent from "../../contest-details/detail-components.js";
@@ -80,7 +80,7 @@ export default function ContestInfo() {
                             <p>Voting Begins</p>
                         </div>
                         <div>
-                            <p>{vote_date}</p>
+                            <p style={{ fontSize: '15px', color: '#a3a3a3' }}>{vote_date}</p>
                         </div>
                     </GridElement>
                     <GridElement>
@@ -88,7 +88,7 @@ export default function ContestInfo() {
                             <p>Ends</p>
                         </div>
                         <div>
-                            <p>{end_date}</p>
+                            <p style={{ fontSize: '15px', color: '#a3a3a3' }}>{end_date}</p>
                         </div>
                     </GridElement>
                     <GridElement>
@@ -96,9 +96,11 @@ export default function ContestInfo() {
                             <p>Submitter Rewards</p>
                         </div>
                         <div>
-                            {processed_rewards.length === 0 && <FontAwesomeIcon icon={faTimesCircle} style={{ color: 'rgba(178,31,71)', fontSize: '1.5em' }} />}
+
+                            {processed_rewards.length === 0 && <p><RestrictionStatus status={false} /></p>}
                             {processed_rewards.length === 1 && <p>{processed_rewards[0].sum} {processed_rewards[0].symbol}</p>}
-                            {processed_rewards.length > 1 && <FontAwesomeIcon icon={faCheckCircle} style={{ color: 'rgb(6, 214, 160)', fontSize: '1.5em' }} />}
+                            {processed_rewards.length > 1 && <p><RestrictionStatus status={true} /></p>}
+
                         </div>
                     </GridElement>
                     <GridElement>
@@ -106,8 +108,10 @@ export default function ContestInfo() {
                             <p>Voter Rewards</p>
                         </div>
                         <div>
-                            {Object.values(contest_settings.voter_rewards).length === 0 && <FontAwesomeIcon icon={faTimesCircle} style={{ color: 'rgba(178,31,71)', fontSize: '1.5em' }} />}
-                            {Object.values(contest_settings.voter_rewards).length > 0 && <FontAwesomeIcon icon={faCheckCircle} style={{ color: 'rgb(6, 214, 160)', fontSize: '1.5em' }} />}
+                            <p>
+                                {Object.values(contest_settings.voter_rewards).length === 0 && <RestrictionStatus status={false} />}
+                                {Object.values(contest_settings.voter_rewards).length > 0 && <RestrictionStatus status={true} />}
+                            </p>
                         </div>
                     </GridElement>
                 </DetailGrid>
