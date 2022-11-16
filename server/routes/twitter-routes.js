@@ -11,12 +11,15 @@ const { clean } = require('../helpers/common');
 const { socketSendNewSubmission, socketSendUserSubmissionStatus } = require('../helpers/socket-messages');
 const { isAdmin } = require('../middlewares/admin-middleware');
 const logger = require('../logger').child({ service: 'twitter_api' })
+const path = require('path')
 twitter.use(express.json())
 
 dotenv.config()
 
-let twitter_redirect = process.env.NODE_ENV === 'production' ? "https://calabara.com/twitter/oauth2" : "https://localhost:3001/twitter/oauth2"
+let twitter_redirect = process.env.NODE_ENV === 'production' ? "https://calabara.com/twitter/oauth2" : "https://192.168.1.224:3001/twitter/oauth2"
 
+const successful_redirect = '<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu"><html style="width: 100vw; height: 100vh; background-color: rgb(20, 20, 22); font-family: Ubuntu,sans,sans-serif"><body style="width: 100vw; height: 100vh;"><div style="height: 100vh; width: 100vw; display: flex; flex-direction: column; align-items: center; text-align: center; justify-content: center;"><p style="font-size: 80px; color: rgb(211, 211, 211);">Successfully linked your account ✅</p><p style="font-size: 50px; color: grey;">Please close this window</p></div></html></body>'
+const failed_redirect = '<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu"><html style="width: 100vw; height: 100vh; background-color: rgb(20, 20, 22); font-family: Ubuntu,sans,sans-serif"><body style="width: 100vw; height: 100vh;"><div style="height: 100vh; width: 100vw; display: flex; flex-direction: column; align-items: center; text-align: center; justify-content: center;"><p style="font-size: 80px; color: rgb(211, 211, 211);">There was a problem linking your account 😕</p><p style="font-size: 50px; color: grey;">Please close this window and try again</p></div></html></body>'
 
 /**
  * @var codeVerifier private code
@@ -62,36 +65,69 @@ twitter.post('/generateAuthLink', authenticateToken, async function (req, res, n
 
 /**
  * There are known issues with twitter Oauth2 on mobile devices see here: https://twittercommunity.com/t/web-oauth-2-0-is-broken-on-android-if-twitter-app-is-installed/169698
+ * basically, user session gets destroyed on mobile twitter auth
+ * to overcome this, we need to match the originial session with a new undefined session via the stateVerifier
+ * during the auth process, we'll then update the original user session
  */
 
-twitter.get('/oauth2', authenticateToken, async function (req, res, next) {
-    const { state, code } = req.query;
-    req.session.twitter.state = state;
-    req.session.twitter.code = code;
-    req.session.twitter.retries = 0;
 
-    const { codeVerifier, stateVerifier, accessToken, refreshToken, expiresIn } = req.session.twitter;
+// begin patch 
+const processTwitterSession = async (req, state, code) => {
+
+    if (!(req.sessionID && req.session.user)) {
+        let sess = await db.query('select sid, sess->\'twitter\' as twitter_session from session where (sess->>\'twitter\')::json->>\'stateVerifier\' = $1', [state])
+            .then(clean)
+        return { sid: sess.sid, stateVerifier: sess.twitter_session.stateVerifier, codeVerifier: sess.twitter_session.codeVerifier }
+    }
+    else {
+        return { sid: req.sessionID, stateVerifier: req.session.twitter.stateVerifier, codeVerifier: req.session.twitter.codeVerifier }
+    }
+}
+
+const updateTwitterSession = async (data, sid) => {
+    return await db.query('update session set sess = jsonb_set(sess::jsonb, \'{twitter}\', (sess->>\'twitter\')::jsonb || $1) where sid = $2', [data, sid])
+}
+
+// end patch
+
+twitter.get('/oauth2', async function (req, res, next) {
+    const { state, code } = req.query;
+    let patched_session = await processTwitterSession(req, state, code)
+
+    let twitter_auth_session_stage1 = {
+        state: state,
+        code: code,
+        retries: 0,
+
+    }
+    updateTwitterSession(JSON.stringify(twitter_auth_session_stage1), patched_session.sid)
+
+    const { codeVerifier, stateVerifier } = patched_session;
 
     if ((!codeVerifier || !state || !stateVerifier || !code) || (state != stateVerifier)) {
-        return res.status(200).send('<script>window.close()</script>')
+        return res.status(200).send(`${failed_redirect}<script>window.close()</script>`)
     }
 
 
     requestClient.loginWithOAuth2({ code, codeVerifier, redirectUri: twitter_redirect })
         .then(async ({ client: loggedClient, accessToken, refreshToken, expiresIn }) => {
 
-            req.session.twitter.accessToken = accessToken
-            req.session.twitter.refreshToken = refreshToken
-            req.session.twitter.expiresIn = expiresIn
+            let twitter_auth_session_stage2 = {
+                accessToken: accessToken,
+                refreshToken: refreshToken,
+                expiresIn: expiresIn
+            }
+
+            updateTwitterSession(JSON.stringify(twitter_auth_session_stage2), patched_session.sid)
 
             // Example request
             const { data: userObject } = await loggedClient.v2.me();
             logger.log({ level: 'info', message: `twitter auth suceeded` })
-            return res.status(200).send('<script>window.close()</script>')
+            return res.status(200).send(`${successful_redirect}<script>window.close()</script>`)
         })
         .catch((err) => {
             logger.log({ level: 'error', message: `twitter auth failed with error: ${err}` })
-            return res.status(200).send('<script>window.close()</script>')
+            return res.status(200).send(`${failed_redirect}<script>window.close()</script>`)
         });
 
 })
@@ -136,10 +172,6 @@ twitter.get('/user_account', authenticateToken, async function (req, res, next) 
     res.send(data).status(200)
 })
 
-
-twitter.post('/generate_quote_intent', verifyTwitterContest, async function (req, res, next) {
-    res.send(`https://twitter.com/i/web/status/${req.announcementID}`).status(200)
-})
 
 
 

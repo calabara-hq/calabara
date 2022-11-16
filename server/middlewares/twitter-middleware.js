@@ -35,21 +35,30 @@ const update_user_twitter = async (address, data) => {
 
     await db.query('update users set twitter = null where twitter->>\'id\' = $1', [data.id])
     return db.query('insert into users (address, twitter) values ($1, $2) on conflict (address) do update set twitter = $2', [address, data])
-        .catch(err => console.log(err))
+        .catch(err => {
+            logger.log({ level: 'error', message: `udpate user twitter failed with error: ${err}` })
+        })
 }
 
+// this function is too fast. stale access tokens can be present when a user wants to change accounts,
+// resulting in the account not actually being changed. 
+// to solve this, clear the accessToken on the first retry (0). 
+// nobody can humanly auth that fast
 
 async function poll_auth_status(req, res, next) {
 
-    const { codeVerifier, stateVerifier, state, code, accessToken, retries } = req.session.twitter || {};
+    let { codeVerifier, stateVerifier, state, code, accessToken, retries } = req.session.twitter || {};
 
     try {
 
         if (!codeVerifier || !stateVerifier) return res.send({ status: 'error' }).status(200)
 
-        req.session.twitter.retries = typeof retries === undefined ? 0 : retries + 1
+        retries = retries ? retries + 1 : 0
+        req.session.twitter.retries = retries
 
         // there was an error in the oauth process
+
+        if (retries === 0 && accessToken) req.session.twitter.accessToken = null
 
         if (retries > 19) {
             req.session.twitter.retries = 0;
@@ -76,6 +85,7 @@ async function poll_auth_status(req, res, next) {
             if (state !== stateVerifier) return res.send({ status: 'error' }).status(200)
             const client = new TwitterApi(accessToken);
             const { data: user } = await client.v2.me({ "user.fields": ["profile_image_url"] });
+            req.session.twitter.retries = 0;
             req.session.twitter.user = user
             update_user_twitter(req.session.user.address, user)
             res.send({ status: 'ready', user })

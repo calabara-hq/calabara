@@ -36,7 +36,6 @@ export default function App() {
         <Route path="/oauth/discord">
           <DiscordRedirect />
         </Route>
-
         <Route path="/*">
           <Routes initial_session={session} />
         </Route>

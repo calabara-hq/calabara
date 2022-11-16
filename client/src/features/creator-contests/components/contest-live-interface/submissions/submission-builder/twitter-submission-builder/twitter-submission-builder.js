@@ -1,7 +1,7 @@
 import { faExclamationCircle, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from 'axios';
-import { useEffect, useReducer, useState } from "react";
+import { useContext, useEffect, useReducer, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import styled from 'styled-components';
@@ -15,6 +15,7 @@ import { LinkTwitterButton } from "../../../../../../twitter-link-account/styles
 import { selectIsTwitterLinked } from "../../../../../../user/user-reducer";
 import { fade_in } from "../../../../common/common_styles";
 import Placeholder from '../../../../common/spinner';
+import { selectContestSettings } from "../../../interface/contest-interface-reducer";
 import {
     CancelButton,
     CreateSubmissionContainer,
@@ -216,12 +217,11 @@ const RedirectWrap = styled.div`
 
 
 function TwitterRedirect(props) {
-    const { ens, contest_hash } = useParams()
+    const contest_settings = useSelector(selectContestSettings)
 
     const handleClick = async () => {
-        let intent = await axios.post('/twitter/generate_quote_intent', { ens: ens, contest_hash: contest_hash })
-            .then(res => res.data)
-            .catch(err => console.log(err))
+        let { announcementID } = contest_settings.twitter_integration
+        let intent = `https://twitter.com/web/status/${announcementID}`
         window.open(intent)
         props.handleCloseDrawer();
     }
