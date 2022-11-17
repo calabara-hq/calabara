@@ -18,6 +18,7 @@ const pre_process = async (ens, contest_hash) => {
 
 
 async function verifyTwitterAuth(req, res, next) {
+    console.log(req.session.twitter)
     try {
         const client = new TwitterApi(req.session.twitter.accessToken)
         await client.v2.me();
@@ -53,12 +54,18 @@ async function poll_auth_status(req, res, next) {
 
         if (!codeVerifier || !stateVerifier) return res.send({ status: 'error' }).status(200)
 
-        retries = retries ? retries + 1 : 0
-        req.session.twitter.retries = retries
+        //retries = retries ? retries += 1 : 0
+        retries = (typeof retries === 'undefined') ? 0 : retries
+        console.log('RETRIES', retries)
+        console.log('accessToken', accessToken)
 
         // there was an error in the oauth process
 
-        if (retries === 0 && accessToken) req.session.twitter.accessToken = null
+        if ((retries === 0) && accessToken) {
+            console.log('clearing access token on initial retry state')
+            req.session.twitter.accessToken = null
+            //accessToken = null
+        }
 
         if (retries > 19) {
             req.session.twitter.retries = 0;
@@ -68,16 +75,21 @@ async function poll_auth_status(req, res, next) {
 
         // if the user refuses app access, code will not be provided
         if (codeVerifier && stateVerifier && state && !code) {
+            req.session.twitter.retries = 0;
             return res.send({ status: 'error' }).status(200)
         }
 
         if (codeVerifier && stateVerifier && state && code) {
-            if (stateVerifier !== state) return res.send({ status: 'error' }).status(200)
+            if (stateVerifier !== state) {
+                req.session.twitter.retries = 0;
+                return res.send({ status: 'error' }).status(200)
+            }
         }
 
 
         if (codeVerifier && stateVerifier && !accessToken) {
             // user got the auth link but hasn't yet approved the authorization
+            req.session.twitter.retries = retries + 1
             return res.send({ status: 'pending' }).status(200)
         }
 
@@ -85,12 +97,15 @@ async function poll_auth_status(req, res, next) {
             if (state !== stateVerifier) return res.send({ status: 'error' }).status(200)
             const client = new TwitterApi(accessToken);
             const { data: user } = await client.v2.me({ "user.fields": ["profile_image_url"] });
-            req.session.twitter.retries = 0;
-            req.session.twitter.user = user
             update_user_twitter(req.session.user.address, user)
             res.send({ status: 'ready', user })
+            console.log('auth suceeded. resetting retries')
+            req.session.twitter.retries = 0;
+            req.session.twitter.user = user
+
         }
     } catch (e) {
+        req.session.twitter.retries = 0;
         return res.send({ status: 'error' }).status(200)
     }
 }

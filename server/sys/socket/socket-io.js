@@ -6,17 +6,26 @@ const socketConnection = (server) => {
     io.on('connection', (socket) => {
         logger.log({ level: 'info', message: `Client connected [id=${socket.id}]` })
 
-        socket.on('contest-subscribe', (room) => {
-            // add subscription
-            logger.log({ level: 'info', message: `Client joining [room=${room}]` })
-            socket.join(room)
-        })
 
         socket.on('user-subscribe', (room) => {
             // add subscription
             logger.log({ level: 'info', message: `Client joining [room=${room}]` })
             socket.join(room)
         })
+
+        socket.on('contest-subscribe', (room) => {
+            // add subscription
+            logger.log({ level: 'info', message: `Client joining [room=${room}]` })
+            socket.join(room)
+        })
+
+        socket.on('user-contest-subscribe', (room) => {
+            // add subscription
+            logger.log({ level: 'info', message: `Client joining [room=${room}]` })
+            socket.join(room)
+        })
+
+
 
         socket.on('disconnect', () => {
             logger.log({ level: 'info', message: `Client disconnected [id=${socket.id}]` })

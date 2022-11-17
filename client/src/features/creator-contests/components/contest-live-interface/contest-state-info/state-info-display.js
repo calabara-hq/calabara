@@ -46,7 +46,7 @@ function StateController() {
 
 
     const initializeSubmissionStatusListener = () => {
-        socket.emit('user-subscribe', `${contest_hash}-${walletAddress}`)
+        socket.emit('user-contest-subscribe', `${contest_hash}-${walletAddress}`)
     }
 
 

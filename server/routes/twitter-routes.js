@@ -8,10 +8,11 @@ const { authenticateToken } = require('../middlewares/auth-middleware');
 const { sendTweet, sendQuoteTweet, convertTweet, verifyTwitterAuth, poll_auth_status, verifyTwitterContest } = require('../middlewares/twitter-middleware');
 const { check_submitter_eligibility_PROTECTED, createSubmission } = require('../middlewares/creator-contests/submit-middleware');
 const { clean } = require('../helpers/common');
-const { socketSendNewSubmission, socketSendUserSubmissionStatus } = require('../helpers/socket-messages');
+const { socketSendNewSubmission, socketSendUserSubmissionStatus, socketSendUserTwitterAuthStatus } = require('../helpers/socket-messages');
 const { isAdmin } = require('../middlewares/admin-middleware');
 const logger = require('../logger').child({ service: 'twitter_api' })
-const path = require('path')
+const path = require('path');
+const session = require('express-session');
 twitter.use(express.json())
 
 dotenv.config()
@@ -35,6 +36,16 @@ let scopes = {
 }
 
 
+// keep track of the user account for future reference
+const update_user_twitter = async (address, data) => {
+    // flush the db of any addresses linked to this same twitter account. Want only 1 twitter linked to 1 address at a time (for now)
+
+    await db.query('update users set twitter = null where twitter->>\'id\' = $1', [data.id])
+    return db.query('insert into users (address, twitter) values ($1, $2) on conflict (address) do update set twitter = $2', [address, data])
+        .catch(err => {
+            logger.log({ level: 'error', message: `udpate user twitter failed with error: ${err}` })
+        })
+}
 
 twitter.post('/generateAuthLink', authenticateToken, async function (req, res, next) {
     const { scope_type } = req.body
@@ -73,19 +84,20 @@ twitter.post('/generateAuthLink', authenticateToken, async function (req, res, n
 
 // begin patch 
 const processTwitterSession = async (req, state, code) => {
-
     if (!(req.sessionID && req.session.user)) {
-        let sess = await db.query('select sid, sess->\'twitter\' as twitter_session from session where (sess->>\'twitter\')::json->>\'stateVerifier\' = $1', [state])
+        let sess = await db.query('select sid, sess->\'user\' as user_session, sess->\'twitter\' as twitter_session from session where (sess->>\'twitter\')::json->>\'stateVerifier\' = $1', [state])
             .then(clean)
-        return { sid: sess.sid, stateVerifier: sess.twitter_session.stateVerifier, codeVerifier: sess.twitter_session.codeVerifier }
+        return { sid: sess.sid, userAddress: sess.user_session.address, stateVerifier: sess.twitter_session.stateVerifier, codeVerifier: sess.twitter_session.codeVerifier }
     }
     else {
-        return { sid: req.sessionID, stateVerifier: req.session.twitter.stateVerifier, codeVerifier: req.session.twitter.codeVerifier }
+        return { sid: req.sessionID, userAddress: req.session.user?.address, stateVerifier: req.session.twitter?.stateVerifier, codeVerifier: req.session.twitter?.codeVerifier }
     }
 }
 
 const updateTwitterSession = async (data, sid) => {
-    return await db.query('update session set sess = jsonb_set(sess::jsonb, \'{twitter}\', (sess->>\'twitter\')::jsonb || $1) where sid = $2', [data, sid])
+    try {
+        return await db.query('update session set sess = jsonb_set(sess::jsonb, \'{twitter}\', (sess->>\'twitter\')::jsonb || $1) where sid = $2', [data, sid])
+    } catch (e) { console.log(e) }
 }
 
 // end patch
@@ -94,38 +106,47 @@ twitter.get('/oauth2', async function (req, res, next) {
     const { state, code } = req.query;
     let patched_session = await processTwitterSession(req, state, code)
 
-    let twitter_auth_session_stage1 = {
+    let query_params = {
         state: state,
         code: code,
         retries: 0,
 
     }
-    updateTwitterSession(JSON.stringify(twitter_auth_session_stage1), patched_session.sid)
 
     const { codeVerifier, stateVerifier } = patched_session;
 
     if ((!codeVerifier || !state || !stateVerifier || !code) || (state != stateVerifier)) {
+        socketSendUserTwitterAuthStatus(patched_session.userAddress, { status: 'failed' })
         return res.status(200).send(`${failed_redirect}<script>window.close()</script>`)
     }
 
 
-    requestClient.loginWithOAuth2({ code, codeVerifier, redirectUri: twitter_redirect })
+    return requestClient.loginWithOAuth2({ code, codeVerifier, redirectUri: twitter_redirect })
         .then(async ({ client: loggedClient, accessToken, refreshToken, expiresIn }) => {
 
-            let twitter_auth_session_stage2 = {
+            let client_params = {
                 accessToken: accessToken,
                 refreshToken: refreshToken,
                 expiresIn: expiresIn
             }
 
-            updateTwitterSession(JSON.stringify(twitter_auth_session_stage2), patched_session.sid)
+
+
 
             // Example request
-            const { data: userObject } = await loggedClient.v2.me();
+            const { data: user } = await loggedClient.v2.me({ "user.fields": ["profile_image_url"] });
+
+            let twitter_auth_session = JSON.stringify({ ...query_params, ...client_params, ...{ user: user } })
+            console.log(twitter_auth_session)
+
+            updateTwitterSession(twitter_auth_session, patched_session.sid)
+            update_user_twitter(patched_session.userAddress, user)
+            socketSendUserTwitterAuthStatus(patched_session.userAddress, { status: 'success', data: user })
             logger.log({ level: 'info', message: `twitter auth suceeded` })
             return res.status(200).send(`${successful_redirect}<script>window.close()</script>`)
         })
         .catch((err) => {
+            socketSendUserTwitterAuthStatus(patched_session.userAddress, { status: 'failed' })
             logger.log({ level: 'error', message: `twitter auth failed with error: ${err}` })
             return res.status(200).send(`${failed_redirect}<script>window.close()</script>`)
         });
@@ -140,8 +161,6 @@ twitter.get('/poll_auth_status', authenticateToken, poll_auth_status)
 twitter.post('/sendQuoteTweet', authenticateToken, check_submitter_eligibility_PROTECTED, verifyTwitterContest, sendQuoteTweet, convertTweet, createSubmission, async function (req, res, next) {
     const { ens } = req.body
     let meta_data = { tweet_id: req.tweet_id }
-    console.log(req.tweet_id)
-    //res.sendStatus(442) // TEMPORARY
 
     let result = await db.query('insert into contest_submissions (ens, contest_hash, author, created, locked, pinned, _url, meta_data) values ($1, $2, $3, $4, $5, $6, $7, $8) returning id ', [ens, req.contest_hash, req.session.user.address, req.created, false, false, req.url, { tweet_id: JSON.parse(req.tweet_id) }]).then(clean)
     res.sendStatus(200)
