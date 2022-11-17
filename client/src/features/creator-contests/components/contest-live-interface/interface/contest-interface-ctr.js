@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useHistory, useParams } from "react-router-dom";
 import styled from 'styled-components';
-import { disconnectSocket, initializeSocketConnection, socket } from "../../../../../service/socket";
+import { socket } from "../../../../../service/socket";
 import Placeholder from "../../common/spinner";
 import { selectIsLoading, setContestSettings, setPromptData, stateReset, updateState } from "./contest-interface-reducer";
 import ContestInterface from './interface';
@@ -67,7 +67,6 @@ export default function ContestInterfaceController() {
 
     useEffect(() => {
         let ignore = false;
-        initializeSocketConnection();
         fetch(`/creator_contests/fetch_contest?ens=${ens}&contest_hash=${contest_hash}`)
             .then(data => data.text())
             .then(data => (data ? JSON.parse(data) : { mydata: null }))
@@ -86,20 +85,13 @@ export default function ContestInterfaceController() {
                 return history.push(`/${ens}/creator_contests`)
             })
 
-
-        socket.on('connect', () => {
-            console.log('connected to socket')
-            // connect to submission channel
-            socket.emit('contest-subscribe', contest_hash)
-
-        })
-
+        // connect to submission channel
+        socket.emit('contest-subscribe', contest_hash)
 
         return () => {
             ignore = true;
             dispatch(stateReset())
             clearInterval(timerRef.current)
-            disconnectSocket();
             document.body.style.overflow = 'unset';
         }
     }, [])
