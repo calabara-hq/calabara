@@ -20,7 +20,7 @@ const SubmissionWrap = styled.div`
     }
 
     @media screen and (max-width: 720px){
-        grid-template-columns: 1fr;
+        display: block;
     }
 
 

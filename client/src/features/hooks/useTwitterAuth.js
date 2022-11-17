@@ -1,24 +1,69 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { selectWalletAddress } from "../../app/sessionReducer";
+import { selectIsConnected, selectWalletAddress } from "../../app/sessionReducer";
 import { setUserTwitter } from "../user/user-reducer";
+import { socket } from "../../service/socket";
 
-export const useTwitterAuth = (authType) => {
+
+export const useTwitterAuth = (authenticationType) => {
     const [authState, setAuthState] = useState(0);
     const [accountInfo, setAccountInfo] = useState(null);
     const [error, setError] = useState(false);
-    const [authenticationType, setAuthenticationType] = useState(authType);
-    const walletAddress = useSelector(selectWalletAddress)
+    const [authType, setAuthType] = useState(authenticationType);
+    const isConnected = useSelector(selectIsConnected)
     const [authURI, setAuthURI] = useState(null);
     const dispatch = useDispatch();
 
-    
+
+    // get authentication link
+    // open link
+    // if success, set auth state and proceed
+    // if error, re-fetch auth link with access level, force user to click again, and start over 
+
+
+    // regenerate auth link on wallet connect
     useEffect(() => {
-        if (authenticationType) {
-            generateAuthLink(authenticationType)
+        if (isConnected && authType) generateAuthLink(authType)
+    }, [isConnected])
+
+    useEffect(() => {
+        if (authType) {
+            generateAuthLink(authType)
         }
-    }, [authenticationType, walletAddress])
+    }, [authType])
+
+
+    // resest auth after 20 seconds
+    useEffect(() => {
+        if (authState === 1) {
+            const timer = setTimeout(() => {
+                if (authState === 1) {
+                    handleAuthError()
+                }
+            }, 20_000)
+            return () => {
+                clearTimeout(timer)
+            }
+        }
+    }, [authState])
+
+
+    useEffect(() => {
+        const authHandler = (response) => {
+            if (response.status === 'success') {
+                setAccountInfo(response.data)
+                dispatch(setUserTwitter(response.data))
+                setError(false)
+                setAuthState(2)
+            }
+            else if (response.status === 'failed') {
+                handleAuthError()
+            }
+        }
+        socket.on('user_twitter_auth', authHandler)
+    }, [socket])
+
 
     const generateAuthLink = (scope_type) => {
         axios.post('/twitter/generateAuthLink', { scope_type: scope_type }, { withCredentials: true })
@@ -33,52 +78,22 @@ export const useTwitterAuth = (authType) => {
         if (!authURI) return
         window.open(authURI, "_blank", "height=750,width=600,scrollbars")
         setAuthState(1);
-        setTimeout(pollAuthState, 3000)
-    }
-
-    const pollAuthState = () => {
-        return fetch('/twitter/poll_auth_status', { credentials: 'include' })
-            .then(data => data.json())
-            .then(data => {
-                switch (data.status) {
-                    case 'error':
-                        console.log('something went horribly wrong')
-                        handleAuthError()
-                        break
-                    case 'pending':
-                        console.log('pending')
-                        console.log(error)
-                        setTimeout(pollAuthState, 2000)
-                        break
-                    case 'ready':
-                        console.log('ready')
-                        setAccountInfo(data.user)
-                        dispatch(setUserTwitter(data.user))
-                        setError(false)
-                        setAuthState(2)
-                }
-            })
-            .catch(err => {
-                console.log(err)
-            })
     }
 
     const handleAuthError = () => {
-        fetch('/twitter/destroy_session')
-            .then(() => {
-                setError(true);
-                setAccountInfo(null);
-                setAuthState(0)
-            })
+        setError(true);
+        setAccountInfo(null);
+        setAuthState(0);
     }
+
 
     const destroySession = () => {
         fetch('/twitter/destroy_session')
             .then(() => {
-                console.log('resetting state')
                 setError(false);
                 setAccountInfo(null);
-                setAuthState(0)
+                setAuthState(0);
+                generateAuthLink(authType)
             })
     }
 
@@ -86,8 +101,7 @@ export const useTwitterAuth = (authType) => {
     return {
         authState: authState,
         accountInfo,
-        authenticationType,
-        setAuthenticationType,
+        setTwitterAuthType: (authenticationType) => setAuthType(authenticationType),
         onOpen: () => handleOpenAuth(),
         destroySession: () => destroySession(),
         auth_error: error,

@@ -19,7 +19,9 @@ import {
 
 
 export default function Twitter(props) {
-    const { authState, auth_error, accountInfo, generateAuthLink, onOpen, destroySession } = useTwitterAuth('privileged')
+    const { authState, auth_error, accountInfo, setTwitterAuthType, onOpen, destroySession } = useTwitterAuth('privileged')
+
+    // re-initialize whenever wallet changes
 
     const destroy_session = () => {
         destroySession()
@@ -30,6 +32,7 @@ export default function Twitter(props) {
     const toggleTwitter = () => {
         if (!props.twitterData.enabled) {
             props.setTwitterData({ type: 'update_single', payload: { stage: 1 } })
+            setTwitterAuthType('privileged')
         }
         else {
             destroy_session()

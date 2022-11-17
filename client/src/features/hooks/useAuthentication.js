@@ -7,6 +7,7 @@ import { showNotification } from "../notifications/notifications";
 import { useDispatch, useSelector } from "react-redux";
 import { selectUserSession, selectWalletAddress } from "../../app/sessionReducer";
 import { destroyTwitter, setUserTwitter } from "../user/user-reducer";
+import { socket } from "../../service/socket";
 
 
 export default function useAuthentication() {
@@ -18,6 +19,7 @@ export default function useAuthentication() {
             dispatch(destroyTwitter())
         }
     });
+
     const { address } = useAccount();
     const dispatch = useDispatch()
 
@@ -31,8 +33,15 @@ export default function useAuthentication() {
 
     useEffect(() => {
         if (!session) return disconnect()
-        fetchUserTwitter()
+        handleActiveSession()
     }, [session])
+
+
+    const handleActiveSession = () => {
+        fetchUserTwitter();
+        socket.emit('user-subscribe', connectedAddress)
+    }
+
 
     const fetchUserTwitter = async () => {
         let twitter_data = await axios.get('/twitter/user_account')

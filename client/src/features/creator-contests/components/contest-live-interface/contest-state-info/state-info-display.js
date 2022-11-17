@@ -23,7 +23,7 @@ export default function ContestStateInfo() {
 
 
 function StateController() {
-    const contest_state = 0//useSelector(selectContestState)
+    const contest_state = useSelector(selectContestState)
     const isWalletConnected = useSelector(selectIsConnected)
     const walletAddress = useSelector(selectWalletAddress)
     const [isCreating, setIsCreating] = useState(false);
@@ -46,7 +46,7 @@ function StateController() {
 
 
     const initializeSubmissionStatusListener = () => {
-        socket.emit('user-subscribe', `${contest_hash}-${walletAddress}`)
+        socket.emit('user-contest-subscribe', `${contest_hash}-${walletAddress}`)
     }
 
 

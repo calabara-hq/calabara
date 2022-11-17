@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
-import Routes from '../routes/routes.js'
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
-import DiscordRedirect from '../features/discord/discord-oauth-redirect.js'
-import wrapPromise from '../helpers/wrap-promise';
 import { useDispatch } from 'react-redux';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import DiscordRedirect from '../features/discord/discord-oauth-redirect.js';
+import wrapPromise from '../helpers/wrap-promise';
+import Routes from '../routes/routes.js';
+import { disconnectSocket, initializeSocketConnection, socket } from "../service/socket.js";
 import { clearSession, setUserSession } from './sessionReducer.js';
 
 const fetchSession = () => {
@@ -23,10 +24,15 @@ export default function App() {
 
   useEffect(() => {
     dispatch(setUserSession(session))
+    // start socket as early as possible
+    initializeSocketConnection();
+    socket.on('connect', () => {
+      console.log('connected to socket')
+    })
     return () => {
+      disconnectSocket();
       dispatch(clearSession())
     }
-
   }, [])
 
   return (
@@ -36,7 +42,6 @@ export default function App() {
         <Route path="/oauth/discord">
           <DiscordRedirect />
         </Route>
-
         <Route path="/*">
           <Routes initial_session={session} />
         </Route>

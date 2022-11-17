@@ -1,7 +1,7 @@
 import { faExclamationCircle, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from 'axios';
-import { useEffect, useReducer, useState } from "react";
+import { useContext, useEffect, useReducer, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import styled from 'styled-components';
@@ -15,6 +15,7 @@ import { LinkTwitterButton } from "../../../../../../twitter-link-account/styles
 import { selectIsTwitterLinked } from "../../../../../../user/user-reducer";
 import { fade_in } from "../../../../common/common_styles";
 import Placeholder from '../../../../common/spinner';
+import { selectContestSettings } from "../../../interface/contest-interface-reducer";
 import {
     CancelButton,
     CreateSubmissionContainer,
@@ -27,7 +28,7 @@ import {
 
 
 export default function TwitterSubmissionBuilder({ handleCloseDrawer }) {
-    const { authState, auth_error, authLink, accountInfo, setAuthenticationType, getAuthLink, onOpen, destroySession } = useTwitterAuth(null)
+    const { authState, auth_error, authLink, accountInfo, setTwitterAuthType, getAuthLink, onOpen, destroySession } = useTwitterAuth(null)
     const [builderData, setBuilderData] = useReducer(TwitterThreadReducer, twitter_initial_state)
 
     const destroy_session = () => {
@@ -54,7 +55,7 @@ export default function TwitterSubmissionBuilder({ handleCloseDrawer }) {
                         setBuilderData={setBuilderData}
                         authState={authState}
                         authLink={authLink}
-                        setAuthenticationType={setAuthenticationType}
+                        setTwitterAuthType={setTwitterAuthType}
                         accountInfo={accountInfo}
                         getAuthLink={getAuthLink}
                         onOpen={onOpen}
@@ -146,7 +147,7 @@ function ActionsController(props) {
         return <AuthChoice
             builderData={props.builderData}
             setBuilderData={props.setBuilderData}
-            setAuthenticationType={props.setAuthenticationType}
+            setTwitterAuthType={props.setTwitterAuthType}
             onOpen={props.onOpen} />
     }
     else if (props.builderData.stage === 1) {
@@ -183,7 +184,7 @@ function AuthChoice(props) {
     const handleChoice = (choice) => {
         let stage = 1
         // dont ask them to connect again if their twitter is already hooked up and simple auth is chosen
-        props.setAuthenticationType(choice)
+        props.setTwitterAuthType(choice)
         if ((choice === 'standard') && isTwitterConnected) stage = 2
         props.setBuilderData({ type: 'update_single', payload: { auth_type: choice, stage: stage } })
     }
@@ -216,12 +217,11 @@ const RedirectWrap = styled.div`
 
 
 function TwitterRedirect(props) {
-    const { ens, contest_hash } = useParams()
+    const contest_settings = useSelector(selectContestSettings)
 
     const handleClick = async () => {
-        let intent = await axios.post('/twitter/generate_quote_intent', { ens: ens, contest_hash: contest_hash })
-            .then(res => res.data)
-            .catch(err => console.log(err))
+        let { announcementID } = contest_settings.twitter_integration
+        let intent = `https://twitter.com/web/status/${announcementID}`
         window.open(intent)
         props.handleCloseDrawer();
     }

@@ -21,7 +21,7 @@ let sess = {
 if (process.env.NODE_ENV === 'production') {
   sess.cookie = {
     secure: true,
-    sameSite: 'lax',
+    sameSite: 'strict',
     maxAge: 1000 * 60 * 60 * 6 // 6 hours
   }
 }
@@ -29,7 +29,7 @@ if (process.env.NODE_ENV === 'production') {
 else {
   sess.cookie = {
     secure: true,
-    sameSite: 'lax',
+    sameSite: 'strict',
     maxAge: 1000 * 60 * 60 * 6 // 6 hours
   }
 }
