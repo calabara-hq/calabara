@@ -137,7 +137,6 @@ twitter.get('/oauth2', async function (req, res, next) {
             const { data: user } = await loggedClient.v2.me({ "user.fields": ["profile_image_url"] });
 
             let twitter_auth_session = JSON.stringify({ ...query_params, ...client_params, ...{ user: user } })
-            console.log(twitter_auth_session)
 
             updateTwitterSession(twitter_auth_session, patched_session.sid)
             update_user_twitter(patched_session.userAddress, user)

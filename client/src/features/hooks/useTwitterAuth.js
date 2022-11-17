@@ -58,7 +58,6 @@ export const useTwitterAuth = (authenticationType) => {
                 setAuthState(2)
             }
             else if (response.status === 'failed') {
-                console.log('got a response!!!')
                 handleAuthError()
             }
         }
@@ -67,10 +66,8 @@ export const useTwitterAuth = (authenticationType) => {
 
 
     const generateAuthLink = (scope_type) => {
-        console.log('generating link for auth type', scope_type)
         axios.post('/twitter/generateAuthLink', { scope_type: scope_type }, { withCredentials: true })
             .then(res => {
-                console.log('setting auth URI')
                 setAuthURI(res.data)
             })
     }
@@ -78,7 +75,6 @@ export const useTwitterAuth = (authenticationType) => {
     // on initial open, we check if user is already authed
     const handleOpenAuth = () => {
         if (error) setError(false)
-        console.log('authURI', authURI)
         if (!authURI) return
         window.open(authURI, "_blank", "height=750,width=600,scrollbars")
         setAuthState(1);
