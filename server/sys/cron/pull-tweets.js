@@ -42,7 +42,7 @@ const main_loop = async () => {
         let quotes = await fetch_quote_tweets(contest.tweet_id)
         if (!quotes) return
         logger.log({ level: 'info', message: `processing ${quotes.length} tweets for contest ${contest.hash}` })
-        for (const quote of quotes) {
+        for await (const quote of quotes) {
             await register_tweet(contest, quote)
         }
     })
