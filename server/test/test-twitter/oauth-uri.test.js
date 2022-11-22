@@ -15,7 +15,7 @@ describe('twitter oauth2 url generation', () => {
         let redirectUri = queryString.get('redirect_uri')
 
         expect(scope).to.eql('tweet.read users.read tweet.write')
-        expect(redirectUri).to.eql('https://localhost:3001/twitter/oauth2')
+        expect(redirectUri).to.eql('https://192.168.1.224:3001/twitter/oauth2')
     })
 
     it('link with standard scope', async () => {
@@ -26,7 +26,7 @@ describe('twitter oauth2 url generation', () => {
         let redirectUri = queryString.get('redirect_uri')
 
         expect(scope).to.eql('tweet.read users.read')
-        expect(redirectUri).to.eql('https://localhost:3001/twitter/oauth2')
+        expect(redirectUri).to.eql('https://192.168.1.224:3001/twitter/oauth2')
     })
 
     it('link with null scope', async () => {

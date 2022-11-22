@@ -1,3 +1,5 @@
+import { faGlobe } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect } from 'react';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import { useSelector } from "react-redux";
@@ -35,26 +37,22 @@ const InterfaceTopSplit = styled.div`
         flex-direction: column;
     }
  `
-/*
-const OrgCard = styled.div`
+
+export const WebLink = styled.div`
     display: flex;
-    flex-direction: column;
-    flex: 1 0 25%;
-    justify-content: space-evenly;
+    flex-direction: row;
     align-items: center;
-    background-color: #1e1e1e;
+    padding: 7px;
+    border: 2px solid #4d4d4d;
     border-radius: 10px;
-    min-height: 280px;
-    animation: ${fade_in} 0.2s ease-in-out;
-    > * {
-        margin: 10px;
-        animation: ${fade_in} 1s ease-in-out;
+    cursor: pointer;
+    font-size: 15px;
+    color: #4d4d4d;
+    &:hover{
+        color: #cccccc;
+        background-color: #1e1e1e;
     }
-
 `
-*/
-
-
 
 const InterfaceTopLeft = styled.div`
     display: flex;
@@ -154,7 +152,7 @@ function RenderOrgCard({ info }) {
         <OrgCard>
             <LazyLoadImage style={{ maxWidth: '5em', margin: '0 auto', borderRadius: '100px' }} src={`/${info.logo}`} effect="blur" />
             <Contest_h2_alt>{info.name}</Contest_h2_alt>
-            <a href={'//' + info.website} target="_blank">{info.website}</a>
+            <WebLink onClick={() => window.open(`//${info.website}`, '_blank')}><FontAwesomeIcon icon={faGlobe} /></WebLink>
         </OrgCard>
     )
 }
