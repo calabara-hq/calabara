@@ -42,18 +42,26 @@ describe('register tweets job', async (done) => {
         expect(submission_obj.submission_body.blocks.length).to.eql(0)
     })
 
-    it('submission object media thread', async () => {
-        let tweet = { tweet_id: "1590030047494406145" }
+    it('submission object multi-media thread 1', async () => {
+        let tweet = { tweet_id: "1594835095600390146" }
         let submission_obj = await create_submission(tweet, "1539985534327595008")
-        expect(submission_obj.submission_body.blocks.length).to.eql(4)
-        expect(submission_obj.submission_body.blocks[0].type).to.eql('image')
-        expect(submission_obj.submission_body.blocks[1].type).to.eql('image')
-        expect(submission_obj.submission_body.blocks[2].type).to.eql('image')
-        expect(submission_obj.submission_body.blocks[3].type).to.eql('image')
-
+        try {
+            expect(submission_obj.submission_body.blocks.length).to.eql(3)
+            expect(submission_obj.submission_body.blocks[0].type).to.eql('image')
+            expect(submission_obj.submission_body.blocks[1].type).to.eql('image')
+            expect(submission_obj.submission_body.blocks[2].type).to.eql('image')
+        } catch (err) {
+            console.error('are you sure this tweet was from the last 7 days?')
+            expect(1).to.eql(2)
+        }
     })
 
-
+    it('submission object multi-media thread 2', async () => {
+        // with a video
+        let tweet = { tweet_id: "1594836602278264834" }
+        let submission_obj = await create_submission(tweet, "1539985534327595008")
+        console.log(submission_obj)
+    })
 
     done()
 })

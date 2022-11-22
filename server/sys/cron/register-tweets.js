@@ -36,21 +36,21 @@ const randomId = (length) => {
     return text;
 }
 
-// add 30 seconds since this loop only runs every 30 secs
-const getDate = () => {
+// insert 30 seconds buffer to voting end since this loop only runs every 30 secs
+const getDates = () => {
     const now = new Date()
-    return new Date(now.getTime() + 30 * 1000).toISOString()
+    return { t1: now.toISOString(), t2: new Date(now.getTime() - (30 * 1000)).toISOString() }
 }
 
 
 // select unregistered tweets. group by author id
 
 const pull_unregistered_tweets = async () => {
-    let date = getDate();
+    let dates = getDates();
     return await db.query('select author_id, json_agg(json_build_object(\'tweet_id\', tweets.tweet_id, \'created\', tweets.created, \'contest_hash\', tweets.contest_hash)) as contests \
                         from tweets inner join contests on tweets.contest_hash = contests._hash \
-                        where registered = false and contests._start < $1 and contests._voting > $1 \
-                        group by author_id', [date])
+                        where registered = false and contests._start < $1 and contests._voting > $2 \
+                        group by author_id', [dates.t1, dates.t2])
         .then(clean)
         .then(asArray)
 }
@@ -193,9 +193,10 @@ const create_submission = async (tweet, author_id) => {
 
     const thread = await get_thread(tweet.tweet_id, author_id) // get the thread
     const includes = new TwitterV2IncludesHelper(thread)
+
+    console.log(thread.meta.result_count)
     if (thread.meta.result_count > 0) {
         let thread_arr = thread.data.data.reverse()            // get it in chronological order
-
         await serializedLoop(thread_arr, async (thread_el) => {
             const { id, text } = thread_el
             const medias = includes.medias(thread_el)

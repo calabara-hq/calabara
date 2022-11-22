@@ -384,3 +384,27 @@
 {"level":"error","message":"stream rule listener failed with error: {\"type\":\"request\"}","service":"cron:twitter_stream_manager","timestamp":"2022-11-17 21:15:20"}
 {"level":"error","message":"get twitter stream rules failed with error: Error: Request failed.","service":"twitter_stream_ingestor","timestamp":"2022-11-17 23:25:20"}
 {"level":"error","message":"stream rule listener failed with error: {\"type\":\"request\"}","service":"cron:twitter_stream_manager","timestamp":"2022-11-17 23:25:20"}
+{"level":"error","message":"user attempted to submit outside of the submission window","service":"middleware:contest_submit","timestamp":"2022-11-21 17:25:03"}
+{"level":"error","message":"user attempted to submit outside of the submission window","service":"middleware:contest_submit","timestamp":"2022-11-21 17:25:03"}
+{"level":"error","message":"user attempted to submit outside of the submission window","service":"middleware:contest_submit","timestamp":"2022-11-21 17:25:03"}
+{"level":"error","message":"user attempted to submit outside of the submission window","service":"middleware:contest_submit","timestamp":"2022-11-21 17:25:03"}
+{"level":"error","message":"user has already submitted","service":"middleware:contest_submit","timestamp":"2022-11-21 17:25:04"}
+{"level":"error","message":"user failed restriction checks","service":"middleware:contest_submit","timestamp":"2022-11-21 17:25:04"}
+{"level":"error","message":"user failed restriction checks","service":"middleware:contest_submit","timestamp":"2022-11-21 17:25:04"}
+{"level":"error","message":"user failed restriction checks","service":"middleware:contest_submit","timestamp":"2022-11-21 17:25:04"}
+{"level":"error","message":"user attempted to submit outside of the submission window","service":"middleware:contest_submit","timestamp":"2022-11-21 17:25:04"}
+{"level":"error","message":"user attempted to submit outside of the submission window","service":"middleware:contest_submit","timestamp":"2022-11-21 17:25:04"}
+{"level":"error","message":"user self voting error","service":"middleware:contest_vote","timestamp":"2022-11-21 17:25:05"}
+{"level":"error","message":"user failed voting requirement check","service":"middleware:contest_vote","timestamp":"2022-11-21 17:25:06"}
+{"level":"error","message":"user failed voting requirement check","service":"middleware:contest_vote","timestamp":"2022-11-21 17:25:06"}
+{"level":"error","message":"user failed voting requirement check","service":"middleware:contest_vote","timestamp":"2022-11-21 17:25:06"}
+{"level":"error","message":"user failed voting requirement check","service":"middleware:contest_vote","timestamp":"2022-11-21 17:25:06"}
+{"level":"error","message":"user attempted to vote outside of the voting window","service":"middleware:contest_vote","timestamp":"2022-11-21 17:25:09"}
+{"level":"error","message":"user attempted to vote outside of the voting window","service":"middleware:contest_vote","timestamp":"2022-11-21 17:25:09"}
+{"level":"error","message":"get thread failed with error: []","service":"twitter_api","timestamp":"2022-11-21 18:17:06"}
+{"level":"error","message":"get thread failed with error: []","service":"twitter_api","timestamp":"2022-11-21 18:18:12"}
+{"level":"error","message":"get thread failed with error: []","service":"twitter_api","timestamp":"2022-11-21 18:19:03"}
+{"level":"error","message":"get thread failed with error: []","service":"twitter_api","timestamp":"2022-11-21 18:19:10"}
+{"level":"error","message":"get thread failed with error: []","service":"twitter_api","timestamp":"2022-11-21 18:19:32"}
+{"level":"error","message":"get thread failed with error: []","service":"twitter_api","timestamp":"2022-11-21 18:20:16"}
+{"level":"error","message":"get thread failed with error: []","service":"twitter_api","timestamp":"2022-11-21 18:20:26"}
