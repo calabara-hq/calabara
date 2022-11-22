@@ -19,7 +19,7 @@ let base_settings = {
     anon_subs: false,
     visible_votes: false,
     self_voting: false,
-    snapshot_block: '2022-09-29T23:46:06.126Z'
+    snapshot_block: '2022-11-22T18:05:20.984Z'
 }
 
 

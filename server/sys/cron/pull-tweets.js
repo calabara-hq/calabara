@@ -10,15 +10,16 @@ const logger = require('../../logger.js').child({ service: 'cron:pull_tweets' })
 // look for unregistered quote tweets
 // try to match them with users in our DB
 
-// add 5 minutes since this loop only runs every 5 mins
-const getDate = () => {
+// insert 5 minutes buffer to voting end since this loop only runs every 5 mins
+const getDates = () => {
     const now = new Date()
-    return new Date(now.getTime() + 5 * 60000).toISOString()
+    return { t1: now.toISOString(), t2: new Date(now.getTime() - (5 * 60000)).toISOString() }
+
 }
 
 const pull_active_twitter_contests = async () => {
-    const date = getDate()
-    return await db.query('select ens, _hash, settings->\'twitter_integration\' as twitter_integration from contests where _start < $1 and _voting > $1', [date])
+    const dates = getDates()
+    return await db.query('select ens, _hash, settings->\'twitter_integration\' as twitter_integration from contests where _start < $1 and _voting > $2', [dates.t1, dates.t2])
         .then(clean)
         .then(asArray)
         .then(data => {
@@ -41,7 +42,7 @@ const main_loop = async () => {
         let quotes = await fetch_quote_tweets(contest.tweet_id)
         if (!quotes) return
         logger.log({ level: 'info', message: `processing ${quotes.length} tweets for contest ${contest.hash}` })
-        for (const quote of quotes) {
+        for await (const quote of quotes) {
             await register_tweet(contest, quote)
         }
     })

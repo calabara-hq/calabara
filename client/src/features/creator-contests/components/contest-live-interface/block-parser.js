@@ -17,7 +17,7 @@ export const ParseBlocks = ({ data }) => {
 
             let reactElement = ReactHtmlParse(html)
             if (reactElement[0].type === 'img') {
-                return elements.push(<div style={{display: 'flex', justifyContent: 'center'}}><LazyLoadImage src={reactElement[0].props.src} effect="blur" style={{ maxWidth: '35em', borderRadius: '10px' }} /></div>)
+                return elements.push(<div style={{display: 'flex', justifyContent: 'center', position: 'relative'}}><LazyLoadImage src={reactElement[0].props.src} effect="blur" style={{ maxWidth: '90%', borderRadius: '10px' }} /></div>)
             }
             elements.push(reactElement)
         })

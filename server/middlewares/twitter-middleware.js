@@ -18,7 +18,6 @@ const pre_process = async (ens, contest_hash) => {
 
 
 async function verifyTwitterAuth(req, res, next) {
-    console.log(req.session.twitter)
     try {
         const client = new TwitterApi(req.session.twitter.accessToken)
         await client.v2.me();
@@ -26,87 +25,6 @@ async function verifyTwitterAuth(req, res, next) {
     } catch (err) {
         logger.log({ level: 'info', message: 'user twitter session is not active' })
         return res.sendStatus(440)
-    }
-}
-
-
-// keep track of the user account for future reference
-const update_user_twitter = async (address, data) => {
-    // flush the db of any addresses linked to this same twitter account. Want only 1 twitter linked to 1 address at a time (for now)
-
-    await db.query('update users set twitter = null where twitter->>\'id\' = $1', [data.id])
-    return db.query('insert into users (address, twitter) values ($1, $2) on conflict (address) do update set twitter = $2', [address, data])
-        .catch(err => {
-            logger.log({ level: 'error', message: `udpate user twitter failed with error: ${err}` })
-        })
-}
-
-// this function is too fast. stale access tokens can be present when a user wants to change accounts,
-// resulting in the account not actually being changed. 
-// to solve this, clear the accessToken on the first retry (0). 
-// nobody can humanly auth that fast
-
-async function poll_auth_status(req, res, next) {
-
-    let { codeVerifier, stateVerifier, state, code, accessToken, retries } = req.session.twitter || {};
-
-    try {
-
-        if (!codeVerifier || !stateVerifier) return res.send({ status: 'error' }).status(200)
-
-        //retries = retries ? retries += 1 : 0
-        retries = (typeof retries === 'undefined') ? 0 : retries
-        console.log('RETRIES', retries)
-        console.log('accessToken', accessToken)
-
-        // there was an error in the oauth process
-
-        if ((retries === 0) && accessToken) {
-            console.log('clearing access token on initial retry state')
-            req.session.twitter.accessToken = null
-            //accessToken = null
-        }
-
-        if (retries > 19) {
-            req.session.twitter.retries = 0;
-            return res.send({ status: 'error' }).status(200)
-        }
-
-
-        // if the user refuses app access, code will not be provided
-        if (codeVerifier && stateVerifier && state && !code) {
-            req.session.twitter.retries = 0;
-            return res.send({ status: 'error' }).status(200)
-        }
-
-        if (codeVerifier && stateVerifier && state && code) {
-            if (stateVerifier !== state) {
-                req.session.twitter.retries = 0;
-                return res.send({ status: 'error' }).status(200)
-            }
-        }
-
-
-        if (codeVerifier && stateVerifier && !accessToken) {
-            // user got the auth link but hasn't yet approved the authorization
-            req.session.twitter.retries = retries + 1
-            return res.send({ status: 'pending' }).status(200)
-        }
-
-        if (accessToken) {
-            if (state !== stateVerifier) return res.send({ status: 'error' }).status(200)
-            const client = new TwitterApi(accessToken);
-            const { data: user } = await client.v2.me({ "user.fields": ["profile_image_url"] });
-            update_user_twitter(req.session.user.address, user)
-            res.send({ status: 'ready', user })
-            console.log('auth suceeded. resetting retries')
-            req.session.twitter.retries = 0;
-            req.session.twitter.user = user
-
-        }
-    } catch (e) {
-        req.session.twitter.retries = 0;
-        return res.send({ status: 'error' }).status(200)
     }
 }
 
@@ -274,4 +192,4 @@ async function convertTweet(req, res, next) {
 
 
 
-module.exports = { verifyTwitterAuth, process_thread, verifyTwitterContest, poll_auth_status, sendTweet, sendQuoteTweet, convertTweet }
+module.exports = { verifyTwitterAuth, process_thread, verifyTwitterContest, sendTweet, sendQuoteTweet, convertTweet }

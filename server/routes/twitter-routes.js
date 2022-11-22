@@ -1,11 +1,10 @@
-const { TwitterApi } = require('twitter-api-v2')
 const { requestClient } = require('../twitter-client/config');
 const express = require('express');
 const dotenv = require('dotenv')
 const twitter = express();
 const db = require('../helpers/db-init')
 const { authenticateToken } = require('../middlewares/auth-middleware');
-const { sendTweet, sendQuoteTweet, convertTweet, verifyTwitterAuth, poll_auth_status, verifyTwitterContest } = require('../middlewares/twitter-middleware');
+const { sendTweet, sendQuoteTweet, convertTweet, verifyTwitterAuth, verifyTwitterContest } = require('../middlewares/twitter-middleware');
 const { check_submitter_eligibility_PROTECTED, createSubmission } = require('../middlewares/creator-contests/submit-middleware');
 const { clean } = require('../helpers/common');
 const { socketSendNewSubmission, socketSendUserSubmissionStatus, socketSendUserTwitterAuthStatus } = require('../helpers/socket-messages');
@@ -70,8 +69,6 @@ twitter.post('/generateAuthLink', authenticateToken, async function (req, res, n
  * local to oauth popup window
  * set session vars from twitter oauth get request
  * try to login and close window
- * handle the status in poll_auth_status
- * 
  *  */
 
 /**
@@ -130,9 +127,6 @@ twitter.get('/oauth2', async function (req, res, next) {
                 expiresIn: expiresIn
             }
 
-
-
-
             // Example request
             const { data: user } = await loggedClient.v2.me({ "user.fields": ["profile_image_url"] });
 
@@ -152,9 +146,6 @@ twitter.get('/oauth2', async function (req, res, next) {
 
 })
 
-
-
-twitter.get('/poll_auth_status', authenticateToken, poll_auth_status)
 
 
 twitter.post('/sendQuoteTweet', authenticateToken, check_submitter_eligibility_PROTECTED, verifyTwitterContest, sendQuoteTweet, convertTweet, createSubmission, async function (req, res, next) {

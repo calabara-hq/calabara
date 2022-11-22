@@ -164,6 +164,42 @@ describe('voting restrictions tests', async (done) => {
         await cleanup();
     })
 
+    it(`1 restriction pass erc1155`, async () => {
+
+        let voting_strategy = {
+            strategy_type: 'token',
+            type: 'erc1155',
+            symbol: 'CC',
+            address: '0xEeA66A9069a698C381d4d160Ae6e630cb71766C5',
+            decimal: 0,
+            token_id: 1,
+            sub_cap: 0,
+            hard_cap: 0,
+        }
+
+        let voter_restrictions = [
+            {
+                type: 'erc1155',
+                symbol: 'CC',
+                address: '0xEeA66A9069a698C381d4d160Ae6e630cb71766C5',
+                decimal: 0,
+                token_id: 1,
+                threshold: 1
+            }
+        ]
+        let submitter_restrictions = []
+
+        let contest_hash = await create_voting_scenario(voting_strategy, submitter_restrictions, voter_restrictions)
+
+        let submission_id = await create_dummy_submission(contest_hash)
+
+        let dummy_vote_response = await castDummyVote(contest_hash, submission_id, 1)
+        expect(dummy_vote_response.status).to.eql(200)
+
+        await cleanup();
+    })
+
+
     it(`1 restriction fail erc1155`, async () => {
 
         let voting_strategy = {
@@ -198,42 +234,6 @@ describe('voting restrictions tests', async (done) => {
 
         await cleanup();
     })
-
-    /*
-    it(`1 restriction pass erc1155`, async () => {
-
-        let voting_strategy = {
-            strategy_type: 'token',
-            type: 'erc20',
-            symbol: 'SHARK',
-            address: '0x232AFcE9f1b3AAE7cb408e482E847250843DB931',
-            decimal: 18,
-            sub_cap: 0,
-            hard_cap: 0,
-        }
-
-        let voter_restrictions = [
-            {
-                type: 'erc721',
-                symbol: 'OxMosquitoes',
-                address: '0xDb6fd84921272E288998a4B321B6C187BBd2BA4C',
-                decimal: 0,
-                threshold: 1
-            }
-        ]
-        let submitter_restrictions = []
-
-        let contest_hash = await create_voting_scenario(voting_strategy, submitter_restrictions, voter_restrictions)
-
-        let submission_id = await create_dummy_submission(contest_hash)
-
-        let dummy_vote_response = await castDummyVote(contest_hash, submission_id, 1)
-        expect(dummy_vote_response.status).to.eql(200)
-
-        await cleanup();
-    })
-
-*/
 
     it(`multi restriction pass`, async () => {
 
