@@ -56,12 +56,7 @@ describe('register tweets job', async (done) => {
         }
     })
 
-    it('submission object multi-media thread 2', async () => {
-        // with a video
-        let tweet = { tweet_id: "1594836602278264834" }
-        let submission_obj = await create_submission(tweet, "1539985534327595008")
-        console.log(submission_obj)
-    })
+
 
     done()
 })

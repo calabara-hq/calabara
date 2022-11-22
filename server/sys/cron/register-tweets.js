@@ -194,7 +194,6 @@ const create_submission = async (tweet, author_id) => {
     const thread = await get_thread(tweet.tweet_id, author_id) // get the thread
     const includes = new TwitterV2IncludesHelper(thread)
 
-    console.log(thread.meta.result_count)
     if (thread.meta.result_count > 0) {
         let thread_arr = thread.data.data.reverse()            // get it in chronological order
         await serializedLoop(thread_arr, async (thread_el) => {

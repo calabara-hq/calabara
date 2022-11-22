@@ -62,6 +62,53 @@ describe('submitting restrictions tests', async (done) => {
         await cleanup();
     })
 
+    it(`1 restriction pass erc1155`, async () => {
+
+        let voting_strategy = {}
+        let voter_restrictions = []
+        let submitter_restrictions = [
+            {
+                type: 'erc1155',
+                symbol: 'CC',
+                address: '0xEeA66A9069a698C381d4d160Ae6e630cb71766C5',
+                decimal: 0,
+                threshold: 1,
+                token_id: 1
+            }
+        ]
+
+
+        let contest_hash = await create_accepting_submissions_scenario(voting_strategy, submitter_restrictions, voter_restrictions)
+        let real_submission_response = await createRealSubmission(contest_hash)
+        expect(real_submission_response.status).to.eql(200)
+
+        await cleanup();
+    })
+
+
+    it(`1 restriction fail erc1155`, async () => {
+
+        let voting_strategy = {}
+        let voter_restrictions = []
+        let submitter_restrictions = [
+            {
+                type: 'erc1155',
+                symbol: 'CC',
+                address: '0xEeA66A9069a698C381d4d160Ae6e630cb71766C5',
+                decimal: 0,
+                threshold: 3,
+                token_id: 1
+            }
+        ]
+
+
+        let contest_hash = await create_accepting_submissions_scenario(voting_strategy, submitter_restrictions, voter_restrictions)
+        let real_submission_response = await createRealSubmission(contest_hash)
+        expect(real_submission_response.status).to.eql(419)
+
+        await cleanup();
+    })
+
     it(`1 restriction pass erc721`, async () => {
 
         let voting_strategy = {}
@@ -118,6 +165,14 @@ describe('submitting restrictions tests', async (done) => {
                 address: '0x232AFcE9f1b3AAE7cb408e482E847250843DB931',
                 decimal: 18,
                 threshold: 1
+            },
+            {
+                type: 'erc1155',
+                symbol: 'CC',
+                address: '0xEeA66A9069a698C381d4d160Ae6e630cb71766C5',
+                decimal: 0,
+                threshold: 1,
+                token_id: 1
             },
             {
                 type: 'erc721',
