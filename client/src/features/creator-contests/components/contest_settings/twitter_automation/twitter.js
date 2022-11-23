@@ -89,6 +89,7 @@ function ActionController(props) {
                     <b></b>
                     <p style={{ color: '#a3a3a3' }}>We'll tweet this for you once you're done </p>
                     {props.twitterData.error === "empty_content" && <div className="tab-message error"><p>announcement tweet can't be empty</p></div>}
+                    {props.twitterData.error === "char_overflow" && <div className="tab-message error"><p>tweets must be 280 characters or less</p></div>}
                     <b style={{ marginBottom: '30px' }}></b>
                 </div>
                 <CreateThread accountInfo={props.accountInfo} authState={props.authState} twitterData={props.twitterData} setTwitterData={props.setTwitterData} showTweetButton={false} />

@@ -9,6 +9,7 @@ import { TwitterSubmissionCheckpointBar } from "../../../../../../checkpoint-bar
 import CreateThread from "../../../../../../create-twitter-thread/create-thread";
 import useTweet from "../../../../../../hooks/useTweet";
 import useTwitterAuth from "../../../../../../hooks/useTwitterAuth";
+import { showNotification } from "../../../../../../notifications/notifications";
 import TwitterThreadReducer, { twitter_initial_state } from "../../../../../../reducers/twitter-thread-reducer";
 import LinkTwitter from "../../../../../../twitter-link-account/link-twitter";
 import { LinkTwitterButton } from "../../../../../../twitter-link-account/styles";
@@ -124,7 +125,14 @@ function ActionsController(props) {
 
     const handleSubmit = async () => {
         setIsSaving(true)
-        await sendQuoteTweet(ens, contest_hash, props.builderData.tweets)
+        for (const [idx, tweet] of props.builderData.tweets.entries()) {
+            if (tweet.text.length > 280) {
+                props.setBuilderData({ type: 'focus_tweet', payload: idx })
+                setIsSaving(false)
+                showNotification('error', 'error', 'tweets must be 280 characters or less')
+                return true
+            }
+        } await sendQuoteTweet(ens, contest_hash, props.builderData.tweets)
             .then(res => {
                 setTimeout(() => {
                     props.handleCloseDrawer();

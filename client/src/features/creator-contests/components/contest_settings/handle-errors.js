@@ -172,6 +172,14 @@ export default function useErrorHandler(date_times) {
             setTwitterData({ type: 'update_single', payload: { error: 'empty_content' } })
             return true
         }
+
+        for (const [idx, tweet] of twitterData.tweets.entries()) {
+            if (tweet.text.length > 280) {
+                setTwitterData({ type: 'update_single', payload: { error: 'char_overflow' } })
+                setTwitterData({ type: 'focus_tweet', payload: idx })
+                return true
+            }
+        }
         return false
 
     }
