@@ -11,7 +11,7 @@ import { Author, SubmissionBottomBlur, SubmissionMeta, VoteTotals } from './subm
 
 const SubmissionWrap = styled.div`
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(25em,100%), 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(31em,100%), 1fr));
     overflow: wrap;
     margin: -10px;
     margin-bottom: 400px;
@@ -56,6 +56,8 @@ const SubmissionPreviewContainer = styled.div`
     > p {
         // handles long strings of chars with no spaces.. Not a normal case
         overflow: hidden;
+        //word-break: break-all;
+        //white-space: normal;
     }
 
     &::before{

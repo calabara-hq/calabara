@@ -67,7 +67,18 @@ export const RightAlignButtons = styled.div`
     margin-left: auto;
     gap: 10px;
 `
-
+export const CharacterLimit = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    border: none;
+    padding: 0px 13px;
+    border-radius: 100px;
+    background-color: transparent;
+    margin-left: auto;
+    color: ${props => props.isCharOverflow ? 'rgb(178, 31, 71)' : ''};
+`
 
 export const AddTweetButton = styled.div`
     cursor: pointer;
