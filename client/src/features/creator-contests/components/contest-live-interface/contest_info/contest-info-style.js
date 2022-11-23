@@ -63,17 +63,18 @@ export const GridElement = styled.div`
 
 
 export const CheckpointWrap = styled.div`
+    margin: 0 auto;
     margin-top: 70px;
     display: flex;
     flex-direction: column;
-    width: 100%;
+    width: 95%;
 
 `
 
 export const CheckpointTop = styled.div`
     margin: 0 auto;
     height: fit-content;
-    width: 95%;
+    width: 90%;
     color: #d3d3d3;
     margin-bottom: 1em;
     animation: ${fade_in} 0.8s ease-in-out;

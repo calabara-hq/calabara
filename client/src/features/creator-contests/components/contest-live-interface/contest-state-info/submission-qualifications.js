@@ -4,10 +4,10 @@ import { useWalletContext } from "../../../../../app/WalletContext";
 import useSubmissionEngine from "../../../../hooks/useSubmissionEngine";
 import useTwitterAuth from "../../../../hooks/useTwitterAuth";
 import LinkTwitter from "../../../../twitter-link-account/link-twitter";
-import { selectIsTwitterLinked, selectUserTwitter, setUserTwitter } from "../../../../user/user-reducer";
+import { selectIsTwitterLinked, selectUserTwitter } from "../../../../user/user-reducer";
 import { Contest_h4 } from "../../common/common_styles";
 import { selectContestSettings } from "../interface/contest-interface-reducer";
-import { AltSubmissionButton, ConnectWalletButton, DataGrid, DataWrap, GridElement, RestrictionStatus, RestrictionStatusNotConnected, StatusDiv, SubmissionStatus, TwitterAccountBox, TwitterSwitchAccount, TwitterWrap } from "./styles";
+import { AltSubmissionButton, ConnectWalletButton, DataGrid, DataWrap, GridElement, RestrictionStatus, RestrictionStatusNotConnected, SubmissionStatus, TwitterAccountBox, TwitterSwitchAccount, TwitterWrap } from "./styles";
 
 export default function SubmissionQualifications({ showTwitter, submitOnClick }) {
     const contest_settings = useSelector(selectContestSettings)
@@ -79,7 +79,7 @@ function TwitterStatus({ processEligibility }) {
                     <TwitterAccountBox>
                         <img style={{ borderRadius: '100px', maxWidth: '30px' }} src={twitterAccount.profile_image_url} />
                         <TwitterSwitchAccount onClick={() => onOpen('standard')}>edit</TwitterSwitchAccount>
-                        <RestrictionStatus status={'pass'} key={`twitter-eligibility`} />
+                        <SubmissionStatus status={'pass'} />
                     </TwitterAccountBox>
                 </div>
             </GridElement>
@@ -92,7 +92,7 @@ function TwitterStatus({ processEligibility }) {
             <div>
                 <TwitterWrap>
                     <LinkTwitter minimal setError={setError} auth_type={'standard'} auth_error={auth_error} onOpen={onOpen} customButton={true} clearErrors={() => setError(null)} />
-                    <RestrictionStatus status={'fail'} key={`twitter-eligibility`} />
+                    <SubmissionStatus status={'fail'} />
                 </TwitterWrap>
             </div>
         </GridElement>

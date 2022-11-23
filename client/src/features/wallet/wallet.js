@@ -4,7 +4,11 @@ export default function Wallet() {
 
   return (
     <div className="walletBox">
-      <ConnectButton showBalance={false} />
+      <ConnectButton accountStatus={{
+        smallScreen: 'address',
+        largeScreen: 'full'
+      }}
+        showBalance={false} />
     </div>
   )
 };

@@ -1,9 +1,8 @@
 node_modules/
-.log
-*.log
 *.cert
 *.key
 .env
+*.log
 *_env
 production_env
 dev_env
