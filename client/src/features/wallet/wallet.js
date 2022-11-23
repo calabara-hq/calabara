@@ -5,7 +5,7 @@ export default function Wallet() {
   return (
     <div className="walletBox">
       <ConnectButton accountStatus={{
-        smallScreen: 'avatar',
+        smallScreen: 'address',
         largeScreen: 'full'
       }}
         showBalance={false} />
