@@ -101,7 +101,9 @@ const OrgCard = styled.div`
     border-radius: 10px;
     padding: 5px 10px;
     min-height: 6em;
-    gap: 20px;
+    > * {
+        margin: 10px;
+    }
 
 `
 
