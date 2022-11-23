@@ -17,7 +17,6 @@ const { fetchSubmissions } = require('../middlewares/creator-contests/fetch-subm
 const { socketSendNewSubmission, socketSendUserSubmissionStatus } = require('../helpers/socket-messages.js');
 const { uploadTwitterMedia } = require('../middlewares/twitter-upload-media.js');
 const { add_stream_rules } = require('../twitter-client/stream.js');
-const { default: fetch } = require('node-fetch');
 dotenv.config()
 
 const serverRoot = path.normalize(path.join(__dirname, '../'));
@@ -52,10 +51,7 @@ contests.get('/fetch_contest', async function (req, res, next) {
 // fetch submissions
 
 contests.get('/fetch_submissions', fetchSubmissions, async function (req, res, next) {
-    //res.send(req.submissions).status(200)
-    let data = await fetch('https://calabara.com/creator_contests/fetch_submissions/?ens=sharkdao.eth&contest_hash=998d2176')
-        .then(data => data.json())
-    res.send(data)
+    res.send(req.submissions).status(200)
 })
 
 

@@ -1,13 +1,13 @@
 import { useConnectModal } from "@rainbow-me/rainbowkit";
 import axios from "axios";
-import { useEffect, useState } from "react";
-import { useAccount, useConnect, useDisconnect, useSignMessage } from 'wagmi';
+import { useEffect } from "react";
+import { useAccount, useDisconnect } from 'wagmi';
 import { showNotification } from "../notifications/notifications";
 
 import { useDispatch, useSelector } from "react-redux";
 import { selectUserSession, selectWalletAddress } from "../../app/sessionReducer";
-import { destroyTwitter, setUserTwitter } from "../user/user-reducer";
 import { socket } from "../../service/socket";
+import { destroyTwitter, setUserTwitter } from "../user/user-reducer";
 
 
 export default function useAuthentication() {
