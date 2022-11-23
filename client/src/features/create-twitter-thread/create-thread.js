@@ -6,10 +6,9 @@ import Placeholder from '../creator-contests/components/common/spinner';
 import useAutosizeTextArea from "../hooks/useAutosizeTextArea";
 import { showNotification } from '../notifications/notifications'
 import {
-    AddImageButton, AddTweetButton, DeleteTweetButton, LinkedAccount, MediaContainer, RemoveMediaButton, RightAlignButtons, TextArea,
+    AddImageButton, AddTweetButton, CharacterLimit, DeleteTweetButton, LinkedAccount, MediaContainer, RemoveMediaButton, RightAlignButtons, TextArea,
     TextAreaBottom, TextAreaWrap, ThreadBar, ThreadWrap, TweetButton, TweetMedia
 } from './styles';
-
 
 /** props
  * twitterdata
@@ -34,10 +33,10 @@ export default function CreateThread(props) {
 
 function CreateTweet(props) {
     const [isMediaLoading, setIsMediaLoading] = useState(false);
-
     const mediaUploader = useRef(null);
     const textAreaRef = useRef(null);
     useAutosizeTextArea(textAreaRef.current, props.twitterData.tweets[props.tweet_id].text)
+
 
     const clearErrors = () => {
         if (props.twitterData.error) return props.setTwitterData({ type: 'update_single', payload: { error: null } })
@@ -87,7 +86,6 @@ function CreateTweet(props) {
             url: '/creator_contests/twitter_contest_upload_img',
             data: formData
         }).then((response) => {
-            console.log(response)
             let img_obj = {
                 preview: img.preview,
                 ...response.data.file
@@ -121,9 +119,10 @@ function CreateTweet(props) {
                 <input placeholder="Logo" type="file" accept="image/*" style={{ display: 'none' }} onChange={handleMediaUpload} ref={mediaUploader} />
                 <AddImageButton disabled={props.twitterData.tweets[props.tweet_id].media?.preview} onClick={() => mediaUploader.current.click()}><FontAwesomeIcon icon={faImage} /></AddImageButton>
                 <RightAlignButtons>
+                    <CharacterLimit isCharOverflow={props.twitterData.tweets[props.tweet_id].text.length > 280}>{`${props.twitterData.tweets[props.tweet_id].text.length} / ${280}`}</CharacterLimit>
                     <DeleteTweetButton disabled={props.tweet_id === 0} onClick={deleteTweet}><FontAwesomeIcon icon={faTrash} /></DeleteTweetButton>
                     <AddTweetButton disabled={!props.twitterData.tweets[props.tweet_id]} onClick={addTweet}><FontAwesomeIcon icon={faPlus} /></AddTweetButton>
-                    {props.showTweetButton && <TweetButton disabled={!props.twitterData.tweets[props.tweet_id]} onClick={props.handleSubmit}>{props.twitterData.tweets.length > 1 ? 'tweet all' : 'tweet'}</TweetButton>}
+                    {props.showTweetButton && <TweetButton disabled={!props.twitterData.tweets[props.tweet_id] || props.twitterData.tweets[props.tweet_id].text.length > 280} onClick={props.handleSubmit}>{props.twitterData.tweets.length > 1 ? 'tweet all' : 'tweet'}</TweetButton>}
                 </RightAlignButtons>
             </TextAreaBottom>
         </TextAreaWrap>
