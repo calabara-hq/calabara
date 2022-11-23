@@ -11,19 +11,9 @@ import { Author, SubmissionBottomBlur, SubmissionMeta, VoteTotals } from './subm
 
 const SubmissionWrap = styled.div`
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: repeat(auto-fill, minmax(min(25em,100%), 1fr));
     overflow: wrap;
     margin: -10px;
-
-    @media screen and (max-width: 1115px){
-        grid-template-columns: 1fr 1fr;
-    }
-
-    @media screen and (max-width: 720px){
-        display: block;
-    }
-
-
     margin-bottom: 400px;
     background-color: #1e1e1e;
     padding: 10px;
@@ -63,6 +53,10 @@ const SubmissionPreviewContainer = styled.div`
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
     padding: 20px;
     ${props => (props.contest_rank && props.contest_rank < 2) ? css`${uniqueRankStyles[props.contest_rank - 1]}` : ''}
+    > p {
+        // handles long strings of chars with no spaces.. Not a normal case
+        overflow: hidden;
+    }
 
     &::before{
         display: inline-block;
@@ -103,24 +97,6 @@ const SubmissionHeading = styled.div`
         @media screen and (max-width: 408px){
             justify-content: center;
         }
-    `
-
-
-const CreateSubmissionButton = styled.button`
-    margin-left: auto;
-    font-size: 15px;
-    border: 2px solid #539bf5;
-    border-radius: 10px;
-    background-color: #1e1e1e;
-    color: #d3d3d3;
-    padding: 10px 15px;
-    &:active{
-        transform: scale(0.9);
-    }
-    @media screen and (max-width: 408px){
-        margin-left: 0;
-    }
-
 `
 
 export default function SubmissionDisplay({ }) {
