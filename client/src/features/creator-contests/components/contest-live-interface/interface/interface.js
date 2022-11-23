@@ -60,7 +60,6 @@ const InterfaceTopLeft = styled.div`
     flex-direction: column;
     //background-color: #1e1e1e;
     border-radius: 10px;
-    padding: 10px;
     position: relative;
     > * {
        margin-bottom: 20px;
@@ -103,6 +102,21 @@ const OrgCard = styled.div`
     min-height: 6em;
     > * {
         margin: 10px;
+    }
+    @media screen and (max-width: 700px){
+        > h2 {
+            font-size: 25px;
+        }
+    }
+    @media screen and (max-width: 600px){
+        > h2 {
+            font-size: 20px;
+        }
+    }
+    @media screen and (max-width: 450px){
+        > h2 {
+            font-size:17px;
+        }
     }
 
 `
