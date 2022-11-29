@@ -7,7 +7,7 @@ contests.use(express.json())
 const { authenticateToken } = require('../middlewares/auth-middleware.js');
 const { isAdmin } = require('../middlewares/admin-middleware')
 const { clean, asArray, shuffleArray } = require('../helpers/common')
-const { createContest, isNick } = require('../middlewares/creator-contests/create-contest-middleware');
+const { createContest } = require('../middlewares/creator-contests/create-contest-middleware');
 const { check_submitter_eligibility_unprotected, check_submitter_eligibility_PROTECTED, createSubmission } = require('../middlewares/creator-contests/submit-middleware');
 const { imageUpload, twitterMediaUpload, fileSizeLimitErrorHandler } = require('../middlewares/image-upload-middleware.js');
 const { calc_sub_vp__unprotected, calc_sub_vp__PROTECTED, calc_total_vp_UNPROTECTED } = require('../middlewares/creator-contests/vote-middleware.js');
@@ -64,7 +64,7 @@ contests.get('/fetch_contest_winners_as_csv', get_winners_as_csv, async function
 
 // create a contest
 
-contests.post('/create_contest', authenticateToken, isAdmin, isNick, createContest, async function (req, res, next) {
+contests.post('/create_contest', authenticateToken, isAdmin, createContest, async function (req, res, next) {
     const { ens, contest_settings, prompt_data } = req.body
     const { start_date, voting_begin, end_date } = contest_settings.date_times
     await db.query('insert into contests (ens, created, _start, _voting, _end, _hash, settings, prompt_data, locked, pinned) values ($1, $2, $3, $4, $5, $6, $7, $8, false, false)', [ens, req.created, start_date, voting_begin, end_date, req.hash, contest_settings, prompt_data])
