@@ -7,7 +7,7 @@ import { socket } from '../../../../../../service/socket';
 import { selectContestState } from '../../interface/contest-interface-reducer';
 import ExpandSubmissionDrawer from './expand-submission-drawer';
 import { Author, SubmissionBottomBlur, SubmissionMeta, VoteTotals } from './submission-display-styles';
-
+import { Anchorme } from 'react-anchorme';
 
 const SubmissionWrap = styled.div`
     display: grid;
@@ -194,21 +194,14 @@ function LazyLoadedSubmission({ sub, handleExpand, index }) {
     const [submission_body, set_submission_body] = useState(null);
     const [rank, setRank] = useState(null);
     const contest_state = useSelector(selectContestState)
-    const [drawerOpen, setDrawerOpen] = useState(false);
-
-    const handleClose = () => {
-
-        setDrawerOpen(false);
-        document.body.style.overflow = 'unset';
-
-    }
-
 
 
     useEffect(() => {
         fetch(sub._url).then(res => {
             res.json().then(json => {
+                console.log(json)
                 set_tldr_img(json.tldr_image)
+                console.log(json.tldr_text)
                 set_tldr_text(json.tldr_text)
                 set_submission_body(json.submission_body)
                 if (contest_state === 2) {
@@ -224,7 +217,7 @@ function LazyLoadedSubmission({ sub, handleExpand, index }) {
     return (
 
         <SubmissionPreviewContainer onClick={() => handleExpand(sub.id, tldr_img, tldr_text, submission_body, sub.author, sub.votes)} contest_rank={rank}>
-            <p>{tldr_text}</p>
+            <p><Anchorme target='_blank'>{tldr_text}</Anchorme></p>
             <LazyStyledImage>
                 <LazyLoadImage style={{ maxWidth: '15em', maxHeight: '15em', margin: '0 auto', borderRadius: '10px' }} src={tldr_img} effect="blur" />
             </LazyStyledImage>

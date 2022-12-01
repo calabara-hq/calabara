@@ -98,8 +98,7 @@ const register_tweet = async (contest, quote) => {
 }
 
 const handle_fetched_tweet = async (tweet) => {
-    console.log('handling streamed tweet')
-    console.log(tweet)
+    logger.log({ level: 'info', message: 'handling streamed tweet' })
     let contest = { hash: tweet.matching_rules[0].tag }
     return await register_tweet(contest, tweet.data)
 }
@@ -107,7 +106,7 @@ const handle_fetched_tweet = async (tweet) => {
 
 const get_tweet = async (tweet_id) => {
     try {
-        return await appClient.v2.singleTweet(tweet_id, { expansions: ['attachments.media_keys'], "media.fields": ["url", "preview_image_url"], "tweet.fields": ["text"] })
+        return await appClient.v2.singleTweet(tweet_id, { expansions: ['attachments.media_keys'], "media.fields": ["url", "preview_image_url"], "tweet.fields": ["text", "entities"] })
     } catch (err) {
         const errors = TwitterApi.getErrors(err)
         logger.log({ level: 'error', message: `get tweet failed with error: ${JSON.stringify(errors)}` })
@@ -118,7 +117,7 @@ const get_tweet = async (tweet_id) => {
 
 const get_thread = async (tweet_id, author_id) => {
     try {
-        return await appClient.v2.search(`conversation_id:${tweet_id} from:${author_id} to:${author_id}`, { expansions: ['attachments.media_keys'], "media.fields": ["url", "preview_image_url"], "tweet.fields": ["text"], max_results: 100 })
+        return await appClient.v2.search(`conversation_id:${tweet_id} from:${author_id} to:${author_id}`, { expansions: ['attachments.media_keys'], "media.fields": ["url", "preview_image_url"], "tweet.fields": ["text", "entities"], max_results: 100 })
     } catch (err) {
         const errors = TwitterApi.getErrors(err)
         logger.log({ level: 'error', message: `get thread failed with error: ${JSON.stringify(errors)}` })

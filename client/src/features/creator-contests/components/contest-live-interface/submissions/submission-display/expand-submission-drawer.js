@@ -8,6 +8,7 @@ import { useSelector } from "react-redux";
 import { fade_in } from "../../../common/common_styles";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Author, SubmissionMeta, VoteTotals } from "./submission-display-styles";
+import { Anchorme } from 'react-anchorme';
 
 
 
@@ -99,7 +100,7 @@ export default function ExpandSubmissionDrawer({ drawerOpen, handleClose, id, TL
                         </SubmissionMeta>
                     }
                 </>
-                <p>{TLDRText}</p>
+                <p><Anchorme target="_blank">{TLDRText}</Anchorme></p>
                 <LazyLoadImage src={TLDRImage} effect="opacity" />
                 {expandData && <ParseBlocks data={expandData} />}
             </SubmissionWrap>
