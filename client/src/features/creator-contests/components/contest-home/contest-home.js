@@ -35,44 +35,6 @@ export default function ContestHomepage() {
         history.push(`contest_settings`)
     }
 
-
-    if (ens === 'sharkdao.eth' || ens === 'thenounsquare.eth') {
-        return (
-            <>
-                <BackButton customWidth={'68%'} link={'/' + ens + '/dashboard'} text={"dashboard"} />
-                <ContestHomeWrap>
-                    <SplitTop>
-                        <Suspense fallback={<OrgCard />}>
-                            <RenderOrgCard homepage_data={homepage_data} />
-                        </Suspense>
-                        <AboutCC>
-                            <div>
-                                <h4>Participate in weekly contests to receive retroactive funding for your most creative artwork, ideas, memes, and everything else.</h4>
-                                <img src={CC_Logo} />
-                            </div>
-                            <NewContest onClick={handleSettings}><FontAwesomeIcon icon={faPlus} /> New Contest </NewContest>
-                        </AboutCC>
-                    </SplitTop>
-                    <SplitBottom>
-                        <SplitBottomLeft>
-                            <Suspense fallback={<RoundContainer style={{ height: '500px' }} />}>
-                                <ListContests homepage_data={homepage_data} />
-                            </Suspense>
-                        </SplitBottomLeft>
-
-                        <SplitBottomRight>
-                            <Suspense fallback={<StatContainer style={{ height: '230px' }} />}>
-                                <ListStats homepage_data={homepage_data} />
-                            </Suspense>
-                        </SplitBottomRight>
-
-                    </SplitBottom>
-                </ContestHomeWrap>
-            </>
-        )
-    }
-
-    // else
     return (
         <>
             <BackButton customWidth={'68%'} link={'/' + ens + '/dashboard'} text={"dashboard"} />
@@ -81,18 +43,32 @@ export default function ContestHomepage() {
                     <Suspense fallback={<OrgCard />}>
                         <RenderOrgCard homepage_data={homepage_data} />
                     </Suspense>
-                    <CC_notFound>
-                        <img src={CC_Logo} />
+                    <AboutCC>
                         <div>
-                            <h4>Interested in creator contests? Hit us up in our Discord.</h4>
-                            <a href="https://discord.gg/dBBzHe9k3E" target={"_blank"} style={{ textAlign: 'center', fontSize: '35px' }}><FontAwesomeIcon icon={faDiscord}></FontAwesomeIcon></a>
+                            <h4>Participate in weekly contests to receive retroactive funding for your most creative artwork, ideas, memes, and everything else.</h4>
+                            <img src={CC_Logo} />
                         </div>
-
-                    </CC_notFound>
+                        <NewContest onClick={handleSettings}><FontAwesomeIcon icon={faPlus} /> New Contest </NewContest>
+                    </AboutCC>
                 </SplitTop>
+                <SplitBottom>
+                    <SplitBottomLeft>
+                        <Suspense fallback={<RoundContainer style={{ height: '500px' }} />}>
+                            <ListContests homepage_data={homepage_data} />
+                        </Suspense>
+                    </SplitBottomLeft>
+
+                    <SplitBottomRight>
+                        <Suspense fallback={<StatContainer style={{ height: '230px' }} />}>
+                            <ListStats homepage_data={homepage_data} />
+                        </Suspense>
+                    </SplitBottomRight>
+
+                </SplitBottom>
             </ContestHomeWrap>
         </>
     )
+
 }
 
 function ListContests({ homepage_data }) {

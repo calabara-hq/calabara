@@ -75,6 +75,7 @@
     "plotly.js": "^2.6.1",
     "protobufjs": "^7.0.0",
     "react": "^18.2.0",
+    "react-anchorme": "^2.2.1",
     "react-beautiful-dnd": "^13.1.0",
     "react-big-calendar": "^0.38.5",
     "react-bootstrap": "^1.6.4",

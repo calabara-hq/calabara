@@ -57,15 +57,48 @@ export const PromptContainer = styled.div`
 
 
 export const PromptWrap = styled.div`
-    position: relative;
+    align-items: flex-start;
     background-color: #262626;
     border-radius: 10px;
     padding: 10px;
-    padding-bottom: 100px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
+    word-wrap: break-word;
+    text-align: center;
+    animation: ${fade_in} 0.5s ease-in;
 
-    > p {
+    > * h2 {
+        color: #d9d9d9;
+        text-align: left;
+    }
+    
+    > * p {
         font-size: 15px;
+        color: #d3d3d3;
+        text-align: left;
+
+    }
+
+    img {
+        max-width: 35em;
+        border-radius: 10px;
+        align-self: center;
+        justify-self: center;
+        border-radius: 10px;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    @media screen and (max-width: 500px){
+        img{
+            max-width: 20em !important;
+        }
+    }
+
+    > * {
+        margin-top: 20px;
+        margin-bottom: 20px;
+
+
     }
 `
 
@@ -146,6 +179,12 @@ export const PromptCoverImage = styled.img`
     @media screen and (max-width: 400px){
             //display: none;
     }
+`
+
+export const ExpandedCoverImage = styled.img`
+    max-width: 90%;
+    border-radius: 10px;
+    margin: 0 auto;
 `
 
 

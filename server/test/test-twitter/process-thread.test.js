@@ -30,6 +30,17 @@ describe('process thread', async (done) => {
 
     })
 
+
+    it('single tweet empty text', async () => {
+
+        const thread = [
+            { text: '' }
+        ]
+
+        let processed = process_thread(thread)
+        expect(processed).to.eql([])
+    })
+
     it('thread no media', async () => {
 
         const thread = [
@@ -49,6 +60,24 @@ describe('process thread', async (done) => {
         const thread = [
             {
                 text: 'tweet1',
+                media: {
+                    media_id: 1,
+                    url: 'xyz.com',
+                    preview: 'blob'
+                }
+            }
+        ]
+
+        let processed = process_thread(thread)
+        expect(processed).to.eql([{ text: thread[0].text, media: { media_ids: [1] } }])
+
+    })
+
+    it('single tweet media only', async () => {
+
+        const thread = [
+            {
+                text: '',
                 media: {
                     media_id: 1,
                     url: 'xyz.com',
