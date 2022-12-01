@@ -40,12 +40,8 @@ const calculateProgressRatio = (cc_state, t0, t1, t2) => {
     else return 100
 }
 
-
-
-
 export default function ContestInterfaceController() {
     const { ens, contest_hash } = useParams();
-    const [settings, setSettings] = useState(null);
     const dispatch = useDispatch();
     const timerRef = useRef(null);
     const isLoading = useSelector(selectIsLoading);

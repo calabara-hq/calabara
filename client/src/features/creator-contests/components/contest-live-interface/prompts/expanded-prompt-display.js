@@ -4,10 +4,12 @@ import { ParseBlocks } from "../block-parser";
 import SubmissionQualifications from "../contest-state-info/submission-qualifications";
 import { selectContestState, selectPromptData } from "../interface/contest-interface-reducer";
 import SubmissionBuilderInterfaceController from "../submissions/submission-builder/submission-builder-interface-ctr";
+import Zoom from 'react-medium-image-zoom'
+import '../../../../../css/image-zoom.css'
+
 import {
     ExpandedCoverImage,
-    FadeDiv, PromptContent,
-    PromptCoverImage, PromptTop, PromptWrap, QualificationsWrap
+    FadeDiv, PromptContent, PromptTop, PromptWrap, QualificationsWrap
 } from "./styles";
 
 
@@ -24,6 +26,10 @@ export default function ExpandedPrompt({ isCreating, setIsCreating, handleClose 
         setIsCreating(false);
     }
 
+    const handleImageZoom = () => {
+
+    }
+
     if (!isCreating) {
         return (
             <>
@@ -38,8 +44,8 @@ export default function ExpandedPrompt({ isCreating, setIsCreating, handleClose 
                         <Label color={labelColorOptions[prompt_data.promptLabelColor]}>{prompt_data.promptLabel}</Label>
                     </PromptTop>
                     <PromptContent>
-                        <ExpandedCoverImage src={prompt_data.coverImage} />
-                        <ParseBlocks data={prompt_data.editorData} />
+                        <Zoom><ExpandedCoverImage src={prompt_data.coverImage} /></Zoom>
+                        <ParseBlocks data={prompt_data.editorData} withZoom />
                     </PromptContent>
                 </PromptWrap>
 
