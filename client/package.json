@@ -88,6 +88,7 @@
     "react-lazy-load-image-component": "^1.5.5",
     "react-lazyload": "^3.2.0",
     "react-medium-editor": "^1.8.1",
+    "react-medium-image-zoom": "^5.1.2",
     "react-modern-drawer": "^1.1.2",
     "react-plotly.js": "^2.5.1",
     "react-rainbow-components": "^1.30.0",
@@ -122,18 +123,11 @@
       "react-app/jest"
     ]
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not op_mini all"
+  ],
   "proxy": "https://localhost:3001",
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.17.7",

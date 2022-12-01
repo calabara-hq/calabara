@@ -102,7 +102,7 @@ export default function ExpandSubmissionDrawer({ drawerOpen, handleClose, id, TL
                 </>
                 <p><Anchorme truncate={45} target="_blank">{TLDRText}</Anchorme></p>
                 <LazyLoadImage src={TLDRImage} effect="opacity" />
-                {expandData && <ParseBlocks data={expandData} />}
+                {expandData && <ParseBlocks data={expandData} withZoom/>}
             </SubmissionWrap>
         </DrawerComponent>
 
