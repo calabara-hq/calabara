@@ -28,17 +28,20 @@ async function verifyTwitterAuth(req, res, next) {
     }
 }
 
+//TURTLES trim empty tweets
 
 const process_thread = (thread) => {
     try {
-        return thread.map(el => {
+        let results = []
+        thread.map(el => {
             let { text, media } = el
             if (media) {
                 let { media_id } = media
-                return { text, media: { media_ids: [media_id] } }
+                return results.push({ text, media: { media_ids: [media_id] } })
             }
-            return el
+            if (text !== '') return results.push(el)
         })
+        return results
     } catch (e) {
         logger.log({ level: 'error', message: `failed processing twitter thread with error: ${e}` })
         return null
@@ -68,6 +71,7 @@ async function sendTweet(req, res, next) {
 
     let processed_thread = process_thread(tweet)
     if (!processed_thread) return res.sendStatus(443)
+    if (processed_thread === []) return res.sendStatus(443)
 
     try {
         let tweet_id = await twitter_send_tweet(accessToken, processed_thread)
@@ -93,6 +97,7 @@ async function sendQuoteTweet(req, res, next) {
     if (!announcementID) return res.sendStatus(400)
     let processed_thread = process_thread(tweet)
     if (!processed_thread) return res.sendStatus(443)
+    if (processed_thread === []) return res.sendStatus(443)
 
     processed_thread[0].quote_tweet_id = announcementID
 

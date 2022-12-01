@@ -57,6 +57,7 @@ twitter.post('/generateAuthLink', authenticateToken, async function (req, res, n
         return res.sendStatus(400)
     }
     const { url, codeVerifier, state } = requestClient.generateOAuth2AuthLink(twitter_redirect, { scope: scopes[scope_type] });
+    console.log('session from link', req.sessionID, req.session, 'end')
     req.session.twitter = {
         codeVerifier: codeVerifier,
         stateVerifier: state,
@@ -81,6 +82,7 @@ twitter.post('/generateAuthLink', authenticateToken, async function (req, res, n
 
 // begin patch 
 const processTwitterSession = async (req, state, code) => {
+    console.log('session in process', req.sessionID, req.session, 'end')
     if (!(req.sessionID && req.session.user)) {
         let sess = await db.query('select sid, sess->\'user\' as user_session, sess->\'twitter\' as twitter_session from session where (sess->>\'twitter\')::json->>\'stateVerifier\' = $1', [state])
             .then(clean)
@@ -101,6 +103,7 @@ const updateTwitterSession = async (data, sid) => {
 
 twitter.get('/oauth2', async function (req, res, next) {
     const { state, code } = req.query;
+    console.log('session in oauth2', req.sessionID, req.session, 'end')
     let patched_session = await processTwitterSession(req, state, code)
 
     let query_params = {
