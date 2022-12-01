@@ -1,15 +1,15 @@
-import { useEffect, useRef, useState, useMemo } from "react";
-import styled from 'styled-components'
-import { ParseBlocks, parse_base_js } from "../../block-parser";
-import { SubmissionVotingBox } from "../../vote/voting-components";
-import DrawerComponent from "../../../../../drawer/drawer";
-import { selectContestState } from "../../interface/contest-interface-reducer";
-import { useSelector } from "react-redux";
-import { fade_in } from "../../../common/common_styles";
-import { LazyLoadImage } from "react-lazy-load-image-component";
-import { Author, SubmissionMeta, VoteTotals } from "./submission-display-styles";
 import { Anchorme } from 'react-anchorme';
-
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import Zoom from 'react-medium-image-zoom';
+import { useSelector } from "react-redux";
+import styled from 'styled-components';
+import '../../../../../../css/image-zoom.css';
+import DrawerComponent from "../../../../../drawer/drawer";
+import { fade_in } from "../../../common/common_styles";
+import { ParseBlocks } from "../../block-parser";
+import { selectContestState } from "../../interface/contest-interface-reducer";
+import { SubmissionVotingBox } from "../../vote/voting-components";
+import { Author, SubmissionMeta, VoteTotals } from "./submission-display-styles";
 
 
 const DrawerWrapper = styled.div`
@@ -51,7 +51,7 @@ const SubmissionWrap = styled.div`
     }
 
     img {
-        max-width: 90%;
+        max-width: 35em;
         border-radius: 10px;
         align-self: center;
         justify-self: center;
@@ -75,15 +75,7 @@ const SubmissionWrap = styled.div`
     }
     
 `
-const LazyLoadImageContainer = styled.div`
-    img {
-        max-width: 35em;
-        border-radius: 10px;
-    }
 
-    
-
-`
 
 export default function ExpandSubmissionDrawer({ drawerOpen, handleClose, id, TLDRImage, TLDRText, expandData, author, votes }) {
     const contest_state = useSelector(selectContestState)
@@ -100,9 +92,9 @@ export default function ExpandSubmissionDrawer({ drawerOpen, handleClose, id, TL
                         </SubmissionMeta>
                     }
                 </>
-                <p><Anchorme truncate={45} target="_blank">{TLDRText}</Anchorme></p>
-                <LazyLoadImage src={TLDRImage} effect="opacity" />
-                {expandData && <ParseBlocks data={expandData} withZoom/>}
+                <p><Anchorme target="_blank">{TLDRText}</Anchorme></p>
+                <Zoom><LazyLoadImage src={TLDRImage} effect="opacity" /></Zoom>
+                {expandData && <Anchorme><ParseBlocks data={expandData} /></Anchorme>}
             </SubmissionWrap>
         </DrawerComponent>
 
