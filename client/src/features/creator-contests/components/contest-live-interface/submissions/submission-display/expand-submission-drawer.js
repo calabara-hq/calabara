@@ -51,7 +51,7 @@ const SubmissionWrap = styled.div`
     }
 
     img {
-        max-width: 35em;
+        max-width: 90%;
         border-radius: 10px;
         align-self: center;
         justify-self: center;
@@ -100,7 +100,7 @@ export default function ExpandSubmissionDrawer({ drawerOpen, handleClose, id, TL
                         </SubmissionMeta>
                     }
                 </>
-                <p><Anchorme target="_blank">{TLDRText}</Anchorme></p>
+                <p><Anchorme truncate={45} target="_blank">{TLDRText}</Anchorme></p>
                 <LazyLoadImage src={TLDRImage} effect="opacity" />
                 {expandData && <ParseBlocks data={expandData} />}
             </SubmissionWrap>
