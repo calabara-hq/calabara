@@ -5,6 +5,7 @@ import SubmissionQualifications from "../contest-state-info/submission-qualifica
 import { selectContestState, selectPromptData } from "../interface/contest-interface-reducer";
 import SubmissionBuilderInterfaceController from "../submissions/submission-builder/submission-builder-interface-ctr";
 import {
+    ExpandedCoverImage,
     FadeDiv, PromptContent,
     PromptCoverImage, PromptTop, PromptWrap, QualificationsWrap
 } from "./styles";
@@ -37,7 +38,7 @@ export default function ExpandedPrompt({ isCreating, setIsCreating, handleClose 
                         <Label color={labelColorOptions[prompt_data.promptLabelColor]}>{prompt_data.promptLabel}</Label>
                     </PromptTop>
                     <PromptContent>
-                        <PromptCoverImage src={prompt_data.coverImage} />
+                        <ExpandedCoverImage src={prompt_data.coverImage} />
                         <ParseBlocks data={prompt_data.editorData} />
                     </PromptContent>
                 </PromptWrap>
