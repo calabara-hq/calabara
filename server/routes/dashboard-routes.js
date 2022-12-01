@@ -26,12 +26,14 @@ const getDashboardRules = async (ens) => {
         await Promise.all(result.map(async (el) => {
             const key = Object.keys(el.data);
             obj[key] = el.data[key];
+            /*
             if (obj[key].type === 'discord') {
                 let roles = await (getGuildRoles(obj[key].guildId))
                 obj[key].available_roles = roles.map((el) => {
                     return { 'role_id': el.id, 'role_name': el.name, 'role_color': el.color }
                 })
             }
+            */
         }))
         return obj
     }

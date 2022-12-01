@@ -118,17 +118,31 @@ const write_media = async (media) => {
     return media_url
 }
 
+// remove twitter links
+// resolve non-twitter links to expanded url
+// include non-twitter links
+const parse_text_urls = async (text, urls) => {
+    for (const url of urls) {
+        if (url.expanded_url.slice(0, 20) === 'https://twitter.com/') {
+            text = text.replace(url.url, "")
+        }
+        else {
+            text = text.replace(url.url, url.expanded_url)
+        }
+    }
+    return text
+}
 
 const parse_tldr = async (head) => {
     const includes = new TwitterV2IncludesHelper(head)
     const media = includes.media
-    let { id, text } = head.data
+    let { id, text, entities } = head.data
     let leftover_media = null
     let tldr_obj = {
         tldr_text: null,
         tldr_image: null
     }
-    let parsed_text = text.replace(/(?:https?):\/\/[\n\S]+/g, '').trim(); // strip any links and trim whitespace
+    let parsed_text = await parse_text_urls(text, entities.urls)
     if (text) {
         tldr_obj.tldr_text = parsed_text === "" ? null : parsed_text
     }
@@ -141,8 +155,8 @@ const parse_tldr = async (head) => {
 
 }
 
-const create_text_block = (text) => {
-    let parsed_text = text.replace(/(?:https?):\/\/[\n\S]+/g, ''); // strip any links
+const create_text_block = async (text, entities) => {
+    let parsed_text = await parse_text_urls(text, entities.urls)
     if (parsed_text === "") return null
     return {
         id: randomId(10),
@@ -194,14 +208,15 @@ const create_submission = async (tweet, author_id) => {
     const thread = await get_thread(tweet.tweet_id, author_id) // get the thread
     const includes = new TwitterV2IncludesHelper(thread)
 
+
     if (thread.meta.result_count > 0) {
         let thread_arr = thread.data.data.reverse()            // get it in chronological order
         await serializedLoop(thread_arr, async (thread_el) => {
-            const { id, text } = thread_el
+            const { id, text, entities } = thread_el
             const medias = includes.medias(thread_el)
 
             if (text) {
-                let text_block = create_text_block(text)
+                let text_block = await create_text_block(text, entities)
                 if (text_block) submission_body_obj.blocks.push(text_block)
             }
 
