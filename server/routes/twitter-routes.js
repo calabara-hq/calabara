@@ -57,6 +57,7 @@ twitter.post('/generateAuthLink', authenticateToken, async function (req, res, n
         return res.sendStatus(400)
     }
     const { url, codeVerifier, state } = requestClient.generateOAuth2AuthLink(twitter_redirect, { scope: scopes[scope_type] });
+    console.log('STATE HERE', state)
     req.session.twitter = {
         codeVerifier: codeVerifier,
         stateVerifier: state,
@@ -76,19 +77,24 @@ twitter.post('/generateAuthLink', authenticateToken, async function (req, res, n
  * basically, user session gets destroyed on mobile twitter auth
  * to overcome this, we need to match the originial session with a new undefined session via the stateVerifier
  * during the auth process, we'll then update the original user session
+ * we'll have to do this anyways with strict cookie sessions
  */
 
 
 // begin patch 
-const processTwitterSession = async (req, state, code) => {
-    if (!(req.sessionID && req.session.user)) {
-        let sess = await db.query('select sid, sess->\'user\' as user_session, sess->\'twitter\' as twitter_session from session where (sess->>\'twitter\')::json->>\'stateVerifier\' = $1', [state])
-            .then(clean)
-        return { sid: sess.sid, userAddress: sess.user_session.address, stateVerifier: sess.twitter_session.stateVerifier, codeVerifier: sess.twitter_session.codeVerifier }
-    }
-    else {
-        return { sid: req.sessionID, userAddress: req.session.user?.address, stateVerifier: req.session.twitter?.stateVerifier, codeVerifier: req.session.twitter?.codeVerifier }
-    }
+const processTwitterSession = async (state) => {
+
+    let sess = await db.query('select sid, sess->\'user\' as user_session, sess->\'twitter\' as twitter_session from session where (sess->>\'twitter\')::json->>\'stateVerifier\' = $1', [state])
+        .then(clean)
+    return { sid: sess.sid, userAddress: sess.user_session.address, stateVerifier: sess.twitter_session.stateVerifier, codeVerifier: sess.twitter_session.codeVerifier }
+
+    /*
+        with strict sessions, this will never hit
+        else {
+            return { sid: req.sessionID, userAddress: req.session.user?.address, stateVerifier: req.session.twitter?.stateVerifier, codeVerifier: req.session.twitter?.codeVerifier }
+        }
+    */
+
 }
 
 const updateTwitterSession = async (data, sid) => {
@@ -101,7 +107,8 @@ const updateTwitterSession = async (data, sid) => {
 
 twitter.get('/oauth2', async function (req, res, next) {
     const { state, code } = req.query;
-    let patched_session = await processTwitterSession(req, state, code)
+    console.log(state, code)
+    let patched_session = await processTwitterSession(state)
 
     let query_params = {
         state: state,
@@ -131,6 +138,7 @@ twitter.get('/oauth2', async function (req, res, next) {
             const { data: user } = await loggedClient.v2.me({ "user.fields": ["profile_image_url"] });
 
             let twitter_auth_session = JSON.stringify({ ...query_params, ...client_params, ...{ user: user } })
+            console.log(twitter_auth_session)
 
             updateTwitterSession(twitter_auth_session, patched_session.sid)
             update_user_twitter(patched_session.userAddress, user)

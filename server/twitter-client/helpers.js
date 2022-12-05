@@ -58,7 +58,7 @@ const twitter_delete_tweet = async (accessToken, tweet_id) => {
 
 const fetch_quote_tweets = async (tweet_id) => {
     try {
-        return await appClient.v2.quotes(tweet_id, { expansions: ['author_id', 'attachments.media_keys'], 'user.fields': ['username', 'url'], "tweet.fields": "created_at", max_results: 100 })
+        return await appClient.v2.quotes(tweet_id, { exclude: ['retweets'], expansions: ['author_id', 'attachments.media_keys'], 'user.fields': ['username', 'url'], "tweet.fields": "created_at", max_results: 100, })
     } catch (err) {
         const errors = TwitterApi.getErrors(err)
         logger.log({ level: 'error', message: `fetch quote tweet failed with error: ${JSON.stringify(errors)}` })
