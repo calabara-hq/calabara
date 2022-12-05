@@ -28,7 +28,7 @@ export const useTwitterAuth = (authenticationType) => {
     }, [isConnected])
 
     useEffect(() => {
-        if (authType) {
+        if (authType && !authenticationType) {
             generateAuthLink(authType)
         }
     }, [authType])
@@ -51,6 +51,7 @@ export const useTwitterAuth = (authenticationType) => {
 
     useEffect(() => {
         const authHandler = (response) => {
+            console.log('SOCKET GOT SOMETHING')
             if (response.status === 'success') {
                 setAccountInfo(response.data)
                 dispatch(setUserTwitter(response.data))
@@ -76,6 +77,7 @@ export const useTwitterAuth = (authenticationType) => {
     const handleOpenAuth = () => {
         if (error) setError(false)
         if (!authURI) return
+        console.log(authURI)
         window.open(authURI, "_blank", "height=750,width=600,scrollbars")
         setAuthState(1);
     }
