@@ -14,3 +14,4 @@ server/img/logos/*
 server/contest-assets/staging/media/*
 server/contest-assets/staging/submissions/*
 build/
+monitoring/
