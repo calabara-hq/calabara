@@ -28,7 +28,7 @@ const getFileUrls = async () => {
         let result = await db.query('update contest_submissions set locked = true where pinned = false and locked = false returning id, _url').then(clean).then(asArray);
         return result
     } catch (err) {
-        logger.log({ level: 'error', message: `failed pulling file urls with error: ${asset_url}` })
+        logger.log({ level: 'error', message: `failed pulling file urls with error: ${JSON.stringify(err)}` })
     }
 }
 
@@ -36,7 +36,7 @@ const updateFileUrl = async (id, new_url) => {
     try {
         return await db.query('update contest_submissions set locked = false, pinned = true, _url = $1 where id = $2', [new_url, id])
     } catch (err) {
-        logger.log({ level: 'error', message: `failed updating file urls with error: ${asset_url}` })
+        logger.log({ level: 'error', message: `failed updating file urls with error: ${JSON.stringify(err)}` })
     }
 }
 
