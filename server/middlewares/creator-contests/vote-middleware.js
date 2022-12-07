@@ -7,7 +7,7 @@ const { pinFromFs, pinJSON } = require('../../helpers/ipfs-api');
 const db = require('../../helpers/db-init.js');
 const { clean, asArray } = require('../../helpers/common')
 const { checkWalletTokenBalance } = require('../../web3/web3');
-const logger = require('../../logger').child({service: 'middleware:contest_vote'})
+const logger = require('../../logger').child({ service: 'middleware:contest_vote' })
 
 
 // return restrictions and voting_strategy
@@ -167,11 +167,19 @@ async function calc_total_vp_UNPROTECTED(req, res, next) {
             from contests where ens = $1 and _hash = $2', [ens, contest_hash])
         .then(clean)
 
-    let [total_contest_spent, total_contest_vp] = await Promise.all([
-        getTotalSpentVotes(contest_hash, walletAddress),
-        getTotalVotingPower(contest_meta.strategy, walletAddress, contest_meta.snapshot_block)
-    ])
+    let total_contest_spent = await getTotalSpentVotes(contest_hash, walletAddress)
 
+    let total_contest_vp = 0
+
+    if (contest_meta.strategy.strategy_type === 'arcade') {
+        // check restrictions
+        let restriction_results = await compute_restrictions({ protected: true }, walletAddress, contest_meta.restrictions, contest_meta.snapshot_block);
+        if (restriction_results) total_contest_vp = strategy.hard_cap
+    }
+
+    else if (contest_meta.strategy.strategy_type === 'token') {
+        total_contest_vp = await getTotalVotingPower(contest_meta.strategy, walletAddress, contest_meta.snapshot_block)
+    }
 
     req.contest_total_vp = total_contest_vp;
     req.contest_remaining_vp = total_contest_vp - total_contest_spent;
@@ -199,13 +207,8 @@ const getTotalSpentVotes = async (contest_hash, walletAddress) => {
 }
 
 const getTotalVotingPower = async (strategy, walletAddress, snapshot_block) => {
-    if (strategy.strategy_type === 'arcade') {
-        return strategy.hard_cap
-    }
-    else if (strategy.strategy_type === 'token') {
-        let user_tokens = await checkWalletTokenBalance(walletAddress, strategy.address, strategy.decimal, snapshot_block, strategy.token_id)
-        return strategy.hard_cap ? Math.min(user_tokens, strategy.hard_cap) : user_tokens
-    }
+    let user_tokens = await checkWalletTokenBalance(walletAddress, strategy.address, strategy.decimal, snapshot_block, strategy.token_id)
+    return strategy.hard_cap ? Math.min(user_tokens, strategy.hard_cap) : user_tokens
 }
 
 
