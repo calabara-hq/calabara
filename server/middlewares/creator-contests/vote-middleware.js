@@ -95,7 +95,7 @@ async function calc_sub_vp__unprotected(req, res, next) {
         let [total_contest_spent, sub_spent, total_contest_vp] = await Promise.all([
             getTotalSpentVotes(contest_hash, walletAddress),
             getSubmissionSpentVotes(contest_hash, sub_id, walletAddress),
-            getTotalVotingPower(contest_params.strategy, walletAddress, contest_params.snapshot_block)
+            getTotalVotingPower(contest_params, walletAddress)
         ])
 
         let total_votes_available = total_contest_vp - (total_contest_spent - sub_spent);
@@ -139,7 +139,7 @@ async function calc_sub_vp__PROTECTED(req, res, next) {
     let [total_contest_spent, sub_spent, total_contest_vp] = await Promise.all([
         getTotalSpentVotes(contest_hash, walletAddress),
         getSubmissionSpentVotes(contest_hash, sub_id, walletAddress),
-        getTotalVotingPower(contest_params.strategy, walletAddress, contest_params.snapshot_block)
+        getTotalVotingPower(contest_params, walletAddress, contest_params)
     ])
 
 
@@ -163,23 +163,15 @@ async function calc_total_vp_UNPROTECTED(req, res, next) {
     const { ens, walletAddress, contest_hash } = req.body;
 
     let contest_meta = await db.query('select settings->\'voting_strategy\' as strategy, \
+            settings->\'voter_restrictions\' as restrictions, \
             settings->\'snapshot_block\' as snapshot_block \
             from contests where ens = $1 and _hash = $2', [ens, contest_hash])
         .then(clean)
 
-    let total_contest_spent = await getTotalSpentVotes(contest_hash, walletAddress)
-
-    let total_contest_vp = 0
-
-    if (contest_meta.strategy.strategy_type === 'arcade') {
-        // check restrictions
-        let restriction_results = await compute_restrictions({ protected: true }, walletAddress, contest_meta.restrictions, contest_meta.snapshot_block);
-        if (restriction_results) total_contest_vp = strategy.hard_cap
-    }
-
-    else if (contest_meta.strategy.strategy_type === 'token') {
-        total_contest_vp = await getTotalVotingPower(contest_meta.strategy, walletAddress, contest_meta.snapshot_block)
-    }
+    let [total_contest_spent, total_contest_vp] = await Promise.all([
+        getTotalSpentVotes(contest_hash, walletAddress),
+        getTotalVotingPower(contest_meta, walletAddress, contest_meta)
+    ])
 
     req.contest_total_vp = total_contest_vp;
     req.contest_remaining_vp = total_contest_vp - total_contest_spent;
@@ -206,9 +198,19 @@ const getTotalSpentVotes = async (contest_hash, walletAddress) => {
     return spent.total
 }
 
-const getTotalVotingPower = async (strategy, walletAddress, snapshot_block) => {
-    let user_tokens = await checkWalletTokenBalance(walletAddress, strategy.address, strategy.decimal, snapshot_block, strategy.token_id)
-    return strategy.hard_cap ? Math.min(user_tokens, strategy.hard_cap) : user_tokens
+const getTotalVotingPower = async (contest_params, walletAddress) => {
+    let { strategy, restrictions, snapshot_block } = contest_params
+
+    if (strategy.strategy_type === 'arcade') {
+        let restriction_results = await compute_restrictions({ protected: true }, walletAddress, restrictions, snapshot_block);
+        if (restriction_results) return strategy.hard_cap
+        return 0
+    }
+
+    else if (strategy.strategy_type === 'token') {
+        let user_tokens = await checkWalletTokenBalance(walletAddress, strategy.address, strategy.decimal, snapshot_block, strategy.token_id)
+        return strategy.hard_cap ? Math.min(user_tokens, strategy.hard_cap) : user_tokens
+    }
 }
 
 
