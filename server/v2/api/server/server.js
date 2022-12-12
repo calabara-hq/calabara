@@ -2,28 +2,37 @@ const express = require('express');
 const app = express();
 const path = require('path');
 const bodyParser = require('body-parser')
-const dotenv = require('dotenv')
-//const { ROUTES } = require('./routes')
-//const { setupProxies } = require('./proxy')
-const { apiProxy } = require('../controllers/authentication')
 const { createProxyMiddleware } = require('http-proxy-middleware');
-
-dotenv.config();
-
-
+const authentication = require('../routes/authentication')
+const secure_session = require('../session/session')
 const buildPath = path.normalize(path.join(__dirname, '../../../../client/build'));
 const creatorContestDataPath = path.normalize(path.join(__dirname, '../../../contest-assets'));
 const imgPath = path.normalize(path.join(__dirname, '../../../img'));
 
 
+app.use(secure_session)
+
+app.use('/hub/*', createProxyMiddleware({
+    target: 'http://[::1]:5050', changeOrigin: true,
+    onProxyReq: function onProxyReq(proxyReq, req, res) {
+        if (req.session) {
+            proxyReq.setHeader('Cookie', JSON.stringify(req.session))
+        }
+    },
+    onProxyRes: function onProxyRes(proxyRes, req, res) {
+        if (proxyRes.headers['set-cookie']) {
+            res.setHeader('Set-Cookie', proxyRes.headers['set-cookie'])
+        }
+    }
+}));
+
+app.use(express.json())
 app.use(express.static(buildPath));
 app.use(express.static(imgPath));
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
-app.use(express.json())
 
-app.use('/authentication/*', createProxyMiddleware({ target: 'http://192.168.1.224:5050', changeOrigin: true ,}));
-
+app.use('/authentication', authentication)
 
 app.get('/img/*', function (req, res, next) {
     res.sendFile(path.join(imgPath, req.url.split('/').slice(2).join('/')))

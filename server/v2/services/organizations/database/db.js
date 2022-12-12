@@ -1,6 +1,5 @@
 const { Pool } = require('pg')
-const dotenv = require('dotenv')
-dotenv.config();
+require('dotenv').config({path: __dirname + '/./../../../../.env'})
 
 let config;
 

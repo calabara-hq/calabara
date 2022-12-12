@@ -1,7 +1,5 @@
 const { Pool } = require('pg')
-const dotenv = require('dotenv')
-
-dotenv.config();
+const dotenv = require('dotenv').config({path: __dirname + '/./../.env'})
 
 
 const db_init = () => {
