@@ -1,0 +1,46 @@
+type Organization {
+  id: Int!
+  name: String!
+  members: Int!
+  website: String
+  discord: String
+  logo: String!
+  addresses: [String]
+  verified: Boolean!
+  ens: String!
+  rules: [Rule]
+  widgets: Widgets
+  dashboard: Widgets
+}
+
+type DashboardInfo{
+  widgets: Widgets
+  rules: [Rule]
+}
+
+type Rule {
+  type: String!
+  symbol: String
+  address: String
+  decimal: String
+  guildId: String
+  serverName: String
+}
+
+type Widgets {
+  installed: [Widget]
+  installable: [Widget]
+}
+
+type Widget {
+  ens: String
+  name: String
+}
+
+type Query {
+  organizations: [Organization]
+  organization(ens: String!): Organization
+  rules(ens: String!): [Rule]
+  widgets(ens: String!): Widgets
+  dashboard: DashboardInfo
+}
