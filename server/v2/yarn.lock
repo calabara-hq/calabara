@@ -127,6 +127,15 @@
     tslib "^2.4.0"
     value-or-promise "^1.0.11"
 
+"@graphql-tools/stitching-directives@^2.3.24":
+  version "2.3.24"
+  resolved "https://registry.yarnpkg.com/@graphql-tools/stitching-directives/-/stitching-directives-2.3.24.tgz#0f918a3fcaf25f05e013d5716f3a6f508423c2f6"
+  integrity sha512-74AfOT+ukSetJIh7J+tWLdhH2snwpTYAn+NYVYGb69Sn7zX1uJssNa5LXORporsBOeA1VZnzBg0KRoWx9yOLhA==
+  dependencies:
+    "@graphql-tools/delegate" "9.0.21"
+    "@graphql-tools/utils" "9.1.3"
+    tslib "^2.4.0"
+
 "@graphql-tools/utils@9.1.1":
   version "9.1.1"
   resolved "https://registry.yarnpkg.com/@graphql-tools/utils/-/utils-9.1.1.tgz#b47ea8f0d18c038c5c1c429e72caa5c25039fbab"
@@ -852,6 +861,13 @@ glob-parent@~5.1.2:
   integrity sha512-AOIgSQCepiJYwP3ARnGx+5VnTu2HBYdzbGP45eLw1vr3zB3vZLeyed1sC9hnbcOc9/SrMyM5RPQrkGz4aS9Zow==
   dependencies:
     is-glob "^4.0.1"
+
+graphql-tag@^2.12.6:
+  version "2.12.6"
+  resolved "https://registry.yarnpkg.com/graphql-tag/-/graphql-tag-2.12.6.tgz#d441a569c1d2537ef10ca3d1633b48725329b5f1"
+  integrity sha512-FdSNcu2QQcWnM2VNvSCCDCVS5PpPqpzgFT8+GXzqJuoDd0CBncxCY278u4mhRO7tMgo2JjgJA5aZ+nWSQ/Z+xg==
+  dependencies:
+    tslib "^2.1.0"
 
 graphql-yoga@^3.1.1:
   version "3.1.1"

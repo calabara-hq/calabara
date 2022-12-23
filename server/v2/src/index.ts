@@ -22,9 +22,9 @@ var secureServer = https.createServer({ key, cert }, app);
 
 
 if (process.env.NODE_ENV === 'development') {
-    waitOn({ resources: ['tcp:5050'] }, async () => {
+    waitOn({ resources: ['tcp:5050', 'tcp:5051'] }, async () => {
         secureServer.listen(3001, () => {
-            console.log('gateway initialized')
+            console.log(`gateway running at https://localhost:3001`)
         })
     })
 }

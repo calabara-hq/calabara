@@ -6,7 +6,7 @@ export const clean = (data: QueryData): any[] | null => {
     return data.rows
 }
 
-export const asArray = (data: QueryData): any[] => {
+export const asArray = (data: any): any[] => {
     if (Array.isArray(data)) return data
     if (!data) return []
     return [data]
