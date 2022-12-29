@@ -7,7 +7,7 @@ import { socket } from "../../../../../service/socket";
 import { Contest_h4 } from "../../common/common_styles";
 import { selectContestState, setRemainingVotingPower, setTotalVotingPower } from "../interface/contest-interface-reducer";
 import { ExpandedPromptComponent } from "../prompts/prompt-display";
-import { Container, DataWrap, GridElement, WinnersButton } from "./styles";
+import { CancelWinnersButton, Container, DataWrap, GnosisWinners, GridElement, UtopiaWinners, WinnersButton, WinnersFormat } from "./styles";
 import SubmissionQualifications from "./submission-qualifications";
 import VotingData from "./voting-data";
 import VotingQualifications from "./voting-qualifications";
@@ -95,9 +95,10 @@ function StateController() {
 
 function Winners() {
     const { ens, contest_hash } = useParams();
+    const [isClicked, setIsClicked] = useState(false);
 
-    const handleDownloadCsv = async () => {
-        let csv_data = await fetch(`/creator_contests/fetch_contest_winners_as_csv?ens=${ens}&contest_hash=${contest_hash}`)
+    const handleDownloadCsv = async (format) => {
+        let csv_data = await fetch(`/creator_contests/fetch_contest_winners_as_csv?ens=${ens}&contest_hash=${contest_hash}&format=${format}`)
             .then(res => res.text())
 
         var encodedUri = encodeURI(csv_data);
@@ -108,13 +109,29 @@ function Winners() {
         link.click();
 
     }
+
+
+
+
+
+    if (!isClicked) {
+        return (
+            <DataWrap>
+                <GridElement>
+                    <div style={{ color: '#b3b3b3' }}><Contest_h4>Winners</Contest_h4></div>
+                    <div><WinnersButton onClick={() => setIsClicked(true)}>Download Winners</WinnersButton></div>
+                </GridElement>
+            </DataWrap>
+        )
+    }
+
     return (
         <DataWrap>
-            <GridElement>
-
-                <div style={{ color: '#b3b3b3' }}><Contest_h4>Winners</Contest_h4></div>
-                <div><WinnersButton onClick={handleDownloadCsv}>Download Winners</WinnersButton></div>
-            </GridElement>
+            <WinnersFormat>
+                <div><GnosisWinners onClick={() => handleDownloadCsv('gnosis')}>Gnosis Format</GnosisWinners></div>
+                <div><UtopiaWinners onClick={() => handleDownloadCsv('utopia')}>Utopia Format</UtopiaWinners></div>
+                <CancelWinnersButton onClick={() => setIsClicked(false)}>cancel</CancelWinnersButton>
+            </WinnersFormat>
         </DataWrap>
     )
 }

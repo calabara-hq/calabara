@@ -386,7 +386,7 @@ function SaveSettings(props) {
             anon_subs: simpleInputData.anonSubmissions,
             visible_votes: simpleInputData.visibleVotes,
             self_voting: simpleInputData.selfVoting,
-            snapshot_block: snapshotDate.toISOString(),
+            snapshot_timestamp: snapshotDate.toISOString(),
 
         })
 

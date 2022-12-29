@@ -56,7 +56,7 @@ contests.get('/fetch_submissions', fetchSubmissions, async function (req, res, n
 
 
 contests.get('/fetch_contest_winners_as_csv', get_winners_as_csv, async function (req, res, next) {
-    const { ens, contest_hash } = req.query
+    const { ens, contest_hash, format } = req.query
     let result = req.csvContent
     res.send(result).status(200);
 
