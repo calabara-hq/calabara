@@ -7,11 +7,11 @@ import {
 import { TagType } from '../common/common_styles';
 
 
-export const ContestDateDetails = ({ date_times, snapshot }) => {
+export const ContestDateDetails = ({ date_times, snapshot_timestamp }) => {
     const readableStart = new Date(date_times.start_date);
     const readableVote = new Date(date_times.voting_begin);
     const readableEnd = new Date(date_times.end_date);
-    const readableSnapshot = new Date(snapshot);
+    const readableSnapshot = new Date(snapshot_timestamp);
 
     return (
         <div>
@@ -176,7 +176,7 @@ export default function ContestSummaryComponent({ contest_settings }) {
         <>
             <h3>Summary</h3>
             <DetailWrap>
-                <ContestDateDetails date_times={contest_settings.date_times} snapshot={contest_settings.snapshot_block} />
+                <ContestDateDetails date_times={contest_settings.date_times} snapshot_timestamp={contest_settings.snapshot_timestamp} />
             </DetailWrap>
             <DetailWrap>
                 <h4>Submitter Rewards</h4>

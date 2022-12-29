@@ -941,7 +941,7 @@ function SaveComponent({ standardProps, infoErrorController, adminErrorControlle
         }
         else {
 
-            const exists = await axios.post('/organizations/doesNameExist', { name: fields.name, ens: fields.ens })
+            const exists = await axios.get(`/organizations/doesNameExist?ens=${fields.ens}&name=${fields.name}`)
             if (exists.data) {
                 //name already exists
                 setNameErrorMsg({ error: true, msg: "an organization with this name already exists" })
