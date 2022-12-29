@@ -11,14 +11,16 @@ export const ContestDateDetails = ({ date_times, snapshot_timestamp }) => {
     const readableStart = new Date(date_times.start_date);
     const readableVote = new Date(date_times.voting_begin);
     const readableEnd = new Date(date_times.end_date);
-    const readableSnapshot = new Date(snapshot_timestamp);
+    const readableSnapshot = snapshot_timestamp ? new Date(snapshot_timestamp) : null;
+
+    console.log(readableSnapshot)
 
     return (
         <div>
             <p>Start: {readableStart.toLocaleDateString() + ' ' + readableStart.toLocaleTimeString()}</p>
             <p>Vote: {readableVote.toLocaleDateString() + ' ' + readableVote.toLocaleTimeString()}</p>
             <p>End: {readableEnd.toLocaleDateString() + ' ' + readableEnd.toLocaleTimeString()}</p>
-            <p>Snapshot {readableSnapshot.toLocaleDateString() + ' ' + readableSnapshot.toLocaleTimeString()}</p>
+            {readableSnapshot && <p>Snapshot {readableSnapshot.toLocaleDateString() + ' ' + readableSnapshot.toLocaleTimeString()}</p>}
         </div>
     )
 }
