@@ -234,3 +234,47 @@ export const WinnersButton = styled.button`
         margin-left: 0;
     }
 `
+
+export const WinnersFormat = styled.div`
+    display: flex;
+    margin: -10px;
+`
+
+export const GnosisWinners = styled.button`
+    background-color: #12ff80;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 15px;
+    font-size: 15px;
+    margin: 5px;
+    color: black;
+    ${scaleElement};
+`
+export const UtopiaWinners = styled.button`
+    background-color: #d95134;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 15px;
+    font-size: 15px;
+    margin: 5px;
+    color: black;
+    ${scaleElement};
+`
+
+export const CancelWinnersButton = styled.button`
+    align-self: center;
+    font-size: 16px;
+    margin-left: auto;
+    background-color: transparent;
+    border: none;
+    border-radius: 10px;
+    color: rgba(244, 33, 46, 0.5);
+    padding: 5px 10px;
+    &:hover{
+        background-color: rgba(244, 33, 46, 0.1);
+        color: rgb(244, 33, 46);
+    }
+    &:active{
+        transform: scale(0.9)
+    }
+`
