@@ -104,7 +104,7 @@ function Winners() {
         var encodedUri = encodeURI(csv_data);
         var link = document.createElement("a");
         link.setAttribute("href", encodedUri);
-        link.setAttribute("download", "winners.csv");
+        link.setAttribute("download", `${contest_hash}-winners.csv`);
         document.body.appendChild(link); // Required for FF
         link.click();
 
