@@ -18,8 +18,8 @@ async function createContest(req, res, next) {
     contest_settings.created = new Date().toISOString();
     contest_settings.sw_version = process.env.SW_VERSION;
     let hash = crypto.createHash('md5').update(JSON.stringify(contest_settings)).digest('hex').slice(-8);
-    let snapshot = await calculateBlock(contest_settings.snapshot_block)
-    contest_settings.snapshot_block = snapshot
+    let snapshot_block = await calculateBlock(contest_settings.snapshot_timestamp)
+    contest_settings.snapshot_block = snapshot_block
     contest_settings.hash = hash;
     let destination = `creator-contests/${ens}/${hash}/`
     // add the img folder while we're at it

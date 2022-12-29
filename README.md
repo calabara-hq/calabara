@@ -1,47 +1,17 @@
 [![tests](https://github.com/calabara-hq/calabara/actions/workflows/CI.yml/badge.svg)](https://github.com/calabara-hq/calabara/actions/workflows/CI.yml)
 
-## Calabara
-
 <p align="center">
-  <img style="width: 20rem" src="https://github.com/calabara-hq/calabara/blob/production/client/public/img/calabara-logo.png" alt="Calabara's custom image"/>
+  <img style="width: 14rem" src="https://github.com/calabara-hq/calabara/blob/production/client/public/img/calabara-logo.png" alt="Calabara's custom image"/>
 </p>
 
-## Getting Started:
+## Calabara
 
-### Website:
- * https://calabara.com/
-
-### Gitbook Documentation:
- * https://docs.calabara.com/welcome/calabara
-
-### Discord:
- * https://discord.com/invite/bxv7d7tPFa
-
-## Logging Feedback
- * Go to issues tab ^
- * Click ‘Get Started’ on one of the templates
- * Fill out the template
- * Once finished, click Projects and choose Calabara Feedback Project
-
-## Applications
-
-# Creator Contests
-
-# Docs
-
-# Calendar 
-
-# Snapshot
+Calabara is a Nounish hub for web3 public goods.
 
 
-
-## Additional Information
-
-### Contributions
-
-Soon...
-For now hop in our discord and drop a message
-
+ * [Webapp](https://calabara.com)
+ * [Docs](https://docs.calabara.com/welcome/calabara)
+ * [Discord](https://discord.com/invite/bxv7d7tPFa)
 
 
 
