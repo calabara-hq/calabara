@@ -120,9 +120,10 @@
     border-radius: 6px;
     cursor: pointer;
     text-align: center;
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: repeat(2, 50%);
     align-items: center;
+    justify-content: center;
   }
 
   .installable-widget:hover{
@@ -140,6 +141,7 @@
  
   .installable-widget img{
     width: 10rem;
+    margin: 0 auto;
   }
 
   .widget-summary{

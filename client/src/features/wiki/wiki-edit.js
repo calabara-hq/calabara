@@ -13,6 +13,7 @@ import {
 } from '../dashboard/dashboard-info-reducer'
 
 import useCommon from '../hooks/useCommon';
+import { useWalletContext } from '../../app/WalletContext';
 
 
 export default function WikiEditor() {
@@ -23,8 +24,8 @@ export default function WikiEditor() {
   const [filedata, setFileData] = useState([]);
   const [redirect, setRedirect] = useState(true);
 
-  useEffect(async () => {
 
+  useEffect(() => {
     if (info.name == "") {
       // don't allow direct url access. direct the user to the wiki-display screen first.
       history.push('/' + ens + '/docs')
@@ -39,9 +40,12 @@ export default function WikiEditor() {
       }
       else {
         // load data from server
-        const wiki = await axios.get('/wiki/readWiki/' + file)
-        setFileData(wiki.data);
-        setIsLoaded(true);
+        axios.get('/wiki/readWiki/' + file)
+          .then(res => {
+            setFileData(res.data);
+            setIsLoaded(true);
+          })
+
       }
     }
   }, [])
@@ -80,7 +84,7 @@ function ReactEditor({ data }) {
   const [textAreaHeight, setTextAreaHeight] = useState("auto");
   const [parentHeight, setParentHeight] = useState("auto")
   const dispatch = useDispatch();
-  const { authenticated_post } = useCommon();
+  const { authenticated_post } = useWalletContext();
 
   async function publishDocument() {
 

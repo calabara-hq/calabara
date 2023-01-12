@@ -65,7 +65,7 @@ export const useDiscordAuth = (scope, authState, setAuthState, guild_id) => {
                         })
                 }
 
-                windowInstance?.close()
+                //windowInstance?.close()
             }
         }
 

@@ -30,3 +30,12 @@ body{
   background: grey;
   cursor: pointer;
 }
+
+
+aside{
+  z-index: 102;
+}
+
+.cdx-notifies{
+  display: none;
+}

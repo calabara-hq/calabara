@@ -31,7 +31,7 @@
     top: 0;
     bottom: 0;
     border-radius: 10px;
-    background: #00a368;
+    background: #539bf5;
     z-index: -1; }
 
 
@@ -49,39 +49,11 @@
     }
 
     .indexedStep.accomplished {
-      background-color: #00a368;
+      background-color: #539bf5;
     }
 
     .indexedStep.current {
       background-color: white;
     }
 
-    .checkpoint.settings > .RSPBprogressBar > .RSPBstep:nth-child(1)::after {
-      content: "ens";
-      position: absolute;
-      top: 2em;
-    }
 
-    .checkpoint.settings > .RSPBprogressBar > .RSPBstep:nth-child(2)::after {
-      content: "profile";
-      position: absolute;
-      top: 2em;
-    }
-
-    .checkpoint.settings > .RSPBprogressBar > .RSPBstep:nth-child(3)::after {
-      content: "admins";
-      position: absolute;
-      top: 2em;
-    }
-
-    .checkpoint.settings > .RSPBprogressBar > .RSPBstep:nth-child(4)::after {
-      content: "gatekeeper";
-      position: absolute;
-      top: 2em;
-    }
-
-    .checkpoint.settings > .RSPBprogressBar > .RSPBstep:nth-child(5)::after {
-      content: "finalize";
-      position: absolute;
-      top: 2em;
-    }

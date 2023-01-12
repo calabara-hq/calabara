@@ -27,6 +27,7 @@
   .tab-message.neutral{
     background: rgb(44, 192, 255, 0.3);
     color: rgb(44, 192, 255);
+   
   }
 
   .tab-message.error{
@@ -35,7 +36,6 @@
     background: rgba(235, 87, 87, 0.3);
     color: rgb(235, 87, 87);
     width: inherit;
-
   }
 
   .tab-message.success{

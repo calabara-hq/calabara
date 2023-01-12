@@ -1,53 +1,36 @@
-import {configureStore} from '@reduxjs/toolkit';
-import storage from 'redux-persist/lib/storage';
-import {combineReducers, createStore, applyMiddleware} from "redux";
-import { persistReducer } from 'redux-persist';
-import thunk from 'redux-thunk';
-import axios from 'axios'
-import { composeWithDevTools } from 'redux-devtools-extension/developmentOnly';
+import { configureStore } from '@reduxjs/toolkit';
+import { combineReducers } from "redux";
 
+import contestStateReducer from '../features/creator-contests/components/contest-live-interface/interface/contest-interface-reducer.js';
+import contestParticipantRestrictionsReducer from '../features/creator-contests/components/contest_settings/contest_gatekeeper/reducers/restrictions-reducer.js';
+import contestRewardsReducer from '../features/creator-contests/components/contest_settings/contest_rewards/reducers/rewards-reducer.js';
+import dashboardInfoReducer from '../features/dashboard/dashboard-info-reducer.js';
+import dashboardWidgetsReducer from '../features/dashboard/dashboard-widgets-reducer.js';
+import rulesReducer from '../features/gatekeeper/gatekeeper-rules-reducer.js';
+import notificationReducer from '../features/notifications/notification-reducer.js';
+import organizationsReducer from '../features/org-cards/org-cards-reducer.js';
+import userReducer from '../features/user/user-reducer.js';
+import wikiReducer from '../features/wiki/wiki-reducer.js';
+import sessionReducer from './sessionReducer.js';
 
-import notificationReducer from '../features/notifications/notification-reducer';
-import organizationsReducer from '../features/org-cards/org-cards-reducer';
-import connectedReducer from '../features/wallet/wallet-reducer';
-import dashboardWidgetsReducer from '../features/dashboard/dashboard-widgets-reducer';
-import dashboardInfoReducer from '../features/dashboard/dashboard-info-reducer';
-import wikiReducer from '../features/wiki/wiki-reducer';
-import rulesReducer from '../features/gatekeeper/gatekeeper-rules-reducer';
-import userReducer from '../features/user/user-reducer';
-
-
-const reducer = combineReducers({
+const rootReducer = combineReducers({
+  session: sessionReducer,
   notifications: notificationReducer,
   organizations: organizationsReducer,
-  connectivity: connectedReducer,
   dashboardWidgets: dashboardWidgetsReducer,
   dashboardInfo: dashboardInfoReducer,
   wiki_data: wikiReducer,
   gatekeeperRules: rulesReducer,
   user: userReducer,
+  contestState: contestStateReducer,
+  contestRewards: contestRewardsReducer,
+  contestParticipantRestrictions: contestParticipantRestrictionsReducer
 });
 
-const persistConfig = {
-    key: 'root',
-    storage,
-  //  whitelist: ['notifications']
-  whitelist: []
-};
-/*
-const persistedReducer = persistReducer(persistConfig, reducers);
 
 const store = configureStore({
-    reducer: persistedReducer,
-    middleware: [thunk.withExtraArgument(axios)],
-    enhancers: devToolsEnhancer,
-});
-*/
-
-const middleware=[thunk.withExtraArgument(axios)]
-
-const store = createStore(reducer, composeWithDevTools(
-  applyMiddleware(thunk.withExtraArgument(axios))
-))
+  reducer: rootReducer,
+  devTools: process.env.NODE_ENV !== 'production'
+})
 
 export default store;

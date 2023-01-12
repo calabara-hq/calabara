@@ -1,11 +1,10 @@
 const express = require('express');
 const db = require('../helpers/db-init.js')
-const dotenv = require('dotenv')
 const path = require('path')
 const asyncfs = require('fs').promises;
 const settings = express();
 settings.use(express.json())
-const { authenticateToken } = require('../middlewares/jwt-middleware');
+const { authenticateToken } = require('../middlewares/auth-middleware');
 const { isAdmin } = require('../middlewares/admin-middleware')
 const { clean } = require('../helpers/common')
 
@@ -53,11 +52,8 @@ const prepLogo = async (logo, ens) => {
 
 settings.post('/updateSettings', authenticateToken, isAdmin, async function (req, res, next) {
     const { fields } = req.body
-    const walletAddress = req.user.address;
-    const isAdmin = req.user.isAdmin;
-    const isNewOrganization = req.user.isNewOrganization
-
-    console.log(fields)
+    const walletAddress = req.session.user.address;
+    const isNewOrganization = req.session.user.isNewOrganization
 
     // if it's a new organization, we need to push the users wallet address as well
     if (isNewOrganization) fields.addresses.push(walletAddress)
@@ -77,11 +73,11 @@ settings.post('/updateSettings', authenticateToken, isAdmin, async function (req
 
     // we allow updates to discord, so if discord exists in the db already, we have to update the entry at that rule_id
 
-    let discord_rule_id = await db.query('select rule_id from gatekeeper_rules where ens=$1 and rule ->> \'gatekeeperType\' = \'discord\'', [fields.ens]).then(clean);
+    let discord_rule_id = await db.query('select rule_id from gatekeeper_rules where ens=$1 and rule ->> \'type\' = \'discord\'', [fields.ens]).then(clean);
 
 
     for (var rule in fields.gatekeeper.rules) {
-        if (fields.gatekeeper.rules[rule].gatekeeperType === 'discord') {
+        if (fields.gatekeeper.rules[rule].type === 'discord') {
             console.log(fields.gatekeeper.rules[rule])
             let userId = JSON.parse(JSON.stringify(fields.gatekeeper.rules[rule].userId));
             delete fields.gatekeeper.rules[rule].userId
@@ -108,7 +104,7 @@ settings.post('/updateSettings', authenticateToken, isAdmin, async function (req
 
     for (const i in fields.gatekeeper.rulesToDelete) {
         const res = await db.query('delete from gatekeeper_rules where rule_id = $1 returning rule', [fields.gatekeeper.rulesToDelete[i]]).then(clean)
-        if (res.rule.gatekeeperType === 'discord') {
+        if (res.rule.type === 'discord') {
             await db.query('delete from discord_guilds where ens = $1', [fields.ens])
         }
         await db.query("update widgets set gatekeeper_rules = gatekeeper_rules #- $1 where ens = $2", ['{' + fields.gatekeeper.rulesToDelete[i] + '}', fields.ens])
@@ -128,8 +124,6 @@ settings.post('/deleteOrganization', authenticateToken, isAdmin, async function 
     const { ens } = req.body;
 
     await db.query('delete from organizations where ens = $1', [ens]);
-
-
     try {
         await asyncfs.rm(path.normalize(path.join(serverRoot, '/org-repository/', ens)), { recursive: true });
     } catch (e) {

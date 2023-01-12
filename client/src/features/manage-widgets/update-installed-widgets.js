@@ -2,6 +2,7 @@ import React, { useEffect, useState, useReducer, useRef } from 'react'
 import { useSelector } from 'react-redux';
 import calendarLogo from '../../img/calendar.svg'
 import snapshotLogo from '../../img/snapshot.svg'
+import creatorContestsLogo from '../../img/creator-contest.png'
 import wikiLogo from '../../img/wiki.svg'
 import { useParams } from 'react-router-dom';
 import '../../css/manage-widgets.css'
@@ -15,8 +16,7 @@ import {
 import { selectDashboardRules } from '../gatekeeper/gatekeeper-rules-reducer';
 import useWidgets from '../hooks/useWidgets';
 import useCommon from '../hooks/useCommon';
-
-
+import { useWalletContext } from '../../app/WalletContext';
 
 
 export default function ManageInstalledWidgetsTab({ setFunctionality, setTabHeader }) {
@@ -112,6 +112,11 @@ function InstalledWidget({ el, selected, setSelected }) {
     description = 'Integrate a google calendar'
     link = 'https://docs.calabara.com/v1/widgets/calendar-description'
   }
+  if (el.name == 'creator contests') {
+    imgSource = creatorContestsLogo
+    description = 'Run contests for community creatives'
+    link = 'https://docs.calabara.com/coming-soon/creator-contests'
+  }
 
 
 
@@ -161,7 +166,7 @@ function WidgetSummary({ selected, setSettingsStep, setProgress, setTabHeader, s
   const availableRules = useSelector(selectDashboardRules)
   const installedWidgets = useSelector(selectInstalledWidgets)
   const { updateWidgets } = useWidgets();
-  const { authenticated_post } = useCommon();
+  const { authenticated_post } = useWalletContext();
   const { ens } = useParams();
 
   useEffect(() => {
@@ -177,7 +182,7 @@ function WidgetSummary({ selected, setSettingsStep, setProgress, setTabHeader, s
   })
 
   const deleteWidget = async () => {
-    
+
     let num_widgets = installedWidgets.length - 1;
     let res = await authenticated_post('/dashboard/removeWidget', { ens: ens, name: selected.name })
     if (res) {
@@ -265,7 +270,7 @@ function GatekeeperSettings({ selected, setSettingsStep, setTabHeader }) {
   const [ruleError, setRuleError] = useState('');
   const { ens } = useParams();
   const { updateWidgetGatekeeper } = useWidgets();
-  const { authenticated_post } = useCommon();
+  const { authenticated_post } = useWalletContext();
 
   useEffect(() => {
     setTabHeader('gatekeeper')
@@ -314,7 +319,7 @@ function GatekeeperSettings({ selected, setSettingsStep, setTabHeader }) {
       <div className="tab-message neutral">
         <p>Toggle the switches to apply gatekeeper rules to this app. If multiple rules are applied, the gatekeeper will pass if the connected wallet passes any of the rules. <u onClick={() => { window.open('https://docs.calabara.com/gatekeeper') }}>Learn more</u></p>
       </div>
-      <RuleSelect ruleError={ruleError} setRuleError={setRuleError} appliedRules={appliedRules} setAppliedRules={setAppliedRules} />
+      <RuleSelect ruleError={ruleError} setRuleError={setRuleError} appliedRules={appliedRules} setAppliedRules={setAppliedRules} toggle_identifier={"update-installed"} />
       <div className="manage-widgets-next-previous-ctr">
         <button className="previous-btn" onClick={handlePrevious}><i class="fas fa-long-arrow-alt-left"></i></button>
         <button className="save-btn" onClick={handleSave}>Save</button>

@@ -5,7 +5,7 @@ const path = require('path')
 const wiki = express();
 const asyncfs = require('fs').promises;
 wiki.use(express.json())
-const { authenticateToken } = require('../middlewares/jwt-middleware');
+const { authenticateToken } = require('../middlewares/auth-middleware');
 const { isAdmin } = require('../middlewares/admin-middleware')
 const {clean, asArray} = require('../helpers/common')
 

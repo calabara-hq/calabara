@@ -5,17 +5,12 @@ import * as WebWorker from '../../app/worker-client.js'
 import Glyphicon from '@strongdm/glyphicon'
 import calendarLogo from '../../img/calendar.svg'
 import snapshotLogo from '../../img/snapshot.svg'
+import creatorContestsLogo from '../../img/creator-contest.png'
 import wikiLogo from '../../img/wiki.svg'
 import { showNotification } from '../notifications/notifications'
 import useDiscordAuth from '../hooks/useDiscordAuth'
 //redux
 import { useSelector, useDispatch } from 'react-redux';
-
-
-import {
-  selectConnectedBool,
-  selectConnectedAddress,
-} from '../wallet/wallet-reducer';
 
 import {
   selectMemberOf,
@@ -41,11 +36,14 @@ import useDashboardRules from '../hooks/useDashboardRules'
 import useWidgets from '../hooks/useWidgets'
 import useOrganization from '../hooks/useOrganization'
 import useCommon from '../hooks/useCommon'
+import { useWalletContext } from '../../app/WalletContext'
+import { selectIsConnected, selectWalletAddress } from '../../app/sessionReducer'
 
 
 export default function Dashboard() {
-  const isConnected = useSelector(selectConnectedBool)
-  const walletAddress = useSelector(selectConnectedAddress)
+
+  const isConnected = useSelector(selectIsConnected)
+  const walletAddress = useSelector(selectWalletAddress)
   const visibleWidgets = useSelector(selectVisibleWidgets)
   const info = useSelector(selectDashboardInfo)
   const gatekeeperRules = useSelector(selectDashboardRules)
@@ -133,8 +131,7 @@ export default function Dashboard() {
 
 
 function InfoCard({ info, ens, discordIntegrationProps }) {
-  const isConnected = useSelector(selectConnectedBool);
-  const walletAddress = useSelector(selectConnectedAddress);
+  const isConnected = useSelector(selectIsConnected)
   const logoCache = useSelector(selectLogoCache);
   const dashboardRules = useSelector(selectDashboardRules);
   const discord_id = useSelector(selectDiscordId);
@@ -146,7 +143,7 @@ function InfoCard({ info, ens, discordIntegrationProps }) {
   const [isMemberOf, setIsMemberOf] = useState(false);
   const [isInfoLoaded, setIsInfoLoaded] = useState(false);
   const imgRef = createRef(null);
-  const { authenticated_post } = useCommon();
+  const { authenticated_post } = useWalletContext();
 
 
   let {
@@ -199,24 +196,24 @@ function InfoCard({ info, ens, discordIntegrationProps }) {
 
 
 
-
-  useEffect(() => {
-    let promptDiscord = false
-    if (isConnected) {
-      Object.keys(dashboardRules).map((key) => {
-        if (dashboardRules[key].gatekeeperType === 'discord') {
-          if (!discord_id) {
-            promptDiscord = true;
+  /*
+    useEffect(() => {
+      let promptDiscord = false
+      if (isConnected) {
+        Object.keys(dashboardRules).map((key) => {
+          if (dashboardRules[key].type === 'discord') {
+            if (!discord_id) {
+              promptDiscord = true;
+            }
+            else if (discord_id && isConnected) {
+              promptDiscord = false;
+            }
           }
-          else if (discord_id && isConnected) {
-            promptDiscord = false;
-          }
-        }
-      })
-    }
-    setPromptDiscordLink(promptDiscord)
-  }, [dashboardRules, discord_id])
-
+        })
+      }
+      setPromptDiscordLink(promptDiscord)
+    }, [dashboardRules, discord_id])
+  */
 
 
   useEffect(() => {
@@ -273,7 +270,7 @@ function InfoCard({ info, ens, discordIntegrationProps }) {
 
 function ManageWidgets({ isAdmin }) {
 
-  const isConnected = useSelector(selectConnectedBool)
+  const isConnected = useSelector(selectIsConnected)
   const history = useHistory();
 
   useEffect(() => {
@@ -300,7 +297,7 @@ export function WidgetCard({ gatekeeperPass, orgInfo, widget, btnState, setBtnSt
   const { name, link, widget_logo, metadata, gatekeeper_enabled, notify } = widget;
   const [hasNotification, setHasNotification] = useState(false)
   const { updateWidgets } = useWidgets();
-  const { authenticated_post } = useCommon();
+  const { authenticated_post } = useWalletContext();
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -318,6 +315,10 @@ export function WidgetCard({ gatekeeperPass, orgInfo, widget, btnState, setBtnSt
         history.push('/' + ens + '/docs')
       }
 
+      else if (name === 'creator contests') {
+        history.push('/' + ens + '/creator_contests')
+      }
+
     }
   }
 
@@ -331,6 +332,8 @@ export function WidgetCard({ gatekeeperPass, orgInfo, widget, btnState, setBtnSt
   if (name === 'snapshot') { logoImg = snapshotLogo }
   if (name === 'calendar') { logoImg = calendarLogo }
   if (name === 'wiki') { logoImg = wikiLogo }
+  if (name === 'creator contests') { logoImg = creatorContestsLogo }
+
 
 
   return (
@@ -341,7 +344,7 @@ export function WidgetCard({ gatekeeperPass, orgInfo, widget, btnState, setBtnSt
       <div className="card-image">
         <img src={logoImg} />
       </div>
-      <h2> {name == 'wiki' ? 'docs' : name}</h2>
+      {/*<h2> {name == 'wiki' ? 'docs' : name}</h2>*/}
     </article>
 
 

@@ -7,8 +7,7 @@ const discordApp = express();
 discordApp.use(express.json())
 
 const { getServerRoles, getGuildUserRoles } = require('../discord-bot/discord-bot.js')
-require('../discord-bot/deploy-commands.js')
-const { authenticateToken } = require('../middlewares/jwt-middleware')
+const { authenticateToken } = require('../middlewares/auth-middleware')
 const { isAdmin } = require('../middlewares/admin-middleware');
 
 
@@ -155,7 +154,7 @@ discordApp.post('/getUserServers', async function (req, res, next) {
 
 discordApp.post('/addUserDiscord', authenticateToken, async function (req, res, next) {
   const { discord_id } = req.body;
-  const address = req.user.address;
+  const address = req.session.user.address;
   console.log(address, discord_id)
   try {
     const resp = await db.query('update users set discord = $1 where address = $2', [discord_id, address])

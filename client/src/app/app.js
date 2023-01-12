@@ -1,24 +1,49 @@
-import React from 'react';
-import Nav from '../features/navbar/navbar';
-import Container from '../features/container/container'
-import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom'
-import SuccessfulDiscordRedirect from '../features/discord/discord-oauth-redirect'
-import Homepage from '../features/homepage/homepage';
+import React, { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import DiscordRedirect from '../features/discord/discord-oauth-redirect.js';
+import wrapPromise from '../helpers/wrap-promise';
+import Routes from '../routes/routes.js';
+import { disconnectSocket, initializeSocketConnection, socket } from "../service/socket.js";
+import { clearSession, setUserSession } from './sessionReducer.js';
 
+const fetchSession = () => {
+  const promise = fetch('/authentication/isAuthenticated', { credentials: 'include' })
+    .then(res => res.json())
+    .then(res => res.authenticated ? res.user : false)
+    .catch(err => false)
+  return wrapPromise(promise)
+}
+
+const resource = fetchSession()
 
 export default function App() {
+  const dispatch = useDispatch()
+  const session = resource.read()
 
+
+  useEffect(() => {
+    dispatch(setUserSession(session))
+    // start socket as early as possible
+    initializeSocketConnection();
+    socket.on('connect', () => {
+      console.log('connected to socket')
+    })
+    return () => {
+      disconnectSocket();
+      dispatch(clearSession())
+    }
+  }, [])
 
   return (
 
     <Router>
       <Switch>
         <Route path="/oauth/discord">
-          <SuccessfulDiscordRedirect />
+          <DiscordRedirect />
         </Route>
-
         <Route path="/*">
-          <Container />
+          <Routes initial_session={session} />
         </Route>
 
       </Switch>

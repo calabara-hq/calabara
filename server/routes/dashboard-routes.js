@@ -1,21 +1,17 @@
 const express = require('express');
 const db = require('../helpers/db-init.js')
-const dotenv = require('dotenv')
 const path = require('path')
 const dashboard = express();
 dashboard.use(express.json())
 const asyncfs = require('fs').promises;
-const { authenticateToken } = require('../middlewares/jwt-middleware.js');
+const { authenticateToken } = require('../middlewares/auth-middleware.js');
 const { isAdmin } = require('../middlewares/admin-middleware')
 const { clean, asArray } = require('../helpers/common')
 const { getGuildRoles } = require('./discord-routes')
 const googleCalendar = require('../helpers/google-calendar');
-const { default: axios } = require('axios');
 
 
 const serverRoot = path.normalize(path.join(__dirname, '../'));
-
-
 
 const getDashboardInfo = async (ens) => {
     var orgInfo = await db.query('select name, ens, logo, members, website, discord, verified, addresses from organizations where ens = $1', [ens.toLowerCase()]).then(clean);
@@ -25,20 +21,19 @@ const getDashboardInfo = async (ens) => {
 const getDashboardRules = async (ens) => {
     var result = await db.query('select json_build_object (rule_id, rule) AS data from gatekeeper_rules where ens = $1', [ens]).then(clean).then(asArray)
 
-    let obj = {}
-    let obj2 = {}
-
     const buildObj = async () => {
         let obj = {}
         await Promise.all(result.map(async (el) => {
             const key = Object.keys(el.data);
             obj[key] = el.data[key];
-            if (obj[key].gatekeeperType === 'discord') {
+            /*
+            if (obj[key].type === 'discord') {
                 let roles = await (getGuildRoles(obj[key].guildId))
                 obj[key].available_roles = roles.map((el) => {
                     return { 'role_id': el.id, 'role_name': el.name, 'role_color': el.color }
                 })
             }
+            */
         }))
         return obj
     }

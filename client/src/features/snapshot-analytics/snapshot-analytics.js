@@ -1,30 +1,26 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { createClient, getProposals, didAddressVote, userParticipation } from '../../helpers/snapshot_api'
 import '../../css/snapshot-analytics.css'
 import { useParams } from "react-router-dom"
 import { useSelector } from 'react-redux';
 import { Doughnut } from 'react-chartjs-2';
 import BackButton from '../back-button/back-button';
+import { useWalletContext } from '../../app/WalletContext';
+import { selectIsConnected, selectWalletAddress } from '../../app/sessionReducer';
 
-import {
-  selectConnectedBool,
-  selectConnectedAddress,
-} from '../wallet/wallet-reducer';
-import useWallet from '../hooks/useWallet';
 
 
 
 function Analytics() {
 
   const { ens } = useParams();
-  const walletAddress = useSelector(selectConnectedAddress)
-  const isConnected = useSelector(selectConnectedBool)
+  const walletAddress = useSelector(selectWalletAddress)
+  const isConnected = useSelector(selectIsConnected)
   const [missedVotes, setMissedVotes] = useState({ votes: [] })
   const [userParticipationPercentage, setUserParticipationPercentage] = useState(0)
   const [globalParticipationPercentage, setGlobalParticipationPercentage] = useState(0)
   const [pastFiveproposals, setPastFiveProposals] = useState([])
-  const { walletConnect } = useWallet();
-
+  const { walletConnect } = useWalletContext();
 
   const calcMissedVotes = async (client) => {
     const votes = await didAddressVote(client, ens, walletAddress);

@@ -1,24 +1,18 @@
-const express = require('express');
-const app = express();
-const path = require('path');
 const http = require('http');
 const https = require('https');
+const app = require('./server');
 const fs = require('fs');
-const bodyParser = require('body-parser')
 const dotenv = require('dotenv');
-
-const { discordApp } = require('./routes/discord-routes')
-const { authentication } = require('./routes/authentication-routes')
-const { settings } = require('./routes/settings-routes')
-const { dashboard } = require('./routes/dashboard-routes')
-const { organizations } = require('./routes/organization-routes')
-const { wiki } = require('./routes/wiki-routes')
-const { user } = require('./routes/user-routes')
+const initialize_cron = require('./sys/cron/main')
 dotenv.config();
+const initialize_discord_bot = require('./discord-bot/deploy-commands.js')
+const { socketConnection } = require('./sys/socket/socket-io')
+const twitterStream = require('./twitter-client/stream'); // keep this
+const logger = require('./logger').child({ service: 'index' })
 
 
 if (!process.env.NODE_ENV) {
-    console.log('please pass NODE_ENV. Available options are dev and prod')
+    console.error('Please pass NODE_ENV. Available options are development | production | test')
 }
 
 
@@ -26,47 +20,34 @@ let key = fs.readFileSync("localhost.key", "utf-8");
 let cert = fs.readFileSync("localhost.cert", "utf-8");
 
 
-
-const buildPath = path.normalize(path.join(__dirname, '../client/build'));
-app.use(express.static(buildPath));
-
-const imgPath = path.normalize(path.join(__dirname, 'img'));
-app.use(express.static(imgPath));
-
-app.use(bodyParser.json({ limit: '50mb' }));
-app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
-app.use(express.json())
-
-app.use('/discord', discordApp)
-app.use('/authentication', authentication)
-app.use('/settings', settings)
-app.use('/dashboard', dashboard)
-app.use('/organizations', organizations)
-app.use('/wiki', wiki)
-app.use('/user', user)
-
-app.get('/img/*', function (req, res, next) {
-    res.sendFile(path.join(imgPath, req.url.split('/').slice(2).join('/')))
-
-})
-
-app.get('/*', function (req, res, next) {
-    res.sendFile(path.join(buildPath, 'index.html'))
-});
-
-
 var server = http.createServer(app)
 var secureServer = https.createServer({ key, cert }, app);
 
-if (process.env.NODE_ENV == 'development') {
-    secureServer.listen(3001)
-    console.log('Running at Port 3001');
+
+
+if (process.env.NODE_ENV === 'development') {
+    secureServer.listen(3001, () => {
+        socketConnection(secureServer)
+        initialize_cron();
+        initialize_discord_bot()
+            .then(res => logger.log({ level: 'info', message: res }))
+            .then(logger.log({ level: 'info', message: 'Running on port 3001' }))
+            .then(() => secureServer.emit('app_started'))
+    })
 }
 
 else if (process.env.NODE_ENV === 'production') {
     server.listen(80)
-    secureServer.listen(443)
-    console.log('Running at Port 443');
-
+    socketConnection(secureServer)
+    secureServer.listen(443, () => {
+        initialize_cron();
+        initialize_discord_bot()
+            .then(res => logger.log({ level: 'info', message: res }))
+            .then(logger.log({ level: 'info', message: 'Running on port 443' }))
+            .then(() => secureServer.emit('app_started'))
+    })
 }
+
+
+
 

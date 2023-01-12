@@ -5,15 +5,15 @@ import Button from '@mui/material/Button';
 import { useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import useWidgets from '../hooks/useWidgets';
-import useCommon from '../hooks/useCommon';
+import { useWalletContext } from '../../app/WalletContext';
 
 export default function CalendarConfiguration({ mode, metadata, setMetadata, setProgress, setSettingsStep, setTabHeader }) {
     const [configProgress, setConfigProgress] = useState(0)
     const [inputError, setInputError] = useState(0);
     const [calendarID, setCalendarID] = useState(metadata.calendarID || "")
     const [copyStatus, setCopyStatus] = useState('copy to clipboard');
-    const {updateWidgetMetadata} = useWidgets();
-    const { authenticated_post } = useCommon();
+    const { updateWidgetMetadata } = useWidgets();
+    const { authenticated_post } = useWalletContext();
     const { ens } = useParams();
     const dispatch = useDispatch();
 
@@ -117,7 +117,7 @@ export default function CalendarConfiguration({ mode, metadata, setMetadata, set
     }
 
     function handlePrevious() {
-        
+
         if (configProgress == 1) {
             setConfigProgress(0);
         }

@@ -2,7 +2,16 @@ node_modules/
 *.cert
 *.key
 .env
+*.log
+*_env
+production_env
+dev_env
+*.env
 *.pem
 server/org-repository/*
+server/creator-contests/*
 server/img/logos/*
+server/contest-assets/staging/media/*
+server/contest-assets/staging/submissions/*
 build/
+monitoring/

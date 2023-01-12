@@ -6,12 +6,12 @@ const getDataFromLocalstorage = (key, initialValue, shouldSaveInitial = false) =
     const item = window.localStorage.getItem(key)
     if (!item) {
       if (shouldSaveInitial)
-        window.localStorage.setItem(key, JSON.stringify(initialValue))
+      window.localStorage.setItem(key, JSON.stringify(initialValue))
       return initialValue
     }
     return JSON.parse(item)
   } catch (error) {
-    
+
     return initialValue
   }
 }
@@ -29,7 +29,7 @@ const useLocalStorage = (key, initialValue, shouldSaveInitial = false) => {
         window.localStorage.setItem(key, JSON.stringify(valueToStore))
       }
     } catch (error) {
-      
+
     }
   }
   return [storedValue, setValue]
