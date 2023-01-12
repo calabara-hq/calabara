@@ -1,3 +1,4 @@
+import React from 'react'
 import logo_sketch from '../../img/calabara-sketch.png'
 import docs_logo from '../../img/wiki.svg';
 import snapshot_logo from '../../img/snapshot.svg';
@@ -5,8 +6,11 @@ import calendar_logo from '../../img/calendar.svg';
 import contest_logo from '../../img/creator-contest.png'
 import gatekeeper_img from '../../img/gatekeeper-toggle.png';
 import blueprint_img from '../../img/blueprint.png'
-import inTheLab from '../../img/contest-mockup.png'
-import React from 'react'
+import cc_x_sd from '../../img/logo-cc-shark.png'
+import frog from '../../img/frog.jpg';
+import modrovsky from '../../img/modrovsky.gif';
+import clock from '../../img/clock-art.jpg';
+import gnars from '../../img/gnars-art.jpg';
 import styled, { keyframes } from 'styled-components'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faVial, faBook } from '@fortawesome/free-solid-svg-icons'
@@ -138,7 +142,7 @@ function Section1() {
         <Left>
           <div>
             <Section1Text>
-              <h1 style={{ color: "rgb(169, 152, 255)" }}>The community-led design house for web3 public goods.</h1>
+              <h1 style={{ color: "rgb(169, 152, 255)" }}>A community-led design house for web3 public goods.</h1>
             </Section1Text>
           </div>
         </Left>
@@ -221,7 +225,7 @@ function Section2() {
         <Right>
           <h1 style={{ color: "#d3d3d3" }}>Applications</h1>
           <Section2Text>
-            <p style={{ margin: '0'}}>We build open source applications that live in community dashboards. Create a custom dashboard for your organization and add some apps to help fellow members keep up with the latest calendar events, snapshot votes, community documents, and more.</p>
+            <p style={{ margin: '0' }}>We build open source applications that live in community dashboards. Create a custom dashboard for your organization and add some apps to help fellow members keep up with the latest calendar events, snapshot votes, community documents, and more.</p>
           </Section2Text>
         </Right>
       </Top>
@@ -230,7 +234,7 @@ function Section2() {
         <Left>
           <h1 style={{ color: "#d3d3d3" }}>Gatekeeper</h1>
           <Section2Text>
-            <p style={{ margin: '0'}}>Give potential contributors the pitch. Give OG's the alpha. Use Discord server role checks or ERC-721 & ERC-20 balance checks to create gatekeeper rules that uniquely affect each application.</p>
+            <p style={{ margin: '0' }}>Give potential contributors the pitch. Give OG's the alpha. Use Discord server role checks or ERC-721 & ERC-20 balance checks to create gatekeeper rules that uniquely affect each application.</p>
           </Section2Text>
         </Left>
 
@@ -264,6 +268,9 @@ function Section3() {
 
   const Section3Split = styled.div`
     display: flex;
+    @media (max-width: 1000px){
+      flex-direction: column-reverse;
+  }
   `
 
   const Section3Heading = styled.div`
@@ -294,32 +301,56 @@ function Section3() {
     }
   `
 
+  const PortfolioRow = styled.div`
+      display: flex;
+      margin: -10px -10px 10px -10px;
+      width: 75%;
+      justify-content: space-evenly;
+
+    `
+  const PortfolioImg = styled.img`
+    margin: 10px;
+    border-radius: 10px;
+    max-width: 48%;
+    text-align: center;
+    position: relative;
+    &::before{
+      content: 'by modrovsky';
+      color: white;
+      font-size: 10px;
+      position: absolute;
+      right: 0;
+      top: 0;
+      z-index: 10000;
+    }
+  `
+
   return (
     <Section3Wrap>
       <Section3Heading>
-        <h2 style={{ color: '#d3d3d3' }}>A peak inside the lab </h2>
-        <FontAwesomeIcon icon={faVial} fontSize="30px" color="lightgreen"></FontAwesomeIcon>
       </Section3Heading>
       <Section3Split>
-        <Bottom>
-          <Left>
-            <img src={inTheLab} style={{ maxWidth: '50%' }} />
-          </Left>
-          <Right>
-            <Section3Text>
-              <p style={{ margin: '0' }}>
-                We've teamed up with SharkDAO to develop Creator Contests.
-                Creator contests are an experiment in creating incentive systems for community creatives,
-                builders, and artists via retroactive rewards.
-                <br></br><br></br>
-                Reward pools are reserved for winners of periodic contests.
-                At the close of a contest submission period, DAO members vote on submissions and rewards are
-                distributed according to the voting results. Coming Soon.
-              </p>
-            </Section3Text>
-
-          </Right>
-        </Bottom>
+        <Left>
+          <PortfolioRow>
+            <PortfolioImg src={frog} />
+            <PortfolioImg src={clock} />
+          </PortfolioRow>
+          <PortfolioRow>
+            <PortfolioImg src={gnars} />
+            <PortfolioImg src={modrovsky} />
+          </PortfolioRow>
+          <p style={{ width: '90%', margin: '0 auto', color: '#535353' }}><i>TL - frog stand by @darko_eth. TR - Noun'O'Clock by @0xdariush. BL - Gnoggles rail by @anufo204. BR - Index Card by @modrovsky</i></p>
+        </Left>
+        <Right>
+          <img src={cc_x_sd} style={{ maxWidth: '50%' }} />
+          <Section3Text>
+            <p style={{ margin: '0' }}>
+              Creator Contests allow any community to host funding rounds for artists, designers, storytellers, builders, and other creatives who want to build on their brand.
+              <br></br><br></br>
+              Write a prompt, choose the rewards, then let the creators do what they do best. Following a community vote, rewards are distributed to the winners.
+            </p>
+          </Section3Text>
+        </Right>
       </Section3Split>
     </Section3Wrap>
   )

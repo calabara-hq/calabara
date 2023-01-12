@@ -98,7 +98,7 @@
   background-color: #24262e;
   flex-wrap: wrap;
   box-shadow: 0 10px 30px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
-
+  
 }
 
 .dao-card:hover{
@@ -118,7 +118,7 @@
   border-radius: 100px;
 }
 
-.dao-card > h2{
+.dao-card > h3{
   margin-top: auto;
   color: #efefef;
   text-align: center;

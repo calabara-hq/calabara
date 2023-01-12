@@ -13,7 +13,6 @@ export const ContestDateDetails = ({ date_times, snapshot_timestamp }) => {
     const readableEnd = new Date(date_times.end_date);
     const readableSnapshot = snapshot_timestamp ? new Date(snapshot_timestamp) : null;
 
-    console.log(readableSnapshot)
 
     return (
         <div>

@@ -13,21 +13,24 @@ organizations.get('/organizations', async function (req, res, next) {
 
 // get subscriptions
 organizations.get('/getSubscriptions/*', async function (req, res, next) {
-
     const address = req.url.split('/')[2];
-
     var subbed = await db.query('select subscription from subscriptions where address = $1', [address]).then(clean).then(asArray);
     res.status(200);
     res.send(subbed.map(el => el.subscription))
 
 });
 
-organizations.get('/doesEnsExist/*', async function (req, res, next) {
-    const ens = req.url.split('/')[2]
+organizations.get('/doesEnsExist', async function (req, res, next) {
+    const { ens } = req.query
     var result = await db.query('select exists (select id from organizations where ens = $1)', [ens]).then(clean);
     res.send(result.exists).status(200)
 });
 
+organizations.get('/doesNameExist', async function (req, res, next) {
+    const { name, ens } = req.query;
+    var result = await db.query('select exists (select id from organizations where name = $1 and ens != $2)', [name.toLowerCase(), ens]).then(clean);
+    res.send(result.exists).status(200)
+});
 
 // post a new subscription
 organizations.post('/addSubscription', authenticateToken, async function (req, res, next) {
@@ -48,18 +51,6 @@ organizations.post('/removeSubscription', authenticateToken, async function (req
 
 });
 
-/* 
-this is more complex in the case that a user is updating an orgs settings.
-in the simple case (new org), we just need to make sure that the name is unique
-in the complex case (existing org), the name can exist so long as it is only owned by the ens it's tied to.
-*/
-organizations.post('/doesNameExist', async function (req, res, next) {
-    const { name, ens } = req.body;
-    console.log(req.body)
-    var result = await db.query('select exists (select id from organizations where name = $1 and ens != $2)', [name.toLowerCase(), ens]).then(clean);
-    res.send(result.exists).status(200)
-
-});
 
 
 module.exports.organizations = organizations;
