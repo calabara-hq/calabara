@@ -79,8 +79,6 @@ async function gnosis_format(submissions, rewards) {
 }
 
 async function utopia_format(submissions, rewards) {
-    console.log('LOOK HERE')
-    console.log(submissions, rewards)
     let csvContent = "data:text/csv;charset=utf-8,name,wallet,amount,Pay-out token\r\n";
     try {
         if (submissions.length > 0) {

@@ -176,7 +176,7 @@ function OrganizationENSComponent({ standardProps }) {
                 }
                 else {
                     // check if this ens already exists in the system
-                    const doesExist = await axios.get('/organizations/doesEnsExist/' + ens)
+                    const doesExist = await axios.get(`/organizations/doesEnsExist?ens=${ens}`)
                     if (doesExist.data) {
                         // already exists. set error msg
                         setErrorMsg({ error: true, msg: "A dashboard with this ens already exists" })

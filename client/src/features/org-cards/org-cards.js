@@ -152,7 +152,7 @@ function DaoCard({ org, membership }) {
 
     <article className="dao-card" onClick={handleClick}>
       <img data-src={logo} />
-      <h2> {name}</h2>
+      <h3> {name.length > 20 ? name.slice(0, 20) + '...' : name}</h3>
       <p>{members} members</p>
       {isConnected &&
         <>

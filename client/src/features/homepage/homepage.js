@@ -142,7 +142,7 @@ function Section1() {
         <Left>
           <div>
             <Section1Text>
-              <h1 style={{ color: "rgb(169, 152, 255)" }}>The community-led design house for web3 public goods.</h1>
+              <h1 style={{ color: "rgb(169, 152, 255)" }}>A community-led design house for web3 public goods.</h1>
             </Section1Text>
           </div>
         </Left>
