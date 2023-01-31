@@ -21,6 +21,7 @@ const pre_process = async (ens, contest_hash) => {
 const construct_query = async (current_time, params, ens, contest_hash) => {
     const base_prefix = 'select contest_submissions.id, contest_submissions._url'
     const with_author = ',author'
+    const with_twitter = ',contest_submissions.meta_data'
     const with_votes = ',coalesce(sum(votes_spent), 0) as votes from contest_submissions left join contest_votes \
                       on contest_submissions.id = contest_votes.submission_id \
                       where contest_submissions.ens=$1 and contest_submissions.contest_hash=$2 \
@@ -34,7 +35,7 @@ const construct_query = async (current_time, params, ens, contest_hash) => {
     }
 
     // contest not over. stitch together query
-    return base_prefix + (params.anon_subs ? '' : with_author) + (params.visible_votes ? with_votes : without_votes)
+    return base_prefix + (params.anon_subs ? '' : with_author) + (contest_hash === '273d967c' ? with_twitter : '') + (params.visible_votes ? with_votes : without_votes)
 }
 
 
@@ -50,7 +51,7 @@ async function fetchSubmissions(req, res, next) {
         .then(data => {
             return current_time > params._end ? data : shuffleArray(data)
         })
-
+    console.log(submissions)
     req.submissions = submissions
     next();
 }
