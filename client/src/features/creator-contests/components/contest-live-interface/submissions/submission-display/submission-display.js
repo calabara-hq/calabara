@@ -139,7 +139,6 @@ export default function SubmissionDisplay({ }) {
 }
 
 function MapSubmissions({ subs }) {
-
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [TLDRImage, setTLDRImage] = useState(null);
     const [TLDRText, setTLDRText] = useState(null);
@@ -147,7 +146,7 @@ function MapSubmissions({ subs }) {
     const [expandData, setExpandData] = useState(null);
     const [author, setAuthor] = useState(null);
     const [votes, setVotes] = useState(null);
-
+    const [metadata, setMetadata] = useState(null);
 
 
     const handleClose = () => {
@@ -157,12 +156,12 @@ function MapSubmissions({ subs }) {
         setExpandData(null);
         setDrawerOpen(false);
         document.body.style.overflow = 'unset';
-
     }
 
 
-    const handleExpand = async (id, tldr_img, tldr_text, submission_body, author, votes) => {
-        setIdToExpand(id)
+    const handleExpand = async (id, tldr_img, tldr_text, submission_body, author, metadata, votes) => {
+        setIdToExpand(id);
+        setMetadata(metadata ? metadata : null);
         setTLDRImage(tldr_img);
         setTLDRText(tldr_text);
         setExpandData(submission_body);
@@ -183,7 +182,7 @@ function MapSubmissions({ subs }) {
                     <LazyLoadedSubmission key={index} sub={sub} handleExpand={handleExpand} index={index} />
                 )
             })}
-            <ExpandSubmissionDrawer drawerOpen={drawerOpen} handleClose={handleClose} id={idToExpand} TLDRImage={TLDRImage} TLDRText={TLDRText} expandData={expandData} author={author} votes={votes} />
+            <ExpandSubmissionDrawer drawerOpen={drawerOpen} handleClose={handleClose} id={idToExpand} TLDRImage={TLDRImage} TLDRText={TLDRText} expandData={expandData} author={author} metadata={metadata} votes={votes} />
         </>
     )
 }
@@ -195,13 +194,10 @@ function LazyLoadedSubmission({ sub, handleExpand, index }) {
     const [rank, setRank] = useState(null);
     const contest_state = useSelector(selectContestState)
 
-
     useEffect(() => {
         fetch(sub._url).then(res => {
             res.json().then(json => {
-                console.log(json)
                 set_tldr_img(json.tldr_image)
-                console.log(json.tldr_text)
                 set_tldr_text(json.tldr_text)
                 set_submission_body(json.submission_body)
                 if (contest_state === 2) {
@@ -216,7 +212,7 @@ function LazyLoadedSubmission({ sub, handleExpand, index }) {
 
     return (
 
-        <SubmissionPreviewContainer onClick={() => handleExpand(sub.id, tldr_img, tldr_text, submission_body, sub.author, sub.votes)} contest_rank={rank}>
+        <SubmissionPreviewContainer onClick={() => handleExpand(sub.id, tldr_img, tldr_text, submission_body, sub.author, sub.meta_data, sub.votes)} contest_rank={rank}>
             <p><Anchorme truncate={45} target='_blank'>{tldr_text}</Anchorme></p>
             <LazyStyledImage>
                 <LazyLoadImage style={{ maxWidth: '15em', maxHeight: '15em', margin: '0 auto', borderRadius: '10px' }} src={tldr_img} effect="blur" />

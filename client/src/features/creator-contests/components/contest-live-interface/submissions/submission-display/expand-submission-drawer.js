@@ -10,7 +10,7 @@ import { ParseBlocks } from "../../block-parser";
 import { selectContestState } from "../../interface/contest-interface-reducer";
 import { SubmissionVotingBox } from "../../vote/voting-components";
 import { Author, SubmissionMeta, VoteTotals } from "./submission-display-styles";
-
+import { scaleElement } from '../../../../../../css/scale-element';
 
 const DrawerWrapper = styled.div`
     display: flex;
@@ -76,10 +76,20 @@ const SubmissionWrap = styled.div`
     
 `
 
+const ViewThreadButton = styled.button`
+    background-color: rgba(29, 155, 240, 0.8);
+    border: none;
+    border-radius: 10px;
+    padding: 5px 20px;
+    font-weight: bold;
+    align-self: flex-end;
+    ${scaleElement};
+`
 
-export default function ExpandSubmissionDrawer({ drawerOpen, handleClose, id, TLDRImage, TLDRText, expandData, author, votes }) {
+
+export default function ExpandSubmissionDrawer({ drawerOpen, handleClose, id, TLDRImage, TLDRText, expandData, author, metadata, votes }) {
     const contest_state = useSelector(selectContestState)
-
+    console.log(metadata)
     return (
         <DrawerComponent drawerOpen={drawerOpen} handleClose={handleClose} showExit={true}>
             {contest_state === 1 && <SubmissionVotingBox sub_id={id} />}
@@ -93,6 +103,7 @@ export default function ExpandSubmissionDrawer({ drawerOpen, handleClose, id, TL
                     }
                 </>
                 <p><Anchorme target="_blank">{TLDRText}</Anchorme></p>
+                {metadata ? <ViewThreadButton onClick={() => window.open(`https://twitter.com/web/status/${metadata.tweet_id}`)}>view thread</ViewThreadButton> : null}
                 <Zoom><LazyLoadImage src={TLDRImage} effect="opacity" /></Zoom>
                 {expandData && <Anchorme><ParseBlocks data={expandData} /></Anchorme>}
             </SubmissionWrap>
